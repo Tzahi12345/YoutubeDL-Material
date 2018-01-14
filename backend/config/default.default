@@ -1,8 +1,8 @@
 {
     "YoutubeDL-Material": {
         "Host": {
-            "url": "example.com",
-            "port": "8088"
+            "frontend-url": "http://localhost:4200",
+            "backend-port": "8088"
         },
       "Encryption": {
         "use-encryption": false,

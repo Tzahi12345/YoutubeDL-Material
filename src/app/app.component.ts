@@ -50,7 +50,7 @@ export class AppComponent {
       this.exists = fileExists;
       if (this.exists == "failed")
       {
-        this.downloadHelperMp3(name);
+        setTimeout(() => this.downloadHelperMp3(name), 500);
       }
       else
       {
@@ -66,7 +66,7 @@ export class AppComponent {
       this.exists = fileExists;
       if (this.exists == "failed")
       {
-        this.downloadHelperMp4(name);
+        setTimeout(() => this.downloadHelperMp4(name), 500);
       }
       else
       {

@@ -9,8 +9,8 @@ var bodyParser = require("body-parser");
 var app = express();
 var appAnchor = express();
 
-var hostURL = config.get("YoutubeDL-Material.Host.url");
-var hostPort = config.get("YoutubeDL-Material.Host.port");
+var hostURL = config.get("YoutubeDL-Material.Host.frontend-url");
+var hostPort = config.get("YoutubeDL-Material.Host.backend-port");
 var usingEncryption = config.get("YoutubeDL-Material.Encryption.use-encryption");
 var basePath = config.get("YoutubeDL-Material.Downloader.path-base");
 var audioPath = config.get("YoutubeDL-Material.Downloader.path-audio");
