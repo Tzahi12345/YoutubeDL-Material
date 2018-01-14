@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend for hda",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tzahi12345/hda-backend.git"
+  },
+  "author": "Isaac Grynsztein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tzahi12345/hda-backend/issues"
+  },
+  "homepage": "https://github.com/Tzahi12345/hda-backend#readme",
+  "dependencies": {
+    "exe": "^1.0.2",
+    "youtube-dl": "1.11.1"
+  }
+}

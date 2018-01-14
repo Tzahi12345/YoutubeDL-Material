@@ -40,3 +40,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+node_modules/*
+backend/node_modules/*
+YoutubeDL-Material/node_modules/*

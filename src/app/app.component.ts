@@ -13,12 +13,12 @@ import 'rxjs/add/operator/toPromise';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  downloadingmp3: boolean = false;
+  downloadingfile: boolean = false;
   audioOnly: boolean;
   urlError: boolean = false;
   path: string = '';
   url: string = '';
-  exists: boolean = false;
+  exists: string = "";
   topBarTitle: string = "Youtube Downloader";
   constructor(private postsService: PostsService) { 
     this.audioOnly = true;
@@ -48,13 +48,13 @@ export class AppComponent {
   {
     this.postsService.getFileStatusMp3(name).subscribe(fileExists => {
       this.exists = fileExists;
-      if (this.exists == false)
+      if (this.exists == "failed")
       {
         this.downloadHelperMp3(name);
       }
       else
       {
-        window.location.href = 'https://grynsztein.com/audio/' + this.path + ".mp3";
+        window.location.href = this.exists;
       }
     });
     
@@ -64,13 +64,13 @@ export class AppComponent {
   {
     this.postsService.getFileStatusMp4(name).subscribe(fileExists => {
       this.exists = fileExists;
-      if (this.exists == false)
+      if (this.exists == "failed")
       {
         this.downloadHelperMp4(name);
       }
       else
       {
-        window.location.href = 'https://grynsztein.com/video/' + this.path + ".mp4";
+        window.location.href = this.exists;
       }
     });
     
@@ -85,7 +85,7 @@ export class AppComponent {
       
       if (this.audioOnly)
       {
-        this.downloadingmp3 = true;
+        this.downloadingfile = true;
         this.postsService.makeMP3(this.url).subscribe(posts => {
           this.path = posts;
           if (this.path != "-1")
@@ -97,7 +97,7 @@ export class AppComponent {
       }
       else
       {
-        this.downloadingmp3 = true;
+        this.downloadingfile = true;
         this.postsService.makeMP4(this.url).subscribe(posts => {
           this.path = posts;
           if (this.path != "-1")
