@@ -1,20 +1,40 @@
-<!--The whole content below can be removed with the new code.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{title}}!!
-  </h1>
-  <img width="300" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAyNTAgMjUwIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyNTAgMjUwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+DQo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPg0KCS5zdDB7ZmlsbDojREQwMDMxO30NCgkuc3Qxe2ZpbGw6I0MzMDAyRjt9DQoJLnN0MntmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjxnPg0KCTxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMTI1LDMwIDEyNSwzMCAxMjUsMzAgMzEuOSw2My4yIDQ2LjEsMTg2LjMgMTI1LDIzMCAxMjUsMjMwIDEyNSwyMzAgMjAzLjksMTg2LjMgMjE4LjEsNjMuMiAJIi8+DQoJPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxMjUsMzAgMTI1LDUyLjIgMTI1LDUyLjEgMTI1LDE1My40IDEyNSwxNTMuNCAxMjUsMjMwIDEyNSwyMzAgMjAzLjksMTg2LjMgMjE4LjEsNjMuMiAxMjUsMzAgCSIvPg0KCTxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik0xMjUsNTIuMUw2Ni44LDE4Mi42aDBoMjEuN2gwbDExLjctMjkuMmg0OS40bDExLjcsMjkuMmgwaDIxLjdoMEwxMjUsNTIuMUwxMjUsNTIuMUwxMjUsNTIuMUwxMjUsNTIuMQ0KCQlMMTI1LDUyLjF6IE0xNDIsMTM1LjRIMTA4bDE3LTQwLjlMMTQyLDEzNS40eiIvPg0KPC9nPg0KPC9zdmc+DQo=" />
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" href="http://angularjs.blogspot.ca/">Angular blog</a></h2>
-  </li>
-</ul>
+<mat-toolbar color="primary" class="top">
+        <table width="100%" height="100%">
+            <td class="topbar" style="text-align: left; left:0px; font-size: 15px">
+            </td>
+            <td class="topbar" style="text-align: center">
+                <div style="margin-top: 14px">{{topBarTitle}}</div>
+            </td>
+            <td class="topbar" style="text-align: right">
+    
+            </td>
+        </table>
+</mat-toolbar>
 
+<br/>
+
+<mat-card id="card" class="big demo-basic">
+    <mat-card-title>
+        <mat-toolbar color="primary">Youtube Downloader</mat-toolbar>
+    </mat-card-title>
+    <div style="width: 100%; height: 100%; padding-left: 24px; padding-right: 24px; position: relative">
+        <mat-card-content>
+            <form class="example-form">
+                <mat-form-field class="example-full-width">
+                    <input matInput [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required>
+                    <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
+                </mat-form-field>
+            </form>
+            <br/>
+            <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
+            <button style="float: right; margin-top: -16px" (click)="downloadClicked()" [disabled]="downloadingmp3" type="submit" mat-raised-button color="primary">Download</button>
+        </mat-card-content>
+    </div>
+</mat-card>
+<br/>
+<div class="centered big" id="bar_div" *ngIf="downloadingfile;else nofile">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+<ng-template #nofile>
+
+</ng-template>
