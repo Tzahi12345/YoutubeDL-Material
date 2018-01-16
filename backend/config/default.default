@@ -2,6 +2,7 @@
     "YoutubeDL-Material": {
         "Host": {
             "frontend-url": "http://localhost:4200",
+            "backend-url": "youtubedl.grynsztein.com",
             "backend-port": "8088"
         },
       "Encryption": {

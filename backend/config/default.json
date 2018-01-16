@@ -1,13 +1,14 @@
 {
-    "YoutubeDL-Material": {
+    "YoutubeDLMaterial": {
         "Host": {
-            "frontend-url": "http://localhost:4200",
-            "backend-port": "8088"
+            "frontendurl": "http://localhost:4200",
+            "backendurl": "https://youtubedl.grynsztein.com/"
         },
       "Encryption": {
         "use-encryption": false,
-        "cert-file-path": "fullchain.pem",
-        "key-file-path": "privkey.pem"
+        "cert-file-path": "cert.pem",
+        "key-file-path": "privkey.pem",
+        "chain-file-path": "chain.pem"
       },
       "Downloader": {
         "path-base": "http://localhost:8088/",

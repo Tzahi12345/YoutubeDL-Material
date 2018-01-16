@@ -12,7 +12,8 @@
         "favicon.ico",
         "backend/audio",
         "backend/video",
-        "backend"
+        "backend",
+        { "glob": "default.json", "input": "./", "output": "../backend/config/", "allowOutsideOutDir": true }
       ],
       "index": "index.html",
       "main": "main.ts",

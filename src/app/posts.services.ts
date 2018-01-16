@@ -12,15 +12,22 @@ export class PostsService {
     audioFolder: string = "";
     videoFolder: string = "";
     startPath: string = "http://localhost:17442/";
+    startPathSSL: string = "https://localhost:17442/"
     handShakeComplete: boolean = false;
 
     constructor(private http: Http){
         console.log('PostsService Initialized...');
     }
 
-    startHandshake(): Observable<string>
+    startHandshake(url: string): Observable<string>
     {
-        return this.http.get(this.startPath + "url")
+        return this.http.get(url + "geturl")
+            .map(res => res.json());
+    }
+
+    startHandshakeSSL(url: string): Observable<string>
+    {
+        return this.http.get(url + "geturl")
             .map(res => res.json());
     }
 
@@ -56,6 +63,14 @@ export class PostsService {
     getFileStatusMp4(name: string): Observable<string> {
         return this.http.post(this.path + "mp4fileexists",{name: name})
             .map(res => res.json());
+    }
+
+    loadNavItems() {
+        return this.http.get("../../backend/config/default.json")
+                        .map(res => res.json());
+                        //This is optional, you can remove the last line 
+                        // if you don't want to log loaded json in 
+                        // console.
     }
 }
 

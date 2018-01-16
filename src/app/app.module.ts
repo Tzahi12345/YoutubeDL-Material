@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule,
   MatSnackBarModule, MatCardModule, MatSelectModule, MatToolbarModule, MatCheckboxModule,
   MatProgressBarModule  } from '@angular/material';
-  import { NgConfigureModule, ConfigureOptions } from 'ng4-configure/ng4-configure';
-  import { MyOptions } from './configuration_options.component';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';

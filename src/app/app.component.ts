@@ -23,20 +23,39 @@ export class AppComponent {
   constructor(private postsService: PostsService) { 
     this.audioOnly = true;
 
-    // starts handshake
-    this.doHandshake();
+    
+
+    this.postsService.loadNavItems().subscribe(result => {
+      var backendUrl = result.YoutubeDLMaterial.Host.backendurl;
+
+      this.postsService.path = backendUrl;
+      this.postsService.startPath = backendUrl;
+      this.postsService.startPathSSL = backendUrl;
+    });
   }
 
   urlForm = new FormControl('', [Validators.required]);
 
-  doHandshake() {
-    this.postsService.startHandshake().subscribe(url => {
-      this.postsService.path = "http://" + url;
+  doHandshake(url: string) {
+    this.postsService.startHandshake(url).subscribe(theurl => {
+      this.postsService.path = theurl;
       this.postsService.handShakeComplete = true;
       console.log("Handshake complete!");
     },
     error => {
-      console.log("Initial handshake failed, make sure port 17442 is open!");
+      console.log("Initial handshake failed on http.");
+      this.doHandshakeSSL(url);
+    });
+  }
+
+  doHandshakeSSL(url: string) {
+    this.postsService.startHandshakeSSL(url).subscribe(theurl => {
+      this.postsService.path = theurl;
+      this.postsService.handShakeComplete = true;
+      console.log("Handshake complete!");
+    },
+    error => {
+      console.log("Initial handshake failed on https too! Make sure port 17442 is open.");
       this.postsService.handShakeComplete = false;
     });
   }
@@ -119,3 +138,4 @@ export class AppComponent {
     return re.test(str);
   }
 }
+

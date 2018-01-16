@@ -3,26 +3,29 @@ var fs = require('fs');
 var path = require('path');
 var youtubedl = require('youtube-dl');
 var config = require('config');
-const https = require('https');
+var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
+var pem = require('https-pem');
 var app = express();
-var appAnchor = express();
 
-var hostURL = config.get("YoutubeDL-Material.Host.frontend-url");
-var hostPort = config.get("YoutubeDL-Material.Host.backend-port");
-var usingEncryption = config.get("YoutubeDL-Material.Encryption.use-encryption");
-var basePath = config.get("YoutubeDL-Material.Downloader.path-base");
-var audioPath = config.get("YoutubeDL-Material.Downloader.path-audio");
-var videoPath = config.get("YoutubeDL-Material.Downloader.path-video");
+var frontendUrl = config.get("YoutubeDLMaterial.Host.frontendurl");
+var backendUrl = config.get("YoutubeDLMaterial.Host.backendurl")
+var backendPort = 17442;
+var usingEncryption = config.get("YoutubeDLMaterial.Encryption.use-encryption");
+var basePath = config.get("YoutubeDLMaterial.Downloader.path-base");
+var audioPath = config.get("YoutubeDLMaterial.Downloader.path-audio");
+var videoPath = config.get("YoutubeDLMaterial.Downloader.path-video");
 
 if (usingEncryption)
 {
-    var certFilePath = path.resolve(config.get("YoutubeDL-Material.Encryption.cert-file-path"));
-    var keyFilePath = path.resolve(config.get("YoutubeDL-Material.Encryption.key-file-path"));
+    
+    var certFilePath = path.resolve(config.get("YoutubeDLMaterial.Encryption.cert-file-path"));
+    var keyFilePath = path.resolve(config.get("YoutubeDLMaterial.Encryption.key-file-path"));
 
-    var certKeyFile = fs.readFileSync(certFilePath);
-    var certFile = fs.readFileSync(keyFilePath);
+    var certKeyFile = fs.readFileSync(keyFilePath);
+    var certFile = fs.readFileSync(certFilePath);
+
     var options = {
         key: certKeyFile,
         cert: certFile
@@ -34,37 +37,24 @@ if (usingEncryption)
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-appAnchor.use(bodyParser.urlencoded({ extended: false }));
-appAnchor.use(bodyParser.json());
-
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", hostURL);
+    res.header("Access-Control-Allow-Origin", frontendUrl);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 
-appAnchor.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", hostURL);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-appAnchor.get('/url', function(req, res) {
-    res.send(JSON.stringify(("localhost" + ":" + hostPort + "/")));
-    res.end("yes");
-});
-
-appAnchor.get('/using-encryption', function(req, res) {
+app.get('/using-encryption', function(req, res) {
     res.send(usingEncryption);
     res.end("yes");
 });
+
 
 app.post('/tomp3', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var path = audioPath;
     var audiopath = Date.now();
-    youtubedl.exec(url, ['--no-check-certificate','-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3'], {}, function(err, output) {
+    youtubedl.exec(url, ['-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3'], {}, function(err, output) {
         if (err) {
             audiopath = "-1";
             throw err;
@@ -81,7 +71,7 @@ app.post('/tomp4', function(req, res) {
     var date = Date.now();
     var path = videoPath;
     var videopath = Date.now();
-    youtubedl.exec(url, ['--no-check-certificate', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'], {}, function(err, output) {
+    youtubedl.exec(url, ['-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'], {}, function(err, output) {
         if (err) {
             videopath = "-1";
             throw err;
@@ -188,19 +178,17 @@ app.get('/audio/:id', function(req , res){
   });
 
 
-appAnchor.listen(17442,function(){
-  console.log("Anchor set on 17442");
-});
+
 
 if (usingEncryption)
 {
-    https.createServer(options, app).listen(hostPort, function() {
-        console.log('HTTPS: Started on PORT ' + hostPort);
+    https.createServer(options, app).listen(backendPort, function() {
+        console.log('HTTPS: Anchor set on 17442');
     });
 }
 else
 {
-    app.listen(hostPort,function(){
-        console.log("HTTP: Started on PORT " + hostPort);
+    app.listen(backendPort,function(){
+        console.log("HTTP: Started on PORT " + backendPort);
     });
 }
