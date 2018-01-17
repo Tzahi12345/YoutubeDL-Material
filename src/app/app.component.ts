@@ -3,6 +3,7 @@ import {PostsService} from './posts.services';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatSnackBar} from '@angular/material';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
 import 'rxjs/add/operator/toPromise';
@@ -13,6 +14,7 @@ import 'rxjs/add/operator/toPromise';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  determinateProgress: boolean = false;
   downloadingfile: boolean = false;
   audioOnly: boolean;
   urlError: boolean = false;
@@ -20,13 +22,15 @@ export class AppComponent {
   url: string = '';
   exists: string = "";
   topBarTitle: string = "Youtube Downloader";
-  constructor(private postsService: PostsService) { 
+  percentDownloaded: number;
+  constructor(private postsService: PostsService, public snackBar: MatSnackBar) { 
     this.audioOnly = true;
 
     
 
-    this.postsService.loadNavItems().subscribe(result => {
+    this.postsService.loadNavItems().subscribe(result => { // loads settings
       var backendUrl = result.YoutubeDLMaterial.Host.backendurl;
+      this.topBarTitle = result.YoutubeDLMaterial.Extra.title_top;
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
@@ -66,9 +70,17 @@ export class AppComponent {
   downloadHelperMp3(name: string)
   {
     this.postsService.getFileStatusMp3(name).subscribe(fileExists => {
-      this.exists = fileExists;
-      if (this.exists == "failed")
+      var exists = fileExists;
+      this.exists = exists[0];
+      if (exists[0] == "failed")
       {
+        var percent = exists[2];
+        console.log(percent);
+        if (percent > 0.30)
+        {
+          this.determinateProgress = true;
+          this.percentDownloaded = percent*100;
+        }
         setTimeout(() => this.downloadHelperMp3(name), 500);
       }
       else
@@ -82,9 +94,16 @@ export class AppComponent {
   downloadHelperMp4(name: string)
   {
     this.postsService.getFileStatusMp4(name).subscribe(fileExists => {
-      this.exists = fileExists;
-      if (this.exists == "failed")
+      var exists = fileExists;
+      this.exists = exists[0];
+      if (exists[0] == "failed")
       {
+        var percent = exists[2];
+        if (percent > 0.30)
+        {
+          this.determinateProgress = true;
+          this.percentDownloaded = percent*100;
+        }
         setTimeout(() => this.downloadHelperMp4(name), 500);
       }
       else
@@ -111,8 +130,11 @@ export class AppComponent {
           {
             this.downloadHelperMp3(this.path);
           }
+        },
+        error => { // can't access server
+          this.downloadingfile = false;
+          this.openSnackBar("Download failed!", "OK.");
         });
-        
       }
       else
       {
@@ -123,7 +145,11 @@ export class AppComponent {
           {
             this.downloadHelperMp4(this.path);
           }
-        });
+        },
+        error => { // can't access server
+          this.downloadingfile = false;
+          this.openSnackBar("Download failed!", "OK.");
+      });
       }
     }
     else
@@ -136,6 +162,12 @@ export class AppComponent {
     var strRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     var re=new RegExp(strRegex);
     return re.test(str);
+  }
+
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 2000,
+    });
   }
 }
 

@@ -55,12 +55,12 @@ export class PostsService {
             .map(res => res.json());
     }
 
-    getFileStatusMp3(name: string): Observable<string> {
+    getFileStatusMp3(name: string): Observable<any> {
         return this.http.post(this.path + "mp3fileexists",{name: name})
             .map(res => res.json());
     }
 
-    getFileStatusMp4(name: string): Observable<string> {
+    getFileStatusMp4(name: string): Observable<any> {
         return this.http.post(this.path + "mp4fileexists",{name: name})
             .map(res => res.json());
     }

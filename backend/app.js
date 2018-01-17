@@ -54,24 +54,109 @@ app.post('/tomp3', function(req, res) {
     var date = Date.now();
     var path = audioPath;
     var audiopath = Date.now();
-    youtubedl.exec(url, ['-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3'], {}, function(err, output) {
+    youtubedl.exec(url, ['-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
         if (err) {
             audiopath = "-1";
             throw err;
         }
     });
+
+    // write file info
+
+    youtubedl.getInfo(url, function(err, info) {
+        if (err) throw err;
+       
+        var size = info.size;
+        fs.writeFile("data/"+audiopath, size, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+        
+            console.log("The file was saved!");
+        }); 
+      });
     var completeString = "done";
     var audiopathEncoded = encodeURIComponent(audiopath);
     res.send(audiopathEncoded);
     res.end("yes");
 });
 
+function getFileSizeMp3(name)
+{
+    var jsonPath = audioPath+name+".mp3.info.json";
+
+    if (fs.existsSync(jsonPath))
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    else
+        var obj = 0;
+    
+    return obj.filesize;
+}
+
+function getAmountDownloadedMp3(name)
+{
+    var partPath = audioPath+name+".mp3.part";
+    if (fs.existsSync(partPath))
+    {
+        const stats = fs.statSync(partPath);
+        const fileSizeInBytes = stats.size;
+        return fileSizeInBytes;
+    }
+    else
+        return 0;
+}
+
+function getFileSizeMp4(name)
+{
+    var jsonPath = videoPath+name+".info.json";
+    var filesize = 0;
+    if (fs.existsSync(jsonPath))
+    {
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        var format = obj.format.substring(0,3);
+        for (i = 0; i < obj.formats.length; i++)
+        {
+            if (obj.formats[i].format_id == format)
+            {
+                filesize = obj.formats[i].filesize;
+            }
+        }
+    }
+    
+    return filesize;
+}
+
+function getAmountDownloadedMp4(name)
+{
+    var format = getVideoFormatID(name);
+    var partPath = videoPath+name+".f"+format+".mp4.part";
+    if (fs.existsSync(partPath))
+    {
+        const stats = fs.statSync(partPath);
+        const fileSizeInBytes = stats.size;
+        return fileSizeInBytes;
+    }
+    else
+        return 0;
+}
+
+function getVideoFormatID(name)
+{
+    var jsonPath = videoPath+name+".info.json";
+    if (fs.existsSync(jsonPath))
+    {
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        var format = obj.format.substring(0,3);
+        return format;
+    }
+}
+
 app.post('/tomp4', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var path = videoPath;
     var videopath = Date.now();
-    youtubedl.exec(url, ['-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'], {}, function(err, output) {
+    youtubedl.exec(url, ['-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
         if (err) {
             videopath = "-1";
             throw err;
@@ -88,14 +173,19 @@ app.post('/mp3fileexists', function(req, res) {
     var exists = "";
     var fullpath = audioPath + name + ".mp3";
     if (fs.existsSync(fullpath)) {
-    	exists = basePath + audioPath + name;
+    	exists = [basePath + audioPath + name, getFileSizeMp3(name)];
     }
     else
     {
-      exists = "failed";
+        var percent = 0;
+        var size = getFileSizeMp3(name);
+        var downloaded = getAmountDownloadedMp3(name);
+        if (size > 0)
+            percent = downloaded/size;
+        exists = ["failed", getFileSizeMp3(name), percent];
     }
     //console.log(exists + " " + name);
-    res.send(JSON.stringify(exists));
+    res.send(exists);
     res.end("yes");
 });
 
@@ -104,14 +194,19 @@ app.post('/mp4fileexists', function(req, res) {
     var exists = "";
     var fullpath = videoPath + name + ".mp4";
     if (fs.existsSync(fullpath)) {
-    	exists = basePath + videoPath + name;
+    	exists = [basePath + videoPath + name, getFileSizeMp4(name)];
     }
     else
     {
-      exists = "failed";
+        var percent = 0;
+        var size = getFileSizeMp4(name);
+        var downloaded = getAmountDownloadedMp4(name);
+        if (size > 0)
+            percent = downloaded/size;
+        exists = ["failed", getFileSizeMp4(name), percent];
     }
     //console.log(exists + " " + name);
-    res.send(JSON.stringify(exists));
+    res.send(exists);
     res.end("yes");
 });
 

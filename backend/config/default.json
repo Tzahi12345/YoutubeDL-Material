@@ -7,13 +7,15 @@
       "Encryption": {
         "use-encryption": false,
         "cert-file-path": "cert.pem",
-        "key-file-path": "privkey.pem",
-        "chain-file-path": "chain.pem"
+        "key-file-path": "privkey.pem"
       },
       "Downloader": {
         "path-base": "http://localhost:8088/",
         "path-audio": "audio/",
         "path-video": "video/"
+      },
+      "Extra": {
+        "title_top": "Youtube Downloader"
       }
     }
   }
