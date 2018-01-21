@@ -9,6 +9,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
+import {APP_BASE_HREF} from '@angular/common';
 
 @NgModule({
   declarations: [

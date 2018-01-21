@@ -35,6 +35,9 @@ export class AppComponent {
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
       this.postsService.startPathSSL = backendUrl;
+    },
+    error => {
+      console.log(error);
     });
   }
 

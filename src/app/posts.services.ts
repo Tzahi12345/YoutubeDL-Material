@@ -66,11 +66,9 @@ export class PostsService {
     }
 
     loadNavItems() {
-        return this.http.get("../../backend/config/default.json")
+        console.log("Config location: " + window.location.href + "backend/config/default.json");
+        return this.http.get(window.location.href + "backend/config/default.json")
                         .map(res => res.json());
-                        //This is optional, you can remove the last line 
-                        // if you don't want to log loaded json in 
-                        // console.
     }
 }
 

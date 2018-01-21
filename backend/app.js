@@ -211,6 +211,7 @@ app.post('/mp4fileexists', function(req, res) {
 });
 
 app.get('/video/:id', function(req , res){
+    var head;
     const path = "video/" + req.params.id + ".mp4";
   const stat = fs.statSync(path)
   const fileSize = stat.size
@@ -223,7 +224,7 @@ app.get('/video/:id', function(req , res){
       : fileSize-1
     const chunksize = (end-start)+1
     const file = fs.createReadStream(path, {start, end})
-    const head = {
+    head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': chunksize,
@@ -232,7 +233,7 @@ app.get('/video/:id', function(req , res){
     res.writeHead(206, head);
     file.pipe(res);
   } else {
-    const head = {
+    head = {
       'Content-Length': fileSize,
       'Content-Type': 'video/mp4',
     }
@@ -242,6 +243,7 @@ app.get('/video/:id', function(req , res){
 });
 
 app.get('/audio/:id', function(req , res){
+    var head;
     const path = "audio/" + req.params.id + ".mp3";
   const stat = fs.statSync(path)
   const fileSize = stat.size
@@ -254,7 +256,7 @@ app.get('/audio/:id', function(req , res){
       : fileSize-1
     const chunksize = (end-start)+1
     const file = fs.createReadStream(path, {start, end})
-    const head = {
+    head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': chunksize,
@@ -263,7 +265,7 @@ app.get('/audio/:id', function(req , res){
     res.writeHead(206, head);
     file.pipe(res);
   } else {
-    const head = {
+    head = {
       'Content-Length': fileSize,
       'Content-Type': 'audio/mp3',
     }
