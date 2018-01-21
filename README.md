@@ -8,7 +8,7 @@ Check out the prerequisites, and go to the installation section. Easy as pie!
 
 Here's an image of what it'll look like once you're done:
 
-![frontpage](https://i.imgur.com/FpZIRvi.png)
+![frontpage](https://i.imgur.com/m3xozES.png)
 
 ### Prerequisites
 
