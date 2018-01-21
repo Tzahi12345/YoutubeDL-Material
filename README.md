@@ -1,28 +1,58 @@
-# YoutubeDLMaterial
+# YoutubeDL-Material
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.1.2.
+YoutubeDL-Material is a material design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 5](https://angular.io/) for the frontend, and [Nodejs](https://nodejs.org/) on the backend.
 
-## Development server
+## Getting Started
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Check out the prerequisites, and go to the installation section. Easy as pie!
 
-## Code scaffolding
+### Prerequisites
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
+You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: ffmpeg, nodejs, python. If you don't, run this command:
 
-## Build
+```
+sudo apt-get install ffmpeg nodejs python
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+### Installing
 
-## Running unit tests
+First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Drag all the files in `youtubedl-material` to a location accessible to a web server. It works best if it's the root (usually right inside `public_html`. Once that's done, navigate to `backend` and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template. 
 
-## Running end-to-end tests
+Port forward `17442` if you're going to access YoutubeDL-Material from out of your network. This is an important step. Make sure the configuration reflects this appropriately.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+Once the configuration is done, type `sudo nodejs app.js`. This will run the backend server. On your browser, navigate to your installation folder. Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
 
-## Further help
+If you experience problems, know that it's usually caused by a configuration problem. The first thing you should do is check the console. To get there, right click anywhere on the page and click "Inspect element." Then on the menu that pops up, click console. Look at the error there, and try to investigate.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Deployment
+
+If you'd like to install YoutubeDL-Material, go to the Installation section. If you want to build it yourself and/or develop the repository, then this section is for you.
+
+To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
+
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/backend/config`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into a web server, and drag the `backend` directory into the same folder. This folder should have `index.html` in it as well. If it does **not**, you're in the wrong directory.
+
+The frontend is now complete. The backend is much easier. Just go into the `youtubedl-material/backend` folder, and type `sudo nodejs app.js`.
+
+Finally, port forward the port `17442` and point it to the server's IP address. Make sure the port is also allowed through the firewall.
+
+## Contributing
+
+Feel free to submit a pull request! I have no guidelines as of yet, so no need to worry about that.
+
+## Authors
+
+* **Isaac Grynsztein** (me!) - *Initial work*
+
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* youtube-dl
+* [AllTube](https://github.com/Rudloff/alltube) (for the inspiration)
