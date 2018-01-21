@@ -6,6 +6,10 @@ YoutubeDL-Material is a material design frontend for [youtube-dl](https://rg3.gi
 
 Check out the prerequisites, and go to the installation section. Easy as pie!
 
+Here's an image of what it'll look like once you're done:
+
+![frontpage](https://i.imgur.com/FpZIRvi.png)
+
 ### Prerequisites
 
 You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: ffmpeg, nodejs, python. If you don't, run this command:
