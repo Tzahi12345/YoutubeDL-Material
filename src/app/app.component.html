@@ -1,14 +1,14 @@
 <mat-toolbar color="primary" class="top">
-        <table width="100%" height="100%">
-            <td class="topbar" style="text-align: left; left:0px; font-size: 15px">
-            </td>
-            <td class="topbar" style="text-align: center">
-                <div style="margin-top: 14px">{{topBarTitle}}</div>
-            </td>
-            <td class="topbar" style="text-align: right">
-    
-            </td>
-        </table>
+    <table width="100%" height="100%">
+        <td class="topbar" style="text-align: left; left:0px; font-size: 15px">
+        </td>
+        <td class="topbar" style="text-align: center">
+            <div style="margin-top: 14px">{{topBarTitle}}</div>
+        </td>
+        <td class="topbar" style="text-align: right">
+
+        </td>
+    </table>
 </mat-toolbar>
 
 <br/>
@@ -27,19 +27,66 @@
             </form>
             <br/>
             <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
-            <button style="float: right; margin-top: -16px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-raised-button color="primary">Download</button>
+            <button style="float: right; margin-top: -16px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-raised-button
+                color="primary">Download</button>
         </mat-card-content>
     </div>
 </mat-card>
 <br/>
 <div class="centered big" id="bar_div" *ngIf="downloadingfile;else nofile">
-        <div *ngIf="determinateProgress;else indeterminateprogress">
-                <mat-progress-bar mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
-        </div>
-        <ng-template #indeterminateprogress>
-                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        </ng-template>
+    <div *ngIf="determinateProgress;else indeterminateprogress">
+        <mat-progress-bar mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
+    </div>
+    <ng-template #indeterminateprogress>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </ng-template>
+    <br/>
 </div>
 <ng-template #nofile>
+
+</ng-template>
+<mat-accordion>
+    <mat-expansion-panel class="big">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Audio
+            </mat-panel-title>
+            <mat-panel-description>
+                Your audio files are here
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div *ngIf="mp3s.length > 0;else nomp3s">
+            <mat-grid-list cols="4" rowHeight="150px">
+                <mat-grid-tile *ngFor="let file of mp3s; index as i;">
+                    <app-file-card [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL" [length]="file.duration" [isAudio]="true"></app-file-card>
+                </mat-grid-tile>
+            </mat-grid-list>
+        </div>
+
+    </mat-expansion-panel>
+    <mat-expansion-panel class="big">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Video
+            </mat-panel-title>
+            <mat-panel-description>
+                Your video files are here
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div *ngIf="mp4s.length > 0;else nomp4s">
+            <mat-grid-list cols="4" rowHeight="150px">
+                <mat-grid-tile *ngFor="let file of mp4s; index as i;">
+                    <app-file-card [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL" [length]="file.duration" [isAudio]="false"></app-file-card>
+                </mat-grid-tile>
+            </mat-grid-list>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>
+
+<ng-template #nomp3s>
+
+</ng-template>
+
+<ng-template #nomp4s>
 
 </ng-template>

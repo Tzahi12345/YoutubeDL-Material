@@ -48,6 +48,125 @@ app.get('/using-encryption', function(req, res) {
     res.end("yes");
 });
 
+// objects
+
+function File(id, title, thumbnailURL, isAudio, duration) {
+    this.id = id;
+    this.title = title;
+    this.thumbnailURL = thumbnailURL;
+    this.isAudio = isAudio;
+    this.duration = duration;
+}
+
+// actual functions
+
+function getThumbnailMp3(name)
+{
+    var obj = getJSONMp3(name);
+    var thumbnailLink = obj.thumbnail;
+    return thumbnailLink;
+}
+
+function getThumbnailMp4(name)
+{
+    var obj = getJSONMp4(name);
+    var thumbnailLink = obj.thumbnail;
+    return thumbnailLink;
+}
+
+function getFileSizeMp3(name)
+{
+    var jsonPath = audioPath+name+".mp3.info.json";
+
+    if (fs.existsSync(jsonPath))
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    else
+        var obj = 0;
+    
+    return obj.filesize;
+}
+
+function getFileSizeMp4(name)
+{
+    var jsonPath = videoPath+name+".info.json";
+    var filesize = 0;
+    if (fs.existsSync(jsonPath))
+    {
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        var format = obj.format.substring(0,3);
+        for (i = 0; i < obj.formats.length; i++)
+        {
+            if (obj.formats[i].format_id == format)
+            {
+                filesize = obj.formats[i].filesize;
+            }
+        }
+    }
+    
+    return filesize;
+}
+
+function getJSONMp3(name)
+{
+    var jsonPath = audioPath+name+".mp3.info.json";
+    if (fs.existsSync(jsonPath))
+    var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    else
+        var obj = 0;
+    
+    return obj;
+}
+
+function getJSONMp4(name)
+{
+    var jsonPath = videoPath+name+".info.json";
+    if (fs.existsSync(jsonPath))
+    {
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        return obj;
+    }
+    else return 0;
+}
+
+function getAmountDownloadedMp3(name)
+{
+    var partPath = audioPath+name+".mp3.part";
+    if (fs.existsSync(partPath))
+    {
+        const stats = fs.statSync(partPath);
+        const fileSizeInBytes = stats.size;
+        return fileSizeInBytes;
+    }
+    else
+        return 0;
+}
+
+
+
+function getAmountDownloadedMp4(name)
+{
+    var format = getVideoFormatID(name);
+    var partPath = videoPath+name+".f"+format+".mp4.part";
+    if (fs.existsSync(partPath))
+    {
+        const stats = fs.statSync(partPath);
+        const fileSizeInBytes = stats.size;
+        return fileSizeInBytes;
+    }
+    else
+        return 0;
+}
+
+function getVideoFormatID(name)
+{
+    var jsonPath = videoPath+name+".info.json";
+    if (fs.existsSync(jsonPath))
+    {
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        var format = obj.format.substring(0,3);
+        return format;
+    }
+}
 
 app.post('/tomp3', function(req, res) {
     var url = req.body.url;
@@ -81,76 +200,6 @@ app.post('/tomp3', function(req, res) {
     res.end("yes");
 });
 
-function getFileSizeMp3(name)
-{
-    var jsonPath = audioPath+name+".mp3.info.json";
-
-    if (fs.existsSync(jsonPath))
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    else
-        var obj = 0;
-    
-    return obj.filesize;
-}
-
-function getAmountDownloadedMp3(name)
-{
-    var partPath = audioPath+name+".mp3.part";
-    if (fs.existsSync(partPath))
-    {
-        const stats = fs.statSync(partPath);
-        const fileSizeInBytes = stats.size;
-        return fileSizeInBytes;
-    }
-    else
-        return 0;
-}
-
-function getFileSizeMp4(name)
-{
-    var jsonPath = videoPath+name+".info.json";
-    var filesize = 0;
-    if (fs.existsSync(jsonPath))
-    {
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        var format = obj.format.substring(0,3);
-        for (i = 0; i < obj.formats.length; i++)
-        {
-            if (obj.formats[i].format_id == format)
-            {
-                filesize = obj.formats[i].filesize;
-            }
-        }
-    }
-    
-    return filesize;
-}
-
-function getAmountDownloadedMp4(name)
-{
-    var format = getVideoFormatID(name);
-    var partPath = videoPath+name+".f"+format+".mp4.part";
-    if (fs.existsSync(partPath))
-    {
-        const stats = fs.statSync(partPath);
-        const fileSizeInBytes = stats.size;
-        return fileSizeInBytes;
-    }
-    else
-        return 0;
-}
-
-function getVideoFormatID(name)
-{
-    var jsonPath = videoPath+name+".info.json";
-    if (fs.existsSync(jsonPath))
-    {
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        var format = obj.format.substring(0,3);
-        return format;
-    }
-}
-
 app.post('/tomp4', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
@@ -168,7 +217,8 @@ app.post('/tomp4', function(req, res) {
     res.end("yes");
 });
 
-app.post('/mp3fileexists', function(req, res) {
+// gets the status of the mp3 file that's being downloaded
+app.post('/fileStatusMp3', function(req, res) {
     var name = req.body.name + "";
     var exists = "";
     var fullpath = audioPath + name + ".mp3";
@@ -189,7 +239,8 @@ app.post('/mp3fileexists', function(req, res) {
     res.end("yes");
 });
 
-app.post('/mp4fileexists', function(req, res) {
+// gets the status of the mp4 file that's being downloaded
+app.post('/fileStatusMp4', function(req, res) {
     var name = req.body.name;
     var exists = "";
     var fullpath = videoPath + name + ".mp4";
@@ -209,6 +260,113 @@ app.post('/mp4fileexists', function(req, res) {
     res.send(exists);
     res.end("yes");
 });
+
+// gets all download mp3s
+app.post('/getMp3s', function(req, res) {
+    var mp3s = [];
+    var fullpath = audioPath;
+    var files = fs.readdirSync(audioPath);
+    
+    for (var i in files)
+    {
+        var nameLength = path.basename(files[i]).length;
+        var ext = path.basename(files[i]).substring(nameLength-4, nameLength);
+        if (ext == ".mp3") 
+        {
+            var jsonobj = getJSONMp3(path.basename(files[i]).substring(0, path.basename(files[i]).length-4));
+            var id = path.basename(files[i]).substring(0, path.basename(files[i]).length-4);
+            var title = jsonobj.title;
+
+            if (title.length > 14) // edits title if it's too long
+            {
+                title = title.substring(0,12) + "...";
+            }
+
+            var thumbnail = jsonobj.thumbnail;
+            var duration = jsonobj.duration;
+            var isaudio = true;
+            var file = new File(id, title, thumbnail, isaudio, duration);
+            mp3s.push(file);
+        }
+    }
+
+    res.send(mp3s);
+    res.end("yes");
+});
+
+// gets all download mp4s
+app.post('/getMp4s', function(req, res) {
+    var mp4s = [];
+    var fullpath = videoPath;
+    var files = fs.readdirSync(videoPath);
+    
+    for (var i in files)
+    {
+        var nameLength = path.basename(files[i]).length;
+        var ext = path.basename(files[i]).substring(nameLength-4, nameLength);
+        if (ext == ".mp4") 
+        {
+            var jsonobj = getJSONMp4(path.basename(files[i]).substring(0, path.basename(files[i]).length-4));
+            var id = path.basename(files[i]).substring(0, path.basename(files[i]).length-4);
+            var title = jsonobj.title;
+
+            if (title.length > 14) // edits title if it's too long
+            {
+                title = title.substring(0,12) + "...";
+            }
+
+            var thumbnail = jsonobj.thumbnail;
+            var duration = jsonobj.duration;
+            var isaudio = false;
+            var file = new File(id, title, thumbnail, isaudio, duration);
+            mp4s.push(file);
+        }
+    }
+
+    res.send(mp4s);
+    res.end("yes");
+});
+
+// deletes mp3 file
+app.post('/deleteMp3', function(req, res) {
+    var name = req.body.name;
+    var fullpath = audioPath + name + ".mp3";
+    var wasDeleted = false;
+    if (fs.existsSync(fullpath))
+    {
+        fs.unlink(fullpath);
+        wasDeleted = true;
+        res.send(wasDeleted);
+        res.end("yes");
+    }
+    else
+    {
+        wasDeleted = false;
+        res.send(wasDeleted);
+        res.end("yes");
+    }
+});
+
+// deletes mp4 file
+app.post('/deleteMp4', function(req, res) {
+    var name = req.body.name;
+    var fullpath = videoPath + name + ".mp4";
+    var wasDeleted = false;
+    if (fs.existsSync(fullpath))
+    {
+        fs.unlink(fullpath);
+        wasDeleted = true;
+        res.send(wasDeleted);
+        res.end("yes");
+    }
+    else
+    {
+        wasDeleted = false;
+        res.send(wasDeleted);
+        res.end("yes");
+    }
+});
+
 
 app.get('/video/:id', function(req , res){
     var head;

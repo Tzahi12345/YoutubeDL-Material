@@ -56,12 +56,12 @@ export class PostsService {
     }
 
     getFileStatusMp3(name: string): Observable<any> {
-        return this.http.post(this.path + "mp3fileexists",{name: name})
+        return this.http.post(this.path + "fileStatusMp3",{name: name})
             .map(res => res.json());
     }
 
     getFileStatusMp4(name: string): Observable<any> {
-        return this.http.post(this.path + "mp4fileexists",{name: name})
+        return this.http.post(this.path + "fileStatusMp4",{name: name})
             .map(res => res.json());
     }
 
@@ -69,6 +69,32 @@ export class PostsService {
         console.log("Config location: " + window.location.href + "backend/config/default.json");
         return this.http.get(window.location.href + "backend/config/default.json")
                         .map(res => res.json());
+    }
+
+    deleteFile(name: string, isAudio: boolean)
+    {
+        if (isAudio)
+        {
+            return this.http.post(this.path + "deleteMp3",{name: name})
+                .map(res => res.json());
+        }
+        else
+        {
+            return this.http.post(this.path + "deleteMp4",{name: name})
+                .map(res => res.json());
+        }
+    }
+
+    getMp3s()
+    {
+        return this.http.post(this.path + "getMp3s", {})
+            .map(res => res.json());
+    }
+
+    getMp4s()
+    {
+        return this.http.post(this.path + "getMp4s", {})
+            .map(res => res.json());
     }
 }
 

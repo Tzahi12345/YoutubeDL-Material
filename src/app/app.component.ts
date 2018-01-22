@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {PostsService} from './posts.services';
+import {FileCardComponent} from './file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -23,6 +24,10 @@ export class AppComponent {
   exists: string = "";
   topBarTitle: string = "Youtube Downloader";
   percentDownloaded: number;
+
+  mp3s: any[] = [];
+  mp4s: any[] = [];
+
   constructor(private postsService: PostsService, public snackBar: MatSnackBar) { 
     this.audioOnly = true;
 
@@ -35,10 +40,14 @@ export class AppComponent {
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
       this.postsService.startPathSSL = backendUrl;
+
+      this.getMp3s();
+      this.getMp4s();
     },
     error => {
       console.log(error);
     });
+
   }
 
   urlForm = new FormControl('', [Validators.required]);
@@ -65,6 +74,48 @@ export class AppComponent {
       console.log("Initial handshake failed on https too! Make sure port 17442 is open.");
       this.postsService.handShakeComplete = false;
     });
+  }
+
+  getMp3s() {
+    this.postsService.getMp3s().subscribe(result => {
+      var mp3s = result;
+      this.mp3s = mp3s;
+    },
+    error => {
+      console.log(error);
+    });
+  }
+
+  getMp4s() {
+    this.postsService.getMp4s().subscribe(result => {
+      var mp4s = result;
+      this.mp4s = mp4s;
+    },
+    error => {
+      console.log(error);
+    });
+  }
+
+  public removeFromMp3(name: string)
+  {
+    for (var i = 0; i < this.mp3s.length; i++)
+    {
+      if (this.mp3s[i].id == name)
+      {
+        this.mp3s.splice(i,1);
+      }
+    }
+  }
+
+  public removeFromMp4(name: string)
+  {
+    for (var i = 0; i < this.mp4s.length; i++)
+    {
+      if (this.mp4s[i].id == name)
+      {
+        this.mp4s.splice(i,1);
+      }
+    }
   }
 
   ngOnInit() {
@@ -167,7 +218,7 @@ export class AppComponent {
     return re.test(str);
   }
 
-  openSnackBar(message: string, action: string) {
+  public openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 2000,
     });
