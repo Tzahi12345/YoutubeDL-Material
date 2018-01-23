@@ -24,6 +24,7 @@ export class AppComponent {
   exists: string = "";
   topBarTitle: string = "Youtube Downloader";
   percentDownloaded: number;
+  fileManagerEnabled: boolean = false;
 
   mp3s: any[] = [];
   mp4s: any[] = [];
@@ -36,13 +37,17 @@ export class AppComponent {
     this.postsService.loadNavItems().subscribe(result => { // loads settings
       var backendUrl = result.YoutubeDLMaterial.Host.backendurl;
       this.topBarTitle = result.YoutubeDLMaterial.Extra.title_top;
+      this.fileManagerEnabled = result.YoutubeDLMaterial.Extra.file_manager_enabled;
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
       this.postsService.startPathSSL = backendUrl;
 
-      this.getMp3s();
-      this.getMp4s();
+      if (this.fileManagerEnabled)
+      {
+        this.getMp3s();
+        this.getMp4s();
+      }
     },
     error => {
       console.log(error);
@@ -96,6 +101,18 @@ export class AppComponent {
     });
   }
 
+  public goToFile(name, isAudio)
+  {
+    if (isAudio)
+    {
+      this.downloadHelperMp3(name);
+    }
+    else
+    {
+      this.downloadHelperMp4(name);
+    }
+  }
+
   public removeFromMp3(name: string)
   {
     for (var i = 0; i < this.mp3s.length; i++)
@@ -109,6 +126,8 @@ export class AppComponent {
 
   public removeFromMp4(name: string)
   {
+    console.log(name);
+    console.log(this.mp4s);
     for (var i = 0; i < this.mp4s.length; i++)
     {
       if (this.mp4s[i].id == name)

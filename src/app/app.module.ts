@@ -8,10 +8,11 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import {APP_BASE_HREF} from '@angular/common';
 import { FileCardComponent } from './file-card/file-card.component';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { FileCardComponent } from './file-card/file-card.component';
     MatListModule,
     MatGridListModule,
     MatExpansionModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    RouterModule
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]

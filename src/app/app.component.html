@@ -45,43 +45,47 @@
 <ng-template #nofile>
 
 </ng-template>
-<mat-accordion>
-    <mat-expansion-panel class="big">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                Audio
-            </mat-panel-title>
-            <mat-panel-description>
-                Your audio files are here
-            </mat-panel-description>
-        </mat-expansion-panel-header>
-        <div *ngIf="mp3s.length > 0;else nomp3s">
-            <mat-grid-list cols="4" rowHeight="150px">
-                <mat-grid-tile *ngFor="let file of mp3s; index as i;">
-                    <app-file-card [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL" [length]="file.duration" [isAudio]="true"></app-file-card>
-                </mat-grid-tile>
-            </mat-grid-list>
-        </div>
+<div *ngIf="fileManagerEnabled">
+    <mat-accordion>
+        <mat-expansion-panel class="big">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Audio
+                </mat-panel-title>
+                <mat-panel-description>
+                    Your audio files are here
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div *ngIf="mp3s.length > 0;else nomp3s">
+                <mat-grid-list cols="4" rowHeight="150px">
+                    <mat-grid-tile *ngFor="let file of mp3s; index as i;">
+                        <app-file-card (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                            [length]="file.duration" [isAudio]="true"></app-file-card>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </div>
 
-    </mat-expansion-panel>
-    <mat-expansion-panel class="big">
-        <mat-expansion-panel-header>
-            <mat-panel-title>
-                Video
-            </mat-panel-title>
-            <mat-panel-description>
-                Your video files are here
-            </mat-panel-description>
-        </mat-expansion-panel-header>
-        <div *ngIf="mp4s.length > 0;else nomp4s">
-            <mat-grid-list cols="4" rowHeight="150px">
-                <mat-grid-tile *ngFor="let file of mp4s; index as i;">
-                    <app-file-card [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL" [length]="file.duration" [isAudio]="false"></app-file-card>
-                </mat-grid-tile>
-            </mat-grid-list>
-        </div>
-    </mat-expansion-panel>
-</mat-accordion>
+        </mat-expansion-panel>
+        <mat-expansion-panel class="big">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Video
+                </mat-panel-title>
+                <mat-panel-description>
+                    Your video files are here
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div *ngIf="mp4s.length > 0;else nomp4s">
+                <mat-grid-list cols="4" rowHeight="150px">
+                    <mat-grid-tile *ngFor="let file of mp4s; index as i;">
+                        <app-file-card (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                            [length]="file.duration" [isAudio]="false"></app-file-card>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
 
 <ng-template #nomp3s>
 

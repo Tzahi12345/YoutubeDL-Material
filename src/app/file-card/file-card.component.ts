@@ -1,7 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output } from '@angular/core';
 import {PostsService} from '../posts.services';
 import {MatSnackBar} from '@angular/material';
 import {AppComponent} from '../app.component';
+import {EventEmitter} from '@angular/core';
 
 @Component({
   selector: 'app-file-card',
@@ -15,8 +16,9 @@ export class FileCardComponent implements OnInit {
   @Input() name:string;
   @Input() thumbnailURL: string;
   @Input() isAudio: boolean = true;
+  @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private postsService: PostsService, public snackBar: MatSnackBar, private appComponent: AppComponent) { }
+  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public appComponent: AppComponent) { }
 
   ngOnInit() {
   }
@@ -27,10 +29,7 @@ export class FileCardComponent implements OnInit {
       if (result == true)
       {
         this.openSnackBar("Delete success!", "OK.");
-        if (this.isAudio)
-          this.appComponent.removeFromMp3(name);
-        else
-          this.appComponent.removeFromMp4(name);
+        this.removeFile.emit(this.name);
       }
       else
       {

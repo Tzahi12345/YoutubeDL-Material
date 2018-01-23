@@ -1,7 +1,7 @@
 <mat-card class="example-card">
   <button (click)="deleteFile()" class="deleteButton" mat-icon-button><mat-icon>delete_forever</mat-icon></button>
   <div style="padding:5px">
-    <b>{{title}}</b>
+    <b><a href="javascript:void(0)" (click)="appComponent.goToFile(name, isAudio)">{{title}}</a></b>
     <br/>
     ID: {{name}}
 </div>
