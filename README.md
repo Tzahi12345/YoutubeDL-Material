@@ -10,6 +10,10 @@ Here's an image of what it'll look like once you're done:
 
 ![frontpage](https://i.imgur.com/m3xozES.png)
 
+With optional file management enabled (default):
+
+![frontpage_with_files](https://i.imgur.com/z9vME2O.png)
+
 ### Prerequisites
 
 You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: ffmpeg, nodejs, python. If you don't, run this command:
