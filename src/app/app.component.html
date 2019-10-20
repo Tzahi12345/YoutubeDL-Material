@@ -13,25 +13,30 @@
 
 <br/>
 
-<mat-card id="card" class="big demo-basic">
-    <mat-card-title>
-        <mat-toolbar color="primary">Youtube Downloader</mat-toolbar>
-    </mat-card-title>
-    <div style="width: 100%; height: 100%; padding-left: 24px; padding-right: 24px; position: relative">
+<div class="big demo-basic">
+    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
+        <mat-card-title>
+            Youtube Downloader
+        </mat-card-title>
         <mat-card-content>
-            <form class="example-form">
-                <mat-form-field class="example-full-width">
-                    <input matInput [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required>
-                    <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
-                </mat-form-field>
-            </form>
-            <br/>
-            <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
-            <button style="float: right; margin-top: -16px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-raised-button
-                color="primary">Download</button>
+            <div style="position: relative;">
+                <form class="example-form">
+                    <mat-form-field class="example-full-width">
+                        <input matInput [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required>
+                        <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
+                    </mat-form-field>
+                </form>
+                <br/>
+                <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
+                
+            </div>
         </mat-card-content>
-    </div>
-</mat-card>
+        <mat-card-actions>
+            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-stroked-button
+                color="primary">Download</button>
+        </mat-card-actions>
+    </mat-card>
+</div>
 <br/>
 <div class="centered big" id="bar_div" *ngIf="downloadingfile;else nofile">
     <div *ngIf="determinateProgress;else indeterminateprogress">

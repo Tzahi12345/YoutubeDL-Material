@@ -1,5 +1,6 @@
-import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Injectable, isDevMode} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import config from '../assets/default.json';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -8,93 +9,71 @@ import 'rxjs/add/observable/throw';
 
 @Injectable()
 export class PostsService {
-    path: string = "";
-    audioFolder: string = "";
-    videoFolder: string = "";
-    startPath: string = "http://localhost:17442/";
-    startPathSSL: string = "https://localhost:17442/"
-    handShakeComplete: boolean = false;
+    path = '';
+    audioFolder = '';
+    videoFolder = '';
+    startPath = 'http://localhost:17442/';
+    startPathSSL = 'https://localhost:17442/'
+    handShakeComplete = false;
 
-    constructor(private http: Http){
+    constructor(private http: HttpClient) {
         console.log('PostsService Initialized...');
     }
 
-    startHandshake(url: string): Observable<string>
-    {
-        return this.http.get(url + "geturl")
-            .map(res => res.json());
+    startHandshake(url: string) {
+        return this.http.get(url + 'geturl');
     }
 
-    startHandshakeSSL(url: string): Observable<string>
-    {
-        return this.http.get(url + "geturl")
-            .map(res => res.json());
+    startHandshakeSSL(url: string) {
+        return this.http.get(url + 'geturl');
     }
 
-    getVideoFolder(): Observable<string>
-    {
-        return this.http.get(this.startPath + "videofolder")
-            .map(res => res.json());
+    getVideoFolder() {
+        return this.http.get(this.startPath + 'videofolder');
     }
 
-    getAudioFolder(): Observable<string>
-    {
-        return this.http.get(this.startPath + "audiofolder")
-            .map(res => res.json());
+    getAudioFolder() {
+        return this.http.get(this.startPath + 'audiofolder');
     }
 
-    makeMP3(url: string): Observable<string>
-    {
-        return this.http.post(this.path + "tomp3",{url: url})
-            .map(res => res.json());
+    makeMP3(url: string) {
+        return this.http.post(this.path + 'tomp3', {url: url});
     }
 
-    makeMP4(url: string): Observable<string>
-    {
-        return this.http.post(this.path + "tomp4",{url: url})
-            .map(res => res.json());
+    makeMP4(url: string) {
+        return this.http.post(this.path + 'tomp4', {url: url});
     }
 
-    getFileStatusMp3(name: string): Observable<any> {
-        return this.http.post(this.path + "fileStatusMp3",{name: name})
-            .map(res => res.json());
+    getFileStatusMp3(name: string) {
+        return this.http.post(this.path + 'fileStatusMp3', {name: name});
     }
 
-    getFileStatusMp4(name: string): Observable<any> {
-        return this.http.post(this.path + "fileStatusMp4",{name: name})
-            .map(res => res.json());
+    getFileStatusMp4(name: string) {
+        return this.http.post(this.path + 'fileStatusMp4', {name: name});
     }
 
     loadNavItems() {
-        console.log("Config location: " + window.location.href + "backend/config/default.json");
-        return this.http.get(window.location.href + "backend/config/default.json")
-                        .map(res => res.json());
+        if (isDevMode()) {
+            return this.http.get('./assets/default.json');
+        }
+        console.log('Config location: ' + window.location.href + 'backend/config/default.json');
+        return this.http.get(window.location.href + 'backend/config/default.json');
     }
 
-    deleteFile(name: string, isAudio: boolean)
-    {
-        if (isAudio)
-        {
-            return this.http.post(this.path + "deleteMp3",{name: name})
-                .map(res => res.json());
-        }
-        else
-        {
-            return this.http.post(this.path + "deleteMp4",{name: name})
-                .map(res => res.json());
+    deleteFile(name: string, isAudio: boolean) {
+        if (isAudio) {
+            return this.http.post(this.path + 'deleteMp3', {name: name});
+        } else {
+            return this.http.post(this.path + 'deleteMp4', {name: name});
         }
     }
 
-    getMp3s()
-    {
-        return this.http.post(this.path + "getMp3s", {})
-            .map(res => res.json());
+    getMp3s() {
+        return this.http.post(this.path + 'getMp3s', {});
     }
 
-    getMp4s()
-    {
-        return this.http.post(this.path + "getMp4s", {})
-            .map(res => res.json());
+    getMp4s() {
+        return this.http.post(this.path + 'getMp4s', {});
     }
 }
 

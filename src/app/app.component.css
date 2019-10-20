@@ -22,7 +22,7 @@ mat-toolbar.top {
   }*/
 
 .big {
-    width: 60%;
+    max-width: 800px;
     margin: 0 auto;
 }
 
