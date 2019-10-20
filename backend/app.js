@@ -6,7 +6,6 @@ var config = require('config');
 var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
-var pem = require('https-pem');
 var app = express();
 
 var frontendUrl = config.get("YoutubeDLMaterial.Host.frontendurl");

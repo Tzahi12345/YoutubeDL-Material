@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/Tzahi12345/hda-backend#readme",
   "dependencies": {
+    "async": "^3.1.0",
+    "config": "^3.2.3",
     "exe": "^1.0.2",
-    "youtube-dl": "1.11.1"
+    "youtube-dl": "^2.0.1"
   }
 }
