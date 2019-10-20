@@ -172,7 +172,7 @@ app.post('/tomp3', function(req, res) {
     var date = Date.now();
     var path = audioPath;
     var audiopath = Date.now();
-    youtubedl.exec(url, ['-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
+    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
         if (err) {
             audiopath = "-1";
             throw err;
@@ -195,7 +195,9 @@ app.post('/tomp3', function(req, res) {
       });
     var completeString = "done";
     var audiopathEncoded = encodeURIComponent(audiopath);
-    res.send(audiopathEncoded);
+    res.send({
+        audiopathEncoded: audiopathEncoded
+    });
     res.end("yes");
 });
 
@@ -212,7 +214,9 @@ app.post('/tomp4', function(req, res) {
     });
     var completeString = "done";
     var videopathEncoded = encodeURIComponent(videopath);
-    res.send(videopathEncoded);
+    res.send({
+        videopathEncoded: videopathEncoded
+    });
     res.end("yes");
 });
 
@@ -273,6 +277,7 @@ app.post('/getMp3s', function(req, res) {
         if (ext == ".mp3") 
         {
             var jsonobj = getJSONMp3(path.basename(files[i]).substring(0, path.basename(files[i]).length-4));
+            if (!jsonobj) continue;
             var id = path.basename(files[i]).substring(0, path.basename(files[i]).length-4);
             var title = jsonobj.title;
 
@@ -289,7 +294,9 @@ app.post('/getMp3s', function(req, res) {
         }
     }
 
-    res.send(mp3s);
+    res.send({
+        mp3s: mp3s
+    });
     res.end("yes");
 });
 
@@ -306,6 +313,7 @@ app.post('/getMp4s', function(req, res) {
         if (ext == ".mp4") 
         {
             var jsonobj = getJSONMp4(path.basename(files[i]).substring(0, path.basename(files[i]).length-4));
+            if (!jsonobj) continue;
             var id = path.basename(files[i]).substring(0, path.basename(files[i]).length-4);
             var title = jsonobj.title;
 
@@ -322,7 +330,9 @@ app.post('/getMp4s', function(req, res) {
         }
     }
 
-    res.send(mp4s);
+    res.send({
+        mp4s: mp4s
+    });
     res.end("yes");
 });
 
@@ -353,7 +363,9 @@ app.post('/deleteMp4', function(req, res) {
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        fs.unlink(fullpath);
+        fs.unlink(fullpath, call => {
+            // console.log(call);
+        });
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
