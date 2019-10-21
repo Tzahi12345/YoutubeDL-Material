@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule,
   MatSnackBarModule, MatCardModule, MatSelectModule, MatToolbarModule, MatCheckboxModule, MatGridListModule,
   MatProgressBarModule, MatExpansionModule,
-  MatGridList} from '@angular/material';
+  MatGridList,
+  MatProgressSpinnerModule} from '@angular/material';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -41,6 +42,7 @@ import {RouterModule} from '@angular/router';
     MatGridListModule,
     MatExpansionModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     RouterModule
   ],
   providers: [PostsService],

@@ -39,3 +39,10 @@ mat-toolbar.top {
 mat-form-field.mat-form-field {
     font-size: 24px;
   }
+
+.spinner {
+    position: absolute;
+    display: inline-block;
+    margin-left: 8px;
+    margin-top: -10px;
+}
