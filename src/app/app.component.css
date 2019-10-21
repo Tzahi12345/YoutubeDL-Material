@@ -43,6 +43,14 @@ mat-form-field.mat-form-field {
 .spinner {
     position: absolute;
     display: inline-block;
-    margin-left: 8px;
+    margin-left: -28px;
     margin-top: -10px;
+}
+
+.make-room-for-spinner {
+    padding-right: 40px;
+}
+
+.equal-sizes {
+    padding-right: 20px;
 }
