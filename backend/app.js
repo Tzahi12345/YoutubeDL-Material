@@ -8,6 +8,8 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
 
+var URL = require('url').URL;
+
 var frontendUrl = config.get("YoutubeDLMaterial.Host.frontendurl");
 var backendUrl = config.get("YoutubeDLMaterial.Host.backendurl")
 var backendPort = 17442;
@@ -36,8 +38,10 @@ if (usingEncryption)
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+var url_domain = new URL(frontendUrl);
+
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", frontendUrl);
+    res.header("Access-Control-Allow-Origin", url_domain.origin);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
@@ -181,6 +185,7 @@ app.post('/tomp3', function(req, res) {
 
     // write file info
 
+    /*
     youtubedl.getInfo(url, function(err, info) {
         if (err) throw err;
        
@@ -193,6 +198,7 @@ app.post('/tomp3', function(req, res) {
             console.log("The file was saved!");
         }); 
       });
+      */
     var completeString = "done";
     var audiopathEncoded = encodeURIComponent(audiopath);
     res.send({
@@ -206,7 +212,7 @@ app.post('/tomp4', function(req, res) {
     var date = Date.now();
     var path = videoPath;
     var videopath = Date.now();
-    youtubedl.exec(url, ['-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
+    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
         if (err) {
             videopath = "-1";
             throw err;
@@ -343,7 +349,9 @@ app.post('/deleteMp3', function(req, res) {
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        fs.unlink(fullpath);
+        fs.unlink(fullpath, call => {
+
+        });
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
