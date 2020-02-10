@@ -11,11 +11,11 @@ import {EventEmitter} from '@angular/core';
 })
 export class FileCardComponent implements OnInit {
 
-  @Input() title:string;
-  @Input() length:string;
-  @Input() name:string;
+  @Input() title: string;
+  @Input() length: string;
+  @Input() name: string;
   @Input() thumbnailURL: string;
-  @Input() isAudio: boolean = true;
+  @Input() isAudio = true;
   @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private postsService: PostsService, public snackBar: MatSnackBar, public appComponent: AppComponent) { }
@@ -23,17 +23,13 @@ export class FileCardComponent implements OnInit {
   ngOnInit() {
   }
 
-  deleteFile()
-  {
+  deleteFile() {
     this.postsService.deleteFile(this.name, this.isAudio).subscribe(result => {
-      if (result == true)
-      {
-        this.openSnackBar("Delete success!", "OK.");
+      if (result === true) {
+        this.openSnackBar('Delete success!', 'OK.');
         this.removeFile.emit(this.name);
-      }
-      else
-      {
-        this.openSnackBar("Delete failed!", "OK.");
+      } else {
+        this.openSnackBar('Delete failed!', 'OK.');
       }
     });
   }
