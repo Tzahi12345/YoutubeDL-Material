@@ -98,8 +98,8 @@ export class AppComponent implements OnInit {
   }
 
   public removeFromMp4(name: string) {
-    console.log(name);
-    console.log(this.mp4s);
+    // console.log(name);
+    // console.log(this.mp4s);
     for (let i = 0; i < this.mp4s.length; i++) {
       if (this.mp4s[i].id === name) {
         this.mp4s.splice(i, 1);
@@ -120,7 +120,7 @@ export class AppComponent implements OnInit {
       this.exists = exists[0];
       if (exists[0] === 'failed') {
         const percent = exists[2];
-        console.log(percent);
+        // console.log(percent);
         if (percent > 0.30) {
           this.determinateProgress = true;
           this.percentDownloaded = percent * 100;
