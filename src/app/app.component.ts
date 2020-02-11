@@ -139,7 +139,9 @@ export class AppComponent implements OnInit {
         }
 
         // reloads mp3s
-        this.getMp3s();
+        if (this.fileManagerEnabled) {
+          this.getMp3s();
+        }
       }
     });
 
@@ -169,7 +171,9 @@ export class AppComponent implements OnInit {
         }
 
         // reloads mp4s
-        this.getMp4s();
+        if (this.fileManagerEnabled) {
+          this.getMp4s();
+        }
       }
     });
 
