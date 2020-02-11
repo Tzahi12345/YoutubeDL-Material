@@ -255,9 +255,7 @@ app.post('/fileStatusMp4', function(req, res) {
     var fullpath = videoPath + name + ".mp4";
     if (fs.existsSync(fullpath)) {
     	exists = [basePath + videoPath + name, getFileSizeMp4(name)];
-    }
-    else
-    {
+    } else {
         var percent = 0;
         var size = getFileSizeMp4(name);
         var downloaded = getAmountDownloadedMp4(name);
@@ -384,6 +382,19 @@ app.post('/deleteMp4', function(req, res) {
         res.send(wasDeleted);
         res.end("yes");
     }
+});
+
+app.post('/downloadFile', function(req, res) {
+    let fileName = req.body.fileName;
+    let type = req.body.type;
+    let file = null;
+    if (type === 'audio') {
+        file = __dirname + '/' + 'audio/' + fileName + '.mp3';
+    } else if (type === 'video') {
+        file = __dirname + '/' + 'video/' + fileName + '.mp4';
+    }
+
+    res.sendFile(file);
 });
 
 

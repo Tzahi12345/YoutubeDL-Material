@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSnackBar} from '@angular/material';
+import { saveAs } from 'file-saver';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
 import 'rxjs/add/operator/toPromise';
@@ -14,7 +15,9 @@ import 'rxjs/add/operator/toPromise';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  iOS = false;
+
   determinateProgress = false;
   downloadingfile = false;
   audioOnly: boolean;
@@ -25,6 +28,7 @@ export class AppComponent {
   topBarTitle = 'Youtube Downloader';
   percentDownloaded: number;
   fileManagerEnabled = false;
+  downloadOnlyMode = false;
 
   mp3s: any[] = [];
   mp4s: any[] = [];
@@ -35,11 +39,12 @@ export class AppComponent {
     this.audioOnly = false;
 
 
-
+    // loading config
     this.postsService.loadNavItems().subscribe(result => { // loads settings
       const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
       this.topBarTitle = result['YoutubeDLMaterial']['Extra']['title_top'];
       this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
+      this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
@@ -54,30 +59,8 @@ export class AppComponent {
     });
 
   }
-  /*
 
-  doHandshake(url: string) {
-    this.postsService.startHandshake(url).subscribe(theurl => {
-      this.postsService.path = theurl;
-      this.postsService.handShakeComplete = true;
-      console.log('Handshake complete!');
-    }, error => {
-      console.log('Initial handshake failed on http.');
-      this.doHandshakeSSL(url);
-    });
-  }
-
-  doHandshakeSSL(url: string) {
-    this.postsService.startHandshakeSSL(url).subscribe(theurl => {
-      this.postsService.path = theurl;
-      this.postsService.handShakeComplete = true;
-      console.log('Handshake complete!');
-    },
-    error => {
-      console.log('Initial handshake failed on https too! Make sure port 17442 is open.');
-      this.postsService.handShakeComplete = false;
-    });
-  }*/
+  // file manager stuff
 
   getMp3s() {
     this.postsService.getMp3s().subscribe(result => {
@@ -100,9 +83,9 @@ export class AppComponent {
 
   public goToFile(name, isAudio) {
     if (isAudio) {
-      this.downloadHelperMp3(name);
+      this.downloadHelperMp3(name, true);
     } else {
-      this.downloadHelperMp4(name);
+      this.downloadHelperMp4(name, true);
     }
   }
 
@@ -124,10 +107,14 @@ export class AppComponent {
     }
   }
 
+  // app initialization.
   ngOnInit() {
+    this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
   }
 
-  downloadHelperMp3(name: string) {
+  // download helpers
+
+  downloadHelperMp3(name: string, forceView = false) {
     this.postsService.getFileStatusMp3(name).subscribe(fileExists => {
       const exists = fileExists;
       this.exists = exists[0];
@@ -140,13 +127,25 @@ export class AppComponent {
         }
         setTimeout(() => this.downloadHelperMp3(name), 500);
       } else {
-        window.location.href = this.exists;
+        // if download only mode, just download the file. no redirect
+        if (forceView === false && this.downloadOnlyMode && !this.iOS) {
+          this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
+            const blob: Blob = res;
+            saveAs(blob, name + '.mp3');
+            this.downloadingfile = false;
+          });
+        } else {
+          window.location.href = this.exists;
+        }
+
+        // reloads mp3s
+        this.getMp3s();
       }
     });
 
   }
 
-  downloadHelperMp4(name: string) {
+  downloadHelperMp4(name: string, forceView = false) {
     this.postsService.getFileStatusMp4(name).subscribe(fileExists => {
       const exists = fileExists;
       this.exists = exists[0];
@@ -158,12 +157,25 @@ export class AppComponent {
         }
         setTimeout(() => this.downloadHelperMp4(name), 500);
       } else {
-        window.location.href = this.exists;
+        // if download only mode, just download the file. no redirect
+        if (forceView === false && this.downloadOnlyMode) {
+          this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
+            const blob: Blob = res;
+            saveAs(blob, name + '.mp4');
+            this.downloadingfile = false;
+          });
+        } else {
+          window.location.href = this.exists;
+        }
+
+        // reloads mp4s
+        this.getMp4s();
       }
     });
 
   }
 
+  // download click handler
   downloadClicked() {
     if (this.ValidURL(this.url)) {
       this.urlError = false;
@@ -197,6 +209,7 @@ export class AppComponent {
     }
   }
 
+  // checks if url is a valid URL
   ValidURL(str) {
     // tslint:disable-next-line: max-line-length
     const strRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
@@ -204,6 +217,7 @@ export class AppComponent {
     return re.test(str);
   }
 
+  // snackbar helper
   public openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {
       duration: 2000,

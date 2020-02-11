@@ -1,5 +1,5 @@
 import {Injectable, isDevMode} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest, HttpResponseBase } from '@angular/common/http';
 import config from '../assets/default.json';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
@@ -74,6 +74,10 @@ export class PostsService {
 
     getMp4s() {
         return this.http.post(this.path + 'getMp4s', {});
+    }
+
+    downloadFileFromServer(fileName, type) {
+        return this.http.post(this.path + 'downloadFile', {fileName: fileName, type: type}, {responseType: 'blob'});
     }
 }
 
