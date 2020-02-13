@@ -17,7 +17,11 @@
       "Extra": {
         "title_top": "Youtube Downloader",
         "download_only_mode": false,
-		    "file_manager_enabled": true
+        "file_manager_enabled": true
+      },
+      "API": {
+        "use_youtube_API": false,
+        "youtube_API_key": ""
       }
     }
   }
