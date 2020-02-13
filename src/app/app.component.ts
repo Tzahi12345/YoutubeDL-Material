@@ -127,12 +127,18 @@ export class AppComponent implements OnInit {
         }
         setTimeout(() => this.downloadHelperMp3(name), 500);
       } else {
+        this.downloadingfile = false;
+
         // if download only mode, just download the file. no redirect
         if (forceView === false && this.downloadOnlyMode && !this.iOS) {
           this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
             const blob: Blob = res;
             saveAs(blob, name + '.mp3');
-            this.downloadingfile = false;
+
+            // tell server to delete the file once downloaded
+            this.postsService.deleteFile(name, true).subscribe(delRes => {
+
+            });
           });
         } else {
           window.location.href = this.exists;
@@ -159,12 +165,17 @@ export class AppComponent implements OnInit {
         }
         setTimeout(() => this.downloadHelperMp4(name), 500);
       } else {
+        this.downloadingfile = false;
+
         // if download only mode, just download the file. no redirect
         if (forceView === false && this.downloadOnlyMode) {
           this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
             const blob: Blob = res;
             saveAs(blob, name + '.mp4');
-            this.downloadingfile = false;
+
+            // tell server to delete the file once downloaded
+            this.postsService.deleteFile(name, false).subscribe(delRes => {
+            });
           });
         } else {
           window.location.href = this.exists;
