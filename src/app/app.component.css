@@ -54,3 +54,15 @@ mat-form-field.mat-form-field {
 .equal-sizes {
     padding-right: 20px;
 }
+
+.search-card-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.input-clear-button {
+    position: absolute;
+    right: -10px;
+    top: 5px;
+}

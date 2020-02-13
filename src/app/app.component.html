@@ -22,9 +22,25 @@
             <div style="position: relative;">
                 <form class="example-form">
                     <mat-form-field class="example-full-width">
-                        <input matInput [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required>
+                        <input matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required #urlinput>
                         <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
+                        <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
                     </mat-form-field>
+                    <span *ngIf="results_showing">
+                        <span *ngFor="let result of results">
+                            <mat-card style="height: 120px; border-radius: 0px">
+                                <div class="search-card-title">
+                                    {{result.title}}
+                                </div>
+                                <div style="font-size: 12px">
+                                    {{result.uploaded}}
+                                </div>
+                                <br/>
+                                <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">Use URL</button>
+                                <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">View</button>
+                            </mat-card>
+                        </span>
+                    </span>
                 </form>
                 <br/>
                 <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>

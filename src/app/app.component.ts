@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import {PostsService} from './posts.services';
 import {FileCardComponent} from './file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
@@ -9,6 +9,12 @@ import { saveAs } from 'file-saver';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/observable/fromEvent'
+import 'rxjs/add/operator/filter'
+import 'rxjs/add/operator/debounceTime'
+import 'rxjs/add/operator/do'
+import 'rxjs/add/operator/switch'
+import { YoutubeSearchService, Result } from './youtube-search.service';
 
 @Component({
   selector: 'app-root',
@@ -33,12 +39,21 @@ export class AppComponent implements OnInit {
   audioFolderPath;
   videoFolderPath;
 
+  // youtube api
+  youtubeSearchEnabled = false;
+  youtubeAPIKey = null;
+  results_loading = false;
+  results_showing = true;
+  results = [];
+
   mp3s: any[] = [];
   mp4s: any[] = [];
 
   urlForm = new FormControl('', [Validators.required]);
 
-  constructor(private postsService: PostsService, public snackBar: MatSnackBar) {
+  @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
+
+  constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar) {
     this.audioOnly = false;
 
 
@@ -51,6 +66,8 @@ export class AppComponent implements OnInit {
       this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
+      this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'];
+      this.youtubeAPIKey = this.youtubeSearchEnabled ? result['YoutubeDLMaterial']['API']['youtube_API_key'] : null;
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
@@ -59,6 +76,11 @@ export class AppComponent implements OnInit {
       if (this.fileManagerEnabled) {
         this.getMp3s();
         this.getMp4s();
+      }
+
+      if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
+        this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
+        this.attachToInput();
       }
     }, error => {
       console.log(error);
@@ -267,6 +289,34 @@ export class AppComponent implements OnInit {
     });
   }
 
+  clearInput() {
+    this.url = '';
+    this.results_showing = false;
+  }
+
+  onInputBlur() {
+    this.results_showing = false;
+  }
+
+  visitURL(url) {
+    window.open(url);
+  }
+
+  useURL(url) {
+    this.results_showing = false;
+    this.url = url;
+  }
+
+  inputChanged(new_val) {
+    if (new_val === '') {
+      this.results_showing = false;
+    } else {
+      if (this.ValidURL(new_val)) {
+        this.results_showing = false;
+      }
+    }
+  }
+
   // checks if url is a valid URL
   ValidURL(str) {
     // tslint:disable-next-line: max-line-length
@@ -280,6 +330,36 @@ export class AppComponent implements OnInit {
     this.snackBar.open(message, action, {
       duration: 2000,
     });
+  }
+
+  attachToInput() {
+    Observable.fromEvent(this.urlInput.nativeElement, 'keyup')
+      .map((e: any) => e.target.value)           // extract the value of input
+      .filter((text: string) => text.length > 1) // filter out if empty
+      .debounceTime(250)                         // only once every 250ms
+      .do(() => this.results_loading = true)         // enable loading
+      .map((query: string) => this.youtubeSearch.search(query))
+      .switch()                                  // act on the return of the search
+      .subscribe(
+        (results: Result[]) => {
+          // console.log(results);
+          this.results_loading = false;
+          if (results && results.length > 0) {
+            this.results = results;
+            this.results_showing = true;
+          } else {
+            this.results_showing = false;
+          }
+        },
+        (err: any) => {
+          console.log(err)
+          this.results_loading = false;
+          this.results_showing = false;
+        },
+        () => { // on completion
+          this.results_loading = false;
+        }
+      );
   }
 }
 
