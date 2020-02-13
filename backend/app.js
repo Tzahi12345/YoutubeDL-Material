@@ -15,8 +15,9 @@ var backendUrl = config.get("YoutubeDLMaterial.Host.backendurl")
 var backendPort = 17442;
 var usingEncryption = config.get("YoutubeDLMaterial.Encryption.use-encryption");
 var basePath = config.get("YoutubeDLMaterial.Downloader.path-base");
-var audioPath = config.get("YoutubeDLMaterial.Downloader.path-audio");
-var videoPath = config.get("YoutubeDLMaterial.Downloader.path-video");
+var audioFolderPath = config.get("YoutubeDLMaterial.Downloader.path-audio");
+var videoFolderPath = config.get("YoutubeDLMaterial.Downloader.path-video");
+var downloadOnlyMode = config.get("YoutubeDLMaterial.Extra.download_only_mode")
 
 if (usingEncryption)
 {
@@ -79,7 +80,7 @@ function getThumbnailMp4(name)
 
 function getFileSizeMp3(name)
 {
-    var jsonPath = audioPath+name+".mp3.info.json";
+    var jsonPath = audioFolderPath+name+".mp3.info.json";
 
     if (fs.existsSync(jsonPath))
         var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -91,7 +92,7 @@ function getFileSizeMp3(name)
 
 function getFileSizeMp4(name)
 {
-    var jsonPath = videoPath+name+".info.json";
+    var jsonPath = videoFolderPath+name+".info.json";
     var filesize = 0;
     if (fs.existsSync(jsonPath))
     {
@@ -111,7 +112,7 @@ function getFileSizeMp4(name)
 
 function getJSONMp3(name)
 {
-    var jsonPath = audioPath+name+".mp3.info.json";
+    var jsonPath = audioFolderPath+name+".mp3.info.json";
     if (fs.existsSync(jsonPath))
     var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
     else
@@ -122,7 +123,7 @@ function getJSONMp3(name)
 
 function getJSONMp4(name)
 {
-    var jsonPath = videoPath+name+".info.json";
+    var jsonPath = videoFolderPath+name+".info.json";
     if (fs.existsSync(jsonPath))
     {
         var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -133,7 +134,7 @@ function getJSONMp4(name)
 
 function getAmountDownloadedMp3(name)
 {
-    var partPath = audioPath+name+".mp3.part";
+    var partPath = audioFolderPath+name+".mp3.part";
     if (fs.existsSync(partPath))
     {
         const stats = fs.statSync(partPath);
@@ -149,7 +150,7 @@ function getAmountDownloadedMp3(name)
 function getAmountDownloadedMp4(name)
 {
     var format = getVideoFormatID(name);
-    var partPath = videoPath+name+".f"+format+".mp4.part";
+    var partPath = videoFolderPath+name+".f"+format+".mp4.part";
     if (fs.existsSync(partPath))
     {
         const stats = fs.statSync(partPath);
@@ -162,7 +163,7 @@ function getAmountDownloadedMp4(name)
 
 function getVideoFormatID(name)
 {
-    var jsonPath = videoPath+name+".info.json";
+    var jsonPath = videoFolderPath+name+".info.json";
     if (fs.existsSync(jsonPath))
     {
         var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -171,68 +172,88 @@ function getVideoFormatID(name)
     }
 }
 
+function deleteAudioFile(name) {
+    var jsonPath = audioFolderPath+name+'.info.json';
+    var audioFilePath = audioFolderPath+name+'.mp3';
+
+    fs.unlinkSync(audioFilePath);
+    fs.unlinkSync(jsonPath);
+}
+
+function deleteVideoFile(name) {
+    var jsonPath = videoFolderPath+name+'.info.json';
+    var videoFilePath = videoFolderPath+name+'.mp4';
+
+    fs.unlinkSync(videoFilePath);
+    fs.unlinkSync(jsonPath);
+}
+
 app.post('/tomp3', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
-    var path = audioPath;
-    var audiopath = Date.now();
-    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
-        if (err) {
-            audiopath = "-1";
-            throw err;
+    var path = audioFolderPath;
+    var audiopath = '%(title)s.%(ext)s';
+
+    youtubedl.exec(url, ['--get-filename', '-o', audiopath], {}, function(err_getting_name, output) {
+        if (err_getting_name) {
+            res.sendStatus(500);
+            throw err_getting_name;
         }
-    });
-
-    // write file info
-
-    /*
-    youtubedl.getInfo(url, function(err, info) {
-        if (err) throw err;
-       
-        var size = info.size;
-        fs.writeFile("data/"+audiopath, size, function(err) {
-            if(err) {
-                return console.log(err);
+        var output_string = output[0];
+        audiopath = output_string.substring(0, output_string.lastIndexOf('.')) + '.mp3';
+        youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
+            if (err) {
+                audiopath = "-1";
+                res.sendStatus(500);
+                throw err;
+            } else if (output) {
+                var completeString = "done";
+                var audiopathEncoded = encodeURIComponent(audiopath);
+                res.send({
+                    audiopathEncoded: audiopathEncoded
+                });
             }
-        
-            console.log("The file was saved!");
-        }); 
-      });
-      */
-    var completeString = "done";
-    var audiopathEncoded = encodeURIComponent(audiopath);
-    res.send({
-        audiopathEncoded: audiopathEncoded
+        });
     });
-    res.end("yes");
 });
 
 app.post('/tomp4', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
-    var path = videoPath;
-    var videopath = Date.now();
-    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
-        if (err) {
-            videopath = "-1";
-            throw err;
+    var path = videoFolderPath;
+    var videopath = '%(title)s.%(ext)s';
+
+    youtubedl.exec(url, ['--get-filename', '-o', videopath], {}, function(err_getting_name, output) {
+        if (err_getting_name) {
+            res.sendStatus(500);
+            throw err_getting_name;
         }
+        var output_string = output[0];
+        videopath = output_string.substring(0, output_string.lastIndexOf('.')) + '.mp4';
+        youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
+            if (err) {
+                videopath = "-1";
+                res.sendStatus(500);
+                throw err;
+            } else if (output) {
+                var completeString = "done";
+                var videopathEncoded = encodeURIComponent(videopath);
+                res.send({
+                    videopathEncoded: videopathEncoded
+                });
+                res.end("yes");
+            }
+        });
     });
-    var completeString = "done";
-    var videopathEncoded = encodeURIComponent(videopath);
-    res.send({
-        videopathEncoded: videopathEncoded
-    });
-    res.end("yes");
 });
 
 // gets the status of the mp3 file that's being downloaded
 app.post('/fileStatusMp3', function(req, res) {
-    var name = req.body.name + "";
+    var name = decodeURI(req.body.name + "");
     var exists = "";
-    var fullpath = audioPath + name + ".mp3";
+    var fullpath = audioFolderPath + name + ".mp3";
     if (fs.existsSync(fullpath)) {
-    	exists = [basePath + audioPath + name, getFileSizeMp3(name)];
+    	exists = [basePath + audioFolderPath + name, getFileSizeMp3(name)];
     }
     else
     {
@@ -250,11 +271,11 @@ app.post('/fileStatusMp3', function(req, res) {
 
 // gets the status of the mp4 file that's being downloaded
 app.post('/fileStatusMp4', function(req, res) {
-    var name = req.body.name;
+    var name = decodeURI(req.body.name);
     var exists = "";
-    var fullpath = videoPath + name + ".mp4";
+    var fullpath = videoFolderPath + name + ".mp4";
     if (fs.existsSync(fullpath)) {
-    	exists = [basePath + videoPath + name, getFileSizeMp4(name)];
+    	exists = [basePath + videoFolderPath + name, getFileSizeMp4(name)];
     } else {
         var percent = 0;
         var size = getFileSizeMp4(name);
@@ -271,8 +292,8 @@ app.post('/fileStatusMp4', function(req, res) {
 // gets all download mp3s
 app.post('/getMp3s', function(req, res) {
     var mp3s = [];
-    var fullpath = audioPath;
-    var files = fs.readdirSync(audioPath);
+    var fullpath = audioFolderPath;
+    var files = fs.readdirSync(audioFolderPath);
     
     for (var i in files)
     {
@@ -307,8 +328,8 @@ app.post('/getMp3s', function(req, res) {
 // gets all download mp4s
 app.post('/getMp4s', function(req, res) {
     var mp4s = [];
-    var fullpath = videoPath;
-    var files = fs.readdirSync(videoPath);
+    var fullpath = videoFolderPath;
+    var files = fs.readdirSync(videoFolderPath);
     
     for (var i in files)
     {
@@ -343,13 +364,11 @@ app.post('/getMp4s', function(req, res) {
 // deletes mp3 file
 app.post('/deleteMp3', function(req, res) {
     var name = req.body.name;
-    var fullpath = audioPath + name + ".mp3";
+    var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        fs.unlink(fullpath, call => {
-
-        });
+        deleteAudioFile(name);
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
@@ -365,13 +384,11 @@ app.post('/deleteMp3', function(req, res) {
 // deletes mp4 file
 app.post('/deleteMp4', function(req, res) {
     var name = req.body.name;
-    var fullpath = videoPath + name + ".mp4";
+    var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        fs.unlink(fullpath, call => {
-            // console.log(call);
-        });
+        deleteVideoFile(name);
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
@@ -397,6 +414,16 @@ app.post('/downloadFile', function(req, res) {
     res.sendFile(file);
 });
 
+app.post('/deleteFile', function(req, res) {
+    let fileName = req.body.fileName;
+    let type = req.body.type;
+    if (type === 'audio') {
+        deleteAudioFile(fileName);
+    } else if (type === 'video') {
+        deleteVideoFile(fileName);
+    }
+    res.send()
+});
 
 app.get('/video/:id', function(req , res){
     var head;
