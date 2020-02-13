@@ -29,6 +29,9 @@ export class AppComponent implements OnInit {
   percentDownloaded: number;
   fileManagerEnabled = false;
   downloadOnlyMode = false;
+  baseStreamPath;
+  audioFolderPath;
+  videoFolderPath;
 
   mp3s: any[] = [];
   mp4s: any[] = [];
@@ -45,6 +48,9 @@ export class AppComponent implements OnInit {
       this.topBarTitle = result['YoutubeDLMaterial']['Extra']['title_top'];
       this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
       this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
+      this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
+      this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
+      this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
@@ -83,9 +89,9 @@ export class AppComponent implements OnInit {
 
   public goToFile(name, isAudio) {
     if (isAudio) {
-      this.downloadHelperMp3(name, true);
+      this.downloadHelperMp3(name, false, true);
     } else {
-      this.downloadHelperMp4(name, true);
+      this.downloadHelperMp4(name, false, true);
     }
   }
 
@@ -114,7 +120,8 @@ export class AppComponent implements OnInit {
 
   // download helpers
 
-  downloadHelperMp3(name: string, forceView = false) {
+  downloadHelperMp3(name, is_playlist = false, forceView = false) {
+    /*
     this.postsService.getFileStatusMp3(name).subscribe(fileExists => {
       const exists = fileExists;
       this.exists = exists[0];
@@ -125,35 +132,39 @@ export class AppComponent implements OnInit {
           this.determinateProgress = true;
           this.percentDownloaded = percent * 100;
         }
-        setTimeout(() => this.downloadHelperMp3(name), 500);
+        setTimeout(() => this.downloadHelperMp3(name, is_playlist, forceView), 500);
       } else {
+        */
         this.downloadingfile = false;
 
         // if download only mode, just download the file. no redirect
         if (forceView === false && this.downloadOnlyMode && !this.iOS) {
-          this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
-            const blob: Blob = res;
-            saveAs(blob, name + '.mp3');
-
-            // tell server to delete the file once downloaded
-            this.postsService.deleteFile(name, true).subscribe(delRes => {
-
-            });
-          });
+          if (is_playlist) {
+            for (let i = 0; i < name.length; i++) {
+              this.downloadAudioFile(name[i]);
+            }
+          } else {
+            this.downloadAudioFile(name);
+          }
         } else {
-          window.location.href = this.exists;
+          if (is_playlist) {
+            window.location.href = this.baseStreamPath + this.audioFolderPath + name[0];
+          } else {
+            window.location.href = this.baseStreamPath + this.audioFolderPath + name;
+          }
         }
 
         // reloads mp3s
         if (this.fileManagerEnabled) {
           this.getMp3s();
         }
-      }
-    });
+      /* }
+    });*/
 
   }
 
-  downloadHelperMp4(name: string, forceView = false) {
+  downloadHelperMp4(name, is_playlist = false, forceView = false) {
+    /*
     this.postsService.getFileStatusMp4(name).subscribe(fileExists => {
       const exists = fileExists;
       this.exists = exists[0];
@@ -163,30 +174,36 @@ export class AppComponent implements OnInit {
           this.determinateProgress = true;
           this.percentDownloaded = percent * 100;
         }
-        setTimeout(() => this.downloadHelperMp4(name), 500);
+        setTimeout(() => this.downloadHelperMp4(name, is_playlist, forceView), 500);
       } else {
+        */
         this.downloadingfile = false;
 
         // if download only mode, just download the file. no redirect
         if (forceView === false && this.downloadOnlyMode) {
-          this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
-            const blob: Blob = res;
-            saveAs(blob, name + '.mp4');
-
-            // tell server to delete the file once downloaded
-            this.postsService.deleteFile(name, false).subscribe(delRes => {
-            });
-          });
+          if (is_playlist) {
+            for (let i = 0; i < name.length; i++) {
+              this.downloadVideoFile(name[i]);
+            }
+          } else {
+            this.downloadVideoFile(name);
+          }
         } else {
-          window.location.href = this.exists;
+          if (is_playlist) {
+            window.location.href = this.baseStreamPath + this.videoFolderPath + name[0];
+          } else {
+            window.location.href = this.baseStreamPath + this.videoFolderPath + name;
+          }
         }
 
         // reloads mp4s
         if (this.fileManagerEnabled) {
           this.getMp4s();
         }
+        /*
       }
     });
+    */
 
   }
 
@@ -199,9 +216,10 @@ export class AppComponent implements OnInit {
       if (this.audioOnly) {
         this.downloadingfile = true;
         this.postsService.makeMP3(this.url).subscribe(posts => {
-          this.path = posts['audiopathEncoded'];
+          const is_playlist = !!(posts['file_names']);
+          this.path = is_playlist ? posts['file_names'] : posts['audiopathEncoded'];
           if (this.path !== '-1') {
-            this.downloadHelperMp3(this.path);
+            this.downloadHelperMp3(this.path, is_playlist);
           }
         }, error => { // can't access server
           this.downloadingfile = false;
@@ -210,9 +228,10 @@ export class AppComponent implements OnInit {
       } else {
         this.downloadingfile = true;
         this.postsService.makeMP4(this.url).subscribe(posts => {
-          this.path = posts['videopathEncoded'];
+          const is_playlist = !!(posts['file_names']);
+          this.path = is_playlist ? posts['file_names'] : posts['videopathEncoded'];
           if (this.path !== '-1') {
-            this.downloadHelperMp4(this.path);
+            this.downloadHelperMp4(this.path, is_playlist);
           }
         }, error => { // can't access server
           this.downloadingfile = false;
@@ -222,6 +241,30 @@ export class AppComponent implements OnInit {
     } else {
       this.urlError = true;
     }
+  }
+
+  downloadAudioFile(name) {
+    this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
+      const blob: Blob = res;
+      saveAs(blob, name + '.mp3');
+
+      // tell server to delete the file once downloaded
+      this.postsService.deleteFile(name, true).subscribe(delRes => {
+
+      });
+    });
+  }
+
+  downloadVideoFile(name) {
+    this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
+      const blob: Blob = res;
+      saveAs(blob, name + '.mp4');
+
+      // tell server to delete the file once downloaded
+      this.postsService.deleteFile(name, false).subscribe(delRes => {
+
+      });
+    });
   }
 
   // checks if url is a valid URL

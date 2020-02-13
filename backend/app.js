@@ -173,7 +173,7 @@ function getVideoFormatID(name)
 }
 
 function deleteAudioFile(name) {
-    var jsonPath = audioFolderPath+name+'.info.json';
+    var jsonPath = audioFolderPath+name+'.mp3.info.json';
     var audioFilePath = audioFolderPath+name+'.mp3';
 
     fs.unlinkSync(audioFilePath);
@@ -192,15 +192,22 @@ app.post('/tomp3', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var path = audioFolderPath;
-    var audiopath = '%(title)s.%(ext)s';
+    var audiopath = '%(title)s';
 
     youtubedl.exec(url, ['--get-filename', '-o', audiopath], {}, function(err_getting_name, output) {
         if (err_getting_name) {
             res.sendStatus(500);
             throw err_getting_name;
         }
-        var output_string = output[0];
-        audiopath = output_string.substring(0, output_string.lastIndexOf('.')) + '.mp3';
+        var file_names = [];
+        for (let i = 0; i < output.length; i++) {
+            var modified_file_name = output[i];
+            file_names.push(modified_file_name);
+        }
+
+        var is_playlist = file_names.length > 1;
+        if (!is_playlist) audiopath = file_names[0];
+
         youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
             if (err) {
                 audiopath = "-1";
@@ -208,9 +215,10 @@ app.post('/tomp3', function(req, res) {
                 throw err;
             } else if (output) {
                 var completeString = "done";
-                var audiopathEncoded = encodeURIComponent(audiopath);
+                var audiopathEncoded = encodeURIComponent(file_names[0]);
                 res.send({
-                    audiopathEncoded: audiopathEncoded
+                    audiopathEncoded: audiopathEncoded,
+                    file_names: is_playlist ? file_names : null
                 });
             }
         });
@@ -221,15 +229,23 @@ app.post('/tomp4', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var path = videoFolderPath;
-    var videopath = '%(title)s.%(ext)s';
+    var videopath = '%(title)s';
 
     youtubedl.exec(url, ['--get-filename', '-o', videopath], {}, function(err_getting_name, output) {
         if (err_getting_name) {
             res.sendStatus(500);
             throw err_getting_name;
         }
-        var output_string = output[0];
-        videopath = output_string.substring(0, output_string.lastIndexOf('.')) + '.mp4';
+
+        var file_names = [];
+        for (let i = 0; i < output.length; i++) {
+            var modified_file_name = output[i];
+            file_names.push(modified_file_name);
+        }
+
+        var is_playlist = file_names.length > 1;
+        if (!is_playlist) videopath = file_names[0];
+
         youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
             if (err) {
                 videopath = "-1";
@@ -237,9 +253,10 @@ app.post('/tomp4', function(req, res) {
                 throw err;
             } else if (output) {
                 var completeString = "done";
-                var videopathEncoded = encodeURIComponent(videopath);
+                var videopathEncoded = encodeURIComponent(file_names[0]);
                 res.send({
-                    videopathEncoded: videopathEncoded
+                    videopathEncoded: videopathEncoded,
+                    file_names: is_playlist ? file_names : null
                 });
                 res.end("yes");
             }
@@ -403,6 +420,7 @@ app.post('/deleteMp4', function(req, res) {
 
 app.post('/downloadFile', function(req, res) {
     let fileName = req.body.fileName;
+    let is_playlist = req.body.is_playlist;
     let type = req.body.type;
     let file = null;
     if (type === 'audio') {
