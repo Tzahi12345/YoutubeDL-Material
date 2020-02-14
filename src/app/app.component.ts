@@ -48,6 +48,7 @@ export class AppComponent implements OnInit {
 
   mp3s: any[] = [];
   mp4s: any[] = [];
+  files_cols = (window.innerWidth <= 450) ? 2 : 4;
 
   urlForm = new FormControl('', [Validators.required]);
 
@@ -143,90 +144,55 @@ export class AppComponent implements OnInit {
   // download helpers
 
   downloadHelperMp3(name, is_playlist = false, forceView = false) {
-    /*
-    this.postsService.getFileStatusMp3(name).subscribe(fileExists => {
-      const exists = fileExists;
-      this.exists = exists[0];
-      if (exists[0] === 'failed') {
-        const percent = exists[2];
-        // console.log(percent);
-        if (percent > 0.30) {
-          this.determinateProgress = true;
-          this.percentDownloaded = percent * 100;
+    this.downloadingfile = false;
+
+    // if download only mode, just download the file. no redirect
+    if (forceView === false && this.downloadOnlyMode && !this.iOS) {
+      if (is_playlist) {
+        for (let i = 0; i < name.length; i++) {
+          this.downloadAudioFile(name[i]);
         }
-        setTimeout(() => this.downloadHelperMp3(name, is_playlist, forceView), 500);
       } else {
-        */
-        this.downloadingfile = false;
+        this.downloadAudioFile(name);
+      }
+    } else {
+      if (is_playlist) {
+        window.location.href = this.baseStreamPath + this.audioFolderPath + name[0] + '.mp3';
+      } else {
+        window.location.href = this.baseStreamPath + this.audioFolderPath + name + '.mp3';
+      }
+    }
 
-        // if download only mode, just download the file. no redirect
-        if (forceView === false && this.downloadOnlyMode && !this.iOS) {
-          if (is_playlist) {
-            for (let i = 0; i < name.length; i++) {
-              this.downloadAudioFile(name[i]);
-            }
-          } else {
-            this.downloadAudioFile(name);
-          }
-        } else {
-          if (is_playlist) {
-            window.location.href = this.baseStreamPath + this.audioFolderPath + name[0];
-          } else {
-            window.location.href = this.baseStreamPath + this.audioFolderPath + name;
-          }
-        }
-
-        // reloads mp3s
-        if (this.fileManagerEnabled) {
-          this.getMp3s();
-        }
-      /* }
-    });*/
-
+    // reloads mp3s
+    if (this.fileManagerEnabled) {
+      this.getMp3s();
+    }
   }
 
   downloadHelperMp4(name, is_playlist = false, forceView = false) {
-    /*
-    this.postsService.getFileStatusMp4(name).subscribe(fileExists => {
-      const exists = fileExists;
-      this.exists = exists[0];
-      if (exists[0] === 'failed') {
-        const percent = exists[2];
-        if (percent > 0.30) {
-          this.determinateProgress = true;
-          this.percentDownloaded = percent * 100;
+    this.downloadingfile = false;
+
+    // if download only mode, just download the file. no redirect
+    if (forceView === false && this.downloadOnlyMode) {
+      if (is_playlist) {
+        for (let i = 0; i < name.length; i++) {
+          this.downloadVideoFile(name[i]);
         }
-        setTimeout(() => this.downloadHelperMp4(name, is_playlist, forceView), 500);
       } else {
-        */
-        this.downloadingfile = false;
-
-        // if download only mode, just download the file. no redirect
-        if (forceView === false && this.downloadOnlyMode) {
-          if (is_playlist) {
-            for (let i = 0; i < name.length; i++) {
-              this.downloadVideoFile(name[i]);
-            }
-          } else {
-            this.downloadVideoFile(name);
-          }
-        } else {
-          if (is_playlist) {
-            window.location.href = this.baseStreamPath + this.videoFolderPath + name[0];
-          } else {
-            window.location.href = this.baseStreamPath + this.videoFolderPath + name;
-          }
-        }
-
-        // reloads mp4s
-        if (this.fileManagerEnabled) {
-          this.getMp4s();
-        }
-        /*
+        this.downloadVideoFile(name);
       }
-    });
-    */
+    } else {
+      if (is_playlist) {
+        window.location.href = this.baseStreamPath + this.videoFolderPath + name[0] + '.mp4';
+      } else {
+        window.location.href = this.baseStreamPath + this.videoFolderPath + name + '.mp4';
+      }
+    }
 
+    // reloads mp4s
+    if (this.fileManagerEnabled) {
+      this.getMp4s();
+    }
   }
 
   // download click handler
@@ -360,6 +326,10 @@ export class AppComponent implements OnInit {
           this.results_loading = false;
         }
       );
+  }
+
+  onResize(event) {
+    this.files_cols = (event.target.innerWidth <= 450) ? 2 : 4;
   }
 }
 

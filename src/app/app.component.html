@@ -82,10 +82,10 @@
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngIf="mp3s.length > 0;else nomp3s">
-                <mat-grid-list cols="4" rowHeight="150px">
+                <mat-grid-list (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp3s; index as i;">
                         <app-file-card (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
-                            [length]="file.duration" [isAudio]="true"></app-file-card>
+                                [length]="file.duration" [isAudio]="true"></app-file-card>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>
@@ -101,7 +101,7 @@
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngIf="mp4s.length > 0;else nomp4s">
-                <mat-grid-list cols="4" rowHeight="150px">
+                <mat-grid-list (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp4s; index as i;">
                         <app-file-card (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                             [length]="file.duration" [isAudio]="false"></app-file-card>
