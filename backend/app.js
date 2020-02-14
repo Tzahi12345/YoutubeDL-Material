@@ -10,7 +10,12 @@ var app = express();
 
 var URL = require('url').URL;
 
-var frontendUrl = config.get("YoutubeDLMaterial.Host.frontendurl");
+// check if debug mode
+let debugMode = process.env.YTDL_MODE === 'debug';
+
+if (debugMode) console.log('YTDL-Material in debug mode!');
+
+var frontendUrl = !debugMode ? config.get("YoutubeDLMaterial.Host.frontendurl") : 'http://localhost:4200';
 var backendUrl = config.get("YoutubeDLMaterial.Host.backendurl")
 var backendPort = 17442;
 var usingEncryption = config.get("YoutubeDLMaterial.Encryption.use-encryption");
@@ -18,6 +23,7 @@ var basePath = config.get("YoutubeDLMaterial.Downloader.path-base");
 var audioFolderPath = config.get("YoutubeDLMaterial.Downloader.path-audio");
 var videoFolderPath = config.get("YoutubeDLMaterial.Downloader.path-video");
 var downloadOnlyMode = config.get("YoutubeDLMaterial.Extra.download_only_mode")
+
 
 if (usingEncryption)
 {
@@ -194,34 +200,38 @@ app.post('/tomp3', function(req, res) {
     var path = audioFolderPath;
     var audiopath = '%(title)s';
 
-    youtubedl.exec(url, ['--get-filename', '-o', audiopath], {}, function(err_getting_name, output) {
-        if (err_getting_name) {
+    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'], {}, function(err, output) {
+        if (debugMode) {
+            let new_date = Date.now();
+            let difference = (new_date - date)/1000;
+            console.log(`Audio download delay: ${difference} seconds.`);
+        }
+        if (err) {
+            audiopath = "-1";
             res.sendStatus(500);
-            throw err_getting_name;
-        }
-        var file_names = [];
-        for (let i = 0; i < output.length; i++) {
-            var modified_file_name = output[i];
-            file_names.push(modified_file_name);
-        }
-
-        var is_playlist = file_names.length > 1;
-        if (!is_playlist) audiopath = file_names[0];
-
-        youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json'], {}, function(err, output) {
-            if (err) {
-                audiopath = "-1";
-                res.sendStatus(500);
-                throw err;
-            } else if (output) {
-                var completeString = "done";
-                var audiopathEncoded = encodeURIComponent(file_names[0]);
-                res.send({
-                    audiopathEncoded: audiopathEncoded,
-                    file_names: is_playlist ? file_names : null
-                });
+            throw err;
+        } else if (output) {  
+            var file_names = [];
+            for (let i = 0; i < output.length; i++) {
+                let output_json = null;
+                try {
+                    output_json = JSON.parse(output[i]);
+                } catch {
+                    output_json = null;
+                }
+                var modified_file_name = output_json ? output_json['title'] : null;
+                if (modified_file_name) file_names.push(modified_file_name);
             }
-        });
+
+            let is_playlist = file_names.length > 1;
+            if (!is_playlist) audiopath = file_names[0];
+
+            var audiopathEncoded = encodeURIComponent(file_names[0]);
+            res.send({
+                audiopathEncoded: audiopathEncoded,
+                file_names: is_playlist ? file_names : null
+            });
+        }
     });
 });
 
@@ -231,36 +241,39 @@ app.post('/tomp4', function(req, res) {
     var path = videoFolderPath;
     var videopath = '%(title)s';
 
-    youtubedl.exec(url, ['--get-filename', '-o', videopath], {}, function(err_getting_name, output) {
-        if (err_getting_name) {
+    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json', '--print-json'], {}, function(err, output) {
+        if (debugMode) {
+            let new_date = Date.now();
+            let difference = (new_date - date)/1000;
+            console.log(`Video download delay: ${difference} seconds.`);
+        }
+        if (err) {
+            videopath = "-1";
             res.sendStatus(500);
-            throw err_getting_name;
-        }
-
-        var file_names = [];
-        for (let i = 0; i < output.length; i++) {
-            var modified_file_name = output[i];
-            file_names.push(modified_file_name);
-        }
-
-        var is_playlist = file_names.length > 1;
-        if (!is_playlist) videopath = file_names[0];
-
-        youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '--write-info-json'], {}, function(err, output) {
-            if (err) {
-                videopath = "-1";
-                res.sendStatus(500);
-                throw err;
-            } else if (output) {
-                var completeString = "done";
-                var videopathEncoded = encodeURIComponent(file_names[0]);
-                res.send({
-                    videopathEncoded: videopathEncoded,
-                    file_names: is_playlist ? file_names : null
-                });
-                res.end("yes");
+            throw err;
+        } else if (output) {
+            var file_names = [];
+            for (let i = 0; i < output.length; i++) {
+                let output_json = null;
+                try {
+                    output_json = JSON.parse(output[i]);
+                } catch {
+                    output_json = null;
+                }
+                var modified_file_name = output_json ? output_json['title'] : null;
+                if (modified_file_name) file_names.push(modified_file_name);
             }
-        });
+
+            let is_playlist = file_names.length > 1;
+            if (!is_playlist) audiopath = file_names[0];
+            
+            var videopathEncoded = encodeURIComponent(file_names[0]);
+            res.send({
+                videopathEncoded: videopathEncoded,
+                file_names: is_playlist ? file_names : null
+            });
+            res.end("yes");
+        }
     });
 });
 
@@ -445,7 +458,7 @@ app.post('/deleteFile', function(req, res) {
 
 app.get('/video/:id', function(req , res){
     var head;
-    const path = "video/" + req.params.id + ".mp4";
+    const path = "video/" + req.params.id;
   const stat = fs.statSync(path)
   const fileSize = stat.size
   const range = req.headers.range
@@ -477,7 +490,7 @@ app.get('/video/:id', function(req , res){
 
 app.get('/audio/:id', function(req , res){
     var head;
-    const path = "audio/" + req.params.id + ".mp3";
+    const path = "audio/" + req.params.id;
   const stat = fs.statSync(path)
   const fileSize = stat.size
   const range = req.headers.range
@@ -506,7 +519,7 @@ app.get('/audio/:id', function(req , res){
     fs.createReadStream(path).pipe(res)
   }
   });
-
+  
 
 
 

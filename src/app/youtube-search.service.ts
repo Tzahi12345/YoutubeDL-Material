@@ -49,7 +49,6 @@ export class YoutubeSearchService {
       `maxResults=5`
     ].join('&')
     const queryUrl = `${this.url}?${params}`
-    console.log(queryUrl)
     return this.http.get(queryUrl).map(response => {
       return <any>response['items'].map(item => {
         return new Result({
