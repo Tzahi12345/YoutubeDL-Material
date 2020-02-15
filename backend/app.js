@@ -194,6 +194,40 @@ function deleteVideoFile(name) {
     fs.unlinkSync(jsonPath);
 }
 
+function getAudioInfos(fileNames) {
+    let result = [];
+    for (let i = 0; i < fileNames.length; i++) {
+        let fileName = fileNames[i];
+        let fileLocation = audioFolderPath+fileName+'.mp3.info.json';
+        if (fs.existsSync(fileLocation)) {
+            let data = fs.readFileSync(fileLocation);
+            try {
+                result.push(JSON.parse(data));
+            } catch {
+                console.log(`ERROR: Could not find info for file ${fileName}.mp3`);
+            }
+        }
+    }
+    return result;
+}
+
+function getVideoInfos(fileNames) {
+    let result = [];
+    for (let i = 0; i < fileNames.length; i++) {
+        let fileName = fileNames[i];
+        let fileLocation = videoFolderPath+fileName+'.info.json';
+        if (fs.existsSync(fileLocation)) {
+            let data = fs.readFileSync(fileLocation);
+            try {
+                result.push(JSON.parse(data));
+            } catch {
+                console.log(`ERROR: Could not find info for file ${fileName}.mp4`);
+            }
+        }
+    }
+    return result;
+}
+
 app.post('/tomp3', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
@@ -490,7 +524,8 @@ app.get('/video/:id', function(req , res){
 
 app.get('/audio/:id', function(req , res){
     var head;
-    const path = "audio/" + req.params.id;
+    let path = "audio/" + req.params.id;
+    path = path.replace(/\"/g, '\'');
   const stat = fs.statSync(path)
   const fileSize = stat.size
   const range = req.headers.range
@@ -519,7 +554,23 @@ app.get('/audio/:id', function(req , res){
     fs.createReadStream(path).pipe(res)
   }
   });
-  
+
+
+  app.post('/getVideoInfos', function(req, res) {
+    let fileNames = req.body.fileNames;
+    let type = req.body.type;
+    let result = null;
+    if (type === 'audio') {
+        result = getAudioInfos(fileNames)
+    } else if (type === 'video') {
+        result = getVideoInfos(fileNames);
+    }
+    res.send({
+        result: result,
+        success: !!result
+    })
+});
+
 
 
 
