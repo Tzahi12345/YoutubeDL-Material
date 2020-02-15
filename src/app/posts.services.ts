@@ -79,6 +79,10 @@ export class PostsService {
     downloadFileFromServer(fileName, type) {
         return this.http.post(this.path + 'downloadFile', {fileName: fileName, type: type}, {responseType: 'blob'});
     }
+
+    getFileInfo(fileNames, type) {
+        return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type});
+    }
 }
 
 

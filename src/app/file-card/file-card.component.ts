@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
 import {PostsService} from '../posts.services';
 import {MatSnackBar} from '@angular/material';
-import {AppComponent} from '../app.component';
 import {EventEmitter} from '@angular/core';
+import { MainComponent } from 'app/main/main.component';
 
 @Component({
   selector: 'app-file-card',
@@ -18,7 +18,7 @@ export class FileCardComponent implements OnInit {
   @Input() isAudio = true;
   @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public appComponent: AppComponent) { }
+  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) { }
 
   ngOnInit() {
   }

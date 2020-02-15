@@ -1,121 +1,15 @@
 <mat-toolbar color="primary" class="top">
-    <table width="100%" height="100%">
-        <td class="topbar" style="text-align: left; left:0px; font-size: 15px">
-        </td>
-        <td class="topbar" style="text-align: center">
-            <div style="margin-top: 14px">{{topBarTitle}}</div>
-        </td>
-        <td class="topbar" style="text-align: right">
+    <div class="flex-row" width="100%" height="100%">
+        <div class="flex-column" style="text-align: left; margin-top: 1px;">
+            <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
+        </div>
+        <div class="flex-column" style="text-align: center; margin-top: 5px;">
+            <div>{{topBarTitle}}</div>
+        </div>
+        <div class="flex-column" style="text-align: right">
 
-        </td>
-    </table>
+        </div>
+    </div>
 </mat-toolbar>
 
-<br/>
-
-<div class="big demo-basic">
-    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
-        <mat-card-title>
-            Youtube Downloader
-        </mat-card-title>
-        <mat-card-content>
-            <div style="position: relative;">
-                <form class="example-form">
-                    <mat-form-field class="example-full-width">
-                        <input matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required #urlinput>
-                        <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
-                        <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
-                    </mat-form-field>
-                    <span *ngIf="results_showing">
-                        <span *ngFor="let result of results">
-                            <mat-card style="height: 120px; border-radius: 0px">
-                                <div class="search-card-title">
-                                    {{result.title}}
-                                </div>
-                                <div style="font-size: 12px">
-                                    {{result.uploaded}}
-                                </div>
-                                <br/>
-                                <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">Use URL</button>
-                                <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">View</button>
-                            </mat-card>
-                        </span>
-                    </span>
-                </form>
-                <br/>
-                <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
-                
-            </div>
-        </mat-card-content>
-        <mat-card-actions>
-            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-stroked-button
-                color="primary">Download</button>
-        </mat-card-actions>
-    </mat-card>
-</div>
-<br/>
-<div class="centered big" id="bar_div" *ngIf="downloadingfile;else nofile">
-    <div [ngClass]="(determinateProgress && percentDownloaded === 100)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="determinateProgress;else indeterminateprogress">
-        <mat-progress-bar mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
-        <br/>
-    </div>
-    <div *ngIf="determinateProgress && percentDownloaded === 100" class="spinner">
-        <mat-spinner [diameter]="25"></mat-spinner>
-    </div>
-    <ng-template #indeterminateprogress>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </ng-template>
-    <br/>
-</div>
-<ng-template #nofile>
-
-</ng-template>
-<div style="margin: 20px" *ngIf="fileManagerEnabled">
-    <mat-accordion>
-        <mat-expansion-panel class="big">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Audio
-                </mat-panel-title>
-                <mat-panel-description>
-                    Your audio files are here
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <div *ngIf="mp3s.length > 0;else nomp3s">
-                <mat-grid-list (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
-                    <mat-grid-tile *ngFor="let file of mp3s; index as i;">
-                        <app-file-card (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
-                                [length]="file.duration" [isAudio]="true"></app-file-card>
-                    </mat-grid-tile>
-                </mat-grid-list>
-            </div>
-
-        </mat-expansion-panel>
-        <mat-expansion-panel class="big">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Video
-                </mat-panel-title>
-                <mat-panel-description>
-                    Your video files are here
-                </mat-panel-description>
-            </mat-expansion-panel-header>
-            <div *ngIf="mp4s.length > 0;else nomp4s">
-                <mat-grid-list (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
-                    <mat-grid-tile *ngFor="let file of mp4s; index as i;">
-                        <app-file-card (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
-                            [length]="file.duration" [isAudio]="false"></app-file-card>
-                    </mat-grid-tile>
-                </mat-grid-list>
-            </div>
-        </mat-expansion-panel>
-    </mat-accordion>
-</div>
-
-<ng-template #nomp3s>
-
-</ng-template>
-
-<ng-template #nomp4s>
-
-</ng-template>
+<router-outlet></router-outlet>

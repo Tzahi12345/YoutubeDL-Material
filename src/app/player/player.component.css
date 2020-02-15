@@ -1,0 +1,19 @@
+.video-player {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.audio-styles {
+    height: 50px;
+    background-color: transparent;
+}
+
+.video-styles {
+
+}
+
+::ng-deep .mat-button-toggle-label-content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

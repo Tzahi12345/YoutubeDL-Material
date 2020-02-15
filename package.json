@@ -30,6 +30,7 @@
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.0.0-rc.0",
     "tslib": "^1.10.0",
+    "videogular2": "^7.0.1",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
@@ -37,6 +38,7 @@
     "@angular/cli": "^8.3.12",
     "@angular/compiler-cli": "^8.2.11",
     "@angular/language-service": "^8.2.11",
+    "@types/core-js": "^2.5.2",
     "@types/file-saver": "^2.0.1",
     "@types/jasmine": "2.5.45",
     "@types/node": "~6.0.60",

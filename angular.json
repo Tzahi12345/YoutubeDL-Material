@@ -24,7 +24,8 @@
               "src/backend"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "../node_modules/videogular2/fonts/videogular.css"
             ],
             "scripts": []
           },
@@ -74,7 +75,8 @@
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "../node_modules/videogular2/fonts/videogular.css"
             ],
             "assets": [
               "src/assets",
