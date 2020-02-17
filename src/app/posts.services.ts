@@ -60,8 +60,10 @@ export class PostsService {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');
         }
-        console.log('Config location: ' + window.location.href + 'backend/config/default.json');
-        return this.http.get(window.location.href + 'backend/config/default.json');
+        const locations = window.location.href.split('#');
+        const current_location = locations[0];
+        console.log('Config location: ' + current_location + 'backend/config/default.json');
+        return this.http.get(current_location + 'backend/config/default.json');
     }
 
     deleteFile(name: string, isAudio: boolean) {

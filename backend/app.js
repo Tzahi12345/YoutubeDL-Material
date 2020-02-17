@@ -196,7 +196,7 @@ function deleteAudioFile(name) {
                 for (let i = 0; i < descriptors[name].length; i++) {
                     descriptors[name][i].destroy();
                 }
-            } catch {
+            } catch(e) {
 
             }
         } 
@@ -235,7 +235,7 @@ async function deleteVideoFile(name) {
                 for (let i = 0; i < descriptors[name].length; i++) {
                     descriptors[name][i].destroy();
                 }
-            } catch {
+            } catch(e) {
 
             }
         } 
@@ -268,7 +268,7 @@ function getAudioInfos(fileNames) {
             let data = fs.readFileSync(fileLocation);
             try {
                 result.push(JSON.parse(data));
-            } catch {
+            } catch(e) {
                 console.log(`ERROR: Could not find info for file ${fileName}.mp3`);
             }
         }
@@ -285,7 +285,7 @@ function getVideoInfos(fileNames) {
             let data = fs.readFileSync(fileLocation);
             try {
                 result.push(JSON.parse(data));
-            } catch {
+            } catch(e) {
                 console.log(`ERROR: Could not find info for file ${fileName}.mp4`);
             }
         }
@@ -306,8 +306,7 @@ async function getUrlInfos(urls) {
             try {
                 try_putput = JSON.parse(output);
                 result = try_putput;
-            }
-            catch {
+            } catch(e) {
                 // probably multiple urls
                 console.log('failed to parse');
                 console.log(output);
@@ -356,17 +355,15 @@ app.post('/tomp3', function(req, res) {
                 let output_json = null;
                 try {
                     output_json = JSON.parse(output[i]);
-                } catch {
+                } catch(e) {
                     output_json = null;
                 }
                 if (!output_json) {
                     // only run on first go
                     return;
                 }
-                var modified_file_name = output_json ? output_json['title'] : null;
-                var file_path = output_json['_filename'].split('\\');
-                var alternate_file_name = file_path[file_path.length - 1];
-                alternate_file_name = alternate_file_name.substring(0, alternate_file_name.length-4);
+                var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
+                var alternate_file_name = file_name.substring(0, file_name.length-4);
                 if (alternate_file_name) file_names.push(alternate_file_name);
             }
 
@@ -415,25 +412,24 @@ app.post('/tomp4', function(req, res) {
                 let output_json = null;
                 try {
                     output_json = JSON.parse(output[i]);
-                } catch {
+                } catch(e) {
                     output_json = null;
                 }
                 var modified_file_name = output_json ? output_json['title'] : null;
                 if (!output_json) {
                     continue;
                 } 
-                var file_path = output_json['_filename'].split('\\');
+                var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
 
                 // renames file if necessary due to bug
                 if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
                     try {
                         fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
-                        console.log('Renamed ' + file_path + '.webm to ' + file_path);
-                    } catch {
+                        console.log('Renamed ' + file_name + '.webm to ' + file_name);
+                    } catch(e) {
                     }
                 }
-                var alternate_file_name = file_path[file_path.length - 1];
-                alternate_file_name = alternate_file_name.substring(0, alternate_file_name.length-4);
+                var alternate_file_name = file_name.substring(0, file_name.length-4);
                 if (alternate_file_name) file_names.push(alternate_file_name);
             }
 
