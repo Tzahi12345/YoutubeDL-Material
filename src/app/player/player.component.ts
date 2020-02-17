@@ -66,7 +66,6 @@ export class PlayerComponent implements OnInit {
           src: fullLocation,
           type: fileType
         }
-        console.log(mediaObject);
         this.playlist.push(mediaObject);
       }
       this.currentItem = this.playlist[this.currentIndex];
@@ -103,7 +102,7 @@ export class PlayerComponent implements OnInit {
   }
 
   onClickPlaylistItem(item: IMedia, index: number) {
-    console.log('new current item is ' + item.title + ' at index ' + index);
+      // console.log('new current item is ' + item.title + ' at index ' + index);
       this.currentIndex = index;
       this.currentItem = item;
   }
