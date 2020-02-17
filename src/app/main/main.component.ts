@@ -227,8 +227,6 @@ export class MainComponent implements OnInit {
   }
 
   public removeFromMp4(name: string) {
-    // console.log(name);
-    // console.log(this.mp4s);
     for (let i = 0; i < this.mp4s.length; i++) {
       if (this.mp4s[i].id === name) {
         this.mp4s.splice(i, 1);
@@ -332,9 +330,7 @@ export class MainComponent implements OnInit {
         const cachedFormatsExists = this.cachedAvailableFormats[this.url];
         if (cachedFormatsExists) {
           const video_formats = this.cachedAvailableFormats[this.url]['video'];
-          if (video_formats['best_audio_format'] && this.selectedQuality !== ''/* &&
-              video_formats[this.selectedQuality]['acodec'] === 'none'*/) {
-                console.log(this.selectedQuality);
+          if (video_formats['best_audio_format'] && this.selectedQuality !== '') {
               customQualityConfiguration = video_formats[this.selectedQuality]['format_id'] + '+' + video_formats['best_audio_format'];
           }
         }
@@ -446,15 +442,12 @@ export class MainComponent implements OnInit {
   }
 
   getURLInfo(url) {
-    console.log(this.cachedAvailableFormats[url]);
     if (!(this.cachedAvailableFormats[url])) {
       this.formats_loading = true;
-      console.log('has no cached formats available');
       this.postsService.getFileInfo([url], 'irrelevant', true).subscribe(res => {
         if (url === this.url) { this.formats_loading = false; }
         const infos = res['result'];
         const parsed_infos = this.getAudioAndVideoFormats(infos.formats);
-        console.log('got formats for ' + url);
         const available_formats = {audio: parsed_infos[0], video: parsed_infos[1]};
         this.cachedAvailableFormats[url] = available_formats;
       });
@@ -471,7 +464,6 @@ export class MainComponent implements OnInit {
       .switch()                                  // act on the return of the search
       .subscribe(
         (results: Result[]) => {
-          // console.log(results);
           this.results_loading = false;
           if (results && results.length > 0) {
             this.results = results;
@@ -510,7 +502,6 @@ export class MainComponent implements OnInit {
       const format_type = (format.vcodec === 'none') ? 'audio' : 'video';
 
       format_obj.type = format_type;
-      // console.log(format);
       if (format_obj.type === 'audio' && format.abr) {
         const key = format.abr.toString() + 'K';
         format_obj['bitrate'] = format.abr;

@@ -391,8 +391,6 @@ app.post('/tomp4', function(req, res) {
     var selectedHeight = req.body.selectedHeight;
     var customQualityConfiguration = req.body.customQualityConfiguration;
 
-    // console.log(selectedHeight);
-
     let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
 
     if (customQualityConfiguration) {
@@ -422,11 +420,7 @@ app.post('/tomp4', function(req, res) {
                 }
                 var modified_file_name = output_json ? output_json['title'] : null;
                 if (!output_json) {
-                    // only get the first result
-                    // console.log(output_json);
-                    // console.log(output);
                     continue;
-                    res.sendStatus(500);
                 } 
                 var file_path = output_json['_filename'].split('\\');
 
@@ -654,7 +648,7 @@ app.get('/video/:id', function(req , res){
     file.on('close', function() {
         let index = descriptors[req.params.id].indexOf(file);
         descriptors[req.params.id].splice(index, 1);
-        console.log('Successfully closed stream and removed file reference.');
+        if (debugMode) console.log('Successfully closed stream and removed file reference.');
     });
     head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -694,7 +688,7 @@ app.get('/audio/:id', function(req , res){
     file.on('close', function() {
         let index = descriptors[req.params.id].indexOf(file);
         descriptors[req.params.id].splice(index, 1);
-        console.log('Successfully closed stream and removed file reference.');
+        if (debugMode) console.log('Successfully closed stream and removed file reference.');
     });
     head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -720,7 +714,6 @@ app.get('/audio/:id', function(req , res){
     let urlMode = !!req.body.urlMode;
     let type = req.body.type;
     let result = null;
-    // console.log(urlMode);
     if (!urlMode) {
         if (type === 'audio') {
             result = getAudioInfos(fileNames)
