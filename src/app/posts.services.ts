@@ -36,12 +36,16 @@ export class PostsService {
         return this.http.get(this.startPath + 'audiofolder');
     }
 
-    makeMP3(url: string) {
-        return this.http.post(this.path + 'tomp3', {url: url});
+    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string) {
+        return this.http.post(this.path + 'tomp3', {url: url,
+                                                    maxBitrate: selectedQuality,
+                                                    customQualityConfiguration: customQualityConfiguration});
     }
 
-    makeMP4(url: string) {
-        return this.http.post(this.path + 'tomp4', {url: url});
+    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string) {
+        return this.http.post(this.path + 'tomp4', {url: url,
+                                                    selectedHeight: selectedQuality,
+                                                    customQualityConfiguration: customQualityConfiguration});
     }
 
     getFileStatusMp3(name: string) {
@@ -80,8 +84,8 @@ export class PostsService {
         return this.http.post(this.path + 'downloadFile', {fileName: fileName, type: type}, {responseType: 'blob'});
     }
 
-    getFileInfo(fileNames, type) {
-        return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type});
+    getFileInfo(fileNames, type, urlMode) {
+        return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode});
     }
 }
 
