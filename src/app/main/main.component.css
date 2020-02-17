@@ -36,6 +36,10 @@ mat-toolbar.top {
     width: 100%;
 }
 
+.example-80-width {
+    width: 80%
+}
+
 mat-form-field.mat-form-field {
     font-size: 24px;
   }
@@ -65,4 +69,16 @@ mat-form-field.mat-form-field {
     position: absolute;
     right: -10px;
     top: 5px;
+}
+
+.spinner-div {
+    display: inline-block;
+    position: absolute;
+    top: 15px;
+    right: -40px;
+}
+
+.margined {
+    margin-left: 20px;
+    margin-right: 20px;
 }

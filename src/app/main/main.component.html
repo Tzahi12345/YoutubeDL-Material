@@ -7,11 +7,32 @@
         <mat-card-content>
             <div style="position: relative;">
                 <form class="example-form">
-                    <mat-form-field class="example-full-width">
-                        <input matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" placeholder="URL" type="url" name="url" [formControl]="urlForm" required #urlinput>
-                        <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
-                        <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
-                    </mat-form-field>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12 col-sm-9">
+                                <mat-form-field class="example-full-width">
+                                    <input style="padding-right: 25px;" matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" [formControl]="urlForm" required #urlinput>
+                                    <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
+                                    <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-7 col-sm-3">
+                                <mat-form-field style="display: inline-block; width: inherit; min-width: 120px;">
+                                    <mat-label>Quality</mat-label>
+                                    <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality">
+                                      <ng-container *ngFor="let option of qualityOptions[(audioOnly) ? 'audio' : 'video']">
+                                        <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url] && cachedAvailableFormats[url][(audioOnly) ? 'audio' : 'video'][option.value]" [value]="option.value">
+                                            {{option.label}}
+                                        </mat-option>
+                                      </ng-container>
+                                    </mat-select>
+                                    <div class="spinner-div" *ngIf="formats_loading && !cachedAvailableFormats[url]">
+                                        <mat-spinner [diameter]="25"></mat-spinner>
+                                    </div>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
                     <span *ngIf="results_showing">
                         <span *ngFor="let result of results">
                             <mat-card style="height: 120px; border-radius: 0px">
@@ -29,7 +50,7 @@
                     </span>
                 </form>
                 <br/>
-                <mat-checkbox [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
+                <mat-checkbox (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
                 
             </div>
         </mat-card-content>
@@ -41,16 +62,18 @@
 </div>
 <br/>
 <div class="centered big" id="bar_div" *ngIf="downloadingfile;else nofile">
-    <div [ngClass]="(determinateProgress && percentDownloaded === 100)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="determinateProgress;else indeterminateprogress">
-        <mat-progress-bar mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
-        <br/>
+    <div class="margined">
+        <div [ngClass]="(determinateProgress && percentDownloaded === 100)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="determinateProgress;else indeterminateprogress">
+            <mat-progress-bar mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
+            <br/>
+        </div>
+        <div *ngIf="determinateProgress && percentDownloaded === 100" class="spinner">
+            <mat-spinner [diameter]="25"></mat-spinner>
+        </div>
+        <ng-template #indeterminateprogress>
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-template>
     </div>
-    <div *ngIf="determinateProgress && percentDownloaded === 100" class="spinner">
-        <mat-spinner [diameter]="25"></mat-spinner>
-    </div>
-    <ng-template #indeterminateprogress>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </ng-template>
     <br/>
 </div>
 <ng-template #nofile>
