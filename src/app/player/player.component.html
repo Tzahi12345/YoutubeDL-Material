@@ -1,14 +1,17 @@
 <div *ngIf="playlist.length > 0; else loading">
-    <vg-player (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
-        <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
-        </video>
-    </vg-player>
-
-    <br/>
-
-    <div style="width: 100%;">
-        <mat-button-toggle-group style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
-            <mat-button-toggle *ngFor="let name of fileNames; let i = index" [checked]="currentItem.title === name" (click)="onClickPlaylistItem(playlist[i], i)" class="toggle-button" [value]="name">{{name}}</mat-button-toggle>
-        </mat-button-toggle-group>
+    <div [ngClass]="(type === 'audio') ? null : 'container-video'" class="container">
+        <div class="row">
+            <div [ngClass]="(type === 'audio') ? 'my-2 px-1' : null" class="col px-1">
+                <vg-player (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
+                    <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
+                    </video>
+                </vg-player>
+            </div>
+            <div class="col-12 my-2">
+                <mat-button-toggle-group style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
+                    <mat-button-toggle *ngFor="let name of fileNames; let i = index" [checked]="currentItem.title === name" (click)="onClickPlaylistItem(playlist[i], i)" class="toggle-button" [value]="name">{{decodeURI(name)}}</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+        </div>
     </div>
 </div>

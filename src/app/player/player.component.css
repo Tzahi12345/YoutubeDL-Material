@@ -1,19 +1,25 @@
 .video-player {
-    width: 100%;
     margin: 0 auto;
 }
 
 .audio-styles {
     height: 50px;
     background-color: transparent;
+    width: 100%;
 }
 
 .video-styles {
-
+    width: 80%;
 }
 
 ::ng-deep .mat-button-toggle-label-content {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+
+.container-video {
+    max-width: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { VgAPI } from 'videogular2/compiled/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute } from '@angular/router';
@@ -29,8 +29,16 @@ export class PlayerComponent implements OnInit {
   baseStreamPath = null;
   audioFolderPath = null;
   videoFolderPath = null;
+  innerWidth: number;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.innerWidth = window.innerWidth;
+  }
 
   ngOnInit(): void {
+    this.innerWidth = window.innerWidth;
+
     this.fileNames = this.route.snapshot.paramMap.get('fileNames').split('|nvr|');
     this.type = this.route.snapshot.paramMap.get('type');
 
@@ -52,7 +60,7 @@ export class PlayerComponent implements OnInit {
       for (let i = 0; i < this.fileNames.length; i++) {
         const fileName = this.fileNames[i];
         const baseLocation = (this.type === 'audio') ? this.audioFolderPath : this.videoFolderPath;
-        const fullLocation = this.baseStreamPath + baseLocation + fileName + (this.type === 'audio' ? '.mp3' : '.mp4');
+        const fullLocation = this.baseStreamPath + baseLocation + fileName; // + (this.type === 'audio' ? '.mp3' : '.mp4');
         const mediaObject: IMedia = {
           title: fileName,
           src: fullLocation,
@@ -64,11 +72,12 @@ export class PlayerComponent implements OnInit {
       this.currentItem = this.playlist[this.currentIndex];
     });
 
-    this.getFileInfos();
+    // this.getFileInfos();
 
   }
 
   constructor(private postsService: PostsService, private route: ActivatedRoute) {
+
   }
 
   onPlayerReady(api: VgAPI) {
@@ -100,9 +109,13 @@ export class PlayerComponent implements OnInit {
   }
 
   getFileInfos() {
-    this.postsService.getFileInfo(this.fileNames, this.type).subscribe(res => {
+    this.postsService.getFileInfo(this.fileNames, this.type, false).subscribe(res => {
 
     });
+  }
+
+  decodeURI(string) {
+    return decodeURI(string);
   }
 
 }
