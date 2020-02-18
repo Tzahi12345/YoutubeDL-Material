@@ -402,7 +402,7 @@ export class MainComponent implements OnInit {
   }
 
   inputChanged(new_val) {
-    if (new_val === '') {
+    if (new_val === '' || !new_val) {
       this.results_showing = false;
     } else {
       if (this.ValidURL(new_val)) {
@@ -465,7 +465,7 @@ export class MainComponent implements OnInit {
       .subscribe(
         (results: Result[]) => {
           this.results_loading = false;
-          if (results && results.length > 0) {
+          if (this.url !== '' && results && results.length > 0) {
             this.results = results;
             this.results_showing = true;
           } else {
