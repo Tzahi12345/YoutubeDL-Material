@@ -31,6 +31,8 @@ export class PlayerComponent implements OnInit {
   videoFolderPath = null;
   innerWidth: number;
 
+  downloading = false;
+
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.innerWidth = window.innerWidth;
@@ -47,6 +49,12 @@ export class PlayerComponent implements OnInit {
       this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
+      const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
+
+      this.postsService.path = backendUrl;
+      this.postsService.startPath = backendUrl;
+      this.postsService.startPathSSL = backendUrl;
+
       let fileType = null;
       if (this.type === 'audio') {
         fileType = 'audio/mp3';
@@ -115,6 +123,38 @@ export class PlayerComponent implements OnInit {
 
   decodeURI(string) {
     return decodeURI(string);
+  }
+
+  downloadContent() {
+    const fileNames = [];
+    for (let i = 0; i < this.playlist.length; i++) {
+      fileNames.push(this.playlist[i].title);
+    }
+
+    const zipName = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
+    this.downloading = true;
+    this.postsService.downloadFileFromServer(fileNames, this.type, zipName).subscribe(res => {
+      this.downloading = false;
+      const blob: Blob = res;
+      saveAs(blob, zipName + '.zip');
+    }, err => {
+      console.log(err);
+      this.downloading = false;
+    });
+  }
+
+  downloadFile() {
+    const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
+    const filename = this.playlist[0].title;
+    this.downloading = true;
+    this.postsService.downloadFileFromServer(filename, this.type).subscribe(res => {
+      this.downloading = false;
+      const blob: Blob = res;
+      saveAs(blob, filename + ext);
+    }, err => {
+      console.log(err);
+      this.downloading = false;
+    });
   }
 
 }

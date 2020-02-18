@@ -1,7 +1,7 @@
 <div *ngIf="playlist.length > 0">
     <div [ngClass]="(type === 'audio') ? null : 'container-video'" class="container">
-        <div class="row">
-            <div [ngClass]="(type === 'audio') ? 'my-2 px-1' : null" class="col px-1">
+        <div style="max-width: 100%; margin-left: 0px;" class="row">
+            <div [ngClass]="(type === 'audio') ? 'my-2 px-1' : 'video-col'" class="col">
                 <vg-player (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
                     <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
                     </video>
@@ -13,5 +13,12 @@
                 </mat-button-toggle-group>
             </div>
         </div>
+    </div>
+
+    <div *ngIf="playlist.length > 1">
+        <button class="save-button" color="primary" (click)="downloadContent()" [disabled]="downloading" mat-fab><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
+    </div>
+    <div *ngIf="playlist.length === 1">
+        <button class="save-button" color="primary" (click)="downloadFile()" [disabled]="downloading" mat-fab><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
     </div>
 </div>
