@@ -44,7 +44,18 @@
     bottom: 25px;
 }
 
+.favorite-button {
+    left: 25px;
+    position: absolute;
+    bottom: 25px;
+}
+
 .video-col {
     padding-right: 0px;
     padding-left: 0.01px;
+}
+
+.save-icon {
+    bottom: 1px;
+    position: relative;
 }

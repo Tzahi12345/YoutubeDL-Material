@@ -1,7 +1,9 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
 import { VgAPI } from 'videogular2/compiled/core';
 import { PostsService } from 'app/posts.services';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog, MatSnackBar } from '@angular/material';
+import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 
 export interface IMedia {
   title: string;
@@ -33,6 +35,8 @@ export class PlayerComponent implements OnInit {
 
   downloading = false;
 
+  id = null;
+
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.innerWidth = window.innerWidth;
@@ -43,6 +47,7 @@ export class PlayerComponent implements OnInit {
 
     this.fileNames = this.route.snapshot.paramMap.get('fileNames').split('|nvr|');
     this.type = this.route.snapshot.paramMap.get('type');
+    this.id = this.route.snapshot.paramMap.get('id');
 
     // loading config
     this.postsService.loadNavItems().subscribe(result => { // loads settings
@@ -83,7 +88,8 @@ export class PlayerComponent implements OnInit {
 
   }
 
-  constructor(private postsService: PostsService, private route: ActivatedRoute) {
+  constructor(private postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
+              public snackBar: MatSnackBar) {
 
   }
 
@@ -154,6 +160,59 @@ export class PlayerComponent implements OnInit {
     }, err => {
       console.log(err);
       this.downloading = false;
+    });
+  }
+
+  namePlaylistDialog() {
+    const done = new EventEmitter<any>();
+      const dialogRef = this.dialog.open(InputDialogComponent, {
+        width: '300px',
+        data: {
+          inputTitle: 'Name the playlist',
+          inputPlaceholder: 'Name',
+          submitText: 'Favorite',
+          doneEmitter: done
+        }
+      });
+
+      done.subscribe(name => {
+
+        // Eventually do additional checks on name
+        if (name) {
+          this.postsService.createPlaylist(name, this.fileNames, this.type, null).subscribe(res => {
+            if (res['success']) {
+              dialogRef.close();
+              const new_playlist = res['new_playlist'];
+              this.openSnackBar('Playlist \'' + name + '\' successfully created!', '')
+              this.playlistPostCreationHandler(new_playlist.id);
+            }
+          });
+        }
+      });
+  }
+
+  /*
+  createPlaylist(name) {
+    this.postsService.createPlaylist(name, this.fileNames, this.type, null).subscribe(res => {
+      if (res['success']) {
+        console.log('Success!');
+      }
+    });
+  }
+  */
+
+  playlistPostCreationHandler(playlistID) {
+    // changes the route without moving from the current view or
+    // triggering a navigation event
+    this.id = playlistID;
+    console.log(this.router.url);
+    this.router.navigateByUrl(this.router.url + ';id=' + playlistID);
+  }
+
+  // snackbar helper
+  public openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 2000,
     });
   }
 

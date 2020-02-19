@@ -16,9 +16,10 @@
     </div>
 
     <div *ngIf="playlist.length > 1">
-        <button class="save-button" color="primary" (click)="downloadContent()" [disabled]="downloading" mat-fab><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
+        <button class="save-button" color="primary" (click)="downloadContent()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
+        <button *ngIf="!id" color="accent" class="favorite-button" color="primary" (click)="namePlaylistDialog()" mat-fab><mat-icon class="save-icon">favorite</mat-icon></button>
     </div>
     <div *ngIf="playlist.length === 1">
-        <button class="save-button" color="primary" (click)="downloadFile()" [disabled]="downloading" mat-fab><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
+        <button class="save-button" color="primary" (click)="downloadFile()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
     </div>
 </div>
