@@ -301,6 +301,10 @@ export class MainComponent implements OnInit {
   // app initialization.
   ngOnInit() {
     this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
+
+    if (localStorage.getItem('audioOnly') !== null) {
+      this.audioOnly = localStorage.getItem('audioOnly') === 'true';
+    }
   }
 
   // download helpers
@@ -553,6 +557,7 @@ export class MainComponent implements OnInit {
 
   videoModeChanged(new_val) {
     this.selectedQuality = '';
+    localStorage.setItem('audioOnly', new_val.checked.toString());
   }
 
   getAudioAndVideoFormats(formats): any[] {
