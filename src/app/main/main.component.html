@@ -91,10 +91,17 @@
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngIf="mp3s.length > 0;else nomp3s">
-                <mat-grid-list (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
+                <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp3s; index as i;">
                         <app-file-card (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                                 [length]="file.duration" [isAudio]="true"></app-file-card>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <mat-divider *ngIf="playlists.audio.length > 0"></mat-divider>
+                <mat-grid-list *ngIf="playlists.audio.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
+                    <mat-grid-tile *ngFor="let playlist of playlists.audio; let i = index;">
+                        <app-file-card (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
+                            [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>
@@ -110,10 +117,17 @@
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngIf="mp4s.length > 0;else nomp4s">
-                <mat-grid-list (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
+                <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp4s; index as i;">
                         <app-file-card (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                             [length]="file.duration" [isAudio]="false"></app-file-card>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <mat-divider *ngIf="playlists.video.length > 0"></mat-divider>
+                <mat-grid-list *ngIf="playlists.video.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
+                    <mat-grid-tile *ngFor="let playlist of playlists.video; let i = index;">
+                        <app-file-card (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
+                            [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>

@@ -82,12 +82,27 @@ export class PostsService {
         return this.http.post(this.path + 'getMp4s', {});
     }
 
-    downloadFileFromServer(fileName, type) {
-        return this.http.post(this.path + 'downloadFile', {fileName: fileName, type: type}, {responseType: 'blob'});
+    downloadFileFromServer(fileName, type, outputName = null) {
+        return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
+                                                            type: type,
+                                                            is_playlist: Array.isArray(fileName),
+                                                            outputName: outputName},
+                                                          {responseType: 'blob'});
     }
 
     getFileInfo(fileNames, type, urlMode) {
         return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode});
+    }
+
+    createPlaylist(playlistName, fileNames, type, thumbnailURL) {
+        return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
+                                                            fileNames: fileNames,
+                                                            type: type,
+                                                            thumbnailURL: thumbnailURL});
+    }
+
+    removePlaylist(playlistID, type) {
+        return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type});
     }
 }
 

@@ -5,7 +5,8 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
   MatProgressBarModule, MatExpansionModule,
   MatGridList,
   MatProgressSpinnerModule,
-  MatButtonToggleModule} from '@angular/material';
+  MatButtonToggleModule,
+  MatDialogModule} from '@angular/material';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -22,13 +23,15 @@ import {VgCoreModule} from 'videogular2/compiled/core';
 import {VgControlsModule} from 'videogular2/compiled/controls';
 import {VgOverlayPlayModule} from 'videogular2/compiled/overlay-play';
 import {VgBufferingModule} from 'videogular2/compiled/buffering';
+import { InputDialogComponent } from './input-dialog/input-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FileCardComponent,
     MainComponent,
-    PlayerComponent
+    PlayerComponent,
+    InputDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -54,12 +57,16 @@ import {VgBufferingModule} from 'videogular2/compiled/buffering';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
+    MatDialogModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,
     VgBufferingModule,
     RouterModule,
     AppRoutingModule
+  ],
+  entryComponents: [
+    InputDialogComponent
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]

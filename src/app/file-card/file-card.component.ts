@@ -17,21 +17,30 @@ export class FileCardComponent implements OnInit {
   @Input() thumbnailURL: string;
   @Input() isAudio = true;
   @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
+  @Input() isPlaylist = false;
+  @Input() count = null;
+  type;
 
   constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) { }
 
   ngOnInit() {
+    this.type = this.isAudio ? 'audio' : 'video';
   }
 
   deleteFile() {
-    this.postsService.deleteFile(this.name, this.isAudio).subscribe(result => {
-      if (result === true) {
-        this.openSnackBar('Delete success!', 'OK.');
-        this.removeFile.emit(this.name);
-      } else {
-        this.openSnackBar('Delete failed!', 'OK.');
-      }
-    });
+    if (!this.isPlaylist) {
+      this.postsService.deleteFile(this.name, this.isAudio).subscribe(result => {
+        if (result === true) {
+          this.openSnackBar('Delete success!', 'OK.');
+          this.removeFile.emit(this.name);
+        } else {
+          this.openSnackBar('Delete failed!', 'OK.');
+        }
+      });
+    } else {
+      this.removeFile.emit(this.name);
+    }
+
   }
 
   public openSnackBar(message: string, action: string) {

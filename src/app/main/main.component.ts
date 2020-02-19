@@ -51,6 +51,8 @@ export class MainComponent implements OnInit {
   mp3s: any[] = [];
   mp4s: any[] = [];
   files_cols = (window.innerWidth <= 450) ? 2 : 4;
+  playlists = {'audio': [], 'video': []};
+  playlist_thumbnails = {};
 
   urlForm = new FormControl('', [Validators.required]);
 
@@ -194,7 +196,23 @@ export class MainComponent implements OnInit {
   getMp3s() {
     this.postsService.getMp3s().subscribe(result => {
       const mp3s = result['mp3s'];
+      const playlists = result['playlists'];
       this.mp3s = mp3s;
+      this.playlists.audio = playlists;
+
+      // get thumbnail url by using first video. this is a temporary hack
+      for (let i = 0; i < this.playlists.audio.length; i++) {
+        const playlist = this.playlists.audio[i];
+        let videoToExtractThumbnail = null;
+        for (let j = 0; j < this.mp3s.length; j++) {
+          if (this.mp3s[j].id === playlist.fileNames[0]) {
+            // found the corresponding file
+            videoToExtractThumbnail = this.mp3s[j];
+          }
+        }
+
+        this.playlist_thumbnails[playlist.id] = videoToExtractThumbnail.thumbnailURL;
+      }
     }, error => {
       console.log(error);
     });
@@ -203,7 +221,23 @@ export class MainComponent implements OnInit {
   getMp4s() {
     this.postsService.getMp4s().subscribe(result => {
       const mp4s = result['mp4s'];
+      const playlists = result['playlists'];
       this.mp4s = mp4s;
+      this.playlists.video = playlists;
+
+      // get thumbnail url by using first video. this is a temporary hack
+      for (let i = 0; i < this.playlists.video.length; i++) {
+        const playlist = this.playlists.video[i];
+        let videoToExtractThumbnail = null;
+        for (let j = 0; j < this.mp4s.length; j++) {
+          if (this.mp4s[j].id === playlist.fileNames[0]) {
+            // found the corresponding file
+            videoToExtractThumbnail = this.mp4s[j];
+          }
+        }
+
+        this.playlist_thumbnails[playlist.id] = videoToExtractThumbnail.thumbnailURL;
+      }
     },
     error => {
       console.log(error);
@@ -218,12 +252,32 @@ export class MainComponent implements OnInit {
     }
   }
 
+  public goToPlaylist(playlistID, type) {
+    for (let i = 0; i < this.playlists[type].length; i++) {
+      const playlist = this.playlists[type][i];
+      if (playlist.id === playlistID) {
+        // found the playlist, now go to it
+        const fileNames = playlist.fileNames;
+        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID}]);
+      }
+    }
+  }
+
   public removeFromMp3(name: string) {
     for (let i = 0; i < this.mp3s.length; i++) {
       if (this.mp3s[i].id === name) {
         this.mp3s.splice(i, 1);
       }
     }
+  }
+
+  public removePlaylistMp3(playlistID, index) {
+    this.postsService.removePlaylist(playlistID, 'audio').subscribe(res => {
+      if (res['success']) {
+        this.playlists.audio.splice(index, 1);
+      }
+      this.getMp3s();
+    });
   }
 
   public removeFromMp4(name: string) {
@@ -233,6 +287,16 @@ export class MainComponent implements OnInit {
       }
     }
   }
+
+  public removePlaylistMp4(playlistID, index) {
+    this.postsService.removePlaylist(playlistID, 'video').subscribe(res => {
+      if (res['success']) {
+        this.playlists.video.splice(index, 1);
+      }
+      this.getMp4s();
+    });
+  }
+
 
   // app initialization.
   ngOnInit() {

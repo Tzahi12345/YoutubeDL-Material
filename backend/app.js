@@ -6,9 +6,23 @@ var config = require('config');
 var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
+var archiver = require('archiver');
+const low = require('lowdb')
+var URL = require('url').URL;
+const shortid = require('shortid')
+
 var app = express();
 
-var URL = require('url').URL;
+const FileSync = require('lowdb/adapters/FileSync')
+const adapter = new FileSync('db.json');
+const db = low(adapter)
+
+// Set some defaults
+db.defaults({ playlists: {
+    audio: [],
+    video: []
+}}).write();
+
 
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
@@ -178,6 +192,44 @@ function getVideoFormatID(name)
         var format = obj.format.substring(0,3);
         return format;
     }
+}
+
+async function createPlaylistZipFile(fileNames, type, outputName) {
+    return new Promise(async resolve => {
+        let zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
+        // let name = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
+        let ext = (type === 'audio') ? '.mp3' : '.mp4';
+
+        let output = fs.createWriteStream(path.join(zipFolderPath, outputName + '.zip'));
+
+        var archive = archiver('zip', {
+            gzip: true,
+            zlib: { level: 9 } // Sets the compression level.
+        });
+        
+        archive.on('error', function(err) {
+            console.log(err);
+            throw err;
+        });
+        
+        // pipe archive data to the output file
+        archive.pipe(output);
+
+        for (let i = 0; i < fileNames.length; i++) {
+            let fileName = fileNames[i];
+            archive.file(zipFolderPath + fileName + ext, {name: fileName + ext})
+        }
+
+        await archive.finalize();
+
+        // wait a tiny bit for the zip to reload in fs
+        setTimeout(function() {
+            resolve(path.join(zipFolderPath,outputName + '.zip'));
+        }, 100);
+        
+    });
+    
+
 }
 
 function deleteAudioFile(name) {
@@ -491,6 +543,7 @@ app.post('/fileStatusMp4', function(req, res) {
 // gets all download mp3s
 app.post('/getMp3s', function(req, res) {
     var mp3s = [];
+    var playlists = db.get('playlists.audio').value();
     var fullpath = audioFolderPath;
     var files = fs.readdirSync(audioFolderPath);
     
@@ -519,7 +572,8 @@ app.post('/getMp3s', function(req, res) {
     }
 
     res.send({
-        mp3s: mp3s
+        mp3s: mp3s,
+        playlists: playlists
     });
     res.end("yes");
 });
@@ -527,6 +581,7 @@ app.post('/getMp3s', function(req, res) {
 // gets all download mp4s
 app.post('/getMp4s', function(req, res) {
     var mp4s = [];
+    var playlists = db.get('playlists.video').value();
     var fullpath = videoFolderPath;
     var files = fs.readdirSync(videoFolderPath);
     
@@ -555,9 +610,54 @@ app.post('/getMp4s', function(req, res) {
     }
 
     res.send({
-        mp4s: mp4s
+        mp4s: mp4s,
+        playlists: playlists
     });
     res.end("yes");
+});
+
+app.post('/createPlaylist', async (req, res) => {
+    let playlistName = req.body.playlistName;
+    let fileNames = req.body.fileNames;
+    let type = req.body.type;
+    let thumbnailURL = req.body.thumbnailURL;
+
+    let new_playlist = {
+        'name': playlistName,
+        fileNames: fileNames,
+        id: shortid.generate(),
+        thumbnailURL: thumbnailURL
+    };
+
+    db.get(`playlists.${type}`)
+      .push(new_playlist)
+      .write();
+    
+    res.send({
+        new_playlist: new_playlist,
+        success: !!new_playlist // always going to be true
+    })
+});
+
+app.post('/deletePlaylist', async (req, res) => {
+    let playlistID = req.body.playlistID;
+    let type = req.body.type;
+
+    let success = null;
+    try {
+        // removes playlist from playlists
+        db.get(`playlists.${type}`)
+            .remove({id: playlistID})
+            .write();
+
+        success = true;
+    } catch(e) {
+        success = false;
+    }
+
+    res.send({
+        success: success
+    })
 });
 
 // deletes mp3 file
@@ -600,15 +700,20 @@ app.post('/deleteMp4', async (req, res) => {
     }
 });
 
-app.post('/downloadFile', function(req, res) {
-    let fileName = req.body.fileName;
+app.post('/downloadFile', async (req, res) => {
+    let fileNames = req.body.fileNames;
     let is_playlist = req.body.is_playlist;
     let type = req.body.type;
+    let outputName = req.body.outputName;
     let file = null;
-    if (type === 'audio') {
-        file = __dirname + '/' + 'audio/' + fileName + '.mp3';
-    } else if (type === 'video') {
-        file = __dirname + '/' + 'video/' + fileName + '.mp4';
+    if (!is_playlist) {
+        if (type === 'audio') {
+            file = __dirname + '/' + 'audio/' + fileNames + '.mp3';
+        } else if (type === 'video') {
+            file = __dirname + '/' + 'video/' + fileNames + '.mp4';
+        }
+    } else {
+        file = await createPlaylistZipFile(fileNames, type, outputName);
     }
 
     res.sendFile(file);
