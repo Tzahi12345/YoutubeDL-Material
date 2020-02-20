@@ -69,7 +69,6 @@ export class PostsService {
         }
         const locations = window.location.href.split('#');
         const current_location = locations[0];
-        console.log('Config location: ' + current_location + 'backend/config/default.json');
         return this.http.get(current_location + 'backend/config/default.json');
     }
 
