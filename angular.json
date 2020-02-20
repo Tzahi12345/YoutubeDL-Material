@@ -65,6 +65,57 @@
             "browserTarget": "youtube-dl-material:build"
           }
         },
+        "serve-electron": {
+          "builder": "@angular-guru/electron-builder:dev-server",
+          "options": {
+            "browserTarget": "youtube-dl-material:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "youtube-dl-material:build:production"
+            }
+          }
+        },
+        "electron": {
+          "builder": "@angular-guru/electron-builder:build",
+          "options": {
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "main.js",
+            "tsConfig": "src/tsconfig.app.json",
+            "polyfills": "src/polyfills.ts",
+            "assets": [
+              "src/assets",
+              "src/favicon.ico",
+              "src/backend/audio",
+              "src/backend/video",
+              "src/backend"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {

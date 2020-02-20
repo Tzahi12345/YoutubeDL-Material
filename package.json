@@ -8,7 +8,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "electron": "ng build --base-href ./ && electron ."
   },
   "private": true,
   "dependencies": {
@@ -33,6 +34,7 @@
     "rxjs-compat": "^6.0.0-rc.0",
     "tslib": "^1.10.0",
     "videogular2": "^7.0.1",
+    "web-animations-js": "^2.3.2",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
@@ -45,6 +47,7 @@
     "@types/jasmine": "2.5.45",
     "@types/node": "~6.0.60",
     "codelyzer": "^5.0.1",
+    "electron": "^8.0.1",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",

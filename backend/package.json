@@ -1,21 +1,21 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "backend for hda",
+  "description": "backend for YoutubeDL-Material",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tzahi12345/hda-backend.git"
+    "url": ""
   },
   "author": "Isaac Grynsztein",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Tzahi12345/hda-backend/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/Tzahi12345/hda-backend#readme",
+  "homepage": "",
   "dependencies": {
     "archiver": "^3.1.1",
     "async": "^3.1.0",
