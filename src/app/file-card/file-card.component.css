@@ -31,3 +31,29 @@
   top: 50%;
   left: 50%;
 }
+
+.img-div {
+  max-height: 80px;
+  padding: 0px;
+  margin: 0px 0px 0px -5px;
+  width: calc(100% + 5px + 5px);
+}
+
+.max-two-lines {
+  display: -webkit-box;
+  display: -moz-box;
+  max-height: 2.4em;
+  line-height: 1.2em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (max-width: 576px){
+ 
+  .example-card {
+    width: 125px !important;
+  }
+   
+}

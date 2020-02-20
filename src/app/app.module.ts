@@ -24,6 +24,8 @@ import {VgControlsModule} from 'videogular2/compiled/controls';
 import {VgOverlayPlayModule} from 'videogular2/compiled/overlay-play';
 import {VgBufferingModule} from 'videogular2/compiled/buffering';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
+import { LazyLoadImageModule } from 'ng-lazyload-image';
+import { NgxContentLoadingModule } from 'ngx-content-loading';
 
 @NgModule({
   declarations: [
@@ -62,8 +64,10 @@ import { InputDialogComponent } from './input-dialog/input-dialog.component';
     VgControlsModule,
     VgOverlayPlayModule,
     VgBufferingModule,
+    LazyLoadImageModule,
+    NgxContentLoadingModule,
     RouterModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   entryComponents: [
     InputDialogComponent

@@ -20,6 +20,7 @@ export class FileCardComponent implements OnInit {
   @Input() isPlaylist = false;
   @Input() count = null;
   type;
+  image_loaded = false;
 
   constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) { }
 
@@ -41,6 +42,10 @@ export class FileCardComponent implements OnInit {
       this.removeFile.emit(this.name);
     }
 
+  }
+
+  imageLoaded(loaded) {
+    this.image_loaded = true;
   }
 
   public openSnackBar(message: string, action: string) {
