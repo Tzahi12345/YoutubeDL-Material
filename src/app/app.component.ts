@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
 
   @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
 
-  constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
+  constructor(public postsService: PostsService, public snackBar: MatSnackBar,
     public router: Router, public overlayContainer: OverlayContainer) {
 
     // loading config
