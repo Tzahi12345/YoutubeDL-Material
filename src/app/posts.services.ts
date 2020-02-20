@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
+import { THEMES_CONFIG } from '../themes';
 
 @Injectable()
 export class PostsService {
@@ -15,9 +16,15 @@ export class PostsService {
     startPath = 'http://localhost:17442/';
     startPathSSL = 'https://localhost:17442/'
     handShakeComplete = false;
+    THEMES_CONFIG = THEMES_CONFIG;
+    theme;
 
     constructor(private http: HttpClient) {
         console.log('PostsService Initialized...');
+    }
+
+    setTheme(theme) {
+        this.theme = this.THEMES_CONFIG[theme];
     }
 
     startHandshake(url: string) {

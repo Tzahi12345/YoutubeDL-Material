@@ -16,12 +16,17 @@
       },
       "Extra": {
         "title_top": "Youtube Downloader",
-        "download_only_mode": false,
-		    "file_manager_enabled": true
+        "file_manager_enabled": true,
+        "allow_quality_select": true,
+        "download_only_mode": false
       },
       "API": {
         "use_youtube_API": false,
         "youtube_API_key": ""
+      },
+      "Themes": {
+        "default_theme": "default",
+        "allow_theme_change": true
       }
     }
   }

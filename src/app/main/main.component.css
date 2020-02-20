@@ -82,3 +82,33 @@ mat-form-field.mat-form-field {
     margin-left: 20px;
     margin-right: 20px;
 }
+
+.results-div {
+    position: relative;
+    top: -15px;
+}
+
+.first-result-card {
+    border-radius: 4px 4px 0px 0px !important;
+}
+
+.last-result-card {
+    border-radius: 0px 0px 4px 4px !important;
+}
+
+.only-result-card {
+    border-radius: 4px !important;
+}
+
+.result-card {
+    height: 120px;
+    border-radius: 0px;
+    padding-bottom: 5px;
+}
+
+.download-progress-bar {
+    z-index: 999;
+    position: absolute;
+    bottom: 0px;
+    width: 150px;
+}

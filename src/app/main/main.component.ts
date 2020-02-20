@@ -33,7 +33,10 @@ export class MainComponent implements OnInit {
   url = '';
   exists = '';
   percentDownloaded: number;
+
+  // settings
   fileManagerEnabled = false;
+  allowQualitySelect = false;
   downloadOnlyMode = false;
   baseStreamPath;
   audioFolderPath;
@@ -53,6 +56,7 @@ export class MainComponent implements OnInit {
   files_cols = (window.innerWidth <= 450) ? 2 : 4;
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
+  downloading_content = {'audio': {}, 'video': {}};
 
   urlForm = new FormControl('', [Validators.required]);
 
@@ -171,6 +175,7 @@ export class MainComponent implements OnInit {
       this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'] &&
           result['YoutubeDLMaterial']['API']['youtube_API_key'];
       this.youtubeAPIKey = this.youtubeSearchEnabled ? result['YoutubeDLMaterial']['API']['youtube_API_key'] : null;
+      this.allowQualitySelect = result['YoutubeDLMaterial']['Extra']['allow_quality_select'];
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
@@ -246,21 +251,36 @@ export class MainComponent implements OnInit {
 
   public goToFile(name, isAudio) {
     if (isAudio) {
-      this.downloadHelperMp3(name, false, true);
+      this.downloadHelperMp3(name, false, false);
     } else {
-      this.downloadHelperMp4(name, false, true);
+      this.downloadHelperMp4(name, false, false);
     }
   }
 
   public goToPlaylist(playlistID, type) {
-    for (let i = 0; i < this.playlists[type].length; i++) {
-      const playlist = this.playlists[type][i];
-      if (playlist.id === playlistID) {
-        // found the playlist, now go to it
+    const playlist = this.getPlaylistObjectByID(playlistID, type);
+    if (playlist) {
+      if (this.downloadOnlyMode) {
+        this.downloading_content[type][playlistID] = true;
+        this.downloadPlaylist(playlist.fileNames, type, playlist.name, playlistID);
+      } else {
         const fileNames = playlist.fileNames;
         this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID}]);
       }
+    } else {
+      // playlist not found
+      console.error(`Playlist with ID ${playlistID} not found!`);
     }
+  }
+
+  getPlaylistObjectByID(playlistID, type) {
+    for (let i = 0; i < this.playlists[type].length; i++) {
+      const playlist = this.playlists[type][i];
+      if (playlist.id === playlistID) {
+        return playlist;
+      }
+    }
+    return null;
   }
 
   public removeFromMp3(name: string) {
@@ -275,6 +295,7 @@ export class MainComponent implements OnInit {
     this.postsService.removePlaylist(playlistID, 'audio').subscribe(res => {
       if (res['success']) {
         this.playlists.audio.splice(index, 1);
+        this.openSnackBar('Playlist successfully removed.', '');
       }
       this.getMp3s();
     });
@@ -292,6 +313,7 @@ export class MainComponent implements OnInit {
     this.postsService.removePlaylist(playlistID, 'video').subscribe(res => {
       if (res['success']) {
         this.playlists.video.splice(index, 1);
+        this.openSnackBar('Playlist successfully removed.', '');
       }
       this.getMp4s();
     });
@@ -315,9 +337,8 @@ export class MainComponent implements OnInit {
     // if download only mode, just download the file. no redirect
     if (forceView === false && this.downloadOnlyMode && !this.iOS) {
       if (is_playlist) {
-        for (let i = 0; i < name.length; i++) {
-          this.downloadAudioFile(decodeURI(name[i]));
-        }
+        const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
+        this.downloadPlaylist(name, 'audio', zipName);
       } else {
         this.downloadAudioFile(decodeURI(name));
       }
@@ -343,9 +364,8 @@ export class MainComponent implements OnInit {
     // if download only mode, just download the file. no redirect
     if (forceView === false && this.downloadOnlyMode) {
       if (is_playlist) {
-        for (let i = 0; i < name.length; i++) {
-          this.downloadVideoFile(decodeURI(name[i]));
-        }
+        const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
+        this.downloadPlaylist(name, 'video', zipName);
       } else {
         this.downloadVideoFile(decodeURI(name));
       }
@@ -422,7 +442,9 @@ export class MainComponent implements OnInit {
   }
 
   downloadAudioFile(name) {
+    this.downloading_content['audio'][name] = true;
     this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
+      this.downloading_content['audio'][name] = false;
       const blob: Blob = res;
       saveAs(blob, name + '.mp3');
 
@@ -437,7 +459,9 @@ export class MainComponent implements OnInit {
   }
 
   downloadVideoFile(name) {
+    this.downloading_content['video'][name] = true;
     this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
+      this.downloading_content['video'][name] = false;
       const blob: Blob = res;
       saveAs(blob, name + '.mp4');
 
@@ -449,6 +473,15 @@ export class MainComponent implements OnInit {
         });
       }
     });
+  }
+
+  downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
+    this.postsService.downloadFileFromServer(fileNames, type, zipName).subscribe(res => {
+      if (playlistID) { this.downloading_content[type][playlistID] = false };
+      const blob: Blob = res;
+      saveAs(blob, zipName + '.zip');
+    });
+
   }
 
   clearInput() {
@@ -493,7 +526,7 @@ export class MainComponent implements OnInit {
     const reYT = new RegExp(youtubeStrRegex);
     const ytValid = reYT.test(str);
     if (valid && ytValid && Date.now() - this.last_url_check > 1000) {
-      if (str !== this.last_valid_url) {
+      if (str !== this.last_valid_url && this.allowQualitySelect) {
         // get info
         this.getURLInfo(str);
       }

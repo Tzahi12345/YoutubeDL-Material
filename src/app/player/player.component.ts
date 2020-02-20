@@ -205,7 +205,6 @@ export class PlayerComponent implements OnInit {
     // changes the route without moving from the current view or
     // triggering a navigation event
     this.id = playlistID;
-    console.log(this.router.url);
     this.router.navigateByUrl(this.router.url + ';id=' + playlistID);
   }
 

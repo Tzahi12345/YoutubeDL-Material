@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostBinding } from '@angular/core';
 import {PostsService} from './posts.services';
 import {FileCardComponent} from './file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
@@ -16,6 +16,8 @@ import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/switch'
 import { YoutubeSearchService, Result } from './youtube-search.service';
 import { Router } from '@angular/router';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { THEMES_CONFIG } from '../themes';
 
 @Component({
   selector: 'app-root',
@@ -23,55 +25,92 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  iOS = false;
 
-  determinateProgress = false;
-  downloadingfile = false;
-  audioOnly: boolean;
-  urlError = false;
-  path = '';
-  url = '';
-  exists = '';
+  @HostBinding('class') componentCssClass;
+  THEMES_CONFIG = THEMES_CONFIG;
+
+  // config items
   topBarTitle = 'Youtube Downloader';
-  percentDownloaded: number;
-  fileManagerEnabled = false;
-  downloadOnlyMode = false;
-  baseStreamPath;
-  audioFolderPath;
-  videoFolderPath;
-
-  // youtube api
-  youtubeSearchEnabled = false;
-  youtubeAPIKey = null;
-  results_loading = false;
-  results_showing = true;
-  results = [];
-
-  mp3s: any[] = [];
-  mp4s: any[] = [];
-  files_cols = (window.innerWidth <= 450) ? 2 : 4;
-
-  urlForm = new FormControl('', [Validators.required]);
+  defaultTheme = null;
+  allowThemeChange = null;
 
   @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
 
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
-    public router: Router) {
-    this.audioOnly = false;
-
+    public router: Router, public overlayContainer: OverlayContainer) {
 
     // loading config
     this.postsService.loadNavItems().subscribe(result => { // loads settings
       this.topBarTitle = result['YoutubeDLMaterial']['Extra']['title_top'];
+      const themingExists = result['YoutubeDLMaterial']['Themes'];
+      this.defaultTheme = themingExists ? result['YoutubeDLMaterial']['Themes']['default_theme'] : 'default';
+      this.allowThemeChange = themingExists ? result['YoutubeDLMaterial']['Themes']['allow_theme_change'] : true;
+
+      // sets theme to config default if it doesn't exist
+      if (!localStorage.getItem('theme')) {
+        this.setTheme(themingExists ? this.defaultTheme : 'default');
+      }
     }, error => {
       console.log(error);
     });
 
   }
 
-  ngOnInit() {
-    
+  // theme stuff
+
+  setTheme(theme) {
+    // theme is registered, so set it to the stored cookie variable
+    let old_theme = null;
+    if (this.THEMES_CONFIG[theme]) {
+        if (localStorage.getItem('theme')) {
+          old_theme = localStorage.getItem('theme');
+          if (!this.THEMES_CONFIG[old_theme]) {
+            console.log('bad theme found, setting to default');
+            if (this.defaultTheme === null) {
+              // means it hasn't loaded yet
+              console.error('No default theme detected');
+            } else {
+              localStorage.setItem('theme', this.defaultTheme);
+              old_theme = localStorage.getItem('theme'); // updates old_theme
+            }
+          }
+        }
+        localStorage.setItem('theme', theme);
+    } else {
+        console.error('Invalid theme: ' + theme);
+        return;
+    }
+
+    this.postsService.setTheme(theme);
+
+    this.onSetTheme(this.THEMES_CONFIG[theme]['css_label'], old_theme ? this.THEMES_CONFIG[old_theme]['css_label'] : old_theme);
+}
+
+onSetTheme(theme, old_theme) {
+    if (old_theme) {
+      document.body.classList.remove(old_theme);
+      this.overlayContainer.getContainerElement().classList.remove(old_theme);
+    }
+    this.overlayContainer.getContainerElement().classList.add(theme);
+    this.componentCssClass = theme;
   }
+
+  flipTheme() {
+    if (this.postsService.theme.key === 'default') {
+      this.setTheme('dark');
+    } else if (this.postsService.theme.key === 'dark') {
+      this.setTheme('default');
+    }
+  }
+
+  ngOnInit() {
+    if (localStorage.getItem('theme')) {
+      this.setTheme(localStorage.getItem('theme'));
+    } else {
+    //
+    }
+  }
+
 
   goBack() {
     this.router.navigate(['/home']);

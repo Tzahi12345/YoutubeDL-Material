@@ -9,15 +9,15 @@
                 <form class="example-form">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-12 col-sm-9">
-                                <mat-form-field class="example-full-width">
+                            <div [ngClass]="allowQualitySelect ? 'col-sm-9' : null" class="col-12">
+                                <mat-form-field color="accent" class="example-full-width">
                                     <input style="padding-right: 25px;" matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" [formControl]="urlForm" required #urlinput>
                                     <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
                                     <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
                                 </mat-form-field>
                             </div>
-                            <div class="col-7 col-sm-3">
-                                <mat-form-field style="display: inline-block; width: inherit; min-width: 120px;">
+                            <div *ngIf="allowQualitySelect" class="col-7 col-sm-3">
+                                <mat-form-field color="accent" style="display: inline-block; width: inherit; min-width: 120px;">
                                     <mat-label>Quality</mat-label>
                                     <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality">
                                       <ng-container *ngFor="let option of qualityOptions[(audioOnly) ? 'audio' : 'video']">
@@ -33,21 +33,20 @@
                             </div>
                         </div>
                     </div>
-                    <span *ngIf="results_showing">
-                        <span *ngFor="let result of results">
-                            <mat-card style="height: 120px; border-radius: 0px">
+                    <div class="results-div" *ngIf="results_showing">
+                        <span *ngFor="let result of results; let i = index">
+                            <mat-card class="result-card mat-elevation-z7" [ngClass]="[(i === 0 && results.length > 1) ? 'first-result-card' : '', ((i === results.length-1) && results.length > 1) ? 'last-result-card' : '', (results.length === 1) ? 'only-result-card' : '']">
                                 <div class="search-card-title">
                                     {{result.title}}
                                 </div>
-                                <div style="font-size: 12px">
+                                <div style="font-size: 12px; margin-bottom: 10px;">
                                     {{result.uploaded}}
                                 </div>
-                                <br/>
                                 <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">Use URL</button>
                                 <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">View</button>
                             </mat-card>
                         </span>
-                    </span>
+                    </div>
                 </form>
                 <br/>
                 <mat-checkbox (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
@@ -56,7 +55,7 @@
         </mat-card-content>
         <mat-card-actions>
             <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-stroked-button
-                color="primary">Download</button>
+                color="accent">Download</button>
         </mat-card-actions>
     </mat-card>
 </div>
@@ -95,13 +94,18 @@
                     <mat-grid-tile *ngFor="let file of mp3s; index as i;">
                         <app-file-card (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                                 [length]="file.duration" [isAudio]="true"></app-file-card>
+                        <mat-progress-bar *ngIf="downloading_content['audio'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
                 <mat-divider *ngIf="playlists.audio.length > 0"></mat-divider>
+                <div style="width: 100%; text-align: center; margin-top: 10px;" *ngIf="playlists.audio.length > 0">
+                    <h6>Playlists</h6>
+                </div>
                 <mat-grid-list *ngIf="playlists.audio.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.audio; let i = index;">
                         <app-file-card (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
                             [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
+                        <mat-progress-bar *ngIf="downloading_content['audio'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>
@@ -121,13 +125,19 @@
                     <mat-grid-tile *ngFor="let file of mp4s; index as i;">
                         <app-file-card (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                             [length]="file.duration" [isAudio]="false"></app-file-card>
+                        <mat-progress-bar *ngIf="downloading_content['video'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
                 <mat-divider *ngIf="playlists.video.length > 0"></mat-divider>
+
+                <div style="width: 100%; text-align: center; margin-top: 10px;" *ngIf="playlists.video.length > 0">
+                    <h6>Playlists</h6>
+                </div>
                 <mat-grid-list *ngIf="playlists.video.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.video; let i = index;">
                         <app-file-card (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
                             [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
+                        <mat-progress-bar *ngIf="downloading_content['video'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>
