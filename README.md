@@ -1,6 +1,6 @@
 # YoutubeDL-Material
 
-YoutubeDL-Material is a material design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 5](https://angular.io/) for the frontend, and [Nodejs](https://nodejs.org/) on the backend.
+YoutubeDL-Material is a material design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 8](https://angular.io/) for the frontend, and [Nodejs](https://nodejs.org/) on the backend.
 
 ## Getting Started
 
