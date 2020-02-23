@@ -37,6 +37,14 @@ var basePath = config.get("YoutubeDLMaterial.Downloader.path-base");
 var audioFolderPath = config.get("YoutubeDLMaterial.Downloader.path-audio");
 var videoFolderPath = config.get("YoutubeDLMaterial.Downloader.path-video");
 var downloadOnlyMode = config.get("YoutubeDLMaterial.Extra.download_only_mode")
+var useDefaultDownloadingAgent = config.get("YoutubeDLMaterial.Advanced.use_default_downloading_agent");
+var customDownloadingAgent = config.get("YoutubeDLMaterial.Advanced.custom_downloading_agent");
+var validDownloadingAgents = [
+    'aria2c'
+]
+if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
+    console.log(`INFO: Using non-default downloading agent \'${customDownloadingAgent}\'`)
+}
 
 var descriptors = {};
 
@@ -347,9 +355,15 @@ function getVideoInfos(fileNames) {
 
 // currently only works for single urls
 async function getUrlInfos(urls) {
+    let startDate = Date.now();
     let result = [];
     return new Promise(resolve => {
-        youtubedl.exec(urls.join(' '), ['--external-downloader', 'aria2c', '--dump-json'], {}, (err, output) => {
+        youtubedl.exec(urls.join(' '), ['--dump-json'], {}, (err, output) => {
+            if (debugMode) {
+                let new_date = Date.now();
+                let difference = (new_date - startDate)/1000;
+                console.log(`URL info retrieval delay: ${difference} seconds.`);
+            }
             if (err) {
                 console.log('Error during parsing:' + err);
                 resolve(null);
@@ -360,8 +374,8 @@ async function getUrlInfos(urls) {
                 result = try_putput;
             } catch(e) {
                 // probably multiple urls
-                console.log('failed to parse');
-                console.log(output);
+                console.log('failed to parse for urls starting with ' + urls[0]);
+                // console.log(output);
             }
             resolve(result);
         });
@@ -377,7 +391,7 @@ app.post('/tomp3', function(req, res) {
     var customQualityConfiguration = req.body.customQualityConfiguration;
     var maxBitrate = req.body.maxBitrate;
 
-    let downloadConfig = ['--external-downloader', 'aria2c', '-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json']
+    let downloadConfig = ['-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json']
     let qualityPath = '';
 
     if (customQualityConfiguration) {
@@ -389,6 +403,10 @@ app.post('/tomp3', function(req, res) {
 
     if (qualityPath !== '') {
         downloadConfig.splice(2, 0, qualityPath);
+    }
+
+    if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
+        downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
@@ -411,8 +429,8 @@ app.post('/tomp3', function(req, res) {
                     output_json = null;
                 }
                 if (!output_json) {
-                    // only run on first go
-                    return;
+                    // if invalid, continue onto the next
+                    continue;
                 }
                 var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
                 var alternate_file_name = file_name.substring(0, file_name.length-4);
@@ -448,7 +466,11 @@ app.post('/tomp4', function(req, res) {
         qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
     }
 
-    youtubedl.exec(url, ['--external-downloader', 'aria2c', '-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'], {}, function(err, output) {
+    let downloadConfig = ['-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json']
+    if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
+        downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+    }
+    youtubedl.exec(url, downloadConfig, {}, function(err, output) {
         if (debugMode) {
             let new_date = Date.now();
             let difference = (new_date - date)/1000;

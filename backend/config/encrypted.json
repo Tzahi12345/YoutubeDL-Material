@@ -27,6 +27,10 @@
       "Themes": {
         "default_theme": "default",
         "allow_theme_change": true
+      },
+      "Advanced": {
+        "use_default_downloading_agent": true,
+        "custom_downloading_agent": ""
       }
     }
   }
