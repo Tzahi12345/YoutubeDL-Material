@@ -2,6 +2,10 @@
     margin: 0 auto;
 }
 
+.video-player:focus {
+    outline: none;
+}
+
 .audio-styles {
     height: 50px;
     background-color: transparent;
