@@ -3,6 +3,8 @@ import {PostsService} from '../posts.services';
 import {MatSnackBar} from '@angular/material';
 import {EventEmitter} from '@angular/core';
 import { MainComponent } from 'app/main/main.component';
+import { Subject, Observable } from 'rxjs';
+import 'rxjs/add/observable/merge';
 
 @Component({
   selector: 'app-file-card',
@@ -21,8 +23,18 @@ export class FileCardComponent implements OnInit {
   @Input() count = null;
   type;
   image_loaded = false;
+  image_errored = false;
 
-  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) { }
+  scrollSubject;
+  scrollAndLoad;
+
+  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) {
+    this.scrollSubject = new Subject();
+    this.scrollAndLoad = Observable.merge(
+      Observable.fromEvent(window, 'scroll'),
+      this.scrollSubject
+    );
+  }
 
   ngOnInit() {
     this.type = this.isAudio ? 'audio' : 'video';
@@ -42,6 +54,14 @@ export class FileCardComponent implements OnInit {
       this.removeFile.emit(this.name);
     }
 
+  }
+
+  onImgError(event) {
+    this.image_errored = true;
+  }
+
+  onHoverResponse() {
+    this.scrollSubject.next();
   }
 
   imageLoaded(loaded) {

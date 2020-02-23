@@ -11,7 +11,7 @@
                         <div class="row">
                             <div [ngClass]="allowQualitySelect ? 'col-sm-9' : null" class="col-12">
                                 <mat-form-field color="accent" class="example-full-width">
-                                    <input style="padding-right: 25px;" matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" [formControl]="urlForm" required #urlinput>
+                                    <input style="padding-right: 25px;" matInput  (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" [formControl]="urlForm" required #urlinput>
                                     <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
                                     <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
                                 </mat-form-field>
@@ -21,12 +21,12 @@
                                     <mat-label>Quality</mat-label>
                                     <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality">
                                       <ng-container *ngFor="let option of qualityOptions[(audioOnly) ? 'audio' : 'video']">
-                                        <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url] && cachedAvailableFormats[url][(audioOnly) ? 'audio' : 'video'][option.value]" [value]="option.value">
+                                        <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats'] && cachedAvailableFormats[url]['formats'][(audioOnly) ? 'audio' : 'video'][option.value]" [value]="option.value">
                                             {{option.label}}
                                         </mat-option>
                                       </ng-container>
                                     </mat-select>
-                                    <div class="spinner-div" *ngIf="formats_loading && !cachedAvailableFormats[url]">
+                                    <div class="spinner-div" *ngIf="url !== '' && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']">
                                         <mat-spinner [diameter]="25"></mat-spinner>
                                     </div>
                                 </mat-form-field>
@@ -80,7 +80,7 @@
 </ng-template>
 <div style="margin: 20px" *ngIf="fileManagerEnabled">
     <mat-accordion>
-        <mat-expansion-panel class="big">
+        <mat-expansion-panel (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Audio
@@ -92,26 +92,30 @@
             <div *ngIf="mp3s.length > 0;else nomp3s">
                 <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp3s; index as i;">
-                        <app-file-card (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                        <app-file-card #audiofilecard (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                                 [length]="file.duration" [isAudio]="true"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
-                <mat-divider *ngIf="playlists.audio.length > 0"></mat-divider>
-                <div style="width: 100%; text-align: center; margin-top: 10px;" *ngIf="playlists.audio.length > 0">
+                <mat-divider></mat-divider>
+                <div style="width: 100%; text-align: center; margin-top: 10px;">
                     <h6>Playlists</h6>
                 </div>
                 <mat-grid-list *ngIf="playlists.audio.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.audio; let i = index;">
-                        <app-file-card (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
+                        <app-file-card #audiofilecard (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
                             [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
+                <div class="add-playlist-button"><button (click)="openCreatePlaylistDialog('audio')" mat-fab><mat-icon>add</mat-icon></button></div>
+                <div *ngIf="playlists.audio.length === 0">
+                    No playlists available. Create one from your downloading audio files by clicking the blue plus button.
+                </div>
             </div>
 
         </mat-expansion-panel>
-        <mat-expansion-panel class="big">
+        <mat-expansion-panel (mouseleave)="accordionLeft('video')" (mouseenter)="accordionEntered('video')" class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Video
@@ -123,23 +127,29 @@
             <div *ngIf="mp4s.length > 0;else nomp4s">
                 <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp4s; index as i;">
-                        <app-file-card (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                        <app-file-card #videofilecard (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
                             [length]="file.duration" [isAudio]="false"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
-                <mat-divider *ngIf="playlists.video.length > 0"></mat-divider>
+                <mat-divider></mat-divider>
 
-                <div style="width: 100%; text-align: center; margin-top: 10px;" *ngIf="playlists.video.length > 0">
+                <div style="width: 100%; text-align: center; margin-top: 10px;">
                     <h6>Playlists</h6>
                 </div>
                 <mat-grid-list *ngIf="playlists.video.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.video; let i = index;">
-                        <app-file-card (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
+                        <app-file-card #videofilecard (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
                             [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
+        
+                <!-- Add video playlist button -->
+                <div class="add-playlist-button"><button (click)="openCreatePlaylistDialog('video')" mat-fab><mat-icon>add</mat-icon></button></div>
+                <div *ngIf="playlists.video.length === 0">
+                    No playlists available. Create one from your downloading video files by clicking the blue plus button.
+                </div>
             </div>
         </mat-expansion-panel>
     </mat-accordion>

@@ -1,0 +1,19 @@
+
+<form>
+    <div>
+        <mat-form-field color="accent">
+            <input [(ngModel)]="name" matInput placeholder="Name" type="text" required aria-required [ngModelOptions]="{standalone: true}">
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field color="accent">
+            <mat-label>{{(type === 'audio') ? 'Audio files' : 'Videos'}}</mat-label>
+            <mat-select [formControl]="filesSelect" multiple required aria-required>
+            <mat-option *ngFor="let file of filesToSelectFrom" [value]="file.id">{{file.id}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</form>
+
+<div *ngIf="create_in_progress" style="float: left"><mat-spinner [diameter]="25"></mat-spinner></div>
+<button (click)="createPlaylist()" [disabled]="!name || !filesSelect.value || filesSelect.value.length === 0" color="primary" style="float: right" mat-flat-button>Create</button>

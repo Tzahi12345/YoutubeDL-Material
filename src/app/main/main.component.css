@@ -112,3 +112,7 @@ mat-form-field.mat-form-field {
     bottom: 0px;
     width: 150px;
 }
+
+.add-playlist-button {
+    float: right;
+}

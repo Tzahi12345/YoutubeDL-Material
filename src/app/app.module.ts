@@ -24,8 +24,15 @@ import {VgControlsModule} from 'videogular2/compiled/controls';
 import {VgOverlayPlayModule} from 'videogular2/compiled/overlay-play';
 import {VgBufferingModule} from 'videogular2/compiled/buffering';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
-import { LazyLoadImageModule } from 'ng-lazyload-image';
+import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { NgxContentLoadingModule } from 'ngx-content-loading';
+import { audioFilesMouseHovering, videoFilesMouseHovering } from './main/main.component';
+import { Observable } from 'rxjs';
+import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
+
+function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
+  return (element.id === 'video' ? videoFilesMouseHovering : audioFilesMouseHovering);
+}
 
 @NgModule({
   declarations: [
@@ -33,7 +40,8 @@ import { NgxContentLoadingModule } from 'ngx-content-loading';
     FileCardComponent,
     MainComponent,
     PlayerComponent,
-    InputDialogComponent
+    InputDialogComponent,
+    CreatePlaylistComponent
   ],
   imports: [
     BrowserModule,
@@ -64,13 +72,14 @@ import { NgxContentLoadingModule } from 'ngx-content-loading';
     VgControlsModule,
     VgOverlayPlayModule,
     VgBufferingModule,
-    LazyLoadImageModule,
+    LazyLoadImageModule.forRoot({ isVisible }),
     NgxContentLoadingModule,
     RouterModule,
     AppRoutingModule,
   ],
   entryComponents: [
-    InputDialogComponent
+    InputDialogComponent,
+    CreatePlaylistComponent
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]
