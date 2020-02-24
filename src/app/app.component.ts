@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
   @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar,
-    public router: Router, public overlayContainer: OverlayContainer) {
+    public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
 
     // loading config
     this.postsService.loadNavItems().subscribe(result => { // loads settings
@@ -76,6 +76,7 @@ export class AppComponent implements OnInit {
           }
         }
         localStorage.setItem('theme', theme);
+        this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = this.THEMES_CONFIG[theme]['background_color'];
     } else {
         console.error('Invalid theme: ' + theme);
         return;
