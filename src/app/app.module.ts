@@ -7,6 +7,7 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
   MatProgressSpinnerModule,
   MatButtonToggleModule,
   MatDialogModule} from '@angular/material';
+  import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -68,6 +69,7 @@ function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<a
     MatProgressSpinnerModule,
     MatButtonToggleModule,
     MatDialogModule,
+    DragDropModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,
