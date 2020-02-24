@@ -4,12 +4,13 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node backend/app.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "electron": "ng build --base-href ./ && electron ."
+    "electron": "ng build --base-href ./ && electron .",
+    "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js"
   },
   "private": true,
   "dependencies": {
