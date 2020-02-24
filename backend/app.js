@@ -417,6 +417,7 @@ app.post('/tomp3', function(req, res) {
         }
         if (err) {
             audiopath = "-1";
+            console.log(err.stderr);
             res.sendStatus(500);
             throw err;
         } else if (output) {  
@@ -478,6 +479,7 @@ app.post('/tomp4', function(req, res) {
         }
         if (err) {
             videopath = "-1";
+            console.log(err.stderr);
             res.sendStatus(500);
             throw err;
         } else if (output) {
@@ -658,6 +660,32 @@ app.post('/createPlaylist', async (req, res) => {
     res.send({
         new_playlist: new_playlist,
         success: !!new_playlist // always going to be true
+    })
+});
+
+app.post('/updatePlaylist', async (req, res) => {
+    let playlistID = req.body.playlistID;
+    let fileNames = req.body.fileNames;
+    let type = req.body.type;
+
+    let success = false;
+    try {
+        db.get(`playlists.${type}`)
+            .find({id: playlistID})
+            .assign({fileNames: fileNames})
+            .write();
+        /*console.log('success!');
+        let new_val = db.get(`playlists.${type}`)
+            .find({id: playlistID})
+            .value();
+        console.log(new_val);*/
+        success = true;
+    } catch(e) {
+        console.error(`Failed to find playlist with ID ${playlistID}`);
+    }
+    
+    res.send({
+        success: success
     })
 });
 
