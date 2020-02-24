@@ -4,13 +4,17 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "cd backend && node app.js",
+    "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "ng build --base-href ./ && electron .",
     "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js && cp backend/package.json dist/backend/package.json && cd dist/backend && npm install"
+  },
+  "engines": {
+    "node": "12.3.1",
+    "npm": "6.10.3"
   },
   "private": true,
   "dependencies": {
@@ -36,7 +40,8 @@
     "tslib": "^1.10.0",
     "videogular2": "^7.0.1",
     "web-animations-js": "^2.3.2",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.9.1",
+    "typescript": "~3.5.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.803.24",
