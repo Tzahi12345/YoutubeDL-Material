@@ -46,4 +46,5 @@ backend/node_modules/*
 YoutubeDL-Material/node_modules/*
 backend/video/*
 backend/audio/*
+backend/db.json
 src/assets/default.json
