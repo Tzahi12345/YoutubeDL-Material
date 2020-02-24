@@ -34,7 +34,7 @@ Drag all the files in `youtubedl-material` to a location accessible to a web ser
 
 Port forward `17442` if you're going to access YoutubeDL-Material from out of your network. This is an important step. Make sure the configuration reflects this appropriately.
 
-Once the configuration is done, type `sudo nodejs app.js`. This will run the backend server. On your browser, navigate to your installation folder. Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
+Once the configuration is done, run `npm install` to install all the backend dependencies. Once that is finished, type `nodejs app.js`. This will run the backend server. On your browser, navigate to your installation folder. Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
 
 If you experience problems, know that it's usually caused by a configuration problem. The first thing you should do is check the console. To get there, right click anywhere on the page and click "Inspect element." Then on the menu that pops up, click console. Look at the error there, and try to investigate.
 
