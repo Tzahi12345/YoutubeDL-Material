@@ -17,6 +17,7 @@ import 'rxjs/add/operator/switch'
 import { YoutubeSearchService, Result } from '../youtube-search.service';
 import { Router } from '@angular/router';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
+import { Platform } from '@angular/cdk/platform';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
@@ -166,7 +167,7 @@ export class MainComponent implements OnInit {
   last_url_check = 0;
 
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
-    private router: Router, public dialog: MatDialog) {
+    private router: Router, public dialog: MatDialog, private platform: Platform) {
     this.audioOnly = false;
 
 
@@ -330,7 +331,8 @@ export class MainComponent implements OnInit {
 
   // app initialization.
   ngOnInit() {
-    this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
+    // this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
+    this.iOS = this.platform.IOS;
 
     if (localStorage.getItem('audioOnly') !== null) {
       this.audioOnly = localStorage.getItem('audioOnly') === 'true';
@@ -564,7 +566,6 @@ export class MainComponent implements OnInit {
           return;
         }
         const parsed_infos = this.getAudioAndVideoFormats(infos.formats);
-        console.log(parsed_infos);
         const available_formats = {audio: parsed_infos[0], video: parsed_infos[1]};
         this.cachedAvailableFormats[url]['formats'] = available_formats;
       }, err => {
