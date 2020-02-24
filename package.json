@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "ng build --base-href ./ && electron .",
-    "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js"
+    "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js && npm --prefix dist/backend install dist/backend"
   },
   "private": true,
   "dependencies": {
