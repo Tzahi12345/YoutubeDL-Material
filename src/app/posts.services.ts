@@ -107,6 +107,12 @@ export class PostsService {
                                                             thumbnailURL: thumbnailURL});
     }
 
+    updatePlaylist(playlistID, fileNames, type) {
+        return this.http.post(this.path + 'updatePlaylist', {playlistID: playlistID,
+                                                            fileNames: fileNames,
+                                                            type: type});
+    }
+
     removePlaylist(playlistID, type) {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type});
     }

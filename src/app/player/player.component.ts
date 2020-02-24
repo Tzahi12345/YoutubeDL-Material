@@ -4,6 +4,7 @@ import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 export interface IMedia {
   title: string;
@@ -19,6 +20,8 @@ export interface IMedia {
 export class PlayerComponent implements OnInit {
 
   playlist: Array<IMedia> = [];
+  original_playlist: string = null;
+  playlist_updating = false;
 
   currentIndex = 0;
   currentItem: IMedia = null;
@@ -82,6 +85,7 @@ export class PlayerComponent implements OnInit {
         this.playlist.push(mediaObject);
       }
       this.currentItem = this.playlist[this.currentIndex];
+      this.original_playlist = JSON.stringify(this.playlist);
     });
 
     // this.getFileInfos();
@@ -122,9 +126,18 @@ export class PlayerComponent implements OnInit {
   }
 
   getFileInfos() {
-    this.postsService.getFileInfo(this.fileNames, this.type, false).subscribe(res => {
+    const fileNames = this.getFileNames();
+    this.postsService.getFileInfo(fileNames, this.type, false).subscribe(res => {
 
     });
+  }
+
+  getFileNames() {
+    const fileNames = [];
+    for (let i = 0; i < this.playlist.length; i++) {
+      fileNames.push(this.playlist[i].title);
+    }
+    return fileNames;
   }
 
   decodeURI(string) {
@@ -179,7 +192,8 @@ export class PlayerComponent implements OnInit {
 
         // Eventually do additional checks on name
         if (name) {
-          this.postsService.createPlaylist(name, this.fileNames, this.type, null).subscribe(res => {
+          const fileNames = this.getFileNames();
+          this.postsService.createPlaylist(name, fileNames, this.type, null).subscribe(res => {
             if (res['success']) {
               dialogRef.close();
               const new_playlist = res['new_playlist'];
@@ -206,6 +220,30 @@ export class PlayerComponent implements OnInit {
     // triggering a navigation event
     this.id = playlistID;
     this.router.navigateByUrl(this.router.url + ';id=' + playlistID);
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.playlist, event.previousIndex, event.currentIndex);
+  }
+
+   playlistChanged() {
+    return JSON.stringify(this.playlist) !== this.original_playlist;
+  }
+
+  updatePlaylist() {
+    const fileNames = this.getFileNames();
+    this.playlist_updating = true;
+    this.postsService.updatePlaylist(this.id, fileNames, this.type).subscribe(res => {
+    this.playlist_updating = false;
+      if (res['success']) {
+        const fileNamesEncoded = fileNames.join('|nvr|');
+        this.router.navigate(['/player', {fileNames: fileNamesEncoded, type: 'video', id: this.id}]);
+        this.openSnackBar('Successfully updated playlist.', '');
+        this.original_playlist = JSON.stringify(this.playlist);
+      } else {
+        this.openSnackBar('ERROR: Failed to update playlist.', '');
+      }
+    })
   }
 
   // snackbar helper

@@ -63,3 +63,17 @@
     bottom: 1px;
     position: relative;
 }
+
+.update-playlist-button-div {
+    float: right;
+    margin-right: 30px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.spinner-div {
+    position: relative;
+    display: inline-block;
+    margin-right: 12px;
+    top: 8px;
+}
