@@ -4,13 +4,13 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "node backend/app.js",
+    "start": "cd backend && node app.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "ng build --base-href ./ && electron .",
-    "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js && cp backend/package.json dist/backend/package.json && npm --prefix dist/backend install dist/backend"
+    "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js && cp backend/package.json dist/backend/package.json && cd dist/backend && npm install"
   },
   "private": true,
   "dependencies": {
