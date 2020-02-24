@@ -8,14 +8,14 @@
                 </vg-player>
             </div>
             <div class="col-12 my-2">
-                <mat-button-toggle-group cdkDropList (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
+                <mat-button-toggle-group cdkDropList [cdkDropListSortingDisabled]="!id" (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
                     <mat-button-toggle cdkDrag *ngFor="let playlist_item of playlist; let i = index" [checked]="currentItem.title === playlist_item.title" (click)="onClickPlaylistItem(playlist_item, i)" class="toggle-button" [value]="playlist_item.title">{{decodeURI(playlist_item.title)}}</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
         </div>
     </div>
 
-    <div class="update-playlist-button-div" *ngIf="playlistChanged()">
+    <div class="update-playlist-button-div" *ngIf="id && playlistChanged()">
         <div class="spinner-div">
             <mat-spinner *ngIf="playlist_updating" [diameter]="25"></mat-spinner>
         </div>

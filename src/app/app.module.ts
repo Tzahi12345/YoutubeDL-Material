@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule,
   MatSnackBarModule, MatCardModule, MatSelectModule, MatToolbarModule, MatCheckboxModule, MatGridListModule,
   MatProgressBarModule, MatExpansionModule,
-  MatGridList,
   MatProgressSpinnerModule,
   MatButtonToggleModule,
   MatDialogModule} from '@angular/material';
@@ -14,7 +13,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
-import {APP_BASE_HREF} from '@angular/common';
 import { FileCardComponent } from './file-card/file-card.component';
 import {RouterModule} from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,10 +26,9 @@ import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { NgxContentLoadingModule } from 'ngx-content-loading';
 import { audioFilesMouseHovering, videoFilesMouseHovering } from './main/main.component';
-import { Observable } from 'rxjs';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 
-function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
+export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
   return (element.id === 'video' ? videoFilesMouseHovering : audioFilesMouseHovering);
 }
 
