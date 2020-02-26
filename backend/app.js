@@ -2,7 +2,6 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var youtubedl = require('youtube-dl');
-var config = require('config');
 var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -10,6 +9,7 @@ var archiver = require('archiver');
 const low = require('lowdb')
 var URL = require('url').URL;
 const shortid = require('shortid')
+var config_api = require('./config.js'); 
 
 var app = express();
 
@@ -18,64 +18,55 @@ const adapter = new FileSync('db.json');
 const db = low(adapter)
 
 // Set some defaults
-db.defaults({ playlists: {
-    audio: [],
-    video: []
-}}).write();
+db.defaults(
+    { 
+        playlists: {
+            audio: [],
+            video: []
+        },
+        configWriteFlag: false
+}).write();
 
+// config values
+var frontendUrl = null;
+var backendUrl = null;
+var backendPort = 17442;
+var usingEncryption = null;
+var basePath = null;
+var audioFolderPath = null;
+var videoFolderPath = null;
+var downloadOnlyMode = null;
+var useDefaultDownloadingAgent = null;
+var customDownloadingAgent = null;
+
+// other needed values
+var options = null; // encryption options
+var url_domain = null;
 
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
 
 if (debugMode) console.log('YTDL-Material in debug mode!');
 
-var frontendUrl = !debugMode ? config.get("YoutubeDLMaterial.Host.frontendurl") : 'http://localhost:4200';
-var backendUrl = config.get("YoutubeDLMaterial.Host.backendurl")
-var backendPort = 17442;
-var usingEncryption = config.get("YoutubeDLMaterial.Encryption.use-encryption");
-var basePath = config.get("YoutubeDLMaterial.Downloader.path-base");
-var audioFolderPath = config.get("YoutubeDLMaterial.Downloader.path-audio");
-var videoFolderPath = config.get("YoutubeDLMaterial.Downloader.path-video");
-var downloadOnlyMode = config.get("YoutubeDLMaterial.Extra.download_only_mode")
-var useDefaultDownloadingAgent = config.get("YoutubeDLMaterial.Advanced.use_default_downloading_agent");
-var customDownloadingAgent = config.get("YoutubeDLMaterial.Advanced.custom_downloading_agent");
 var validDownloadingAgents = [
     'aria2c'
 ]
-if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
-    console.log(`INFO: Using non-default downloading agent \'${customDownloadingAgent}\'`)
+
+// don't overwrite config if it already happened.. NOT
+// let alreadyWritten = db.get('configWriteFlag').value();
+let writeConfigMode = process.env.write_ytdl_config;
+var config = null;
+
+if (writeConfigMode) {
+    setAndLoadConfig();
+} else {
+    loadConfig();
 }
 
 var descriptors = {};
 
-
-if (usingEncryption)
-{
-    
-    var certFilePath = path.resolve(config.get("YoutubeDLMaterial.Encryption.cert-file-path"));
-    var keyFilePath = path.resolve(config.get("YoutubeDLMaterial.Encryption.key-file-path"));
-
-    var certKeyFile = fs.readFileSync(keyFilePath);
-    var certFile = fs.readFileSync(certFilePath);
-
-    var options = {
-        key: certKeyFile,
-        cert: certFile
-    };
-}
-
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-var url_domain = new URL(frontendUrl);
-
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", url_domain.origin);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
 
 app.get('/using-encryption', function(req, res) {
     res.send(usingEncryption);
@@ -93,6 +84,109 @@ function File(id, title, thumbnailURL, isAudio, duration) {
 }
 
 // actual functions
+
+function startServer() {
+    if (usingEncryption)
+    {
+        https.createServer(options, app).listen(backendPort, function() {
+            console.log('HTTPS: Anchor set on 17442');
+        });
+    }
+    else
+    {
+        app.listen(backendPort,function(){
+            console.log("HTTP: Started on PORT " + backendPort);
+        });
+    }
+}
+
+async function setAndLoadConfig() {
+    await setConfigFromEnv();
+    await loadConfig();
+    // console.log(backendUrl);
+}
+
+async function setConfigFromEnv() {
+    return new Promise(resolve => {
+        let config_items = getEnvConfigItems();
+        let success = config_api.setConfigItems(config_items);
+        if (success) {
+            console.log('Config items set using ENV variables.');
+            setTimeout(() => resolve(true), 100);
+        } else {
+            console.log('ERROR: Failed to set config items using ENV variables.');
+            resolve(false);
+        }
+    });
+}
+
+async function loadConfig() {
+    return new Promise(resolve => {
+        // get config library
+        // config = require('config');
+
+        frontendUrl = !debugMode ? config_api.getConfigItem('ytdl_frontend_url') : 'http://localhost:4200';
+        backendUrl = config_api.getConfigItem('ytdl_backend_url')
+        backendPort = 17442;
+        usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
+        basePath = config_api.getConfigItem('ytdl_base_path');
+        audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
+        videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+        downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
+        useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
+        customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
+        if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
+            console.log(`INFO: Using non-default downloading agent \'${customDownloadingAgent}\'`)
+        }
+
+        if (usingEncryption)
+        {
+            var certFilePath = path.resolve(config_api.getConfigItem('ytdl_cert_file_path'));
+            var keyFilePath = path.resolve(config_api.getConfigItem('ytdl_key_file_path'));
+
+            var certKeyFile = fs.readFileSync(keyFilePath);
+            var certFile = fs.readFileSync(certFilePath);
+
+            options = {
+                key: certKeyFile,
+                cert: certFile
+            };
+        }
+
+        url_domain = new URL(frontendUrl);
+
+        // start the server here
+        startServer();
+
+        resolve(true);
+    });
+    
+}
+
+function getOrigin() {
+    return url_domain.origin;
+}
+
+// gets a list of config items that are stored as an environment variable
+function getEnvConfigItems() {
+    let config_items = [];
+
+    let config_item_keys = Object.keys(config_api.CONFIG_ITEMS);
+    for (let i = 0; i < config_item_keys.length; i++) {
+        let key = config_item_keys[i];
+        if (process['env'][key]) {
+            const config_item = generateEnvVarConfigItem(key);
+            config_items.push(config_item);
+        }
+    }
+    
+    return config_items;
+}
+
+// gets value of a config item and stores it in an object
+function generateEnvVarConfigItem(key) {
+    return {key: key, value: process['env'][key]};
+}
 
 function getThumbnailMp3(name)
 {
@@ -381,6 +475,12 @@ async function getUrlInfos(urls) {
         });
     });
 }
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", getOrigin());
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 app.post('/tomp3', function(req, res) {
     var url = req.body.url;
@@ -879,19 +979,3 @@ app.get('/audio/:id', function(req , res){
         success: !!result
     })
 });
-
-
-
-
-if (usingEncryption)
-{
-    https.createServer(options, app).listen(backendPort, function() {
-        console.log('HTTPS: Anchor set on 17442');
-    });
-}
-else
-{
-    app.listen(backendPort,function(){
-        console.log("HTTP: Started on PORT " + backendPort);
-    });
-}

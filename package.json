@@ -9,8 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "electron": "ng build --base-href ./ && electron .",
-    "postinstall": "ng build --prod && mkdir dist/backend && mkdir dist/backend/config && mkdir dist/backend/audio && mkdir dist/backend/video && cp src/assets/default.json dist/backend/config/default.json && cp backend/app.js dist/backend/app.js && cp backend/package.json dist/backend/package.json && cd dist/backend && npm install"
+    "electron": "ng build --base-href ./ && electron ."
   },
   "engines": {
     "node": "12.3.1",

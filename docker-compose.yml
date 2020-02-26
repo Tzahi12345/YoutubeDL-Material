@@ -1,0 +1,33 @@
+
+version: "3.2"
+services:
+    ytdl_material:
+        build: .
+        environment: 
+            # config items
+            ytdl_frontend_url: http://localhost:8998
+            ytdl_backend_url: http://localhost:17442/
+            ytdl_use_encryption: 'false'
+            ytdl_cert_file_path: /etc/letsencrypt/live/example.com/fullchain.pem
+            ytdl_key_file_path: /etc/letsencrypt/live/example.com/privkey.pem
+            ytdl_base_path: http://localhost:17442/
+            ytdl_audio_folder_path: audio/
+            ytdl_video_folder_path: video/
+            ytdl_title_top: Youtube Downloader
+            ytdl_file_manager_enabled: 'true'
+            ytdl_allow_quality_select: 'true'
+            ytdl_download_only_mode: 'false'
+            ytdl_use_youtube_api: 'false'
+            ytdl_youtube_api_key: 'false'
+            ytdl_default_theme: default
+            ytdl_allow_theme_change: 'true'
+            ytdl_use_default_downloading_agent: 'true'
+            ytdl_custom_downloading_agent: 'false'
+            write_ytdl_config: 'true'
+            # do not touch this
+            ALLOW_CONFIG_MUTATIONS: 'true'
+        restart: always
+        ports:
+            - "17442:17442"
+            - "8998:80"
+        image: tzahi12345/youtubedl-material
