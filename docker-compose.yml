@@ -30,4 +30,4 @@ services:
         ports:
             - "17442:17442"
             - "8998:80"
-        image: tzahi12345/youtubedl-material
+        image: tzahi12345/youtubedl-material:3.1
