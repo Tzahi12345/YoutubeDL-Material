@@ -2,6 +2,8 @@
 
 YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 8](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
+Now with [Docker](#Docker) support!
+
 ## Getting Started
 
 Check out the prerequisites, and go to the installation section. Easy as pie!
