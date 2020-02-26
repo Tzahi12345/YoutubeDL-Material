@@ -1,6 +1,6 @@
 # YoutubeDL-Material
 
-YoutubeDL-Material is a material design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 8](https://angular.io/) for the frontend, and [Nodejs](https://nodejs.org/) on the backend.
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 8](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
 ## Getting Started
 
@@ -20,10 +20,12 @@ Dark mode:
 
 ### Prerequisites
 
-You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: ffmpeg, nodejs, python. If you don't, run this command:
+NOTE: If you would like to use Docker, you can go down to the [Docker](#Docker) section for a setup guide.
+
+You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: nodejs and youtube-dl. If you don't, run this command:
 
 ```
-sudo apt-get install ffmpeg nodejs python
+sudo apt-get install nodejs youtube-dl
 ```
 
 ### Installing
@@ -72,6 +74,16 @@ Once you do that, you're almost up and running. All you need to do is edit the c
 The frontend is now complete. The backend is much easier. Just go into the `youtubedl-material/backend` folder, and type `sudo nodejs app.js`.
 
 Finally, port forward the port `17442` and point it to the server's IP address. Make sure the port is also allowed through the firewall.
+
+## Docker
+
+If you are looking to setup YoutubeDL-Material with Docker, this section is for you. And you're in luck! Docker setup is quite simple.
+
+1. Download the `docker-compose.yml` file in the latest release, or [click here](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml) for a direct link.
+2. Modify the config items in the `environment` section of `docker-compose.yml` to your liking. Otherwise, the default options will work and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
+3. Make sure the port in the `frontend_url` environment variable lines up with the port in the `ports` section.
+4. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
+5. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 17442" or something similar. Make sure you can connect to the frontend, and if so, you are done!
 
 ## Contributing
 
