@@ -60,10 +60,14 @@ Here is an explanation for the configuration entries. Check out the [default con
 | file_manager_enabled | true if you want to use the file manager | true |
 | allow_quality_select | true if you want to select a videos quality level before downloading | true |
 | download_only_mode | true if you want files to directly download to the client with no media player | false |
+| allow_multi_download_mode | true if you want the ability to download multiple videos at the same time | true |
 | use_youtube_API | true if you want to use the Youtube API which is used for YT searches | false |
 | youtube_API_key | Youtube API key. Required if use_youtube_API is enabled | "" |
 | default_theme | Default theme to use. Options are "default" and "dark" | "default" |
 | allow_theme_change | true if you want the icon in the top toolbar that toggles dark mode | true |
+| use_default_downloading_agent | true if you want to use youtube-dl's default downloader | true |
+| custom_downloading_agent | If not using the default downloader, this is the downloader you want to use | "" |
+| allow_advanced_download | true if you want to use the Advanced download options - NOT FULLY IMPLEMENTED | false |
 
 ## Deployment
 
