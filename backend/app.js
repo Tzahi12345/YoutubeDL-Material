@@ -899,12 +899,16 @@ app.post('/downloadFile', async (req, res) => {
     let outputName = req.body.outputName;
     let file = null;
     if (!is_playlist) {
+        fileNames = decodeURI(fileNames);
         if (type === 'audio') {
             file = __dirname + '/' + audioFolderPath + fileNames + '.mp3';
         } else if (type === 'video') {
             file = __dirname + '/' + videoFolderPath + fileNames + '.mp4';
         }
     } else {
+        for (let i = 0; i < fileNames.length; i++) {
+            fileNames[i] = decodeURI(fileNames[i]);
+        }
         file = await createPlaylistZipFile(fileNames, type, outputName);
     }
 
