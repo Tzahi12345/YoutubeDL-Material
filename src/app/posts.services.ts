@@ -43,16 +43,22 @@ export class PostsService {
         return this.http.get(this.startPath + 'audiofolder');
     }
 
-    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string) {
+    // tslint:disable-next-line: max-line-length
+    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null) {
         return this.http.post(this.path + 'tomp3', {url: url,
                                                     maxBitrate: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration});
+                                                    customQualityConfiguration: customQualityConfiguration,
+                                                    customArgs: customArgs,
+                                                    customOutput: customOutput});
     }
 
-    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string) {
+    // tslint:disable-next-line: max-line-length
+    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null) {
         return this.http.post(this.path + 'tomp4', {url: url,
                                                     selectedHeight: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration});
+                                                    customQualityConfiguration: customQualityConfiguration,
+                                                    customArgs: customArgs,
+                                                    customOutput: customOutput});
     }
 
     getFileStatusMp3(name: string) {

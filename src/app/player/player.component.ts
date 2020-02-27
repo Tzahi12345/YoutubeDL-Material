@@ -76,7 +76,7 @@ export class PlayerComponent implements OnInit {
       for (let i = 0; i < this.fileNames.length; i++) {
         const fileName = this.fileNames[i];
         const baseLocation = (this.type === 'audio') ? this.audioFolderPath : this.videoFolderPath;
-        const fullLocation = this.baseStreamPath + baseLocation + fileName; // + (this.type === 'audio' ? '.mp3' : '.mp4');
+        const fullLocation = this.baseStreamPath + baseLocation + encodeURI(fileName); // + (this.type === 'audio' ? '.mp3' : '.mp4');
         const mediaObject: IMedia = {
           title: fileName,
           src: fullLocation,

@@ -24,8 +24,9 @@ services:
             ytdl_allow_theme_change: 'true'
             ytdl_use_default_downloading_agent: 'true'
             ytdl_custom_downloading_agent: 'false'
-            write_ytdl_config: 'true'
+            ytdl_allow_advanced_download: 'false'
             # do not touch this
+            write_ytdl_config: 'true'
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: always
         ports:

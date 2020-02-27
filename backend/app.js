@@ -413,6 +413,30 @@ async function deleteVideoFile(name) {
     });
 }
 
+function recFindByExt(base,ext,files,result) 
+{
+    files = files || fs.readdirSync(base) 
+    result = result || [] 
+
+    files.forEach( 
+        function (file) {
+            var newbase = path.join(base,file)
+            if ( fs.statSync(newbase).isDirectory() )
+            {
+                result = recFindByExt(newbase,ext,fs.readdirSync(newbase),result)
+            }
+            else
+            {
+                if ( file.substr(-1*(ext.length+1)) == '.' + ext )
+                {
+                    result.push(newbase)
+                } 
+            }
+        }
+    )
+    return result
+}
+
 function getAudioInfos(fileNames) {
     let result = [];
     for (let i = 0; i < fileNames.length; i++) {
@@ -485,28 +509,40 @@ app.use(function(req, res, next) {
 app.post('/tomp3', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
-    var path = audioFolderPath;
     var audiopath = '%(title)s';
 
     var customQualityConfiguration = req.body.customQualityConfiguration;
     var maxBitrate = req.body.maxBitrate;
+    var customArgs = req.body.customArgs;
+    var customOutput = req.body.customOutput;
 
-    let downloadConfig = ['-o', path + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json']
+
+    let downloadConfig = null;
     let qualityPath = '';
 
-    if (customQualityConfiguration) {
-        qualityPath = `-f ${customQualityConfiguration}`;
-    } else if (maxBitrate) {
-        if (!maxBitrate || maxBitrate === '') maxBitrate = '0'; 
-        qualityPath = `--audio-quality ${maxBitrate}`
-    }
+    if (customArgs) {
+        downloadConfig = [customArgs];
+    } else {
+        if (customOutput) {
+            downloadConfig = ['-o', audioFolderPath + customOutput + '.mp3', '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
+        } else {
+            downloadConfig = ['-o', audioFolderPath + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
+        }
 
-    if (qualityPath !== '') {
-        downloadConfig.splice(2, 0, qualityPath);
-    }
-
-    if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
-        downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        if (customQualityConfiguration) {
+            qualityPath = `-f ${customQualityConfiguration}`;
+        } else if (maxBitrate) {
+            if (!maxBitrate || maxBitrate === '') maxBitrate = '0'; 
+            qualityPath = `--audio-quality ${maxBitrate}`
+        }
+    
+        if (qualityPath !== '') {
+            downloadConfig.splice(2, 0, qualityPath);
+        }
+    
+        if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
+            downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        }
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
@@ -534,12 +570,14 @@ app.post('/tomp3', function(req, res) {
                     continue;
                 }
                 var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
+                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
+                var alternate_file_path = file_path.substring(0, file_path.length-4);
                 var alternate_file_name = file_name.substring(0, file_name.length-4);
-                if (alternate_file_name) file_names.push(alternate_file_name);
+                if (alternate_file_path) file_names.push(alternate_file_path);
             }
 
             let is_playlist = file_names.length > 1;
-            if (!is_playlist) audiopath = file_names[0];
+            // if (!is_playlist) audiopath = file_names[0];
 
             var audiopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
@@ -555,22 +593,35 @@ app.post('/tomp4', function(req, res) {
     var date = Date.now();
     var path = videoFolderPath;
     var videopath = '%(title)s';
+    var customArgs = req.body.customArgs;
+    var customOutput = req.body.customOutput;
 
     var selectedHeight = req.body.selectedHeight;
     var customQualityConfiguration = req.body.customQualityConfiguration;
 
+    let downloadConfig = null;
     let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
 
-    if (customQualityConfiguration) {
-        qualityPath = customQualityConfiguration;
-    } else if (selectedHeight && selectedHeight !== '') {
-        qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+    if (customArgs) {
+        downloadConfig = [customArgs];
+    } else {
+        if (customOutput) {
+            downloadConfig = ['-o', path + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+        } else {
+            downloadConfig = ['-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+        }
+
+        if (customQualityConfiguration) {
+            qualityPath = customQualityConfiguration;
+        } else if (selectedHeight && selectedHeight !== '') {
+            qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+        }
+    
+        if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
+            downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        }
     }
 
-    let downloadConfig = ['-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json']
-    if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
-        downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
-    }
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
         if (debugMode) {
             let new_date = Date.now();
@@ -606,7 +657,9 @@ app.post('/tomp4', function(req, res) {
                     }
                 }
                 var alternate_file_name = file_name.substring(0, file_name.length-4);
-                if (alternate_file_name) file_names.push(alternate_file_name);
+                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
+                var alternate_file_path = file_path.substring(0, file_path.length-4);
+                if (alternate_file_name) file_names.push(alternate_file_path);
             }
 
             let is_playlist = file_names.length > 1;
@@ -668,31 +721,25 @@ app.post('/fileStatusMp4', function(req, res) {
 app.post('/getMp3s', function(req, res) {
     var mp3s = [];
     var playlists = db.get('playlists.audio').value();
-    var fullpath = audioFolderPath;
-    var files = fs.readdirSync(audioFolderPath);
-    
-    for (var i in files)
-    {
-        var nameLength = path.basename(files[i]).length;
-        var ext = path.basename(files[i]).substring(nameLength-4, nameLength);
-        if (ext == ".mp3") 
+    var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        var file_path = file.substring(audioFolderPath.length, file.length);
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONMp3(id);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+
+        if (title.length > 14) // edits title if it's too long
         {
-            var jsonobj = getJSONMp3(path.basename(files[i]).substring(0, path.basename(files[i]).length-4));
-            if (!jsonobj) continue;
-            var id = path.basename(files[i]).substring(0, path.basename(files[i]).length-4);
-            var title = jsonobj.title;
-
-            if (title.length > 14) // edits title if it's too long
-            {
-                title = title.substring(0,12) + "...";
-            }
-
-            var thumbnail = jsonobj.thumbnail;
-            var duration = jsonobj.duration;
-            var isaudio = true;
-            var file = new File(id, title, thumbnail, isaudio, duration);
-            mp3s.push(file);
+            title = title.substring(0,12) + "...";
         }
+
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+        var isaudio = true;
+        var file_obj = new File(id, title, thumbnail, isaudio, duration);
+        mp3s.push(file_obj);
     }
 
     res.send({
@@ -707,30 +754,25 @@ app.post('/getMp4s', function(req, res) {
     var mp4s = [];
     var playlists = db.get('playlists.video').value();
     var fullpath = videoFolderPath;
-    var files = fs.readdirSync(videoFolderPath);
-    
-    for (var i in files)
-    {
-        var nameLength = path.basename(files[i]).length;
-        var ext = path.basename(files[i]).substring(nameLength-4, nameLength);
-        if (ext == ".mp4") 
+    var files = recFindByExt(videoFolderPath, 'mp4');
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        var file_path = file.substring(videoFolderPath.length, file.length);
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONMp4(id);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+
+        if (title.length > 14) // edits title if it's too long
         {
-            var jsonobj = getJSONMp4(path.basename(files[i]).substring(0, path.basename(files[i]).length-4));
-            if (!jsonobj) continue;
-            var id = path.basename(files[i]).substring(0, path.basename(files[i]).length-4);
-            var title = jsonobj.title;
-
-            if (title.length > 14) // edits title if it's too long
-            {
-                title = title.substring(0,12) + "...";
-            }
-
-            var thumbnail = jsonobj.thumbnail;
-            var duration = jsonobj.duration;
-            var isaudio = false;
-            var file = new File(id, title, thumbnail, isaudio, duration);
-            mp4s.push(file);
+            title = title.substring(0,12) + "...";
         }
+
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+        var isaudio = false;
+        var file_obj = new File(id, title, thumbnail, isaudio, duration);
+        mp4s.push(file_obj);
     }
 
     res.send({
@@ -882,46 +924,48 @@ app.post('/deleteFile', async (req, res) => {
 
 app.get('/video/:id', function(req , res){
     var head;
-    const path = "video/" + req.params.id + '.mp4';
-  const stat = fs.statSync(path)
-  const fileSize = stat.size
-  const range = req.headers.range
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-")
-    const start = parseInt(parts[0], 10)
-    const end = parts[1] 
-      ? parseInt(parts[1], 10)
-      : fileSize-1
-    const chunksize = (end-start)+1
-    const file = fs.createReadStream(path, {start, end})
-    if (descriptors[req.params.id]) descriptors[req.params.id].push(file);
-    else                            descriptors[req.params.id] = [file];
-    file.on('close', function() {
-        let index = descriptors[req.params.id].indexOf(file);
-        descriptors[req.params.id].splice(index, 1);
-        if (debugMode) console.log('Successfully closed stream and removed file reference.');
-    });
-    head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': 'video/mp4',
+    let id = decodeURI(req.params.id);
+    const path = "video/" + id + '.mp4';
+    const stat = fs.statSync(path)
+    const fileSize = stat.size
+    const range = req.headers.range
+    if (range) {
+        const parts = range.replace(/bytes=/, "").split("-")
+        const start = parseInt(parts[0], 10)
+        const end = parts[1] 
+        ? parseInt(parts[1], 10)
+        : fileSize-1
+        const chunksize = (end-start)+1
+        const file = fs.createReadStream(path, {start, end})
+        if (descriptors[id]) descriptors[id].push(file);
+        else                            descriptors[id] = [file];
+        file.on('close', function() {
+            let index = descriptors[id].indexOf(file);
+            descriptors[id].splice(index, 1);
+            if (debugMode) console.log('Successfully closed stream and removed file reference.');
+        });
+        head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'video/mp4',
+        }
+        res.writeHead(206, head);
+        file.pipe(res);
+    } else {
+        head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        }
+        res.writeHead(200, head)
+        fs.createReadStream(path).pipe(res)
     }
-    res.writeHead(206, head);
-    file.pipe(res);
-  } else {
-    head = {
-      'Content-Length': fileSize,
-      'Content-Type': 'video/mp4',
-    }
-    res.writeHead(200, head)
-    fs.createReadStream(path).pipe(res)
-  }
 });
 
 app.get('/audio/:id', function(req , res){
     var head;
-    let path = "audio/" + req.params.id + '.mp3';
+    let id = decodeURI(req.params.id);
+    let path = "audio/" + id + '.mp3';
     path = path.replace(/\"/g, '\'');
   const stat = fs.statSync(path)
   const fileSize = stat.size
@@ -934,11 +978,11 @@ app.get('/audio/:id', function(req , res){
       : fileSize-1
     const chunksize = (end-start)+1
     const file = fs.createReadStream(path, {start, end});
-    if (descriptors[req.params.id]) descriptors[req.params.id].push(file);
-    else                            descriptors[req.params.id] = [file];
+    if (descriptors[id]) descriptors[id].push(file);
+    else                            descriptors[id] = [file];
     file.on('close', function() {
-        let index = descriptors[req.params.id].indexOf(file);
-        descriptors[req.params.id].splice(index, 1);
+        let index = descriptors[id].indexOf(file);
+        descriptors[id].splice(index, 1);
         if (debugMode) console.log('Successfully closed stream and removed file reference.');
     });
     head = {

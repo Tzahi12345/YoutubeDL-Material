@@ -47,6 +47,10 @@ export class MainComponent implements OnInit {
   downloadingfile = false;
   audioOnly: boolean;
   multiDownloadMode = false;
+  customArgsEnabled = false;
+  customArgs = null;
+  customOutputEnabled = false;
+  customOutput = null;
   urlError = false;
   path = '';
   url = '';
@@ -61,6 +65,7 @@ export class MainComponent implements OnInit {
   baseStreamPath;
   audioFolderPath;
   videoFolderPath;
+  allowAdvancedDownload = false;
 
   cachedAvailableFormats = {};
 
@@ -209,6 +214,7 @@ export class MainComponent implements OnInit {
           result['YoutubeDLMaterial']['API']['youtube_API_key'];
       this.youtubeAPIKey = this.youtubeSearchEnabled ? result['YoutubeDLMaterial']['API']['youtube_API_key'] : null;
       this.allowQualitySelect = result['YoutubeDLMaterial']['Extra']['allow_quality_select'];
+      this.allowAdvancedDownload = result['YoutubeDLMaterial']['Advanced']['allow_advanced_download'];
 
       this.postsService.path = backendUrl;
       this.postsService.startPath = backendUrl;
@@ -223,6 +229,18 @@ export class MainComponent implements OnInit {
         this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
         this.attachToInput();
       }
+
+      // set final cache items
+      if (this.allowAdvancedDownload) {
+        if (localStorage.getItem('customArgsEnabled') !== null) {
+          this.customArgsEnabled = localStorage.getItem('customArgsEnabled') === 'true';
+        }
+
+        if (localStorage.getItem('customOutputEnabled') !== null) {
+          this.customOutputEnabled = localStorage.getItem('customOutputEnabled') === 'true';
+        }
+      }
+
     }, error => {
       console.log(error);
     });
@@ -477,8 +495,12 @@ export class MainComponent implements OnInit {
             customQualityConfiguration = audio_formats[this.selectedQuality]['format_id'];
           }
         }
+
+        const customArgs = (this.customArgsEnabled ? this.customArgs : null);
+        const customOutput = (this.customOutputEnabled ? this.customOutput : null);
+
         this.postsService.makeMP3(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
@@ -516,8 +538,11 @@ export class MainComponent implements OnInit {
           }
         }
 
+        const customArgs = (this.customArgsEnabled ? this.customArgs : null);
+        const customOutput = (this.customOutputEnabled ? this.customOutput : null);
+
         this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
@@ -742,6 +767,20 @@ export class MainComponent implements OnInit {
 
   multiDownloadModeChanged(new_val) {
     localStorage.setItem('multiDownloadMode', new_val.checked.toString());
+  }
+
+  customArgsEnabledChanged(new_val) {
+    localStorage.setItem('customArgsEnabled', new_val.checked.toString());
+    if (new_val.checked === true && this.customOutputEnabled) {
+      this.customOutputEnabled = false;
+    }
+  }
+
+  customOutputEnabledChanged(new_val) {
+    localStorage.setItem('customOutputEnabled', new_val.checked.toString());
+    if (new_val.checked === true && this.customArgsEnabled) {
+      this.customArgsEnabled = false;
+    }
   }
 
   getAudioAndVideoFormats(formats): any[] {

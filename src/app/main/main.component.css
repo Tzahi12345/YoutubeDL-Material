@@ -116,3 +116,9 @@ mat-form-field.mat-form-field {
 .add-playlist-button {
     float: right;
 }
+
+.advanced-input {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

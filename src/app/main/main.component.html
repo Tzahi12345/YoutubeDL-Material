@@ -61,7 +61,36 @@
         </mat-card-actions>
     </mat-card>
 </div>
-<div *ngIf="downloads.length > 0 && !current_download" style="margin-top: 15px;" class="big demo-basic">
+<div *ngIf="allowAdvancedDownload" class="big demo-basic">
+    <form style="margin-left: 20px; margin-right: 20px;">
+        <mat-expansion-panel class="big">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Advanced
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="container" style="padding-bottom: 20px;">
+                <div class="row">
+                    <div class="col">
+                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="position: absolute; z-index: 999" [ngModelOptions]="{standalone: true}">Use custom args</mat-checkbox>
+                        <mat-form-field color="accent" class="advanced-input">
+                            <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput placeholder="Custom args">
+                            <mat-hint>No need to include URL, just everything after.</mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col">
+                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="position: absolute; z-index: 999" [ngModelOptions]="{standalone: true}">Use custom output</mat-checkbox>
+                        <mat-form-field color="accent" class="advanced-input">
+                            <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput placeholder="Custom output">
+                            <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">This link</a> will be helpful. Path is relative to the config download path.</mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </form>
+</div>
+<div *ngIf="multiDownloadMode && downloads.length > 0 && !current_download" style="margin-top: 15px;" class="big demo-basic">
     <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
         <div class="container">
             <div *ngFor="let download of downloads; let i = index;" class="row">

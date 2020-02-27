@@ -91,6 +91,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_custom_downloading_agent',
         'path': 'YoutubeDLMaterial.Advanced.custom_downloading_agent'
     },
+    'ytdl_allow_advanced_download': {
+        'key': 'ytdl_allow_advanced_download',
+        'path': 'YoutubeDLMaterial.Advanced.allow_advanced_download'
+    },
 };
 
 module.exports.CONFIG_ITEMS = CONFIG_ITEMS;
