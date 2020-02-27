@@ -1,5 +1,4 @@
 <mat-card class="example-card mat-elevation-z6">
-  <button (click)="deleteFile()" class="deleteButton" mat-icon-button><mat-icon>delete_forever</mat-icon></button>
   <div style="padding:5px">
     <b><a href="javascript:void(0)" (click)="!isPlaylist ? mainComponent.goToFile(name, isAudio) : mainComponent.goToPlaylist(name, type)">{{title}}</a></b>
     <br/>
@@ -13,9 +12,6 @@
         </ngx-content-loading>
       </span>
     </div>
-</div>
-    
-
-  
-
+  </div>
+  <button (click)="deleteFile()" class="deleteButton" mat-icon-button><mat-icon>delete_forever</mat-icon></button>
 </mat-card>
