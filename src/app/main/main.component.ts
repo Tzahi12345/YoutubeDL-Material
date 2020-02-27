@@ -57,6 +57,7 @@ export class MainComponent implements OnInit {
   fileManagerEnabled = false;
   allowQualitySelect = false;
   downloadOnlyMode = false;
+  allowMultiDownloadMode = false;
   baseStreamPath;
   audioFolderPath;
   videoFolderPath;
@@ -200,6 +201,7 @@ export class MainComponent implements OnInit {
       const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
       this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
       this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
+      this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
       this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];

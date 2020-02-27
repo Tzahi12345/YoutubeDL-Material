@@ -50,7 +50,7 @@
                 </form>
                 <br/>
                 <mat-checkbox [disabled]="current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
-                <mat-checkbox [disabled]="current_download" (change)="multiDownloadModeChanged($event)" [(ngModel)]="multiDownloadMode" style="float: right; margin-top: -12px">Multi-download mode</mat-checkbox>
+                <mat-checkbox *ngIf="allowMultiDownloadMode" [disabled]="current_download" (change)="multiDownloadModeChanged($event)" [(ngModel)]="multiDownloadMode" style="float: right; margin-top: -12px">Multi-download mode</mat-checkbox>
                 
             </div>
         </mat-card-content>
