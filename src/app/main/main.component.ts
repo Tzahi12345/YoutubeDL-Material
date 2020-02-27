@@ -22,6 +22,8 @@ import { v4 as uuid } from 'uuid';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
+export let audioFilesOpened = false;
+export let videoFilesOpened = false;
 
 export interface Download {
   uid: string;
@@ -44,6 +46,7 @@ export class MainComponent implements OnInit {
   determinateProgress = false;
   downloadingfile = false;
   audioOnly: boolean;
+  multiDownloadMode = false;
   urlError = false;
   path = '';
   url = '';
@@ -179,10 +182,18 @@ export class MainComponent implements OnInit {
   last_valid_url = '';
   last_url_check = 0;
 
+  test_download: Download = {
+    uid: null,
+    type: 'audio',
+    percent_complete: 0,
+    url: 'http://youtube.com/watch?v=17848rufj',
+    downloading: true,
+    is_playlist: false
+  };
+
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform) {
     this.audioOnly = false;
-
 
     // loading config
     this.postsService.loadNavItems().subscribe(result => { // loads settings
@@ -350,6 +361,10 @@ export class MainComponent implements OnInit {
     if (localStorage.getItem('audioOnly') !== null) {
       this.audioOnly = localStorage.getItem('audioOnly') === 'true';
     }
+
+    if (localStorage.getItem('multiDownloadMode') !== null) {
+      this.multiDownloadMode = localStorage.getItem('multiDownloadMode') === 'true';
+    }
   }
 
   // download helpers
@@ -359,7 +374,7 @@ export class MainComponent implements OnInit {
 
     if (new_download && this.current_download !== new_download) {
       // console.log('mismatched downloads');
-    } else {
+    } else if (!this.multiDownloadMode) {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode && !this.iOS) {
         if (is_playlist) {
@@ -379,9 +394,17 @@ export class MainComponent implements OnInit {
       }
     }
 
+    // remove download from current downloads
+    this.removeDownloadFromCurrentDownloads(new_download);
+
     // reloads mp3s
     if (this.fileManagerEnabled) {
       this.getMp3s();
+      setTimeout(() => {
+        this.audioFileCards.forEach(filecard => {
+          filecard.onHoverResponse();
+        });
+      }, 200);
     }
   }
 
@@ -390,7 +413,7 @@ export class MainComponent implements OnInit {
 
     if (new_download && this.current_download !== new_download) {
       // console.log('mismatched downloads');
-    } else {
+    } else if (!this.multiDownloadMode) {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode) {
         if (is_playlist) {
@@ -410,9 +433,17 @@ export class MainComponent implements OnInit {
       }
     }
 
+    // remove download from current downloads
+    this.removeDownloadFromCurrentDownloads(new_download);
+
     // reloads mp4s
     if (this.fileManagerEnabled) {
       this.getMp4s();
+      setTimeout(() => {
+        this.videoFileCards.forEach(filecard => {
+          filecard.onHoverResponse();
+        });
+      }, 200);
     }
   }
 
@@ -433,7 +464,7 @@ export class MainComponent implements OnInit {
           is_playlist: this.url.includes('playlist')
         };
         this.downloads.push(new_download);
-        if (!this.current_download) { this.current_download = new_download };
+        if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
         this.downloadingfile = true;
 
         let customQualityConfiguration = null;
@@ -471,7 +502,7 @@ export class MainComponent implements OnInit {
           is_playlist: this.url.includes('playlist')
         };
         this.downloads.push(new_download);
-        if (!this.current_download) { this.current_download = new_download };
+        if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
         this.downloadingfile = true;
 
         let customQualityConfiguration = null;
@@ -500,13 +531,23 @@ export class MainComponent implements OnInit {
           this.openSnackBar('Download failed!', 'OK.');
       });
       }
+
+      if (this.multiDownloadMode) {
+          this.url = '';
+          this.downloadingfile = false;
+      }
     } else {
       this.urlError = true;
     }
   }
 
   // download canceled handler
-  cancelDownload() {
+  cancelDownload(download_to_cancel = null) {
+    // if one is provided, cancel that one. otherwise, remove the current one
+    if (download_to_cancel) {
+      this.removeDownloadFromCurrentDownloads(download_to_cancel)
+      return;
+    }
     this.downloadingfile = false;
     this.current_download.downloading = false;
     this.current_download = null;
@@ -518,6 +559,16 @@ export class MainComponent implements OnInit {
       return this.downloads[index];
     } else {
       return null;
+    }
+  }
+
+  removeDownloadFromCurrentDownloads(download_to_remove) {
+    const index = this.downloads.indexOf(download_to_remove);
+    if (index !== -1) {
+      this.downloads.splice(index, 1);
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -687,6 +738,10 @@ export class MainComponent implements OnInit {
     localStorage.setItem('audioOnly', new_val.checked.toString());
   }
 
+  multiDownloadModeChanged(new_val) {
+    localStorage.setItem('multiDownloadMode', new_val.checked.toString());
+  }
+
   getAudioAndVideoFormats(formats): any[] {
     const audio_formats = {};
     const video_formats = {};
@@ -767,6 +822,22 @@ export class MainComponent implements OnInit {
       audioFilesMouseHovering = false;
     } else if (type === 'video') {
       videoFilesMouseHovering = false;
+    }
+  }
+
+  accordionOpened(type) {
+    if (type === 'audio') {
+      audioFilesOpened = true;
+    } else if (type === 'video') {
+      videoFilesOpened = true;
+    }
+  }
+
+  accordionClosed(type) {
+    if (type === 'audio') {
+      audioFilesOpened = false;
+    } else if (type === 'video') {
+      videoFilesOpened = false;
     }
   }
 

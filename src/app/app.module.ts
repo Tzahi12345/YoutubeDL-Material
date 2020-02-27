@@ -25,11 +25,12 @@ import {VgBufferingModule} from 'videogular2/compiled/buffering';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { NgxContentLoadingModule } from 'ngx-content-loading';
-import { audioFilesMouseHovering, videoFilesMouseHovering } from './main/main.component';
+import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
+import { DownloadItemComponent } from './download-item/download-item.component';
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
-  return (element.id === 'video' ? videoFilesMouseHovering : audioFilesMouseHovering);
+  return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
 }
 
 @NgModule({
@@ -39,7 +40,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MainComponent,
     PlayerComponent,
     InputDialogComponent,
-    CreatePlaylistComponent
+    CreatePlaylistComponent,
+    DownloadItemComponent
   ],
   imports: [
     BrowserModule,

@@ -17,6 +17,7 @@ services:
             ytdl_file_manager_enabled: 'true'
             ytdl_allow_quality_select: 'true'
             ytdl_download_only_mode: 'false'
+            ytdl_allow_multi_download_mode: true
             ytdl_use_youtube_api: 'false'
             ytdl_youtube_api_key: 'false'
             ytdl_default_theme: default

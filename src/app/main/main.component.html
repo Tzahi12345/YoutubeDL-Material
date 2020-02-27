@@ -50,6 +50,7 @@
                 </form>
                 <br/>
                 <mat-checkbox [disabled]="current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
+                <mat-checkbox [disabled]="current_download" (change)="multiDownloadModeChanged($event)" [(ngModel)]="multiDownloadMode" style="float: right; margin-top: -12px">Multi-download mode</mat-checkbox>
                 
             </div>
         </mat-card-content>
@@ -58,6 +59,18 @@
                 color="accent">Download</button>
                 <button (click)="cancelDownload()" style="float: right" *ngIf="!!current_download" mat-stroked-button color="warn">Cancel</button>
         </mat-card-actions>
+    </mat-card>
+</div>
+<div *ngIf="downloads.length > 0 && !current_download" style="margin-top: 15px;" class="big demo-basic">
+    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
+        <div class="container">
+            <div *ngFor="let download of downloads; let i = index;" class="row">
+                <ng-container *ngIf="current_download !== download">
+                    <app-download-item style="width: 100%" [download]="download" [queueNumber]="i+1" (cancelDownload)="cancelDownload($event)"></app-download-item>
+                    <mat-divider style="position: relative" *ngIf="i !== downloads.length - 1"></mat-divider>
+                </ng-container>
+            </div>
+        </div>
     </mat-card>
 </div>
 <br/>
@@ -81,7 +94,7 @@
 </ng-template>
 <div style="margin: 20px" *ngIf="fileManagerEnabled">
     <mat-accordion>
-        <mat-expansion-panel (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">
+        <mat-expansion-panel (opened)="accordionOpened('audio')" (closed)="accordionClosed('audio')" (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Audio
@@ -116,7 +129,7 @@
             </div>
 
         </mat-expansion-panel>
-        <mat-expansion-panel (mouseleave)="accordionLeft('video')" (mouseenter)="accordionEntered('video')" class="big">
+        <mat-expansion-panel (opened)="accordionOpened('video')" (closed)="accordionClosed('video')" (mouseleave)="accordionLeft('video')" (mouseenter)="accordionEntered('video')" class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Video
