@@ -18,9 +18,20 @@ import { YoutubeSearchService, Result } from '../youtube-search.service';
 import { Router } from '@angular/router';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Platform } from '@angular/cdk/platform';
+import { v4 as uuid } from 'uuid';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
+
+export interface Download {
+  uid: string;
+  type: string;
+  url: string;
+  percent_complete: number;
+  downloading: boolean;
+  is_playlist: boolean;
+  fileNames?: string[];
+}
 
 @Component({
   selector: 'app-root',
@@ -62,6 +73,8 @@ export class MainComponent implements OnInit {
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
   downloading_content = {'audio': {}, 'video': {}};
+  downloads: Download[] = [];
+  current_download: Download = null;
 
   urlForm = new FormControl('', [Validators.required]);
 
@@ -341,24 +354,28 @@ export class MainComponent implements OnInit {
 
   // download helpers
 
-  downloadHelperMp3(name, is_playlist = false, forceView = false) {
+  downloadHelperMp3(name, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
 
-    // if download only mode, just download the file. no redirect
-    if (forceView === false && this.downloadOnlyMode && !this.iOS) {
-      if (is_playlist) {
-        const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
-        this.downloadPlaylist(name, 'audio', zipName);
-      } else {
-        this.downloadAudioFile(decodeURI(name));
-      }
+    if (new_download && this.current_download !== new_download) {
+      // console.log('mismatched downloads');
     } else {
-      if (is_playlist) {
-        this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
-        // window.location.href = this.baseStreamPath + this.audioFolderPath + name[0] + '.mp3';
+      // if download only mode, just download the file. no redirect
+      if (forceView === false && this.downloadOnlyMode && !this.iOS) {
+        if (is_playlist) {
+          const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
+          this.downloadPlaylist(name, 'audio', zipName);
+        } else {
+          this.downloadAudioFile(decodeURI(name));
+        }
       } else {
-        this.router.navigate(['/player', {fileNames: name, type: 'audio'}]);
-        // window.location.href = this.baseStreamPath + this.audioFolderPath + name + '.mp3';
+        if (is_playlist) {
+          this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
+          // window.location.href = this.baseStreamPath + this.audioFolderPath + name[0] + '.mp3';
+        } else {
+          this.router.navigate(['/player', {fileNames: name, type: 'audio'}]);
+          // window.location.href = this.baseStreamPath + this.audioFolderPath + name + '.mp3';
+        }
       }
     }
 
@@ -368,24 +385,28 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadHelperMp4(name, is_playlist = false, forceView = false) {
+  downloadHelperMp4(name, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
 
-    // if download only mode, just download the file. no redirect
-    if (forceView === false && this.downloadOnlyMode) {
-      if (is_playlist) {
-        const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
-        this.downloadPlaylist(name, 'video', zipName);
-      } else {
-        this.downloadVideoFile(decodeURI(name));
-      }
+    if (new_download && this.current_download !== new_download) {
+      // console.log('mismatched downloads');
     } else {
-      if (is_playlist) {
-        this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
-        // window.location.href = this.baseStreamPath + this.videoFolderPath + name[0] + '.mp4';
+      // if download only mode, just download the file. no redirect
+      if (forceView === false && this.downloadOnlyMode) {
+        if (is_playlist) {
+          const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
+          this.downloadPlaylist(name, 'video', zipName);
+        } else {
+          this.downloadVideoFile(decodeURI(name));
+        }
       } else {
-        this.router.navigate(['/player', {fileNames: name, type: 'video'}]);
-        // window.location.href = this.baseStreamPath + this.videoFolderPath + name + '.mp4';
+        if (is_playlist) {
+          this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
+          // window.location.href = this.baseStreamPath + this.videoFolderPath + name[0] + '.mp4';
+        } else {
+          this.router.navigate(['/player', {fileNames: name, type: 'video'}]);
+          // window.location.href = this.baseStreamPath + this.videoFolderPath + name + '.mp4';
+        }
       }
     }
 
@@ -402,6 +423,17 @@ export class MainComponent implements OnInit {
       this.path = '';
 
       if (this.audioOnly) {
+        // create download object
+        const new_download: Download = {
+          uid: uuid(),
+          type: 'audio',
+          percent_complete: 0,
+          url: this.url,
+          downloading: true,
+          is_playlist: this.url.includes('playlist')
+        };
+        this.downloads.push(new_download);
+        if (!this.current_download) { this.current_download = new_download };
         this.downloadingfile = true;
 
         let customQualityConfiguration = null;
@@ -414,16 +446,34 @@ export class MainComponent implements OnInit {
         }
         this.postsService.makeMP3(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
           customQualityConfiguration).subscribe(posts => {
+          // update download object
+          new_download.downloading = false;
+          new_download.percent_complete = 100;
+
           const is_playlist = !!(posts['file_names']);
           this.path = is_playlist ? posts['file_names'] : posts['audiopathEncoded'];
+
           if (this.path !== '-1') {
-            this.downloadHelperMp3(this.path, is_playlist);
+            this.downloadHelperMp3(this.path, is_playlist, false, new_download);
           }
         }, error => { // can't access server
           this.downloadingfile = false;
           this.openSnackBar('Download failed!', 'OK.');
         });
       } else {
+        // create download object
+        const new_download: Download = {
+          uid: uuid(),
+          type: 'video',
+          percent_complete: 0,
+          url: this.url,
+          downloading: true,
+          is_playlist: this.url.includes('playlist')
+        };
+        this.downloads.push(new_download);
+        if (!this.current_download) { this.current_download = new_download };
+        this.downloadingfile = true;
+
         let customQualityConfiguration = null;
         const cachedFormatsExists = this.cachedAvailableFormats[this.url] &&  this.cachedAvailableFormats[this.url]['formats'];
         if (cachedFormatsExists) {
@@ -433,13 +483,17 @@ export class MainComponent implements OnInit {
           }
         }
 
-        this.downloadingfile = true;
         this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
           customQualityConfiguration).subscribe(posts => {
+          // update download object
+          new_download.downloading = false;
+          new_download.percent_complete = 100;
+
           const is_playlist = !!(posts['file_names']);
           this.path = is_playlist ? posts['file_names'] : posts['videopathEncoded'];
+
           if (this.path !== '-1') {
-            this.downloadHelperMp4(this.path, is_playlist);
+            this.downloadHelperMp4(this.path, is_playlist, false, new_download);
           }
         }, error => { // can't access server
           this.downloadingfile = false;
@@ -448,6 +502,22 @@ export class MainComponent implements OnInit {
       }
     } else {
       this.urlError = true;
+    }
+  }
+
+  // download canceled handler
+  cancelDownload() {
+    this.downloadingfile = false;
+    this.current_download.downloading = false;
+    this.current_download = null;
+  }
+
+  getDownloadByUID(uid) {
+    const index = this.downloads.findIndex(download => download.uid === uid);
+    if (index !== -1) {
+      return this.downloads[index];
+    } else {
+      return null;
     }
   }
 
