@@ -53,7 +53,6 @@ Here is an explanation for the configuration entries. Check out the [default con
 | use-encryption | true if you intend to use SSL encryption (https) | false |
 | cert-file-path | Cert file path - required if using encryption | "/etc/letsencrypt/live/example.com/fullchain.pem" |
 | key-file-path | Private key file path - required if using encryption |  "/etc/letsencrypt/live/example.com/privkey.pem" |
-| path-base | Audio/video stream URL. Usually the same as backendurl | "http://example.com:17442/" |
 | path-audio | Path to audio folder for saved mp3s | "audio/" |
 | path-video | Path to video folder for saved mp4s | "video/" |
 | title_top | Title shown on the top toolbar | "Youtube Downloader" |

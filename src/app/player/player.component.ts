@@ -55,7 +55,7 @@ export class PlayerComponent implements OnInit {
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
       const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
+      this.baseStreamPath = this.postsService.path;
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
 

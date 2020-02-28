@@ -26,10 +26,6 @@ let CONFIG_ITEMS = {
     },
 
     // Downloader
-    'ytdl_base_path': {
-        'key': 'ytdl_base_path',
-        'path': 'YoutubeDLMaterial.Downloader.path-base'
-    },
     'ytdl_audio_folder_path': {
         'key': 'ytdl_audio_folder_path',
         'path': 'YoutubeDLMaterial.Downloader.path-audio'

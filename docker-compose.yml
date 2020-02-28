@@ -5,12 +5,11 @@ services:
         build: .
         environment: 
             # config items
-            ytdl_frontend_url: http://localhost:8998
-            ytdl_backend_url: http://localhost:17442/
+            ytdl_url: http://localhost:8998
+            ytdl_port: '17442'
             ytdl_use_encryption: 'false'
             ytdl_cert_file_path: /etc/letsencrypt/live/example.com/fullchain.pem
             ytdl_key_file_path: /etc/letsencrypt/live/example.com/privkey.pem
-            ytdl_base_path: http://localhost:17442/
             ytdl_audio_folder_path: audio/
             ytdl_video_folder_path: video/
             ytdl_title_top: Youtube Downloader

@@ -10,7 +10,6 @@
         "key-file-path": "/etc/letsencrypt/live/example.com/privkey.pem"
       },
       "Downloader": {
-        "path-base": "http://example.com:17442/api/",
         "path-audio": "audio/",
         "path-video": "video/"
       },
