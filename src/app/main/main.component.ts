@@ -394,7 +394,7 @@ export class MainComponent implements OnInit {
 
     if (new_download && this.current_download !== new_download) {
       // console.log('mismatched downloads');
-    } else if (!this.multiDownloadMode) {
+    } else if (!this.multiDownloadMode || !new_download) {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode && !this.iOS) {
         if (is_playlist) {
@@ -433,7 +433,7 @@ export class MainComponent implements OnInit {
 
     if (new_download && this.current_download !== new_download) {
       // console.log('mismatched downloads');
-    } else if (!this.multiDownloadMode) {
+    } else if (!this.multiDownloadMode || !new_download) {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode) {
         if (is_playlist) {
