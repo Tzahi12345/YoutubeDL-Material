@@ -58,11 +58,7 @@ export class PlayerComponent implements OnInit {
       this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
-      const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
 
-      this.postsService.path = backendUrl + 'api/';
-      this.postsService.startPath = backendUrl;
-      this.postsService.startPathSSL = backendUrl;
 
       let fileType = null;
       if (this.type === 'audio') {

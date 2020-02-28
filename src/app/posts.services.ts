@@ -30,6 +30,7 @@ export class PostsService {
 
         if (isDevMode()) {
             this.debugMode = true;
+            this.path = 'http://localhost:17442/api/';
         }
     }
 

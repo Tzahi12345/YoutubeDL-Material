@@ -31,7 +31,7 @@ db.defaults(
 // config values
 var frontendUrl = null;
 var backendUrl = null;
-var backendPort = 17442;
+var backendPort = null;
 var usingEncryption = null;
 var basePath = null;
 var audioFolderPath = null;
@@ -85,7 +85,7 @@ function startServer() {
     if (usingEncryption)
     {
         https.createServer(options, app).listen(backendPort, function() {
-            console.log('HTTPS: Anchor set on 17442');
+            console.log('HTTPS: Started on PORT ' + backendPort);
         });
     }
     else
@@ -121,9 +121,9 @@ async function loadConfig() {
         // get config library
         // config = require('config');
 
-        frontendUrl = !debugMode ? config_api.getConfigItem('ytdl_frontend_url') : 'http://localhost:4200';
-        backendUrl = config_api.getConfigItem('ytdl_backend_url')
-        backendPort = 17442;
+        // frontendUrl = !debugMode ? config_api.getConfigItem('ytdl_frontend_url') : 'http://localhost:4200';
+        url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
+        backendPort = config_api.getConfigItem('ytdl_port');
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
         basePath = config_api.getConfigItem('ytdl_base_path');
         audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
@@ -149,7 +149,7 @@ async function loadConfig() {
             };
         }
 
-        url_domain = new URL(frontendUrl);
+        url_domain = new URL(url);
 
         // start the server here
         startServer();

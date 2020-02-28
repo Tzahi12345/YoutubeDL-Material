@@ -2,13 +2,13 @@ var config = require('config');
 
 let CONFIG_ITEMS = {
     // Host
-    'ytdl_frontend_url': {
-        'key': 'ytdl_frontend_url',
-        'path': 'YoutubeDLMaterial.Host.frontendurl'
+    'ytdl_url': {
+        'key': 'ytdl_url',
+        'path': 'YoutubeDLMaterial.Host.url'
     },
-    'ytdl_backend_url': {
-        'key': 'ytdl_backend_url',
-        'path': 'YoutubeDLMaterial.Host.backendurl'
+    'ytdl_port': {
+        'key': 'ytdl_port',
+        'path': 'YoutubeDLMaterial.Host.port'
     },
 
     // Encryption

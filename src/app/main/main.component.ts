@@ -204,7 +204,6 @@ export class MainComponent implements OnInit {
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
       const result = !this.postsService.debugMode ? res['config_file'] : res;
-      const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
       this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
       this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
       this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
@@ -217,9 +216,6 @@ export class MainComponent implements OnInit {
       this.allowQualitySelect = result['YoutubeDLMaterial']['Extra']['allow_quality_select'];
       this.allowAdvancedDownload = result['YoutubeDLMaterial']['Advanced']['allow_advanced_download'];
 
-      this.postsService.path = backendUrl + 'api/';
-      this.postsService.startPath = backendUrl;
-      this.postsService.startPathSSL = backendUrl;
 
       if (this.fileManagerEnabled) {
         this.getMp3s();
@@ -395,7 +391,7 @@ export class MainComponent implements OnInit {
 
     if (new_download && this.current_download !== new_download) {
       // console.log('mismatched downloads');
-    } else if (!this.multiDownloadMode) {
+    } else if (!this.multiDownloadMode || !new_download) {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode && !this.iOS) {
         if (is_playlist) {
@@ -434,7 +430,7 @@ export class MainComponent implements OnInit {
 
     if (new_download && this.current_download !== new_download) {
       // console.log('mismatched downloads');
-    } else if (!this.multiDownloadMode) {
+    } else if (!this.multiDownloadMode || !new_download) {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode) {
         if (is_playlist) {
