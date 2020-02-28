@@ -108,5 +108,6 @@ module.exports = {
     getConfigItem: getConfigItem,
     setConfigItem: setConfigItem,
     setConfigItems: setConfigItems,
+    getConfigFile: getConfigFile,
     CONFIG_ITEMS: CONFIG_ITEMS
 }

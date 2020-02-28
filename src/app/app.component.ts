@@ -40,7 +40,8 @@ export class AppComponent implements OnInit {
     public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
 
     // loading config
-    this.postsService.loadNavItems().subscribe(result => { // loads settings
+    this.postsService.loadNavItems().subscribe(res => { // loads settings
+      const result = !this.postsService.debugMode ? res['config_file'] : res;
       this.topBarTitle = result['YoutubeDLMaterial']['Extra']['title_top'];
       const themingExists = result['YoutubeDLMaterial']['Themes'];
       this.defaultTheme = themingExists ? result['YoutubeDLMaterial']['Themes']['default_theme'] : 'default';

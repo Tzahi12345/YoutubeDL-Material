@@ -53,13 +53,14 @@ export class PlayerComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
 
     // loading config
-    this.postsService.loadNavItems().subscribe(result => { // loads settings
+    this.postsService.loadNavItems().subscribe(res => { // loads settings
+      const result = !this.postsService.debugMode ? res['config_file'] : res;
       this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
       const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
 
-      this.postsService.path = backendUrl;
+      this.postsService.path = backendUrl + 'api/';
       this.postsService.startPath = backendUrl;
       this.postsService.startPathSSL = backendUrl;
 

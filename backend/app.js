@@ -2,6 +2,7 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var youtubedl = require('youtube-dl');
+var compression = require('compression');
 var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -67,11 +68,6 @@ var descriptors = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-app.get('/using-encryption', function(req, res) {
-    res.send(usingEncryption);
-    res.end("yes");
-});
 
 // objects
 
@@ -506,7 +502,21 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.post('/tomp3', function(req, res) {
+app.use(compression());
+
+app.get('/api/config', function(req, res) {
+    let config_file = config_api.getConfigFile();
+    res.send({
+        config_file: config_file,
+        success: !!config_file
+    });
+});
+
+app.get('/api/using-encryption', function(req, res) {
+    res.send(usingEncryption);
+});
+
+app.post('/api/tomp3', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var audiopath = '%(title)s';
@@ -588,7 +598,7 @@ app.post('/tomp3', function(req, res) {
     });
 });
 
-app.post('/tomp4', function(req, res) {
+app.post('/api/tomp4', function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var path = videoFolderPath;
@@ -676,7 +686,7 @@ app.post('/tomp4', function(req, res) {
 });
 
 // gets the status of the mp3 file that's being downloaded
-app.post('/fileStatusMp3', function(req, res) {
+app.post('/api/fileStatusMp3', function(req, res) {
     var name = decodeURI(req.body.name + "");
     var exists = "";
     var fullpath = audioFolderPath + name + ".mp3";
@@ -698,7 +708,7 @@ app.post('/fileStatusMp3', function(req, res) {
 });
 
 // gets the status of the mp4 file that's being downloaded
-app.post('/fileStatusMp4', function(req, res) {
+app.post('/api/fileStatusMp4', function(req, res) {
     var name = decodeURI(req.body.name);
     var exists = "";
     var fullpath = videoFolderPath + name + ".mp4";
@@ -718,7 +728,7 @@ app.post('/fileStatusMp4', function(req, res) {
 });
 
 // gets all download mp3s
-app.post('/getMp3s', function(req, res) {
+app.post('/api/getMp3s', function(req, res) {
     var mp3s = [];
     var playlists = db.get('playlists.audio').value();
     var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
@@ -750,7 +760,7 @@ app.post('/getMp3s', function(req, res) {
 });
 
 // gets all download mp4s
-app.post('/getMp4s', function(req, res) {
+app.post('/api/getMp4s', function(req, res) {
     var mp4s = [];
     var playlists = db.get('playlists.video').value();
     var fullpath = videoFolderPath;
@@ -782,7 +792,7 @@ app.post('/getMp4s', function(req, res) {
     res.end("yes");
 });
 
-app.post('/createPlaylist', async (req, res) => {
+app.post('/api/createPlaylist', async (req, res) => {
     let playlistName = req.body.playlistName;
     let fileNames = req.body.fileNames;
     let type = req.body.type;
@@ -805,7 +815,7 @@ app.post('/createPlaylist', async (req, res) => {
     })
 });
 
-app.post('/updatePlaylist', async (req, res) => {
+app.post('/api/updatePlaylist', async (req, res) => {
     let playlistID = req.body.playlistID;
     let fileNames = req.body.fileNames;
     let type = req.body.type;
@@ -831,7 +841,7 @@ app.post('/updatePlaylist', async (req, res) => {
     })
 });
 
-app.post('/deletePlaylist', async (req, res) => {
+app.post('/api/deletePlaylist', async (req, res) => {
     let playlistID = req.body.playlistID;
     let type = req.body.type;
 
@@ -853,7 +863,7 @@ app.post('/deletePlaylist', async (req, res) => {
 });
 
 // deletes mp3 file
-app.post('/deleteMp3', async (req, res) => {
+app.post('/api/deleteMp3', async (req, res) => {
     var name = req.body.name;
     var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
@@ -873,7 +883,7 @@ app.post('/deleteMp3', async (req, res) => {
 });
 
 // deletes mp4 file
-app.post('/deleteMp4', async (req, res) => {
+app.post('/api/deleteMp4', async (req, res) => {
     var name = req.body.name;
     var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
@@ -892,7 +902,7 @@ app.post('/deleteMp4', async (req, res) => {
     }
 });
 
-app.post('/downloadFile', async (req, res) => {
+app.post('/api/downloadFile', async (req, res) => {
     let fileNames = req.body.fileNames;
     let is_playlist = req.body.is_playlist;
     let type = req.body.type;
@@ -915,7 +925,7 @@ app.post('/downloadFile', async (req, res) => {
     res.sendFile(file);
 });
 
-app.post('/deleteFile', async (req, res) => {
+app.post('/api/deleteFile', async (req, res) => {
     let fileName = req.body.fileName;
     let type = req.body.type;
     if (type === 'audio') {
@@ -926,7 +936,7 @@ app.post('/deleteFile', async (req, res) => {
     res.send()
 });
 
-app.get('/video/:id', function(req , res){
+app.get('/api/video/:id', function(req , res){
     var head;
     let id = decodeURI(req.params.id);
     const path = "video/" + id + '.mp4';
@@ -966,7 +976,7 @@ app.get('/video/:id', function(req , res){
     }
 });
 
-app.get('/audio/:id', function(req , res){
+app.get('/api/audio/:id', function(req , res){
     var head;
     let id = decodeURI(req.params.id);
     let path = "audio/" + id + '.mp3';
@@ -1008,7 +1018,7 @@ app.get('/audio/:id', function(req , res){
   });
 
 
-  app.post('/getVideoInfos', async (req, res) => {
+  app.post('/api/getVideoInfos', async (req, res) => {
     let fileNames = req.body.fileNames;
     let urlMode = !!req.body.urlMode;
     let type = req.body.type;
@@ -1027,3 +1037,22 @@ app.get('/audio/:id', function(req , res){
         success: !!result
     })
 });
+
+app.use(function(req, res, next) {
+    //if the request is not html then move along
+    var accept = req.accepts('html', 'json', 'xml');
+    if (accept !== 'html') {
+        return next();
+    }
+
+    // if the request has a '.' assume that it's for a file, move along
+    var ext = path.extname(req.path);
+    if (ext !== '') {
+        return next();
+    }
+
+    fs.createReadStream('./public/index.html').pipe(res);
+
+});
+
+app.use(express.static('./public'));

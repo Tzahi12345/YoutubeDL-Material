@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList, isDevMode } from '@angular/core';
 import {PostsService} from '../posts.services';
 import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
@@ -202,7 +202,8 @@ export class MainComponent implements OnInit {
     this.audioOnly = false;
 
     // loading config
-    this.postsService.loadNavItems().subscribe(result => { // loads settings
+    this.postsService.loadNavItems().subscribe(res => { // loads settings
+      const result = !this.postsService.debugMode ? res['config_file'] : res;
       const backendUrl = result['YoutubeDLMaterial']['Host']['backendurl'];
       this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
       this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
@@ -216,7 +217,7 @@ export class MainComponent implements OnInit {
       this.allowQualitySelect = result['YoutubeDLMaterial']['Extra']['allow_quality_select'];
       this.allowAdvancedDownload = result['YoutubeDLMaterial']['Advanced']['allow_advanced_download'];
 
-      this.postsService.path = backendUrl;
+      this.postsService.path = backendUrl + 'api/';
       this.postsService.startPath = backendUrl;
       this.postsService.startPathSSL = backendUrl;
 
