@@ -51,6 +51,9 @@ export class MainComponent implements OnInit {
   customArgs = null;
   customOutputEnabled = false;
   customOutput = null;
+  youtubeAuthEnabled = false;
+  youtubeUsername = null;
+  youtubePassword = null;
   urlError = false;
   path = '';
   url = '';
@@ -239,6 +242,10 @@ export class MainComponent implements OnInit {
 
         if (localStorage.getItem('customOutputEnabled') !== null) {
           this.customOutputEnabled = localStorage.getItem('customOutputEnabled') === 'true';
+        }
+
+        if (localStorage.getItem('youtubeAuthEnabled') !== null) {
+          this.youtubeAuthEnabled = localStorage.getItem('youtubeAuthEnabled') === 'true';
         }
       }
 
@@ -485,6 +492,12 @@ export class MainComponent implements OnInit {
       this.urlError = false;
       this.path = '';
 
+      // get common args
+      const customArgs = (this.customArgsEnabled ? this.customArgs : null);
+      const customOutput = (this.customOutputEnabled ? this.customOutput : null);
+      const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
+      const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
+
       if (this.audioOnly) {
         // create download object
         const new_download: Download = {
@@ -508,11 +521,8 @@ export class MainComponent implements OnInit {
           }
         }
 
-        const customArgs = (this.customArgsEnabled ? this.customArgs : null);
-        const customOutput = (this.customOutputEnabled ? this.customOutput : null);
-
         this.postsService.makeMP3(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
@@ -550,11 +560,8 @@ export class MainComponent implements OnInit {
           }
         }
 
-        const customArgs = (this.customArgsEnabled ? this.customArgs : null);
-        const customOutput = (this.customOutputEnabled ? this.customOutput : null);
-
         this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
@@ -785,6 +792,10 @@ export class MainComponent implements OnInit {
     localStorage.setItem('customArgsEnabled', new_val.checked.toString());
     if (new_val.checked === true && this.customOutputEnabled) {
       this.customOutputEnabled = false;
+      localStorage.setItem('customOutputEnabled', 'false');
+
+      this.youtubeAuthEnabled = false;
+      localStorage.setItem('youtubeAuthEnabled', 'false');
     }
   }
 
@@ -792,6 +803,15 @@ export class MainComponent implements OnInit {
     localStorage.setItem('customOutputEnabled', new_val.checked.toString());
     if (new_val.checked === true && this.customArgsEnabled) {
       this.customArgsEnabled = false;
+      localStorage.setItem('customArgsEnabled', 'false');
+    }
+  }
+
+  youtubeAuthEnabledChanged(new_val) {
+    localStorage.setItem('youtubeAuthEnabled', new_val.checked.toString());
+    if (new_val.checked === true && this.customArgsEnabled) {
+      this.customArgsEnabled = false;
+      localStorage.setItem('customArgsEnabled', 'false');
     }
   }
 
