@@ -10,6 +10,7 @@ export interface IMedia {
   title: string;
   src: string;
   type: string;
+  label: string;
 }
 
 @Component({
@@ -77,10 +78,20 @@ export class PlayerComponent implements OnInit {
         const fileName = this.fileNames[i];
         const baseLocation = (this.type === 'audio') ? this.audioFolderPath : this.videoFolderPath;
         const fullLocation = this.baseStreamPath + baseLocation + encodeURI(fileName); // + (this.type === 'audio' ? '.mp3' : '.mp4');
+        // if it has a slash (meaning it's in a directory), only get the file name for the label
+        let label = null;
+        const decodedName = decodeURIComponent(fileName);
+        const hasSlash = decodedName.includes('/') || decodedName.includes('\\');
+        if (hasSlash) {
+          label = decodedName.replace(/^.*[\\\/]/, '');
+        } else {
+          label = decodedName;
+        }
         const mediaObject: IMedia = {
           title: fileName,
           src: fullLocation,
-          type: fileType
+          type: fileType,
+          label: label
         }
         this.playlist.push(mediaObject);
       }
