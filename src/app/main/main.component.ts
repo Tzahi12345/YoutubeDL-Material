@@ -62,7 +62,6 @@ export class MainComponent implements OnInit {
   allowQualitySelect = false;
   downloadOnlyMode = false;
   allowMultiDownloadMode = false;
-  baseStreamPath;
   audioFolderPath;
   videoFolderPath;
   allowAdvancedDownload = false;
@@ -207,7 +206,6 @@ export class MainComponent implements OnInit {
       this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
       this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
       this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
-      this.baseStreamPath = result['YoutubeDLMaterial']['Downloader']['path-base'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
       this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'] &&
@@ -403,10 +401,8 @@ export class MainComponent implements OnInit {
       } else {
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
-          // window.location.href = this.baseStreamPath + this.audioFolderPath + name[0] + '.mp3';
         } else {
           this.router.navigate(['/player', {fileNames: name, type: 'audio'}]);
-          // window.location.href = this.baseStreamPath + this.audioFolderPath + name + '.mp3';
         }
       }
     }
@@ -442,10 +438,8 @@ export class MainComponent implements OnInit {
       } else {
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
-          // window.location.href = this.baseStreamPath + this.videoFolderPath + name[0] + '.mp4';
         } else {
           this.router.navigate(['/player', {fileNames: name, type: 'video'}]);
-          // window.location.href = this.baseStreamPath + this.videoFolderPath + name + '.mp4';
         }
       }
     }
