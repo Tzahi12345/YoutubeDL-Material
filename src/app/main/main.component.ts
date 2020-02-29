@@ -15,7 +15,7 @@ import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/switch'
 import { YoutubeSearchService, Result } from '../youtube-search.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
@@ -56,6 +56,7 @@ export class MainComponent implements OnInit {
   url = '';
   exists = '';
   percentDownloaded: number;
+  autoStartDownload = false;
 
   // settings
   fileManagerEnabled = false;
@@ -198,7 +199,7 @@ export class MainComponent implements OnInit {
   };
 
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
-    private router: Router, public dialog: MatDialog, private platform: Platform) {
+    private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
 
     // loading config
@@ -241,10 +242,36 @@ export class MainComponent implements OnInit {
         }
       }
 
+      if (this.autoStartDownload) {
+        this.downloadClicked();
+      }
+
     }, error => {
       console.log(error);
     });
 
+  }
+
+  // app initialization.
+  ngOnInit() {
+    this.iOS = this.platform.IOS;
+
+    if (localStorage.getItem('audioOnly') !== null) {
+      this.audioOnly = localStorage.getItem('audioOnly') === 'true';
+    }
+
+    if (localStorage.getItem('multiDownloadMode') !== null) {
+      this.multiDownloadMode = localStorage.getItem('multiDownloadMode') === 'true';
+    }
+
+    // check if params exist
+    if (this.route.snapshot.paramMap.get('url')) {
+      this.url = decodeURIComponent(this.route.snapshot.paramMap.get('url'));
+      this.audioOnly = this.route.snapshot.paramMap.get('audioOnly') === 'true';
+
+      // set auto start flag to true
+      this.autoStartDownload = true;
+    }
   }
 
   // file manager stuff
@@ -370,21 +397,6 @@ export class MainComponent implements OnInit {
       }
       this.getMp4s();
     });
-  }
-
-
-  // app initialization.
-  ngOnInit() {
-    // this.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window['MSStream'];
-    this.iOS = this.platform.IOS;
-
-    if (localStorage.getItem('audioOnly') !== null) {
-      this.audioOnly = localStorage.getItem('audioOnly') === 'true';
-    }
-
-    if (localStorage.getItem('multiDownloadMode') !== null) {
-      this.multiDownloadMode = localStorage.getItem('multiDownloadMode') === 'true';
-    }
   }
 
   // download helpers

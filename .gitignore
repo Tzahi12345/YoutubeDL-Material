@@ -43,6 +43,7 @@ Thumbs.db
 
 node_modules/*
 backend/node_modules/*
+backend/public/*
 YoutubeDL-Material/node_modules/*
 backend/video/*
 backend/audio/*
