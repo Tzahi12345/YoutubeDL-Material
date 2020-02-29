@@ -121,11 +121,9 @@ async function loadConfig() {
         // get config library
         // config = require('config');
 
-        // frontendUrl = !debugMode ? config_api.getConfigItem('ytdl_frontend_url') : 'http://localhost:4200';
         url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
         backendPort = config_api.getConfigItem('ytdl_port');
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
-        basePath = config_api.getConfigItem('ytdl_base_path');
         audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
         downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
