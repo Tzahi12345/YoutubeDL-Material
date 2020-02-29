@@ -61,7 +61,7 @@
         </mat-card-actions>
     </mat-card>
 </div>
-<div *ngIf="false && allowAdvancedDownload" class="big demo-basic">
+<div *ngIf="allowAdvancedDownload" class="big demo-basic">
     <form style="margin-left: 20px; margin-right: 20px;">
         <mat-expansion-panel class="big">
             <mat-expansion-panel-header>
@@ -71,18 +71,29 @@
             </mat-expansion-panel-header>
             <div class="container" style="padding-bottom: 20px;">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-12 col-sm-6">
                         <mat-checkbox color="accent" [disabled]="current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="position: absolute; z-index: 999" [ngModelOptions]="{standalone: true}">Use custom args</mat-checkbox>
-                        <mat-form-field color="accent" class="advanced-input">
+                        <mat-form-field color="accent" style="margin-bottom: 30px;" class="advanced-input">
                             <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput placeholder="Custom args">
                             <mat-hint>No need to include URL, just everything after.</mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col">
+                    <div class="col-12 col-sm-6">
                         <mat-checkbox color="accent" [disabled]="current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="position: absolute; z-index: 999" [ngModelOptions]="{standalone: true}">Use custom output</mat-checkbox>
-                        <mat-form-field color="accent" class="advanced-input">
+                        <mat-form-field style="margin-bottom: 42px;" color="accent" class="advanced-input">
                             <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput placeholder="Custom output">
                             <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">This link</a> will be helpful. Path is relative to the config download path.</mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-sm-6 mt-2">
+                        <mat-checkbox color="accent" [disabled]="current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="position: absolute; z-index: 999" [ngModelOptions]="{standalone: true}">Use authentication</mat-checkbox>
+                        <mat-form-field color="accent" class="advanced-input">
+                            <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Username">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-sm-6 mt-2">
+                        <mat-form-field color="accent" class="advanced-input">
+                            <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Password">
                         </mat-form-field>
                     </div>
                 </div>

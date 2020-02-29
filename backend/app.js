@@ -515,6 +515,8 @@ app.post('/tomp3', function(req, res) {
     var maxBitrate = req.body.maxBitrate;
     var customArgs = req.body.customArgs;
     var customOutput = req.body.customOutput;
+    var youtubeUsername = req.body.youtubeUsername;
+    var youtubePassword = req.body.youtubePassword;
 
 
     let downloadConfig = null;
@@ -534,6 +536,10 @@ app.post('/tomp3', function(req, res) {
         } else if (maxBitrate) {
             if (!maxBitrate || maxBitrate === '') maxBitrate = '0'; 
             qualityPath = `--audio-quality ${maxBitrate}`
+        }
+
+        if (youtubeUsername && youtubePassword) {
+            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
         }
     
         if (qualityPath !== '') {
@@ -598,6 +604,8 @@ app.post('/tomp4', function(req, res) {
 
     var selectedHeight = req.body.selectedHeight;
     var customQualityConfiguration = req.body.customQualityConfiguration;
+    var youtubeUsername = req.body.youtubeUsername;
+    var youtubePassword = req.body.youtubePassword;
 
     let downloadConfig = null;
     let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
@@ -615,6 +623,10 @@ app.post('/tomp4', function(req, res) {
             qualityPath = customQualityConfiguration;
         } else if (selectedHeight && selectedHeight !== '') {
             qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+        }
+
+        if (youtubeUsername && youtubePassword) {
+            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
         }
     
         if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {

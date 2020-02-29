@@ -44,21 +44,25 @@ export class PostsService {
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null) {
+    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null) {
         return this.http.post(this.path + 'tomp3', {url: url,
                                                     maxBitrate: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
-                                                    customOutput: customOutput});
+                                                    customOutput: customOutput,
+                                                    youtubeUsername: youtubeUsername,
+                                                    youtubePassword: youtubePassword});
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null) {
+    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null) {
         return this.http.post(this.path + 'tomp4', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
-                                                    customOutput: customOutput});
+                                                    customOutput: customOutput,
+                                                    youtubeUsername: youtubeUsername,
+                                                    youtubePassword: youtubePassword});
     }
 
     getFileStatusMp3(name: string) {
