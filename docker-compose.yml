@@ -29,6 +29,5 @@ services:
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: always
         ports:
-            - "17442:17442"
-            - "8998:80"
-        image: tzahi12345/youtubedl-material:3.2
+            - "8998:17442"
+        image: tzahi12345/youtubedl-material:3.3

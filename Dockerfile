@@ -1,28 +1,21 @@
-FROM ubuntu:18.04
+FROM alpine:3.11
 
-RUN apt-get update && apt-get install -y \
-  nodejs \
-  apache2 \
-  npm \
-  youtube-dl
+RUN apk add --update npm python ffmpeg
 
 # Change directory so that our commands run inside this new directory
-WORKDIR /var/www/html
+WORKDIR /app
 
 # Copy dependency definitions
-COPY ./ /var/www/html/
+COPY ./ /app/
 
 # Change directory to backend
-WORKDIR /var/www/html/backend
+WORKDIR /app
 
 # Install dependencies on backend
 RUN npm install
 
-# Change back to original directory
-WORKDIR /var/www/html
-
 # Expose the port the app runs in
-EXPOSE 80
+EXPOSE 17442
 
 # Run the specified command within the container.
-CMD ./docker_wrapper.sh
+CMD [ "node", "app.js" ]
