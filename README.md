@@ -34,7 +34,7 @@ sudo apt-get install nodejs youtube-dl
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
 
-2. Drag all the files in `youtubedl-material` to an easily accessible directory. Navigate to the `backend` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
+2. Drag all the files in `youtubedl-material` to an easily accessible directory. Navigate to the `config` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
 
 NOTE: If you are intending to use a reverse proxy, this next step is not necessary
 3. Port forward the port listed in `default.json`, which defaults to `17442`.
@@ -44,6 +44,8 @@ NOTE: If you are intending to use a reverse proxy, this next step is not necessa
 If you experience problems, know that it's usually caused by a configuration problem. The first thing you should do is check the console. To get there, right click anywhere on the page and click "Inspect element." Then on the menu that pops up, click console. Look at the error there, and try to investigate.
 
 ### Configuration
+
+NOTE: If you are using YoutubeDL-Material v3.2 or lower, click [here](https://github.com/Tzahi12345/YoutubeDL-Material/blob/b87a9f1e2fd896b8e3b2f12429b7ffb15ea4521b/README.md#configuration) for the old README
 
 Here is an explanation for the configuration entries. Check out the [default config](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/backend/config/default.json) for more context.
 
