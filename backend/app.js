@@ -523,7 +523,7 @@ app.post('/tomp3', function(req, res) {
     let qualityPath = '';
 
     if (customArgs) {
-        downloadConfig = [customArgs];
+        downloadConfig = customArgs.split(' ');
     } else {
         if (customOutput) {
             downloadConfig = ['-o', audioFolderPath + customOutput + '.mp3', '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
@@ -611,7 +611,7 @@ app.post('/tomp4', function(req, res) {
     let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
 
     if (customArgs) {
-        downloadConfig = [customArgs];
+        downloadConfig = customArgs.split(' ');
     } else {
         if (customOutput) {
             downloadConfig = ['-o', path + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
