@@ -69,7 +69,7 @@ Here is an explanation for the configuration entries. Check out the [default con
 | allow_theme_change | true if you want the icon in the top toolbar that toggles dark mode | true |
 | use_default_downloading_agent | true if you want to use youtube-dl's default downloader | true |
 | custom_downloading_agent | If not using the default downloader, this is the downloader you want to use | "" |
-| allow_advanced_download | true if you want to use the Advanced download options - NOT FULLY IMPLEMENTED | false |
+| allow_advanced_download | true if you want to use the Advanced download options | false |
 
 ## Deployment
 
