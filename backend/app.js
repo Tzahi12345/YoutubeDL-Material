@@ -697,7 +697,7 @@ app.post('/api/tomp4', function(req, res) {
 
 // gets the status of the mp3 file that's being downloaded
 app.post('/api/fileStatusMp3', function(req, res) {
-    var name = decodeURI(req.body.name + "");
+    var name = decodeURIComponent(req.body.name + "");
     var exists = "";
     var fullpath = audioFolderPath + name + ".mp3";
     if (fs.existsSync(fullpath)) {
@@ -719,7 +719,7 @@ app.post('/api/fileStatusMp3', function(req, res) {
 
 // gets the status of the mp4 file that's being downloaded
 app.post('/api/fileStatusMp4', function(req, res) {
-    var name = decodeURI(req.body.name);
+    var name = decodeURIComponent(req.body.name);
     var exists = "";
     var fullpath = videoFolderPath + name + ".mp4";
     if (fs.existsSync(fullpath)) {
@@ -919,7 +919,7 @@ app.post('/api/downloadFile', async (req, res) => {
     let outputName = req.body.outputName;
     let file = null;
     if (!is_playlist) {
-        fileNames = decodeURI(fileNames);
+        fileNames = decodeURIComponent(fileNames);
         if (type === 'audio') {
             file = __dirname + '/' + audioFolderPath + fileNames + '.mp3';
         } else if (type === 'video') {
@@ -927,7 +927,7 @@ app.post('/api/downloadFile', async (req, res) => {
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
-            fileNames[i] = decodeURI(fileNames[i]);
+            fileNames[i] = decodeURIComponent(fileNames[i]);
         }
         file = await createPlaylistZipFile(fileNames, type, outputName);
     }
@@ -948,7 +948,7 @@ app.post('/api/deleteFile', async (req, res) => {
 
 app.get('/api/video/:id', function(req , res){
     var head;
-    let id = decodeURI(req.params.id);
+    let id = decodeURIComponent(req.params.id);
     const path = "video/" + id + '.mp4';
     const stat = fs.statSync(path)
     const fileSize = stat.size
@@ -988,7 +988,7 @@ app.get('/api/video/:id', function(req , res){
 
 app.get('/api/audio/:id', function(req , res){
     var head;
-    let id = decodeURI(req.params.id);
+    let id = decodeURIComponent(req.params.id);
     let path = "audio/" + id + '.mp3';
     path = path.replace(/\"/g, '\'');
   const stat = fs.statSync(path)

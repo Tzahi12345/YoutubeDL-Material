@@ -74,7 +74,7 @@ export class PlayerComponent implements OnInit {
       for (let i = 0; i < this.fileNames.length; i++) {
         const fileName = this.fileNames[i];
         const baseLocation = (this.type === 'audio') ? this.audioFolderPath : this.videoFolderPath;
-        const fullLocation = this.baseStreamPath + baseLocation + encodeURI(fileName); // + (this.type === 'audio' ? '.mp3' : '.mp4');
+        const fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
         // if it has a slash (meaning it's in a directory), only get the file name for the label
         let label = null;
         const decodedName = decodeURIComponent(fileName);
