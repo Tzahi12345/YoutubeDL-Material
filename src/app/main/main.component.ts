@@ -41,6 +41,8 @@ export interface Download {
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
+  youtubeAuthDisabledOverride = true;
+
   iOS = false;
 
   determinateProgress = false;
@@ -82,7 +84,7 @@ export class MainComponent implements OnInit {
 
   mp3s: any[] = [];
   mp4s: any[] = [];
-  files_cols = (window.innerWidth <= 450) ? 2 : 4;
+  files_cols = null;
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
   downloading_content = {'audio': {}, 'video': {}};
@@ -247,6 +249,15 @@ export class MainComponent implements OnInit {
         if (localStorage.getItem('youtubeAuthEnabled') !== null) {
           this.youtubeAuthEnabled = localStorage.getItem('youtubeAuthEnabled') === 'true';
         }
+
+        // set advanced inputs
+        const customArgs = localStorage.getItem('customArgs');
+        const customOutput = localStorage.getItem('customOutput');
+        const youtubeUsername = localStorage.getItem('youtubeUsername');
+
+        if (customArgs && customArgs !== 'null') { this.customArgs = customArgs };
+        if (customOutput && customOutput !== 'null') { this.customOutput = customOutput };
+        if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername };
       }
 
       if (this.autoStartDownload) {
@@ -263,6 +274,7 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.iOS = this.platform.IOS;
 
+    // get checkboxes
     if (localStorage.getItem('audioOnly') !== null) {
       this.audioOnly = localStorage.getItem('audioOnly') === 'true';
     }
@@ -279,6 +291,8 @@ export class MainComponent implements OnInit {
       // set auto start flag to true
       this.autoStartDownload = true;
     }
+
+    this.setCols();
   }
 
   // file manager stuff
@@ -334,6 +348,18 @@ export class MainComponent implements OnInit {
     error => {
       console.log(error);
     });
+  }
+
+  public setCols() {
+    if (window.innerWidth <= 350) {
+      this.files_cols = 1;
+    } else if (window.innerWidth <= 500) {
+      this.files_cols = 2;
+    } else if (window.innerWidth <= 750) {
+      this.files_cols = 3
+    } else {
+      this.files_cols = 4;
+    }
   }
 
   public goToFile(name, isAudio) {
@@ -497,6 +523,19 @@ export class MainComponent implements OnInit {
       const customOutput = (this.customOutputEnabled ? this.customOutput : null);
       const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
       const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
+
+      // set advanced inputs
+      if (this.allowAdvancedDownload) {
+        if (customArgs) {
+          localStorage.setItem('customArgs', customArgs);
+        }
+        if (customOutput) {
+          localStorage.setItem('customOutput', customOutput);
+        }
+        if (youtubeUsername) {
+          localStorage.setItem('youtubeUsername', youtubeUsername);
+        }
+      }
 
       if (this.audioOnly) {
         // create download object
@@ -776,7 +815,7 @@ export class MainComponent implements OnInit {
   }
 
   onResize(event) {
-    this.files_cols = (event.target.innerWidth <= 450) ? 2 : 4;
+    this.setCols();
   }
 
   videoModeChanged(new_val) {
