@@ -34,7 +34,7 @@ sudo apt-get install nodejs youtube-dl
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
 
-2. Drag all the files in `youtubedl-material` to an easily accessible directory. Navigate to the `config` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
+2. Drag the `youtubedl-material` directory to an easily accessible directory. Navigate to the `config` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
 
 NOTE: If you are intending to use a reverse proxy, this next step is not necessary
 3. Port forward the port listed in `default.json`, which defaults to `17442`.
@@ -77,9 +77,9 @@ If you'd like to install YoutubeDL-Material, go to the Installation section. If 
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/backend/config`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/config`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
 
-The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `nodejs app.js`.
+The frontend is now complete. The backend is much easier. Just go into the `youtubedl-material` folder, and type `nodejs app.js`.
 
 Finally, port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
 
