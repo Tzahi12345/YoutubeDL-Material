@@ -1,4 +1,4 @@
-import {Injectable, isDevMode} from '@angular/core';
+import {Injectable, isDevMode, Inject} from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest, HttpResponseBase } from '@angular/common/http';
 import config from '../assets/default.json';
 import 'rxjs/add/operator/map';
@@ -7,20 +7,31 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
+import { Router } from '@angular/router';
+import { DOCUMENT } from '@angular/common';
 
 @Injectable()
 export class PostsService {
     path = '';
     audioFolder = '';
     videoFolder = '';
-    startPath = 'http://localhost:17442/';
-    startPathSSL = 'https://localhost:17442/'
+    startPath = null; // 'http://localhost:17442/';
+    startPathSSL = null; // 'https://localhost:17442/'
     handShakeComplete = false;
     THEMES_CONFIG = THEMES_CONFIG;
     theme;
 
-    constructor(private http: HttpClient) {
+    debugMode = false;
+    constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document) {
         console.log('PostsService Initialized...');
+        // this.startPath = window.location.href + '/api/';
+        // this.startPathSSL = window.location.href + '/api/';
+        this.path = this.document.location.origin + '/api/';
+
+        if (isDevMode()) {
+            this.debugMode = true;
+            this.path = 'http://localhost:17442/api/';
+        }
     }
 
     setTheme(theme) {
@@ -76,10 +87,9 @@ export class PostsService {
     loadNavItems() {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');
+        } else {
+            return this.http.get(this.path + 'config');
         }
-        const locations = window.location.href.split('#');
-        const current_location = locations[0];
-        return this.http.get(current_location + 'backend/config/default.json');
     }
 
     deleteFile(name: string, isAudio: boolean) {

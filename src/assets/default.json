@@ -1,16 +1,15 @@
 {
     "YoutubeDLMaterial": {
-        "Host": {
-            "frontendurl": "http://localhost:4200",
-            "backendurl": "http://localhost:17442/"
-        },
+      "Host": {
+        "url": "http://localhost",
+        "port": "17442"
+      },
       "Encryption": {
         "use-encryption": false,
         "cert-file-path": "/etc/letsencrypt/live/example.com/fullchain.pem",
         "key-file-path": "/etc/letsencrypt/live/example.com/privkey.pem"
       },
       "Downloader": {
-        "path-base": "http://localhost:17442/",
         "path-audio": "audio/",
         "path-video": "video/"
       },

@@ -22,7 +22,7 @@ Dark mode:
 
 ### Prerequisites
 
-NOTE: If you would like to use Docker, you can go down to the [Docker](#Docker) section for a setup guide.
+NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker) section for a setup guide.
 
 You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: nodejs and youtube-dl. If you don't, run this command:
 
@@ -32,28 +32,30 @@ sudo apt-get install nodejs youtube-dl
 
 ### Installing
 
-First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
+1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
 
-Drag all the files in `youtubedl-material` to a location accessible to a web server. It works best if it's the root (usually right inside `public_html`. Once that's done, navigate to `backend` and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template. 
+2. Drag all the files in `youtubedl-material` to an easily accessible directory. Navigate to the `config` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
 
-Port forward `17442` if you're going to access YoutubeDL-Material from out of your network. This is an important step. Make sure the configuration reflects this appropriately.
+NOTE: If you are intending to use a reverse proxy, this next step is not necessary
+3. Port forward the port listed in `default.json`, which defaults to `17442`.
 
-Once the configuration is done, run `npm install` to install all the backend dependencies. Once that is finished, type `nodejs app.js`. This will run the backend server. On your browser, navigate to your installation folder. Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
+4. Once the configuration is done, run `npm install` to install all the backend dependencies. Once that is finished, type `nodejs app.js`. This will run the backend server, which serves the frontend as well. On your browser, navigate to to the server (url with the specified port). Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
 
 If you experience problems, know that it's usually caused by a configuration problem. The first thing you should do is check the console. To get there, right click anywhere on the page and click "Inspect element." Then on the menu that pops up, click console. Look at the error there, and try to investigate.
 
 ### Configuration
 
+NOTE: If you are using YoutubeDL-Material v3.2 or lower, click [here](https://github.com/Tzahi12345/YoutubeDL-Material/blob/b87a9f1e2fd896b8e3b2f12429b7ffb15ea4521b/README.md#configuration) for the old README
+
 Here is an explanation for the configuration entries. Check out the [default config](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/backend/config/default.json) for more context.
 
 | Config item | Description | Default |
 | ------------- | ------------- | ------------- |
-| frontendurl  | URL to the webserver hosting YTDL-Material | "http://example.com" |
-| backendurl  | URL to the YTDL-Material's backend, should include port 17442 | "http://example.com:17442/" |
+| url  | URL to the server hosting YoutubeDL-Material | "http://example.com" |
+| port  | Desired port for YoutubeDL-Material | "17442" |
 | use-encryption | true if you intend to use SSL encryption (https) | false |
 | cert-file-path | Cert file path - required if using encryption | "/etc/letsencrypt/live/example.com/fullchain.pem" |
 | key-file-path | Private key file path - required if using encryption |  "/etc/letsencrypt/live/example.com/privkey.pem" |
-| path-base | Audio/video stream URL. Usually the same as backendurl | "http://example.com:17442/" |
 | path-audio | Path to audio folder for saved mp3s | "audio/" |
 | path-video | Path to video folder for saved mp4s | "video/" |
 | title_top | Title shown on the top toolbar | "Youtube Downloader" |
@@ -75,21 +77,21 @@ If you'd like to install YoutubeDL-Material, go to the Installation section. If 
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/backend/config`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into a web server, and drag the `backend` directory into the same folder. This folder should have `index.html` in it as well. If it does **not**, you're in the wrong directory.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/backend/config`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
 
-The frontend is now complete. The backend is much easier. Just go into the `youtubedl-material/backend` folder, and type `sudo nodejs app.js`.
+The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `nodejs app.js`.
 
-Finally, port forward the port `17442` and point it to the server's IP address. Make sure the port is also allowed through the firewall.
+Finally, port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
 
 ## Docker
 
 If you are looking to setup YoutubeDL-Material with Docker, this section is for you. And you're in luck! Docker setup is quite simple.
 
-1. Run `curl https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml -o docker-compose.yml` to download the latest release of `docker-compose.yml`, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
-2. Modify the config items in the `environment` section of `docker-compose.yml` to your liking. Otherwise, the default options will work and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
-3. Make sure the port in the `frontend_url` environment variable lines up with the port in the `ports` section.
-4. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
-5. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 17442" or something similar. Make sure you can connect to the frontend, and if so, you are done!
+1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml -o docker-compose.yml` to download the latest release of `docker-compose.yml`, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
+2. Modify the config items in the `environment` section of `docker-compose.yml` to your liking. The default options will work, however, and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
+3. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
+4. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar. 
+5. Make sure you can connect to the specified URL + port, and if so, you are done!
 
 ## Contributing
 
