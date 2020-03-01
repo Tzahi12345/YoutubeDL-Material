@@ -533,17 +533,17 @@ app.post('/api/tomp3', function(req, res) {
     if (customArgs) {
         downloadConfig = customArgs.split(' ');
     } else {
-        if (customOutput) {
-            downloadConfig = ['-o', audioFolderPath + customOutput + '.mp3', '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
-        } else {
-            downloadConfig = ['-o', audioFolderPath + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
-        }
-
         if (customQualityConfiguration) {
             qualityPath = `-f ${customQualityConfiguration}`;
         } else if (maxBitrate) {
             if (!maxBitrate || maxBitrate === '') maxBitrate = '0'; 
             qualityPath = `--audio-quality ${maxBitrate}`
+        }
+
+        if (customOutput) {
+            downloadConfig = ['-o', audioFolderPath + customOutput + '.mp3', '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
+        } else {
+            downloadConfig = ['-o', audioFolderPath + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
         }
 
         if (youtubeUsername && youtubePassword) {
@@ -621,16 +621,16 @@ app.post('/api/tomp4', function(req, res) {
     if (customArgs) {
         downloadConfig = customArgs.split(' ');
     } else {
-        if (customOutput) {
-            downloadConfig = ['-o', path + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
-        } else {
-            downloadConfig = ['-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
-        }
-
         if (customQualityConfiguration) {
             qualityPath = customQualityConfiguration;
         } else if (selectedHeight && selectedHeight !== '') {
             qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+        }
+
+        if (customOutput) {
+            downloadConfig = ['-o', path + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+        } else {
+            downloadConfig = ['-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
         }
 
         if (youtubeUsername && youtubePassword) {
