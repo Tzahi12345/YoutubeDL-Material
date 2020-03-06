@@ -11,7 +11,8 @@
         <a class="a-list-item" matLine (click)="goToSubscription(sub)" href="javascript:void(0)">
             <strong *ngIf="sub.name">{{ sub.name }}</strong>
             <div *ngIf="!sub.name">
-                <ngx-content-loading [width]="200" [height]="20">
+                Name not available. Channel retrieval in progress.
+                <ngx-content-loading *ngIf="false" [width]="200" [height]="20">
                     <svg:g ngx-rect width="200" height="20" y="0" x="0" rx="4" ry="4"></svg:g>
                 </ngx-content-loading>
             </div>
@@ -32,7 +33,8 @@
         <a class="a-list-item" matLine (click)="goToSubscription(sub)" href="javascript:void(0)">
             <strong>{{ sub.name }}</strong>
             <div class="content-loading-div" *ngIf="!sub.name">
-                <ngx-content-loading [primaryColor]="postsService.theme.background_color" [secondaryColor]="postsService.theme.alternate_color" [width]="200" [height]="20">
+                Name not available. Playlist retrieval in progress.
+                <ngx-content-loading *ngIf="false" [primaryColor]="postsService.theme.background_color" [secondaryColor]="postsService.theme.alternate_color" [width]="200" [height]="20">
                     <svg:g ngx-rect width="200" height="20" y="0" x="0" rx="4" ry="4"></svg:g>
                 </ngx-content-loading>
             </div>
@@ -43,11 +45,11 @@
     </mat-list-item>
 </mat-nav-list>
 
-<div style="width: 80%; margin: 0 auto; padding-left: 15px;" *ngIf="!playlist_subscriptions && subscriptions">
+<div style="width: 80%; margin: 0 auto; padding-left: 15px;" *ngIf="playlist_subscriptions.length === 0 && subscriptions">
     <p>You have no playlist subscriptions.</p>
 </div>
 
-<div style="margin: 0 auto" *ngIf="subscriptions_loading">
+<div style="margin: 0 auto; width: 80%" *ngIf="subscriptions_loading">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
 

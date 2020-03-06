@@ -26,7 +26,7 @@ export class SubscriptionsComponent implements OnInit {
 
   getSubscriptions() {
     this.subscriptions_loading = true;
-    this.subscriptions = [];
+    this.subscriptions = null;
     this.channel_subscriptions = [];
     this.playlist_subscriptions = [];
     this.postsService.getAllSubscriptions().subscribe(res => {
@@ -43,6 +43,10 @@ export class SubscriptionsComponent implements OnInit {
           this.channel_subscriptions.push(sub);
         }
       }
+    }, err => {
+      this.subscriptions_loading = false;
+      console.error('Failed to get subscriptions');
+      this.openSnackBar('ERROR: Failed to get subscriptions!', 'OK.');
     });
   }
 

@@ -69,7 +69,12 @@ async function getVideosForSub(sub) {
         const basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
 
-        const appendedBasePath = basePath + (sub.isPlaylist ? 'playlists/%(playlist_title)s' : 'channels/%(uploader)s');
+        let appendedBasePath = null
+        if (sub.name) {
+            appendedBasePath = getAppendedBasePath(sub, basePath);
+        } else {
+            appendedBasePath = basePath + (sub.isPlaylist ? 'playlists/%(playlist_title)s' : 'channels/%(uploader)s');
+        }
 
         let downloadConfig = ['-o', appendedBasePath + '/%(title)s.mp4', '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '-ciw', '--write-annotations', '--write-thumbnail', '--write-info-json', '--print-json'];
 
