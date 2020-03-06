@@ -909,29 +909,44 @@ app.post('/api/getSubscription', async (req, res) => {
     }
 
     // get sub videos
-    let base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
-    let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
-    var files = recFindByExt(appended_base_path, 'mp4');
-    var parsed_files = [];
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(appended_base_path.length, file.length);
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = getJSONMp4(id, appended_base_path);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
+    if (subscription.name) {
+        let base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
+        let files;
+        try {
+            files = recFindByExt(appended_base_path, 'mp4');
+        } catch(e) {
+            files = null;
+            console.log('Failed to get folder for subscription: ' + subscription.name);
+            res.sendStatus(500);
+            return;
+        }
+        var parsed_files = [];
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            var file_path = file.substring(appended_base_path.length, file.length);
+            var id = file_path.substring(0, file_path.length-4);
+            var jsonobj = getJSONMp4(id, appended_base_path);
+            if (!jsonobj) continue;
+            var title = jsonobj.title;
 
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-        var isaudio = false;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration);
-        parsed_files.push(file_obj);
+            var thumbnail = jsonobj.thumbnail;
+            var duration = jsonobj.duration;
+            var isaudio = false;
+            var file_obj = new File(id, title, thumbnail, isaudio, duration);
+            parsed_files.push(file_obj);
+        }
+
+        res.send({
+            subscription: subscription,
+            files: parsed_files
+        });
+    } else {
+        res.sendStatus(500);
     }
+    
 
-    res.send({
-        subscription: subscription,
-        files: parsed_files
-    });
+    
 });
 
 app.post('/api/downloadVideosForSubscription', async (req, res) => {
