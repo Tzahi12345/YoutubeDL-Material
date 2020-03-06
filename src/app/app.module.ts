@@ -6,6 +6,7 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
   MatProgressSpinnerModule,
   MatButtonToggleModule,
   MatDialogModule,
+  MatRippleModule,
   MatSlideToggleModule,
   MatMenuModule} from '@angular/material';
   import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -30,6 +31,11 @@ import { NgxContentLoadingModule } from 'ngx-content-loading';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { DownloadItemComponent } from './download-item/download-item.component';
+import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
+import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
+import { SubscriptionComponent } from './subscription//subscription/subscription.component';
+import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
+import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -45,6 +51,11 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     InputDialogComponent,
     CreatePlaylistComponent,
     DownloadItemComponent,
+    SubscriptionsComponent,
+    SubscribeDialogComponent,
+    SubscriptionComponent,
+    SubscriptionFileCardComponent,
+    SubscriptionInfoDialogComponent,
     SettingsComponent
   ],
   imports: [
@@ -71,6 +82,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
+    MatRippleModule,
+    MatMenuModule,
     MatDialogModule,
     MatSlideToggleModule,
     MatMenuModule,
@@ -87,6 +100,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
   entryComponents: [
     InputDialogComponent,
     CreatePlaylistComponent,
+    SubscribeDialogComponent,
+    SubscriptionInfoDialogComponent,
     SettingsComponent
   ],
   providers: [PostsService],

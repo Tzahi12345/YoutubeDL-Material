@@ -48,6 +48,9 @@ YoutubeDL-Material/node_modules/*
 backend/video/*
 backend/audio/*
 backend/public/*
+backend/subscriptions/archives/*
+backend/subscriptions/playlists/*
+backend/subscriptions/channels/*
 backend/db.json
 backend/subscriptions/channels/*
 backend/subscriptions/playlists/*

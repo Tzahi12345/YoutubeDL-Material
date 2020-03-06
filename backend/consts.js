@@ -56,7 +56,6 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_allow_multi_download_mode',
         'path': 'YoutubeDLMaterial.Extra.allow_multi_download_mode'
     },
-    
 
     // API
     'ytdl_use_youtube_api': {
@@ -76,6 +75,28 @@ let CONFIG_ITEMS = {
     'ytdl_allow_theme_change': {
         'key': 'ytdl_allow_theme_change',
         'path': 'YoutubeDLMaterial.Themes.allow_theme_change'
+    },
+
+    // Subscriptions
+    'ytdl_allow_subscriptions': {
+        'key': 'ytdl_allow_subscriptions',
+        'path': 'YoutubeDLMaterial.Subscriptions.allow_subscriptions'
+    },
+    'ytdl_subscriptions_base_path': {
+        'key': 'ytdl_subscriptions_base_path',
+        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_base_path'
+    },
+    'ytdl_subscriptions_check_interval': {
+        'key': 'ytdl_subscriptions_check_interval',
+        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
+    },
+    'ytdl_subscriptions_check_interval': {
+        'key': 'ytdl_subscriptions_check_interval',
+        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
+    },
+    'ytdl_subscriptions_use_youtubedl_archive': {
+        'key': 'ytdl_use_youtubedl_archive',
+        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_use_youtubedl_archive'
     },
 
     // Advanced

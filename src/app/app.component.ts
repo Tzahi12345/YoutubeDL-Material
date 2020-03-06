@@ -4,7 +4,7 @@ import {FileCardComponent} from './file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatSnackBar, MatDialog} from '@angular/material';
+import {MatSnackBar, MatDialog, MatSidenav} from '@angular/material';
 import { saveAs } from 'file-saver';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
@@ -15,7 +15,7 @@ import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/switch'
 import { YoutubeSearchService, Result } from './youtube-search.service';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
@@ -35,10 +35,17 @@ export class AppComponent implements OnInit {
   defaultTheme = null;
   allowThemeChange = null;
 
-  @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
+  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
+  navigator: string = null;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
     public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
+
+    this.navigator = localStorage.getItem('player_navigator');
+    // runs on navigate, captures the route that navigated to the player (if needed)
+    this.router.events.subscribe((e) => { if (e instanceof NavigationStart) {
+      this.navigator = localStorage.getItem('player_navigator');
+    } });
 
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
@@ -56,6 +63,10 @@ export class AppComponent implements OnInit {
       console.log(error);
     });
 
+  }
+
+  toggleSidenav() {
+    this.sidenav.toggle();
   }
 
   // theme stuff
@@ -116,7 +127,11 @@ onSetTheme(theme, old_theme) {
 
 
   goBack() {
-    this.router.navigate(['/home']);
+    if (!this.navigator) {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigateByUrl(this.navigator);
+    }
   }
 
   openSettingsDialog() {

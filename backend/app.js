@@ -1,4 +1,5 @@
 var async = require('async');
+const { uuid } = require('uuidv4');
 var fs = require('fs');
 var path = require('path');
 var youtubedl = require('youtube-dl');
@@ -10,7 +11,9 @@ var archiver = require('archiver');
 const low = require('lowdb')
 var URL = require('url').URL;
 const shortid = require('shortid')
+const url_api = require('url');
 var config_api = require('./config.js'); 
+var subscriptions_api = require('./subscriptions')
 
 var app = express();
 
@@ -25,7 +28,8 @@ db.defaults(
             audio: [],
             video: []
         },
-        configWriteFlag: false
+        configWriteFlag: false,
+        subscriptions: []
 }).write();
 
 // config values
@@ -39,6 +43,8 @@ var videoFolderPath = null;
 var downloadOnlyMode = null;
 var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
+var allowSubscriptions = null;
+var subscriptionsCheckInterval = null;
 
 // other needed values
 var options = null; // encryption options
@@ -129,6 +135,9 @@ async function loadConfig() {
         downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
         useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
         customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
+        allowSubscriptions = config_api.getConfigItem('ytdl_allow_subscriptions');
+        subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
+
         if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
             console.log(`INFO: Using non-default downloading agent \'${customDownloadingAgent}\'`)
         }
@@ -149,12 +158,45 @@ async function loadConfig() {
 
         url_domain = new URL(url);
 
+        // get subscriptions
+        if (allowSubscriptions) {
+            watchSubscriptions();
+        }
+
         // start the server here
         startServer();
 
         resolve(true);
     });
     
+}
+
+function calculateSubcriptionRetrievalDelay(amount) {
+    // frequency is 5 mins
+    let frequency_in_ms = subscriptionsCheckInterval * 1000;
+    let minimum_frequency = 60 * 1000;
+    const first_frequency = frequency_in_ms/amount;
+    return (first_frequency < minimum_frequency) ? minimum_frequency : first_frequency;
+}
+
+function watchSubscriptions() { 
+    let subscriptions = subscriptions_api.getAllSubscriptions();
+
+    let subscriptions_amount = subscriptions.length;
+    let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);
+
+    let current_delay = 0;
+    for (let i = 0; i < subscriptions.length; i++) {
+        let sub = subscriptions[i];
+        console.log('watching ' + sub.name + ' with delay interval of ' + delay_interval);
+        setTimeout(() => {
+            setInterval(() => {
+                subscriptions_api.getVideosForSub(sub);
+            }, subscriptionsCheckInterval * 1000);
+        }, current_delay);
+        current_delay += delay_interval;
+        if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
+    }
 }
 
 function getOrigin() {
@@ -239,9 +281,14 @@ function getJSONMp3(name)
     return obj;
 }
 
-function getJSONMp4(name)
+function getJSONMp4(name, customPath = null)
 {
-    var jsonPath = videoFolderPath+name+".info.json";
+    let jsonPath = null;
+    if (!customPath) {
+        jsonPath = videoFolderPath+name+".info.json";
+    } else {
+        jsonPath = customPath + name + ".info.json";
+    }
     if (fs.existsSync(jsonPath))
     {
         var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -816,6 +863,124 @@ app.post('/api/getMp4s', function(req, res) {
     res.end("yes");
 });
 
+app.post('/api/subscribe', async (req, res) => {
+    let name = req.body.name;
+    let url = req.body.url;
+    let timerange = req.body.timerange;
+
+    const new_sub = {
+                        name: name,
+                        url: url,
+                        id: uuid()
+                    };
+
+    // adds timerange if it exists, otherwise all videos will be downloaded
+    if (timerange) {
+        new_sub.timerange = timerange;
+    }
+
+    const result_obj = await subscriptions_api.subscribe(new_sub);
+
+    if (result_obj.success) {
+        res.send({
+            new_sub: new_sub
+        });
+    } else {
+        res.send({
+            new_sub: null,
+            error: result_obj.error
+        })
+    }
+});
+
+app.post('/api/unsubscribe', async (req, res) => {
+    let deleteMode = req.body.deleteMode
+    let sub = req.body.sub;
+
+    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode);
+    if (result_obj.success) {
+        res.send({
+            success: result_obj.success
+        });
+    } else {
+        res.send({
+            success: false,
+            error: result_obj.error
+        });
+    }
+});
+
+app.post('/api/getSubscription', async (req, res) => {
+    let subID = req.body.id;
+
+    // get sub from db
+    let subscription = subscriptions_api.getSubscription(subID);
+
+    if (!subscription) {
+        // failed to get subscription from db, send 400 error
+        res.sendStatus(400);
+        return;
+    }
+
+    // get sub videos
+    if (subscription.name) {
+        let base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
+        let files;
+        try {
+            files = recFindByExt(appended_base_path, 'mp4');
+        } catch(e) {
+            files = null;
+            console.log('Failed to get folder for subscription: ' + subscription.name);
+            res.sendStatus(500);
+            return;
+        }
+        var parsed_files = [];
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            var file_path = file.substring(appended_base_path.length, file.length);
+            var id = file_path.substring(0, file_path.length-4);
+            var jsonobj = getJSONMp4(id, appended_base_path);
+            if (!jsonobj) continue;
+            var title = jsonobj.title;
+
+            var thumbnail = jsonobj.thumbnail;
+            var duration = jsonobj.duration;
+            var isaudio = false;
+            var file_obj = new File(id, title, thumbnail, isaudio, duration);
+            parsed_files.push(file_obj);
+        }
+
+        res.send({
+            subscription: subscription,
+            files: parsed_files
+        });
+    } else {
+        res.sendStatus(500);
+    }
+    
+
+    
+});
+
+app.post('/api/downloadVideosForSubscription', async (req, res) => {
+    let subID = req.body.subID;
+    let sub = subscriptions_api.getSubscription(subID);
+    subscriptions_api.getVideosForSub(sub);
+    res.send({
+        success: true
+    });
+});
+
+app.post('/api/getAllSubscriptions', async (req, res) => {
+    // get subs from api
+    let subscriptions = subscriptions_api.getAllSubscriptions();
+
+    res.send({
+        subscriptions: subscriptions
+    });
+});
+
 app.post('/api/createPlaylist', async (req, res) => {
     let playlistName = req.body.playlistName;
     let fileNames = req.body.fileNames;
@@ -962,8 +1127,15 @@ app.post('/api/deleteFile', async (req, res) => {
 
 app.get('/api/video/:id', function(req , res){
     var head;
+    let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
-    const path = "video/" + id + '.mp4';
+    let path = "video/" + id + '.mp4';
+    if (optionalParams['subName']) {
+        let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        const isPlaylist = optionalParams['subPlaylist'];
+        basePath += (isPlaylist === 'true' ? 'playlists/' : 'channels/');
+        path = basePath + optionalParams['subName'] + '/' + id + '.mp4'; 
+    }
     const stat = fs.statSync(path)
     const fileSize = stat.size
     const range = req.headers.range
