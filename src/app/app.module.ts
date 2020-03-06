@@ -28,6 +28,7 @@ import { NgxContentLoadingModule } from 'ngx-content-loading';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { DownloadItemComponent } from './download-item/download-item.component';
+import { SettingsComponent } from './settings/settings.component';
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
   return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
@@ -41,7 +42,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     PlayerComponent,
     InputDialogComponent,
     CreatePlaylistComponent,
-    DownloadItemComponent
+    DownloadItemComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
