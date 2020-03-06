@@ -1,0 +1,20 @@
+<br/>
+<button class="back-button" (click)="goBack()" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
+<div style="margin-bottom: 15px;">
+    <h2 style="text-align: center;" *ngIf="subscription">
+        {{subscription.name}}
+    </h2>
+</div>
+<mat-divider style="width: 80%; margin: 0 auto"></mat-divider>
+<br/>
+
+<div *ngIf="subscription">
+    <h4 style="text-align: center; margin-bottom: 20px;">Videos</h4>
+    <div class="container">
+        <div class="row">
+            <div *ngFor="let file of files" class="col mb-4 sub-file-col">
+                <app-subscription-file-card (goToFileEmit)="goToFile($event)" [file]="file"></app-subscription-file-card>
+            </div>
+        </div>
+    </div>
+</div>

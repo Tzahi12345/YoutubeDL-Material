@@ -31,15 +31,18 @@ export class PlayerComponent implements OnInit {
   // params
   fileNames: string[];
   type: string;
+  id = null; // used for playlists (not subscription)
+  subscriptionName = null;
+  subPlaylist = null;
 
   baseStreamPath = null;
   audioFolderPath = null;
   videoFolderPath = null;
+  subscriptionFolderPath = null;
+
   innerWidth: number;
 
   downloading = false;
-
-  id = null;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -52,6 +55,8 @@ export class PlayerComponent implements OnInit {
     this.fileNames = this.route.snapshot.paramMap.get('fileNames').split('|nvr|');
     this.type = this.route.snapshot.paramMap.get('type');
     this.id = this.route.snapshot.paramMap.get('id');
+    this.subscriptionName = this.route.snapshot.paramMap.get('subscriptionName');
+    this.subPlaylist = this.route.snapshot.paramMap.get('subPlaylist');
 
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
@@ -59,6 +64,7 @@ export class PlayerComponent implements OnInit {
       this.baseStreamPath = this.postsService.path;
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
+      this.subscriptionFolderPath = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_base_path'];
 
 
       let fileType = null;
@@ -66,15 +72,27 @@ export class PlayerComponent implements OnInit {
         fileType = 'audio/mp3';
       } else if (this.type === 'video') {
         fileType = 'video/mp4';
+      } else if (this.type === 'subscription') {
+        // only supports mp4 for now
+        fileType = 'video/mp4';
       } else {
         // error
-        console.error('Must have valid file type! Use \'audio\' or \video\'');
+        console.error('Must have valid file type! Use \'audio\', \'video\', or \'subscription\'.');
       }
 
       for (let i = 0; i < this.fileNames.length; i++) {
         const fileName = this.fileNames[i];
-        const baseLocation = (this.type === 'audio') ? this.audioFolderPath : this.videoFolderPath;
-        const fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
+        let baseLocation = null;
+        let fullLocation = null;
+        if (!this.subscriptionName) {
+          baseLocation = this.type + '/';
+          fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
+        } else {
+          // default to video but include subscription name param
+          baseLocation = 'video/';
+          fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
+                          '&subPlaylist=' + this.subPlaylist;
+        }
         // if it has a slash (meaning it's in a directory), only get the file name for the label
         let label = null;
         const decodedName = decodeURIComponent(fileName);

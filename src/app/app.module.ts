@@ -5,7 +5,9 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
   MatProgressBarModule, MatExpansionModule,
   MatProgressSpinnerModule,
   MatButtonToggleModule,
-  MatDialogModule} from '@angular/material';
+  MatDialogModule,
+  MatRippleModule,
+  MatMenuModule} from '@angular/material';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
@@ -28,6 +30,11 @@ import { NgxContentLoadingModule } from 'ngx-content-loading';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { DownloadItemComponent } from './download-item/download-item.component';
+import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
+import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
+import { SubscriptionComponent } from './subscription//subscription/subscription.component';
+import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
+import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
   return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
@@ -41,7 +48,12 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     PlayerComponent,
     InputDialogComponent,
     CreatePlaylistComponent,
-    DownloadItemComponent
+    DownloadItemComponent,
+    SubscriptionsComponent,
+    SubscribeDialogComponent,
+    SubscriptionComponent,
+    SubscriptionFileCardComponent,
+    SubscriptionInfoDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -67,6 +79,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
+    MatRippleModule,
+    MatMenuModule,
     MatDialogModule,
     DragDropModule,
     VgCoreModule,
@@ -80,7 +94,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
   ],
   entryComponents: [
     InputDialogComponent,
-    CreatePlaylistComponent
+    CreatePlaylistComponent,
+    SubscribeDialogComponent,
+    SubscriptionInfoDialogComponent
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]

@@ -1,0 +1,17 @@
+<div style="position: relative; width: fit-content;">
+    <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+        <mat-menu #action_menu="matMenu">
+        <button mat-menu-item><mat-icon>info</mat-icon>Info</button>
+        <button mat-menu-item><mat-icon>restore</mat-icon>Delete and redownload</button>
+        <button mat-menu-item><mat-icon>delete_forever</mat-icon>Delete forever</button>
+    </mat-menu>
+    <mat-card (click)="goToFile(file.name)" matRipple class="example-card mat-elevation-z6">
+        <div style="padding:5px">
+            <div *ngIf="!image_errored && file.thumbnailURL" class="img-div">
+                <img class="image" (error)="onImgError($event)" [src]="file.thumbnailURL" alt="Thumbnail">
+            </div>
+
+            <span class="max-two-lines"><strong>{{file.title}}</strong></span>      
+        </div>
+    </mat-card>
+</div>

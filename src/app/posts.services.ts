@@ -136,6 +136,22 @@ export class PostsService {
     removePlaylist(playlistID, type) {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type});
     }
+
+    createSubscription(url, name, timerange = null) {
+        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange})
+    }
+
+    unsubscribe(sub, deleteMode = false) {
+        return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode})
+    }
+
+    getSubscription(id) {
+        return this.http.post(this.path + 'getSubscription', {id: id});
+    }
+
+    getAllSubscriptions() {
+        return this.http.post(this.path + 'getAllSubscriptions', {});
+    }
 }
 
 

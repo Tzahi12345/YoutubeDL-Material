@@ -28,6 +28,12 @@
         "default_theme": "default",
         "allow_theme_change": true
       },
+      "Subscriptions": {
+        "allow_subscriptions": true,
+        "subscriptions_base_path": "subscriptions/",
+        "subscriptions_check_interval": "300",
+        "subscriptions_use_youtubedl_archive": true
+      },
       "Advanced": {
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",

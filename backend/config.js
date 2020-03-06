@@ -56,7 +56,10 @@ function setConfigFile(config) {
 
 function getConfigItem(key) {
     let config_json = getConfigFile();
-    if (!CONFIG_ITEMS[key]) console.log('cannot find config with key ' + key);
+    if (!CONFIG_ITEMS[key]) {
+        console.log('cannot find config with key ' + key);
+        return null;
+    }
     let path = CONFIG_ITEMS[key]['path'];
     return Object.byString(config_json, path);
 };

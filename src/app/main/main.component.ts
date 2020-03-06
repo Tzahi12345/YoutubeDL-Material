@@ -372,6 +372,7 @@ export class MainComponent implements OnInit {
         this.downloading_content[type][playlistID] = true;
         this.downloadPlaylist(playlist.fileNames, type, playlist.name, playlistID);
       } else {
+        localStorage.setItem('player_navigator', this.router.url);
         const fileNames = playlist.fileNames;
         this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID}]);
       }
@@ -444,6 +445,7 @@ export class MainComponent implements OnInit {
           this.downloadAudioFile(decodeURI(name));
         }
       } else {
+        localStorage.setItem('player_navigator', this.router.url);
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
         } else {
@@ -481,6 +483,7 @@ export class MainComponent implements OnInit {
           this.downloadVideoFile(decodeURI(name));
         }
       } else {
+        localStorage.setItem('player_navigator', this.router.url);
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
         } else {
