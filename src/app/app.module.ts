@@ -5,7 +5,9 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
   MatProgressBarModule, MatExpansionModule,
   MatProgressSpinnerModule,
   MatButtonToggleModule,
-  MatDialogModule} from '@angular/material';
+  MatDialogModule,
+  MatSlideToggleModule,
+  MatMenuModule} from '@angular/material';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
@@ -70,6 +72,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatProgressSpinnerModule,
     MatButtonToggleModule,
     MatDialogModule,
+    MatSlideToggleModule,
+    MatMenuModule,
     DragDropModule,
     VgCoreModule,
     VgControlsModule,
@@ -82,7 +86,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
   ],
   entryComponents: [
     InputDialogComponent,
-    CreatePlaylistComponent
+    CreatePlaylistComponent,
+    SettingsComponent
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]

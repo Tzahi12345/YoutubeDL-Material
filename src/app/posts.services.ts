@@ -92,6 +92,10 @@ export class PostsService {
         }
     }
 
+    setConfig(config) {
+        return this.http.post(this.path + 'setConfig', {new_config_file: config});
+    }
+
     deleteFile(name: string, isAudio: boolean) {
         if (isAudio) {
             return this.http.post(this.path + 'deleteMp3', {name: name});

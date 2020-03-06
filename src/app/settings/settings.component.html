@@ -1,1 +1,193 @@
-<p>settings works!</p>
+<h4 mat-dialog-title>Settings</h4>
+
+<mat-dialog-content>
+<!-- Host -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Host
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-form-field>
+                    <input [(ngModel)]="new_config['Host']['url']" matInput placeholder="URL" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <mat-form-field>
+                    <input [(ngModel)]="new_config['Host']['port']" matInput placeholder="Port" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+            
+        </div>
+    </div>
+</mat-expansion-panel>
+
+<!-- Encryption -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Encryption
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Encryption']['use-encryption']">Use encryption</mat-checkbox>
+            </div>
+            
+            <div class="col-12">
+                <mat-form-field>
+                    <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['cert-file-path']" matInput placeholder="Cert file path">
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+            
+            <div class="col-12">
+                <mat-form-field>
+                    <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['key-file-path']" matInput placeholder="Key file path">
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+
+<!-- Downloader -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Downloader
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-form-field>
+                    <input matInput [(ngModel)]="new_config['Downloader']['path-audio']" placeholder="Audio folder path" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+            
+            <div class="col-12">
+                <mat-form-field>
+                    <input matInput [(ngModel)]="new_config['Downloader']['path-video']" placeholder="Video folder path" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+
+<!-- Extra -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Extra
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-form-field>
+                    <input [(ngModel)]="new_config['Extra']['title_top']" matInput placeholder="Top title" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Extra']['file_manager_enabled']">File manager enabled</mat-checkbox>
+            </div>
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Extra']['allow_quality_select']">Allow quality select</mat-checkbox>
+            </div>
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Extra']['download_only_mode']">Download only mode</mat-checkbox>
+            </div>
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Extra']['allow_multi_download_mode']">Allow multi-download mode</mat-checkbox>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+
+<!-- API -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            API
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['API']['use_youtube_api']">Use YouTube API</mat-checkbox>
+            </div>
+            <div class="col-12">
+                <mat-form-field>
+                    <input [disabled]="!new_config['API']['use_youtube_api']" [(ngModel)]="new_config['API']['youtube_API_key']" matInput placeholder="Youtube API Key" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+
+<!-- Themes -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Themes
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-select style="width: 100px" [(ngModel)]="new_config['Themes']['default_theme']">
+                    <mat-option value="default">Default</mat-option>
+                    <mat-option value="dark">Dark</mat-option>
+                </mat-select>
+            </div>
+            
+            <div class="col-12 mt-4">
+                <mat-checkbox [(ngModel)]="new_config['Themes']['allow_theme_change']">Allow theme change</mat-checkbox>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+
+<!-- Advanced -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Advanced
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Advanced']['use_default_downloading_agent']">Use default downloading agent</mat-checkbox>
+            </div>
+            <div class="col-12">
+                <mat-form-field>
+                    <input [disabled]="!new_config['Advanced']['use_default_downloading_agent']" [(ngModel)]="new_config['Advanced']['custom_downloading_agent']" matInput placeholder="Custom agent" required>
+                    <mat-hint></mat-hint>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <mat-checkbox [(ngModel)]="new_config['Advanced']['allow_advanced_download']">Allow advanced download</mat-checkbox>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <div style="margin-bottom: 10px;">
+        <button color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;Save</button>
+        <button mat-flat-button [mat-dialog-close]="false"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;Cancel</button>
+    </div>
+</mat-dialog-actions>
