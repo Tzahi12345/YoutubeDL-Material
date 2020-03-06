@@ -49,4 +49,7 @@ backend/video/*
 backend/audio/*
 backend/public/*
 backend/db.json
+backend/subscriptions/channels/*
+backend/subscriptions/playlists/*
+backend/subscriptions/archives/*
 src/assets/default.json

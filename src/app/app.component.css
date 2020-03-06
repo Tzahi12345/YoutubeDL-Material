@@ -11,3 +11,9 @@
     flex-basis: 100%;
     flex: 1;
 }
+
+.theme-slide-toggle {
+    top: 2px;
+    left: 10px;
+    position: relative;
+}
