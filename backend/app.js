@@ -557,6 +557,20 @@ app.get('/api/config', function(req, res) {
     });
 });
 
+app.post('/api/setConfig', function(req, res) {
+    let new_config_file = req.body.new_config_file;
+    if (new_config_file && new_config_file['YoutubeDLMaterial']) {
+        let success = config_api.setConfigFile(new_config_file);
+        res.send({
+            success: success
+        });
+    } else {
+        console.log('ERROR: Tried to save invalid config file!')
+        res.sendStatus(400);
+    }
+    
+});
+
 app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
 });

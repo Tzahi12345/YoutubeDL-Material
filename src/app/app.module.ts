@@ -7,6 +7,7 @@ import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, Ma
   MatButtonToggleModule,
   MatDialogModule,
   MatRippleModule,
+  MatSlideToggleModule,
   MatMenuModule} from '@angular/material';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -35,6 +36,7 @@ import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-d
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
 import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
+import { SettingsComponent } from './settings/settings.component';
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
   return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
@@ -53,7 +55,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SubscribeDialogComponent,
     SubscriptionComponent,
     SubscriptionFileCardComponent,
-    SubscriptionInfoDialogComponent
+    SubscriptionInfoDialogComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -82,6 +85,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatRippleModule,
     MatMenuModule,
     MatDialogModule,
+    MatSlideToggleModule,
+    MatMenuModule,
     DragDropModule,
     VgCoreModule,
     VgControlsModule,
@@ -96,7 +101,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     InputDialogComponent,
     CreatePlaylistComponent,
     SubscribeDialogComponent,
-    SubscriptionInfoDialogComponent
+    SubscriptionInfoDialogComponent,
+    SettingsComponent
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]

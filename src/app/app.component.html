@@ -13,8 +13,25 @@
                     <button *ngIf="allowThemeChange" mat-icon-button (click)="flipTheme()"><mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon></button>
                 </div>
             </div>
-        </mat-toolbar>
-    </div>
+            <div class="flex-column" style="text-align: center; margin-top: 5px;">
+                <div>{{topBarTitle}}</div>
+            </div>
+            <div class="flex-column" style="text-align: right; align-items: flex-end;">
+                <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+                <mat-menu #menuSettings="matMenu">
+                    <button (click)="$event.stopPropagation();" *ngIf="allowThemeChange" mat-menu-item>
+                      <mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon>
+                      <span>Dark</span>
+                      <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'" (change)="flipTheme()"></mat-slide-toggle>
+                    </button>
+                    <button (click)="openSettingsDialog()" mat-menu-item>
+                      <mat-icon>settings</mat-icon>
+                      <span>Settings</span>
+                    </button>
+                </mat-menu>
+            </div>
+        </div>
+    </mat-toolbar>
 
     <div style="height: calc(100% - 64px)">
         <mat-sidenav-container style="height: 100%">

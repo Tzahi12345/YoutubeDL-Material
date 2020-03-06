@@ -52,4 +52,7 @@ backend/subscriptions/archives/*
 backend/subscriptions/playlists/*
 backend/subscriptions/channels/*
 backend/db.json
+backend/subscriptions/channels/*
+backend/subscriptions/playlists/*
+backend/subscriptions/archives/*
 src/assets/default.json
