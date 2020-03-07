@@ -149,6 +149,10 @@ export class PostsService {
         return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode})
     }
 
+    deleteSubscriptionFile(sub, file, deleteForever) {
+        return this.http.post(this.path + 'deleteSubscriptionFile', {sub: sub, file: file, deleteForever: deleteForever})
+    }
+
     getSubscription(id) {
         return this.http.post(this.path + 'getSubscription', {id: id});
     }

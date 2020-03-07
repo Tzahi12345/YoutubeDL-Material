@@ -1,7 +1,22 @@
 <h4 mat-dialog-title>{{sub.name}}</h4>
 
 <mat-dialog-content>
-    <strong>Type:</strong> {{(sub.isPlaylist ? 'Playlist' : 'Channel')}}
+    <div class="info-item">
+        <strong>Type: </strong>
+        <span class="info-item-value">{{(sub.isPlaylist ? 'Playlist' : 'Channel')}}</span>
+    </div>
+    <div class="info-item">
+        <strong>URL: </strong>
+        <span class="info-item-value">{{sub.url}}</span>
+    </div>
+    <div class="info-item">
+        <strong>ID: </strong>
+        <span class="info-item-value">{{sub.id}}</span>
+    </div>
+    <div class="info-item" *ngIf="sub.archive">
+        <strong>Archive: </strong>
+        <span class="info-item-value">{{sub.archive}}</span>
+    </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>

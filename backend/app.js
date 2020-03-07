@@ -160,7 +160,11 @@ async function loadConfig() {
 
         // get subscriptions
         if (allowSubscriptions) {
+            // runs initially, then runs every ${subscriptionCheckInterval} seconds
             watchSubscriptions();
+            setInterval(() => {
+                watchSubscriptions();
+            }, subscriptionsCheckInterval * 1000);
         }
 
         // start the server here
@@ -190,9 +194,7 @@ function watchSubscriptions() {
         let sub = subscriptions[i];
         console.log('watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(() => {
-            setInterval(() => {
-                subscriptions_api.getVideosForSub(sub);
-            }, subscriptionsCheckInterval * 1000);
+            subscriptions_api.getVideosForSub(sub);
         }, current_delay);
         current_delay += delay_interval;
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
@@ -415,10 +417,11 @@ function deleteAudioFile(name) {
     });
 }
 
-async function deleteVideoFile(name) {
+async function deleteVideoFile(name, customPath = null) {
     return new Promise(resolve => {
-        var jsonPath = path.join(videoFolderPath,name+'.info.json');
-        var videoFilePath = path.join(videoFolderPath,name+'.mp4');
+        let filePath = customPath ? customPath : videoFolderPath;
+        var jsonPath = path.join(filePath,name+'.info.json');
+        var videoFilePath = path.join(filePath,name+'.mp4');
         jsonPath = path.join(__dirname, jsonPath);
         videoFilePath = path.join(__dirname, videoFilePath);
 
@@ -908,6 +911,23 @@ app.post('/api/unsubscribe', async (req, res) => {
             error: result_obj.error
         });
     }
+});
+
+app.post('/api/deleteSubscriptionFile', async (req, res) => {
+    let deleteForever = req.body.deleteForever;
+    let file = req.body.file;
+    let sub = req.body.sub;
+
+    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever);
+
+    if (success) {
+        res.send({
+            success: success
+        });
+    } else {
+        res.sendStatus(500);
+    }
+
 });
 
 app.post('/api/getSubscription', async (req, res) => {

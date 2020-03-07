@@ -55,6 +55,13 @@
     bottom: 5px;
     position: absolute;
   }
+
+  .duration-time {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    z-index: 99999;
+  }
   
   @media (max-width: 576px){
    

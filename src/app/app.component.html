@@ -30,8 +30,8 @@
         <mat-sidenav-container style="height: 100%">
             <mat-sidenav #sidenav>
                 <mat-nav-list>
-                    <a mat-list-item routerLink='/home'>Home</a>
-                    <a mat-list-item routerLink='/subscriptions'>Subscriptions</a>
+                    <a mat-list-item (click)="sidenav.close()" routerLink='/home'>Home</a>
+                    <a mat-list-item (click)="sidenav.close()" routerLink='/subscriptions'>Subscriptions</a>
                 </mat-nav-list>
             </mat-sidenav>
             <mat-sidenav-content [style.background]="postsService.theme ? postsService.theme.background_color : null">

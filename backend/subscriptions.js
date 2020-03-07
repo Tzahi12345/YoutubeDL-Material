@@ -64,6 +64,51 @@ async function unsubscribe(sub, deleteMode) {
 
 }
 
+async function deleteSubscriptionFile(sub, file, deleteForever) {
+    const basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+    const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
+    const appendedBasePath = getAppendedBasePath(sub, basePath);
+    const name = file;
+    let retrievedID = null;
+    return new Promise(resolve => {
+        let filePath = appendedBasePath;
+        var jsonPath = path.join(filePath,name+'.info.json');
+        var videoFilePath = path.join(filePath,name+'.mp4');
+        jsonPath = path.join(__dirname, jsonPath);
+        videoFilePath = path.join(__dirname, videoFilePath);
+
+        jsonExists = fs.existsSync(jsonPath);
+        videoFileExists = fs.existsSync(videoFilePath);
+
+        if (jsonExists) {
+            retrievedID = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))['id'];
+            fs.unlinkSync(jsonPath);
+        }
+
+        if (videoFileExists) {
+            fs.unlink(videoFilePath, function(err) {
+                if (fs.existsSync(jsonPath) || fs.existsSync(videoFilePath)) {
+                    resolve(false);
+                } else {
+                    // check if the user wants the video to be redownloaded (deleteForever === false)
+                    if (!deleteForever && useArchive && sub.archive && retrievedID) {
+                        const archive_path = path.join(sub.archive, 'archive.txt')
+                        // if archive exists, remove line with video ID
+                        if (fs.existsSync(archive_path)) {
+                            removeIDFromArchive(archive_path, retrievedID);
+                        }
+                    }
+                    resolve(true);
+                }
+            });
+        } else {
+            // TODO: tell user that the file didn't exist
+            resolve(true);
+        }
+        
+    });
+}
+
 async function getVideosForSub(sub) {
     return new Promise(resolve => {
         const basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
@@ -199,10 +244,38 @@ const deleteFolderRecursive = function(folder_to_delete) {
     }
   };
 
+function removeIDFromArchive(archive_path, id) {
+    fs.readFile(archive_path, {encoding: 'utf-8'}, function(err, data) {
+        if (err) throw error;
+    
+        let dataArray = data.split('\n'); // convert file data in an array
+        const searchKeyword = id; // we are looking for a line, contains, key word id in the file
+        let lastIndex = -1; // let say, we have not found the keyword
+    
+        for (let index=0; index<dataArray.length; index++) {
+            if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
+                lastIndex = index; // found a line includes a id keyword
+                break; 
+            }
+        }
+    
+        dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
+    
+        // UPDATE FILE WITH NEW DATA
+        const updatedData = dataArray.join('\n');
+        fs.writeFile(archive_path, updatedData, (err) => {
+            if (err) throw err;
+            // console.log ('Successfully updated the file data');
+        });
+    
+    });
+}
+
 module.exports = {
-    getSubscription    : getSubscription,
-    getAllSubscriptions: getAllSubscriptions,
-    subscribe          : subscribe,
-    unsubscribe        : unsubscribe,
-    getVideosForSub    : getVideosForSub
+    getSubscription        : getSubscription,
+    getAllSubscriptions    : getAllSubscriptions,
+    subscribe              : subscribe,
+    unsubscribe            : unsubscribe,
+    deleteSubscriptionFile : deleteSubscriptionFile,
+    getVideosForSub        : getVideosForSub
 }
