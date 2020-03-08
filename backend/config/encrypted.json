@@ -11,7 +11,8 @@
       },
       "Downloader": {
         "path-audio": "audio/",
-        "path-video": "video/"
+        "path-video": "video/",
+        "custom_args": ""
       },
       "Extra": {
         "title_top": "Youtube Downloader",
