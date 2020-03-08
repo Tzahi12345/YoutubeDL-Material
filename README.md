@@ -99,10 +99,12 @@ You can use the internal API on your server to run downloads on your instance wi
 
 #### Downloading audio files 
 `curl -XPOST -H "Content-type: application/json" -d '{"url": "<your youtube url>"}' 'http://localhost:17442/api/tomp3'`
+
 Remember to replace `<your video url>` with the actual URL. 
 
 #### Downloading video files
 `curl -XPOST -H "Content-type: application/json" -d '{"url": "<your youtube url>"}' 'http://localhost:17442/api/tomp4'`
+
 Remember to replace `<your video url>` with the actual URL. 
 
 ## Contributing
