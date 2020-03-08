@@ -93,6 +93,18 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 4. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar. 
 5. Make sure you can connect to the specified URL + port, and if so, you are done!
 
+## API
+
+You can use the internal API on your server to run downloads on your instance without using the frontend. All of the available endpoints can be seen over [here](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/backend/app.js) -- search for '/api/' on the page to find all the endpoints. I will expand on the available endpoints in the future, but for now I'd like to highlight the two most useful ones:
+
+#### Downloading audio files 
+`curl -XPOST -H "Content-type: application/json" -d '{"url": "<your youtube url>"}' 'http://localhost:17442/api/tomp3'`
+Remember to replace `<your video url>` with the actual URL. 
+
+#### Downloading video files
+`curl -XPOST -H "Content-type: application/json" -d '{"url": "<your youtube url>"}' 'http://localhost:17442/api/tomp4'`
+Remember to replace `<your video url>` with the actual URL. 
+
 ## Contributing
 
 Feel free to submit a pull request! I have no guidelines as of yet, so no need to worry about that.
