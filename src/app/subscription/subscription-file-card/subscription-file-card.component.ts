@@ -52,7 +52,7 @@ export class SubscriptionFileCardComponent implements OnInit {
   }
 
   goToFile() {
-    this.goToFileEmit.emit(this.file.title);
+    this.goToFileEmit.emit(this.file.id);
   }
 
   deleteAndRedownload() {

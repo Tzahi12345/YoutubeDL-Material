@@ -186,6 +186,8 @@ function calculateSubcriptionRetrievalDelay(amount) {
 function watchSubscriptions() { 
     let subscriptions = subscriptions_api.getAllSubscriptions();
 
+    if (!subscriptions) return;
+
     let subscriptions_amount = subscriptions.length;
     let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);
 
