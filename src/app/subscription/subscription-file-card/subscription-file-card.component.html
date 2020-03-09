@@ -7,7 +7,7 @@
         <button (click)="deleteAndRedownload()" mat-menu-item><mat-icon>restore</mat-icon>Delete and redownload</button>
         <button (click)="deleteForever()" mat-menu-item *ngIf="sub.archive && use_youtubedl_archive"><mat-icon>delete_forever</mat-icon>Delete forever</button>
     </mat-menu>
-    <mat-card (click)="goToFile(file.name)" matRipple class="example-card mat-elevation-z6">
+    <mat-card (click)="goToFile()" matRipple class="example-card mat-elevation-z6">
         <div style="padding:5px">
             <div *ngIf="!image_errored && file.thumbnailURL" class="img-div">
                 <img class="image" (error)="onImgError($event)" [src]="file.thumbnailURL" alt="Thumbnail">
