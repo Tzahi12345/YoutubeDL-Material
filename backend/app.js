@@ -585,6 +585,7 @@ app.post('/api/tomp3', function(req, res) {
 
     var customQualityConfiguration = req.body.customQualityConfiguration;
     var maxBitrate = req.body.maxBitrate;
+    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
     var customArgs = req.body.customArgs;
     var customOutput = req.body.customOutput;
     var youtubeUsername = req.body.youtubeUsername;
@@ -620,6 +621,11 @@ app.post('/api/tomp3', function(req, res) {
     
         if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
             downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        }
+
+        if (globalArgs && globalArgs !== '') {
+            // adds global args
+            downloadConfig = downloadConfig.concat(globalArgs.split(' '));
         }
     }
 
@@ -671,6 +677,7 @@ app.post('/api/tomp4', function(req, res) {
     var date = Date.now();
     var path = videoFolderPath;
     var videopath = '%(title)s';
+    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
     var customArgs = req.body.customArgs;
     var customOutput = req.body.customOutput;
 
@@ -703,6 +710,11 @@ app.post('/api/tomp4', function(req, res) {
     
         if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
             downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        }
+
+        if (globalArgs && globalArgs !== '') {
+            // adds global args
+            downloadConfig = downloadConfig.concat(globalArgs.split(' '));
         }
     }
 

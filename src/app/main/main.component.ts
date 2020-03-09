@@ -801,8 +801,9 @@ export class MainComponent implements OnInit {
 
   getSimulatedOutput() {
     const customArgsExists = this.customArgsEnabled && this.customArgs;
+    const globalArgsExists = this.globalCustomArgs && this.globalCustomArgs !== '';
 
-    const full_string_array: string[] = [];
+    let full_string_array: string[] = [];
     const base_string_array = ['youtube-dl', this.url];
 
     if (customArgsExists) {
@@ -859,6 +860,10 @@ export class MainComponent implements OnInit {
       const additional_params = ['--write-info-json', '--print-json'];
 
       full_string_array.push(...additional_params);
+    }
+
+    if (globalArgsExists) {
+      full_string_array = full_string_array.concat(this.globalCustomArgs.split(' '));
     }
 
     this.simulatedOutput = full_string_array.join(' ');
