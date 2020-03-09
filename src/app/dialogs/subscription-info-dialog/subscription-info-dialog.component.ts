@@ -29,4 +29,11 @@ export class SubscriptionInfoDialogComponent implements OnInit {
     });
   }
 
+  downloadArchive() {
+    this.postsService.downloadArchive(this.sub).subscribe(res => {
+      const blob: Blob = res;
+      saveAs(blob, 'archive.txt');
+    });
+  }
+
 }

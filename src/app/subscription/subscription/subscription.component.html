@@ -13,7 +13,7 @@
     <div class="container">
         <div class="row">
             <div *ngFor="let file of files" class="col mb-4 sub-file-col">
-                <app-subscription-file-card (reloadSubscription)="getSubscription()" (goToFileEmit)="goToFile($event)" [file]="file" [sub]="subscription"></app-subscription-file-card>
+                <app-subscription-file-card (reloadSubscription)="getSubscription()" (goToFileEmit)="goToFile($event)" [file]="file" [sub]="subscription" [use_youtubedl_archive]="use_youtubedl_archive"></app-subscription-file-card>
             </div>
         </div>
     </div>

@@ -120,6 +120,10 @@ export class PostsService {
                                                           {responseType: 'blob'});
     }
 
+    downloadArchive(sub) {
+        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob'});
+    }
+
     getFileInfo(fileNames, type, urlMode) {
         return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode});
     }

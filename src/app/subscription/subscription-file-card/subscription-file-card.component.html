@@ -5,7 +5,7 @@
     <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
         <mat-menu #action_menu="matMenu">
         <button (click)="deleteAndRedownload()" mat-menu-item><mat-icon>restore</mat-icon>Delete and redownload</button>
-        <button (click)="deleteForever()" mat-menu-item><mat-icon>delete_forever</mat-icon>Delete forever</button>
+        <button (click)="deleteForever()" mat-menu-item *ngIf="sub.archive && use_youtubedl_archive"><mat-icon>delete_forever</mat-icon>Delete forever</button>
     </mat-menu>
     <mat-card (click)="goToFile(file.name)" matRipple class="example-card mat-elevation-z6">
         <div style="padding:5px">

@@ -20,6 +20,7 @@ export class SubscriptionFileCardComponent implements OnInit {
 
   @Input() file;
   @Input() sub;
+  @Input() use_youtubedl_archive = false;
 
   @Output() goToFileEmit = new EventEmitter<any>();
   @Output() reloadSubscription = new EventEmitter<boolean>();

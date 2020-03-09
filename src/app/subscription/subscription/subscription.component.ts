@@ -12,6 +12,7 @@ export class SubscriptionComponent implements OnInit {
   id = null;
   subscription = null;
   files: any[] = null;
+  use_youtubedl_archive = false;
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router) { }
 
@@ -20,6 +21,7 @@ export class SubscriptionComponent implements OnInit {
       this.id = this.route.snapshot.paramMap.get('id');
 
       this.getSubscription();
+      this.getConfig();
     }
   }
 
@@ -30,8 +32,14 @@ export class SubscriptionComponent implements OnInit {
   getSubscription() {
     this.postsService.getSubscription(this.id).subscribe(res => {
       this.subscription = res['subscription'];
-      console.log(res['files']);
       this.files = res['files'];
+    });
+  }
+
+  getConfig() {
+    this.postsService.loadNavItems().subscribe(res => {
+      const result = !this.postsService.debugMode ? res['config_file'] : res;
+      this.use_youtubedl_archive = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_use_youtubedl_archive'];
     });
   }
 

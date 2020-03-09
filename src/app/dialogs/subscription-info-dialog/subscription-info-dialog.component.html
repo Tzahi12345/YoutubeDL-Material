@@ -21,5 +21,7 @@
 
 <mat-dialog-actions>
     <button mat-button mat-dialog-close>Close</button>
+    <button mat-stroked-button (click)="downloadArchive()" color="accent">Export Archive</button>
+    <span class="spacer"></span>
     <button mat-button (click)="unsubscribe()" color="warn">Unsubscribe</button>
 </mat-dialog-actions>
