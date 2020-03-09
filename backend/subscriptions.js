@@ -11,7 +11,7 @@ const config_api = require('./config');
 const adapter = new FileSync('db.json');
 const db = low(adapter)
 
-let debugMode = process.env.YTDL_MODE === 'debug';
+const debugMode = process.env.YTDL_MODE === 'debug';
 
 async function subscribe(sub) {
     const result_obj = {

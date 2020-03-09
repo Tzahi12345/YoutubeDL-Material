@@ -3,7 +3,7 @@
         <mat-toolbar color="primary" class="top">
             <div class="flex-row" width="100%" height="100%">
                 <div class="flex-column" style="text-align: left; margin-top: 1px;">
-                    <button class="no-outline" *ngIf="router.url.split(';')[0] !== '/player'" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
+                    <button #hamburgerMenu style="outline: none" *ngIf="router.url.split(';')[0] !== '/player'" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
                     <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
                 </div>
                 <div class="flex-column" style="text-align: center; margin-top: 5px;">
@@ -12,10 +12,10 @@
                 <div class="flex-column" style="text-align: right; align-items: flex-end;">
                     <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                     <mat-menu #menuSettings="matMenu">
-                        <button (click)="$event.stopPropagation();" *ngIf="allowThemeChange" mat-menu-item>
+                        <button (click)="themeMenuItemClicked($event)" *ngIf="allowThemeChange" mat-menu-item>
                           <mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon>
                           <span>Dark</span>
-                          <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'" (change)="flipTheme()"></mat-slide-toggle>
+                          <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
                         </button>
                         <button (click)="openSettingsDialog()" mat-menu-item>
                           <mat-icon>settings</mat-icon>

@@ -15,7 +15,7 @@ import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/switch'
 import { YoutubeSearchService, Result } from './youtube-search.service';
-import { Router, NavigationStart } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
   allowThemeChange = null;
 
   @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
+  @ViewChild('hamburgerMenu', {static: false, read: ElementRef}) hamburgerMenuButton: ElementRef;
   navigator: string = null;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
@@ -45,7 +46,13 @@ export class AppComponent implements OnInit {
     // runs on navigate, captures the route that navigated to the player (if needed)
     this.router.events.subscribe((e) => { if (e instanceof NavigationStart) {
       this.navigator = localStorage.getItem('player_navigator');
-    } });
+    } else if (e instanceof NavigationEnd) {
+      // blurs hamburger menu if it exists, as the sidenav likes to focus on it after closing
+      if (this.hamburgerMenuButton && this.hamburgerMenuButton.nativeElement) {
+        this.hamburgerMenuButton.nativeElement.blur();
+      }
+    }
+    });
 
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
@@ -117,6 +124,11 @@ onSetTheme(theme, old_theme) {
     }
   }
 
+  themeMenuItemClicked(event) {
+    this.flipTheme();
+    event.stopPropagation();
+  }
+
   ngOnInit() {
     if (localStorage.getItem('theme')) {
       this.setTheme(localStorage.getItem('theme'));
@@ -135,7 +147,10 @@ onSetTheme(theme, old_theme) {
   }
 
   openSettingsDialog() {
-    const dialogRef = this.dialog.open(SettingsComponent);
+    const dialogRef = this.dialog.open(SettingsComponent, {
+      width: '80vw'
+    });
   }
+
 }
 
