@@ -12,6 +12,7 @@ services:
             ytdl_key_file_path: /etc/letsencrypt/live/example.com/privkey.pem
             ytdl_audio_folder_path: audio/
             ytdl_video_folder_path: video/
+            ytdl_custom_args: ''
             ytdl_title_top: Youtube Downloader
             ytdl_file_manager_enabled: 'true'
             ytdl_allow_quality_select: 'true'
@@ -21,6 +22,10 @@ services:
             ytdl_youtube_api_key: 'false'
             ytdl_default_theme: default
             ytdl_allow_theme_change: 'true'
+            ytdl_allow_subscriptions: 'true'
+            ytdl_subscriptions_base_path: subscriptions/
+            ytdl_subscriptions_check_interval: '300'
+            ytdl_subscriptions_use_youtubedl_archive: 'true'
             ytdl_use_default_downloading_agent: 'true'
             ytdl_custom_downloading_agent: 'false'
             ytdl_allow_advanced_download: 'false'
