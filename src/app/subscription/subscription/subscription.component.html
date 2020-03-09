@@ -9,10 +9,21 @@
 <br/>
 
 <div *ngIf="subscription">
-    <h4 style="text-align: center; margin-bottom: 20px;">Videos</h4>
+    <div class="flex-grid">
+        <div class="col"></div>
+        <div class="col">
+            <h4 style="text-align: center; margin-bottom: 20px;">Videos</h4>
+        </div>
+        <div class="col">
+            <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
+                <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" placeholder="Search" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+        </div>
+    </div>
     <div class="container">
         <div class="row">
-            <div *ngFor="let file of files" class="col mb-4 sub-file-col">
+            <div *ngFor="let file of filtered_files" class="col-6 col-lg-4 mb-4 sub-file-col">
                 <app-subscription-file-card (reloadSubscription)="getSubscription()" (goToFileEmit)="goToFile($event)" [file]="file" [sub]="subscription" [use_youtubedl_archive]="use_youtubedl_archive"></app-subscription-file-card>
             </div>
         </div>

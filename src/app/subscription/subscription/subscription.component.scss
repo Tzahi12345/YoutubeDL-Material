@@ -7,3 +7,30 @@
     position: absolute;
     left: 15px;
 }
+
+.search-bar {
+    transition: all .5s ease;
+    position: relative;
+    float: right;
+}
+ 
+.search-bar-unfocused {
+    width: 100px;
+}
+
+.search-input {
+    transition: all .5s ease;
+}
+
+.search-bar-focused {
+    width: 100%;
+}
+
+.flex-grid {
+    width: 100%;
+    display: block;
+}
+.col {
+    width: 33%;
+    display: inline-block;
+}
