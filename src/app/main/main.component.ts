@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList, isDevMode } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import {PostsService} from '../posts.services';
 import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
@@ -45,6 +45,7 @@ export class MainComponent implements OnInit {
 
   iOS = false;
 
+  // local settings
   determinateProgress = false;
   downloadingfile = false;
   audioOnly: boolean;
@@ -63,15 +64,19 @@ export class MainComponent implements OnInit {
   percentDownloaded: number;
   autoStartDownload = false;
 
-  // settings
+  // global settings
   fileManagerEnabled = false;
   allowQualitySelect = false;
   downloadOnlyMode = false;
   allowMultiDownloadMode = false;
   audioFolderPath;
   videoFolderPath;
+  globalCustomArgs = null;
   allowAdvancedDownload = false;
+  useDefaultDownloadingAgent = true;
+  customDownloadingAgent = null;
 
+  // formats cache
   cachedAvailableFormats = {};
 
   // youtube api
@@ -202,6 +207,8 @@ export class MainComponent implements OnInit {
     is_playlist: false
   };
 
+  simulatedOutput = '';
+
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
@@ -214,11 +221,15 @@ export class MainComponent implements OnInit {
       this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
+      this.globalCustomArgs = result['YoutubeDLMaterial']['Downloader']['custom_args'];
       this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'] &&
           result['YoutubeDLMaterial']['API']['youtube_API_key'];
       this.youtubeAPIKey = this.youtubeSearchEnabled ? result['YoutubeDLMaterial']['API']['youtube_API_key'] : null;
       this.allowQualitySelect = result['YoutubeDLMaterial']['Extra']['allow_quality_select'];
       this.allowAdvancedDownload = result['YoutubeDLMaterial']['Advanced']['allow_advanced_download'];
+      this.useDefaultDownloadingAgent = result['YoutubeDLMaterial']['Advanced']['use_default_downloading_agent'];
+      this.customDownloadingAgent = result['YoutubeDLMaterial']['Advanced']['custom_downloading_agent'];
+
 
 
       if (this.fileManagerEnabled) {
@@ -258,6 +269,8 @@ export class MainComponent implements OnInit {
       if (this.autoStartDownload) {
         this.downloadClicked();
       }
+
+      setInterval(() => this.getSimulatedOutput(), 1000);
 
     }, error => {
       console.log(error);
@@ -547,11 +560,7 @@ export class MainComponent implements OnInit {
 
         let customQualityConfiguration = null;
         if (this.selectedQuality !== '') {
-          const cachedFormatsExists = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
-          if (cachedFormatsExists) {
-            const audio_formats = this.cachedAvailableFormats[this.url]['formats']['audio'];
-            customQualityConfiguration = audio_formats[this.selectedQuality]['format_id'];
-          }
+          customQualityConfiguration = this.getSelectedAudioFormat();
         }
 
         this.postsService.makeMP3(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
@@ -584,14 +593,7 @@ export class MainComponent implements OnInit {
         if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
         this.downloadingfile = true;
 
-        let customQualityConfiguration = null;
-        const cachedFormatsExists = this.cachedAvailableFormats[this.url] &&  this.cachedAvailableFormats[this.url]['formats'];
-        if (cachedFormatsExists) {
-          const video_formats = this.cachedAvailableFormats[this.url]['formats']['video'];
-          if (video_formats['best_audio_format'] && this.selectedQuality !== '') {
-              customQualityConfiguration = video_formats[this.selectedQuality]['format_id'] + '+' + video_formats['best_audio_format'];
-          }
-        }
+        const customQualityConfiguration = this.getSelectedVideoFormat();
 
         this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
           customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword).subscribe(posts => {
@@ -630,6 +632,29 @@ export class MainComponent implements OnInit {
     this.downloadingfile = false;
     this.current_download.downloading = false;
     this.current_download = null;
+  }
+
+  getSelectedAudioFormat() {
+    if (this.selectedQuality === '') { return null };
+    const cachedFormatsExists = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
+    if (cachedFormatsExists) {
+      const audio_formats = this.cachedAvailableFormats[this.url]['formats']['audio'];
+      return audio_formats[this.selectedQuality]['format_id'];
+    } else {
+      return null;
+    }
+  }
+
+  getSelectedVideoFormat() {
+    if (this.selectedQuality === '') { return null };
+    const cachedFormatsExists = this.cachedAvailableFormats[this.url] &&  this.cachedAvailableFormats[this.url]['formats'];
+    if (cachedFormatsExists) {
+      const video_formats = this.cachedAvailableFormats[this.url]['formats']['video'];
+      if (video_formats['best_audio_format'] && this.selectedQuality !== '') {
+          return video_formats[this.selectedQuality]['format_id'] + '+' + video_formats['best_audio_format'];
+      }
+    }
+    return null;
   }
 
   getDownloadByUID(uid) {
@@ -772,6 +797,72 @@ export class MainComponent implements OnInit {
         this.errorFormats(url);
       });
     }
+  }
+
+  getSimulatedOutput() {
+    const customArgsExists = this.customArgsEnabled && this.customArgs;
+
+    const full_string_array: string[] = [];
+    const base_string_array = ['youtube-dl', this.url];
+
+    if (customArgsExists) {
+      this.simulatedOutput = base_string_array.join(' ') + ' ' + this.customArgs;
+      return this.simulatedOutput;
+    }
+
+    full_string_array.push(...base_string_array);
+
+    const base_path = this.audioOnly ? this.audioFolderPath : this.videoFolderPath;
+    const ext = this.audioOnly ? '.mp3' : '.mp4';
+    // gets output
+    let output_string_array = ['-o', base_path + '%(title)s' + ext];
+    if (this.customOutputEnabled && this.customOutput) {
+      output_string_array = ['-o', this.customOutput + ext];
+    }
+    // before pushing output, should check if using an external downloader
+    if (!this.useDefaultDownloadingAgent && this.customDownloadingAgent === 'aria2c') {
+      full_string_array.push('--external-downloader', 'aria2c');
+    }
+    // pushes output
+    full_string_array.push(...output_string_array);
+
+    // logic splits into audio and video modes
+    if (this.audioOnly) {
+      // adds base audio string
+      const format_array = [];
+      const audio_format = this.getSelectedAudioFormat();
+      if (audio_format) {
+        format_array.push('-f', audio_format);
+      } else if (this.selectedQuality) {
+        format_array.push('--audio-quality', this.selectedQuality);
+      }
+
+      // pushes formats
+      full_string_array.splice(2, 0, ...format_array);
+
+      const additional_params = ['-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
+
+      full_string_array.push(...additional_params);
+    } else {
+      // adds base video string
+      let format_array = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'];
+      const video_format = this.getSelectedVideoFormat();
+      if (video_format) {
+        format_array = ['-f', video_format];
+      } else if (this.selectedQuality) {
+        format_array = [`bestvideo[height=${this.selectedQuality}]+bestaudio/best[height=${this.selectedQuality}]`];
+      }
+
+      // pushes formats
+      full_string_array.splice(2, 0, ...format_array);
+
+      const additional_params = ['--write-info-json', '--print-json'];
+
+      full_string_array.push(...additional_params);
+    }
+
+    this.simulatedOutput = full_string_array.join(' ');
+    return this.simulatedOutput;
   }
 
   errorFormats(url) {
