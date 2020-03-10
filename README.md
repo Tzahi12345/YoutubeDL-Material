@@ -37,6 +37,7 @@ sudo apt-get install nodejs youtube-dl
 2. Drag the `youtubedl-material` directory to an easily accessible directory. Navigate to the `config` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
 
 NOTE: If you are intending to use a reverse proxy, this next step is not necessary
+
 3. Port forward the port listed in `default.json`, which defaults to `17442`.
 
 4. Once the configuration is done, run `npm install` to install all the backend dependencies. Once that is finished, type `nodejs app.js`. This will run the backend server, which serves the frontend as well. On your browser, navigate to to the server (url with the specified port). Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
