@@ -276,9 +276,12 @@ function getFileSizeMp4(name)
 
 function getJSONMp3(name)
 {
-    var jsonPath = audioFolderPath+name+".mp3.info.json";
+    var jsonPath = audioFolderPath+name+".info.json";
+    var alternateJsonPath = audioFolderPath+name+".mp3.info.json";
     if (fs.existsSync(jsonPath))
-    var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    else if (fs.existsSync(alternateJsonPath))
+        var obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
     else
         var obj = 0;
     
@@ -595,7 +598,7 @@ app.post('/api/tomp3', function(req, res) {
 
 
     let downloadConfig = null;
-    let qualityPath = '';
+    let qualityPath = '-f bestaudio';
 
     if (customArgs) {
         downloadConfig = customArgs.split(' ');
@@ -608,9 +611,9 @@ app.post('/api/tomp3', function(req, res) {
         }
 
         if (customOutput) {
-            downloadConfig = ['-o', audioFolderPath + customOutput + '.mp3', '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
+            downloadConfig = ['-x', '--audio-format', 'mp3', '-o', audioFolderPath + customOutput + '.%(ext)s', '--write-info-json', '--print-json'];
         } else {
-            downloadConfig = ['-o', audioFolderPath + audiopath + ".mp3", '-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
+            downloadConfig = ['-x', '--audio-format', 'mp3', '-o', audioFolderPath + audiopath + ".%(ext)s", '--write-info-json', '--print-json'];
         }
 
         if (youtubeUsername && youtubePassword) {
@@ -618,7 +621,7 @@ app.post('/api/tomp3', function(req, res) {
         }
     
         if (qualityPath !== '') {
-            downloadConfig.splice(2, 0, qualityPath);
+            downloadConfig.splice(3, 0, qualityPath);
         }
     
         if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
