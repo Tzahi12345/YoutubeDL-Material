@@ -965,7 +965,7 @@ app.post('/api/getSubscription', async (req, res) => {
             files = recFindByExt(appended_base_path, 'mp4');
         } catch(e) {
             files = null;
-            console.log('Failed to get folder for subscription: ' + subscription.name);
+            console.log('Failed to get folder for subscription: ' + subscription.name + ' at path ' + appended_base_path);
             res.sendStatus(500);
             return;
         }

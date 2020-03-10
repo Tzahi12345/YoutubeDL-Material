@@ -32,12 +32,77 @@ async function subscribe(sub) {
         // add sub to db
         db.get('subscriptions').push(sub).write();
 
-        await getVideosForSub(sub);
-        result_obj.success = true;
+        let success = await getSubscriptionInfo(sub);
+        result_obj.success = success;
         result_obj.sub = sub;
+        getVideosForSub(sub);
         resolve(result_obj);
     });
     
+}
+
+async function getSubscriptionInfo(sub) {
+    const basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+    return new Promise(resolve => {
+        // get videos 
+        let downloadConfig = ['--dump-json', '--playlist-end', '1']
+        youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
+            if (debugMode) {
+                console.log('Subscribe: got info for subscription ' + sub.id);
+            }
+            if (err) {
+                console.log(err.stderr);
+                resolve(false);
+            } else if (output) {
+                if (output.length === 0 || (output.length === 1 && output[0] === '')) {
+                    if (debugMode) console.log('Could not get info for ' + sub.id);
+                    resolve(false);
+                }
+                for (let i = 0; i < output.length; i++) {
+                    let output_json = null;
+                    try {
+                        output_json = JSON.parse(output[i]);
+                    } catch(e) {
+                        output_json = null;
+                    }
+                    if (!output_json) {
+                        continue;
+                    }
+
+                    if (!sub.name) {
+                        sub.name = sub.isPlaylist ? output_json.playlist_title : output_json.uploader;
+                        // if it's now valid, update
+                        if (sub.name) {
+                            db.get('subscriptions').find({id: sub.id}).assign({name: sub.name}).write();
+                        }
+                    }
+
+                    if (!sub.archive) {
+                        // must create the archive
+                        const archive_dir = basePath + 'archives/' + sub.name;
+                        const archive_path = path.join(archive_dir, 'archive.txt');
+
+                        // creates archive directory and text file if it doesn't exist
+                        if (!fs.existsSync(archive_dir)) {
+                            fs.mkdirSync(archive_dir);
+                            fs.closeSync(fs.openSync(archive_path, 'w'));
+                        } else if (!fs.existsSync(archive_path)) {
+                            fs.closeSync(fs.openSync(archive_path, 'w'));
+                        }
+
+                        // updates subscription
+                        sub.archive = archive_dir;
+                        db.get('subscriptions').find({id: sub.id}).assign({archive: archive_dir}).write();
+                    }
+
+                    // TODO: get even more info
+
+                    resolve(true);
+                }
+                resolve(false);
+            }
+        });
+    });
 }
 
 async function unsubscribe(sub, deleteMode) {
@@ -72,17 +137,21 @@ async function deleteSubscriptionFile(sub, file, deleteForever) {
     let retrievedID = null;
     return new Promise(resolve => {
         let filePath = appendedBasePath;
-        var jsonPath = path.join(filePath,name+'.info.json');
-        var videoFilePath = path.join(filePath,name+'.mp4');
-        jsonPath = path.join(__dirname, jsonPath);
-        videoFilePath = path.join(__dirname, videoFilePath);
+        var jsonPath = path.join(__dirname,filePath,name+'.info.json');
+        var videoFilePath = path.join(__dirname,filePath,name+'.mp4');
+        var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
 
         jsonExists = fs.existsSync(jsonPath);
         videoFileExists = fs.existsSync(videoFilePath);
+        imageFileExists = fs.existsSync(imageFilePath);
 
         if (jsonExists) {
             retrievedID = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))['id'];
             fs.unlinkSync(jsonPath);
+        }
+
+        if (imageFileExists) {
+            fs.unlinkSync(imageFilePath);
         }
 
         if (videoFileExists) {
@@ -111,6 +180,10 @@ async function deleteSubscriptionFile(sub, file, deleteForever) {
 
 async function getVideosForSub(sub) {
     return new Promise(resolve => {
+        if (!subExists(sub.id)) {
+            resolve(false);
+            return;
+        }
         const basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
 
@@ -129,24 +202,11 @@ async function getVideosForSub(sub) {
 
         let archive_dir = null;
         let archive_path = null;
-        let usingTempArchive = false;
 
         if (useArchive) {
             if (sub.archive) {
                 archive_dir = sub.archive;
                 archive_path = path.join(archive_dir, 'archive.txt')
-            } else {
-                usingTempArchive = true;
-
-                // set temporary archive
-                archive_dir = basePath + 'archives/' + sub.id;
-                archive_path = path.join(archive_dir, sub.id + '.txt');
-
-                // create temporary dir and archive txt
-                if (!fs.existsSync(archive_dir)) {
-                    fs.mkdirSync(archive_dir);
-                    fs.closeSync(fs.openSync(archive_path, 'w'));
-                }
             }
             downloadConfig.push('--download-archive', archive_path);
         }
@@ -160,8 +220,9 @@ async function getVideosForSub(sub) {
                 console.log(err.stderr);
                 resolve(false);
             } else if (output) {
-                if (output.length === 0) {
+                if (output.length === 0 || (output.length === 1 && output[0] === '')) {
                     if (debugMode) console.log('No additional videos to download for ' + sub.name);
+                    resolve(true);
                 }
                 for (let i = 0; i < output.length; i++) {
                     let output_json = null;
@@ -174,39 +235,8 @@ async function getVideosForSub(sub) {
                         continue;
                     }
 
-                    if (!sub.name && output_json) {
-                        sub.name = sub.isPlaylist ? output_json.playlist_title : output_json.uploader;
-                        // if it's now valid, update
-                        if (sub.name) {
-                            db.get('subscriptions').find({id: sub.id}).assign({name: sub.name}).write();
-                        }
-                    }
-
-                    if (usingTempArchive && !sub.archive && sub.name) {
-                        let new_archive_dir = basePath + 'archives/' + sub.name;
-
-                        // TODO: clean up, code looks ugly
-                        if (fs.existsSync(new_archive_dir)) {
-                            if (fs.existsSync(new_archive_dir + '/archive.txt')) {
-                                console.log('INFO: Archive file already exists. Rewriting archive.');
-                                fs.unlinkSync(new_archive_dir + '/archive.txt')
-                            }
-                        } else {
-                            // creates archive directory for subscription
-                            fs.mkdirSync(new_archive_dir);
-                        }
-
-                        // moves archive
-                        fs.copyFileSync(archive_path, new_archive_dir + '/archive.txt');
-
-                        // updates subscription
-                        sub.archive = new_archive_dir;
-                        db.get('subscriptions').find({id: sub.id}).assign({archive: new_archive_dir}).write();
-
-                        // remove temporary archive directory
-                        fs.unlinkSync(archive_path);
-                        fs.rmdirSync(archive_dir);
-                    }
+                    // TODO: Potentially store downloaded files in db?
+        
                 }
                 resolve(true);
             }
@@ -221,6 +251,10 @@ function getAllSubscriptions() {
 
 function getSubscription(subID) {
     return db.get('subscriptions').find({id: subID}).value();
+}
+
+function subExists(subID) {
+    return !!db.get('subscriptions').find({id: subID}).value();
 }
 
 // helper functions
