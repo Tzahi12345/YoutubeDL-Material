@@ -35,4 +35,4 @@ services:
         restart: always
         ports:
             - "8998:17442"
-        image: tzahi12345/youtubedl-material:3.3
+        image: tzahi12345/youtubedl-material:3.4
