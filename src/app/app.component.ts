@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
   topBarTitle = 'Youtube Downloader';
   defaultTheme = null;
   allowThemeChange = null;
+  allowSubscriptions = false;
 
   @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
   @ViewChild('hamburgerMenu', {static: false, read: ElementRef}) hamburgerMenuButton: ElementRef;
@@ -61,6 +62,7 @@ export class AppComponent implements OnInit {
       const themingExists = result['YoutubeDLMaterial']['Themes'];
       this.defaultTheme = themingExists ? result['YoutubeDLMaterial']['Themes']['default_theme'] : 'default';
       this.allowThemeChange = themingExists ? result['YoutubeDLMaterial']['Themes']['allow_theme_change'] : true;
+      this.allowSubscriptions = result['YoutubeDLMaterial']['Subscriptions']['allow_subscriptions'];
 
       // sets theme to config default if it doesn't exist
       if (!localStorage.getItem('theme')) {
