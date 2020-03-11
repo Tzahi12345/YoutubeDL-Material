@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "YoutubeDL-Material",
-    "version": "0.1",
-    "description": "The official chrome extension of YoutubeDL-Material, an open-source and self-hosted YouTube downloader.",
+    "version": "0.2",
+    "description": "The Official Firefox & Chrome Extension of YoutubeDL-Material, an open-source and self-hosted YouTube downloader.",
     "background": {
         "scripts": ["background.js"]
     },
@@ -16,5 +16,11 @@
     "options_ui": {
         "page": "options.html",
         "open_in_tab": false
+    },
+    "browser_specific_settings": {
+        "gecko": {
+          "id": "IsaacMGrynsztein@gmail.com",
+          "strict_min_version": "57.0"
+        }
     }
 }
