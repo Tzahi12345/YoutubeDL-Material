@@ -38,6 +38,7 @@ export class SettingsComponent implements OnInit {
     this.postsService.setConfig(settingsToSave).subscribe(res => {
       if (res['success']) {
         // sets new config as old config
+        this.postsService.settings_changed.next(true);
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
       }
     }, err => {

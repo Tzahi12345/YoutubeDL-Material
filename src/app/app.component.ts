@@ -55,6 +55,20 @@ export class AppComponent implements OnInit {
     }
     });
 
+    this.loadConfig();
+    this.postsService.settings_changed.subscribe(changed => {
+      if (changed) {
+        this.loadConfig();
+      }
+    });
+
+  }
+
+  toggleSidenav() {
+    this.sidenav.toggle();
+  }
+
+  loadConfig() {
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
       const result = !this.postsService.debugMode ? res['config_file'] : res;
@@ -71,11 +85,6 @@ export class AppComponent implements OnInit {
     }, error => {
       console.log(error);
     });
-
-  }
-
-  toggleSidenav() {
-    this.sidenav.toggle();
   }
 
   // theme stuff

@@ -9,6 +9,7 @@ import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
 import { Router } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +21,7 @@ export class PostsService {
     handShakeComplete = false;
     THEMES_CONFIG = THEMES_CONFIG;
     theme;
+    settings_changed = new BehaviorSubject<boolean>(false);
 
     debugMode = false;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document) {

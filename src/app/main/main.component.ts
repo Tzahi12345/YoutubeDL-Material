@@ -213,6 +213,25 @@ export class MainComponent implements OnInit {
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
 
+    this.configLoad();
+
+    this.postsService.settings_changed.subscribe(changed => {
+      if (changed) {
+        this.loadConfig();
+      }
+    });
+  }
+
+  async configLoad() {
+    await this.loadConfig();
+    if (this.autoStartDownload) {
+      this.downloadClicked();
+    }
+
+    setInterval(() => this.getSimulatedOutput(), 1000);
+  }
+
+  async loadConfig() {
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
       const result = !this.postsService.debugMode ? res['config_file'] : res;
@@ -266,16 +285,13 @@ export class MainComponent implements OnInit {
         if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername };
       }
 
-      if (this.autoStartDownload) {
-        this.downloadClicked();
-      }
-
-      setInterval(() => this.getSimulatedOutput(), 1000);
+      return true;
 
     }, error => {
       console.log(error);
-    });
 
+      return false;
+    });
   }
 
   // app initialization.
