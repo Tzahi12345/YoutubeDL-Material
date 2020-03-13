@@ -18,6 +18,7 @@ services:
             ytdl_allow_quality_select: 'true'
             ytdl_download_only_mode: 'false'
             ytdl_allow_multi_download_mode: 'true'
+            ytdl_settings_pin_required: 'false'
             ytdl_use_youtube_api: 'false'
             ytdl_youtube_api_key: 'false'
             ytdl_default_theme: default

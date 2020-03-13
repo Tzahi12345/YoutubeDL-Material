@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
+import { MatDialog } from '@angular/material';
+import { CheckOrSetPinDialogComponent } from 'app/dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -12,7 +14,7 @@ export class SettingsComponent implements OnInit {
   new_config = null
   loading_config = false;
 
-  constructor(private postsService: PostsService) { }
+  constructor(private postsService: PostsService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.getConfig();
@@ -44,6 +46,14 @@ export class SettingsComponent implements OnInit {
     }, err => {
       console.error('Failed to save config!');
     })
+  }
+
+  setNewPin() {
+    const dialogRef = this.dialog.open(CheckOrSetPinDialogComponent, {
+      data: {
+        resetMode: true
+      }
+    });
   }
 
 }

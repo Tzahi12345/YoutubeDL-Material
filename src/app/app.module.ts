@@ -37,6 +37,7 @@ import { SubscriptionComponent } from './subscription//subscription/subscription
 import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
+import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
   return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
@@ -56,7 +57,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SubscriptionComponent,
     SubscriptionFileCardComponent,
     SubscriptionInfoDialogComponent,
-    SettingsComponent
+    SettingsComponent,
+    CheckOrSetPinDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -102,7 +104,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     CreatePlaylistComponent,
     SubscribeDialogComponent,
     SubscriptionInfoDialogComponent,
-    SettingsComponent
+    SettingsComponent,
+    CheckOrSetPinDialogComponent
   ],
   providers: [PostsService],
   bootstrap: [AppComponent]
