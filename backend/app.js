@@ -9,6 +9,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
 const low = require('lowdb')
+const NodeID3 = require('node-id3')
 var URL = require('url').URL;
 const shortid = require('shortid')
 const url_api = require('url');
@@ -658,11 +659,24 @@ app.post('/api/tomp3', function(req, res) {
                     // if invalid, continue onto the next
                     continue;
                 }
-                var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
-                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
-                var alternate_file_path = file_path.substring(0, file_path.length-4);
-                var alternate_file_name = file_name.substring(0, file_name.length-4);
-                if (alternate_file_path) file_names.push(alternate_file_path);
+                
+                var full_file_path = output_json['_filename'].substring(0, output_json['_filename'].length-5) + '.mp3';
+                console.log(full_file_path);
+                if (fs.existsSync(full_file_path)) {
+                    let tags = {
+                        title: output_json['title'],
+                        artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
+                    }
+                    // NodeID3.create(tags, function(frame) {  })
+                    let success = NodeID3.write(tags, full_file_path);
+                    if (success) console.log('successfully tagged file');
+                    else console.log('failed to tag file');
+                } else {
+                    console.log('Output mp3 does not exist');
+                }
+
+                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length-5);
+                if (file_path) file_names.push(file_path);
             }
 
             let is_playlist = file_names.length > 1;
