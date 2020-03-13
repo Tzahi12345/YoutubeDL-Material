@@ -33,9 +33,9 @@
 }
 
 .img-div {
-  max-height: 80px;
+  height: 60px;
   padding: 0px;
-  margin: 0px 0px 0px -5px;
+  margin: 8px 0px 0px -5px;
   width: calc(100% + 5px + 5px);
 }
 

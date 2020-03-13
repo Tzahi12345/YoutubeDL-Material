@@ -18,7 +18,7 @@ export class SubscriptionsComponent implements OnInit {
 
   subscriptions_loading = false;
 
-  constructor(private dialog: MatDialog, private postsService: PostsService, private router: Router, private snackBar: MatSnackBar) { }
+  constructor(private dialog: MatDialog, public postsService: PostsService, private router: Router, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.getSubscriptions();

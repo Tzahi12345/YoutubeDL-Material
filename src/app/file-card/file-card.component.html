@@ -1,9 +1,11 @@
 <mat-card class="example-card mat-elevation-z6">
   <div style="padding:5px">
-    <b><a href="javascript:void(0)" (click)="!isPlaylist ? mainComponent.goToFile(name, isAudio) : mainComponent.goToPlaylist(name, type)">{{title}}</a></b>
-    <br/>
-    <span class="max-two-lines">ID: {{name}}</span>
-    <div *ngIf="isPlaylist">Count: {{count}}</div>
+    <div style="height: 52px;">
+      <b><a href="javascript:void(0)" (click)="!isPlaylist ? mainComponent.goToFile(name, isAudio) : mainComponent.goToPlaylist(name, type)">{{title}}</a></b>
+      <br/>
+      <span class="max-two-lines">ID: {{name}}</span>
+      <div *ngIf="isPlaylist">Count: {{count}}</div>
+    </div>
     <div *ngIf="!image_errored && thumbnailURL" class="img-div">
       <img class="image" (error) ="onImgError($event)" [id]="type" [lazyLoad]="thumbnailURL" [customObservable]="scrollAndLoad" (onLoad)="imageLoaded($event)" alt="Thumbnail">
       <span *ngIf="!image_loaded">
