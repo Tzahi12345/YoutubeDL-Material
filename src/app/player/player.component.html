@@ -19,7 +19,7 @@
         <div class="spinner-div">
             <mat-spinner *ngIf="playlist_updating" [diameter]="25"></mat-spinner>
         </div>
-        <button color="primary" [disabled]="playlist_updating" (click)="updatePlaylist()" mat-raised-button>Save changes <mat-icon>update</mat-icon></button>
+        <button color="primary" [disabled]="playlist_updating" (click)="updatePlaylist()" mat-raised-button><ng-container i18n="Playlist save changes button">Save changes</ng-container>&nbsp;<mat-icon>update</mat-icon></button>
         
     </div>
 

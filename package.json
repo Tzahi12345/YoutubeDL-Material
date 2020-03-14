@@ -25,6 +25,7 @@
     "@angular/core": "^8.2.11",
     "@angular/forms": "^8.2.11",
     "@angular/http": "^7.2.15",
+    "@angular/localize": "^9.0.6",
     "@angular/material": "^8.2.3",
     "@angular/platform-browser": "^8.2.11",
     "@angular/platform-browser-dynamic": "^8.2.11",

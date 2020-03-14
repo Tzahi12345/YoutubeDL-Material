@@ -7,6 +7,7 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
+  <!-- TODO: Internationalize these buttons -->
   <button mat-button mat-dialog-close>Cancel</button>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
   <button mat-button [disabled]="!inputText" type="submit" (click)="enterPressed()">{{submitText}}</button>
