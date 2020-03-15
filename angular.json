@@ -7,6 +7,12 @@
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "es": "src/locale/messages.es.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -52,6 +58,9 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "es": {
+              "localize": ["es"]
             }
           }
         },
@@ -63,6 +72,9 @@
           "configurations": {
             "production": {
               "browserTarget": "youtube-dl-material:build:production"
+            },
+            "es": {
+              "browserTarget": "youtube-dl-material:build:es"
             }
           }
         },

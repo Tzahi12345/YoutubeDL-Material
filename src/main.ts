@@ -12,18 +12,16 @@ if (environment.production) {
   enableProdMode();
 }
 
-// const locale = localStorage.getItem('locale');
-
-getTranslations('assets/i18n', false, true, true, 'en', null, 'locale').then(translations => {
-    if (translations) {
-      loadTranslations(translations);
-    }
-
-    import('./app/app.module').then(module =>
-    {
-      platformBrowserDynamic()
-        .bootstrapModule(module.AppModule)
-        .catch(err => console.error(err));
-    });
+const locale = localStorage.getItem('locale');
+if (locale) {
+  fetch(`./assets/i18n/messages.${locale}.json`).then(res => res.json()).then((resp) => {
+    console.log(resp);
+    loadTranslations(resp);
+    platformBrowserDynamic().bootstrapModule(AppModule);
+  }, err => {
+    platformBrowserDynamic().bootstrapModule(AppModule);
   });
-platformBrowserDynamic().bootstrapModule(AppModule);
+} else {
+  console.log('no locale');
+  platformBrowserDynamic().bootstrapModule(AppModule);
+}
