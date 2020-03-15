@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
-import { VgAPI } from 'videogular2/compiled/core';
+import { VgAPI } from 'ngx-videogular';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
