@@ -1180,7 +1180,7 @@ app.get('/api/video/:id', function(req , res){
     var head;
     let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
-    let path = "video/" + id + '.mp4';
+    let path = videoFolderPath + id + '.mp4';
     if (optionalParams['subName']) {
         let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         const isPlaylist = optionalParams['subPlaylist'];
