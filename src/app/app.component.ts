@@ -36,8 +36,8 @@ export class AppComponent implements OnInit {
   allowThemeChange = null;
   allowSubscriptions = false;
 
-  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
-  @ViewChild('hamburgerMenu', {static: false, read: ElementRef}) hamburgerMenuButton: ElementRef;
+  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('hamburgerMenu', { read: ElementRef }) hamburgerMenuButton: ElementRef;
   navigator: string = null;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,

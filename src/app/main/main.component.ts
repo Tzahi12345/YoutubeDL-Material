@@ -192,7 +192,7 @@ export class MainComponent implements OnInit {
   selectedQuality = '';
   formats_loading = false;
 
-  @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
+  @ViewChild('urlinput', { read: ElementRef }) urlInput: ElementRef;
   @ViewChildren('audiofilecard') audioFileCards: QueryList<FileCardComponent>;
   @ViewChildren('videofilecard') videoFileCards: QueryList<FileCardComponent>;
   last_valid_url = '';
