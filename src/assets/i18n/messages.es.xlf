@@ -962,7 +962,7 @@
                <context context-type="linenumber">3</context>
             </context-group>
             <note from="description" priority="1">Video duration label</note>
-            <target>Longitud:</target>
+            <target>Duración:</target>
          </trans-unit>
          <trans-unit datatype="html" id="94e01842dcee90531caa52e4147f70679bac87fe">
             <source>Delete and redownload</source>
