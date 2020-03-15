@@ -4,7 +4,8 @@ import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatSnackBar, MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
@@ -192,7 +193,7 @@ export class MainComponent implements OnInit {
   selectedQuality = '';
   formats_loading = false;
 
-  @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
+  @ViewChild('urlinput', { read: ElementRef }) urlInput: ElementRef;
   @ViewChildren('audiofilecard') audioFileCards: QueryList<FileCardComponent>;
   @ViewChildren('videofilecard') videoFileCards: QueryList<FileCardComponent>;
   last_valid_url = '';

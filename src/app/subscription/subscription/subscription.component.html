@@ -12,11 +12,11 @@
     <div class="flex-grid">
         <div class="col"></div>
         <div class="col">
-            <h4 style="text-align: center; margin-bottom: 20px;">Videos</h4>
+            <h4 i18n="Subscription videos title" style="text-align: center; margin-bottom: 20px;">Videos</h4>
         </div>
         <div class="col">
             <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
-                <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" placeholder="Search" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
+                <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" placeholder="Search" i18n-placeholder="Subscription videos search placeholder" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
                 <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
         </div>

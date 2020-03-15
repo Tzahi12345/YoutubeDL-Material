@@ -1,5 +1,6 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { SubscribeDialogComponent } from 'app/dialogs/subscribe-dialog/subscribe-dialog.component';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';

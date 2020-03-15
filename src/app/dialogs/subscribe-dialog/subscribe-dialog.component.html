@@ -1,25 +1,25 @@
-<h4 mat-dialog-title>Subscribe to playlist or channel</h4>
+<h4 mat-dialog-title i18n="Subscribe dialog title">Subscribe to playlist or channel</h4>
 
 <mat-dialog-content>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <mat-form-field color="accent">
-                    <input [(ngModel)]="url" matInput placeholder="URL" required aria-required="true">
-                    <mat-hint>The playlist or channel URL</mat-hint>
+                    <input [(ngModel)]="url" matInput placeholder="URL" i18n-placeholder="Subscription URL input placeholder" required aria-required="true">
+                    <mat-hint><ng-container i18n="Subscription URL input hint">The playlist or channel URL</ng-container></mat-hint>
                 </mat-form-field>
             </div>
             <div class="col-12">
                 <mat-form-field color="accent">
-                    <input [(ngModel)]="name" matInput placeholder="Custom name">
-                    <mat-hint>This is optional</mat-hint>
+                    <input [(ngModel)]="name" matInput placeholder="Custom name" i18n-placeholder="Subscription custom name placeholder">
+                    <mat-hint><ng-container i18n="Custom name input hint">This is optional</ng-container></mat-hint>
                 </mat-form-field>
             </div>
             <div class="col-12 mt-3">
-                <mat-checkbox [(ngModel)]="download_all">Download all uploads</mat-checkbox>
+                <mat-checkbox [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
             </div>
             <div class="col-12" *ngIf="!download_all">
-                Download videos uploaded in the last
+                <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
                 <mat-form-field color="accent" style="width: 50px; text-align: center">
                     <input type="number" matInput [(ngModel)]="timerange_amount">
                 </mat-form-field>
@@ -34,7 +34,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button mat-dialog-close><ng-container i18n="Subscribe cancel button">Cancel</ng-container></button>
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
     <button mat-button [disabled]="!url" type="submit" (click)="subscribeClicked()">Subscribe</button>
     <div class="mat-spinner" *ngIf="subscribing">

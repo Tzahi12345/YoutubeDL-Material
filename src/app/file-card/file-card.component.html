@@ -3,8 +3,8 @@
     <div style="height: 52px;">
       <b><a href="javascript:void(0)" (click)="!isPlaylist ? mainComponent.goToFile(name, isAudio) : mainComponent.goToPlaylist(name, type)">{{title}}</a></b>
       <br/>
-      <span class="max-two-lines">ID: {{name}}</span>
-      <div *ngIf="isPlaylist">Count: {{count}}</div>
+      <span class="max-two-lines"><ng-container i18n="File or playlist ID">ID:</ng-container>&nbsp;{{name}}</span>
+      <div *ngIf="isPlaylist"><ng-container i18n="Playlist video count">Count:</ng-container>&nbsp;{{count}}</div>
     </div>
     <div *ngIf="!image_errored && thumbnailURL" class="img-div">
       <img class="image" (error) ="onImgError($event)" [id]="type" [lazyLoad]="thumbnailURL" [customObservable]="scrollAndLoad" (onLoad)="imageLoaded($event)" alt="Thumbnail">
