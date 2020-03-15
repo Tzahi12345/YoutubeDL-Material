@@ -2,7 +2,8 @@ import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
 import { VgAPI } from 'videogular2/compiled/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 

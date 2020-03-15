@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
 import {PostsService} from '../posts.services';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {EventEmitter} from '@angular/core';
 import { MainComponent } from 'app/main/main.component';
 import { Subject, Observable } from 'rxjs';
