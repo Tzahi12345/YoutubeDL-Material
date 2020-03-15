@@ -1,6 +1,15 @@
 <h4 i18n="Settings title" mat-dialog-title>Settings</h4>
 <!-- <ng-container i18n="Allow subscriptions setting"></ng-container> -->
 <mat-dialog-content>
+<!-- Language -->
+<div>
+    Language:&nbsp;&nbsp;&nbsp;<mat-select class="locale-select" (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
+        <mat-option *ngFor="let locale of supported_locales" [value]="locale">
+            {{all_locales[locale]['nativeName']}}
+        </mat-option>
+    </mat-select>
+</div>
+
 <!-- Host -->
 <mat-expansion-panel class="settings-expansion-panel">
     <mat-expansion-panel-header>
