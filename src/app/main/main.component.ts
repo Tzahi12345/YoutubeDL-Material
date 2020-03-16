@@ -885,6 +885,10 @@ export class MainComponent implements OnInit {
       full_string_array.push(...additional_params);
     }
 
+    if (this.use_youtubedl_archive) {
+      full_string_array.push('--download-archive', 'archive.txt');
+    }
+
     if (globalArgsExists) {
       full_string_array = full_string_array.concat(this.globalCustomArgs.split(' '));
     }
