@@ -18,8 +18,6 @@
 
 .image {
   width: 100%;
-  height: 100%;
-  border-radius: 0px 0px 4px 4px;
 }
 
 .example-full-width-height {
@@ -38,6 +36,8 @@
   padding: 0px;
   margin: 8px 0px 0px -5px;
   width: calc(100% + 5px + 5px);
+  overflow: hidden;
+  border-radius: 0px 0px 4px 4px;
 }
 
 .max-two-lines {
