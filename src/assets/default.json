@@ -12,7 +12,7 @@
     "Downloader": {
       "path-audio": "audio/",
       "path-video": "video/",
-      "use_youtubedl_archive": true,
+      "use_youtubedl_archive": false,
       "custom_args": ""
     },
     "Extra": {
