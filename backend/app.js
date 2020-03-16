@@ -58,7 +58,13 @@ let debugMode = process.env.YTDL_MODE === 'debug';
 if (debugMode) console.log('YTDL-Material in debug mode!');
 
 var validDownloadingAgents = [
-    'aria2c'
+    'aria2c',
+    'avconv',
+    'axel',
+    'curl',
+    'ffmpeg',
+    'httpie',
+    'wget'
 ]
 
 // don't overwrite config if it already happened.. NOT
@@ -143,6 +149,8 @@ async function loadConfig() {
 
         if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
             console.log(`INFO: Using non-default downloading agent \'${customDownloadingAgent}\'`)
+        } else {
+            customDownloadingAgent = null;
         }
 
         if (usingEncryption)
@@ -659,8 +667,8 @@ app.post('/api/tomp3', async function(req, res) {
             downloadConfig.splice(3, 0, qualityPath);
         }
     
-        if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
-            downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
+            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
         }
 
         if (useYoutubeDLArchive) {
@@ -783,8 +791,8 @@ app.post('/api/tomp4', async function(req, res) {
             downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
         }
     
-        if (!useDefaultDownloadingAgent && customDownloadingAgent === 'aria2c') {
-            downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
+        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
+            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
         }
 
         if (useYoutubeDLArchive) {
