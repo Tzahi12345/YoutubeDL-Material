@@ -19,7 +19,7 @@ var subscriptions_api = require('./subscriptions')
 var app = express();
 
 const FileSync = require('lowdb/adapters/FileSync')
-const adapter = new FileSync('db.json');
+const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
 
 // Set some defaults
@@ -41,7 +41,6 @@ var usingEncryption = null;
 var basePath = null;
 var audioFolderPath = null;
 var videoFolderPath = null;
-var useYoutubeDLArchive = null;
 var downloadOnlyMode = null;
 var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
@@ -140,7 +139,6 @@ async function loadConfig() {
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
         audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
-        useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
         useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
         customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
@@ -414,6 +412,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
             }
         } 
 
+        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
             const archive_path = audioFolderPath + 'archive.txt';
 
@@ -424,8 +423,13 @@ async function deleteAudioFile(name, blacklistMode = false) {
             if (jsonobj) id = jsonobj.id;
 
             // use subscriptions API to remove video from the archive file, and write it to the blacklist
-            const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
-            if (blacklistMode && line) writeToBlacklist('audio', line);
+            if (fs.existsSync(archive_path)) {
+                const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+                if (blacklistMode && line) writeToBlacklist('audio', line);
+            } else {
+                console.log('Could not find archive file for audio files. Creating...');
+                fs.closeSync(fs.openSync(archive_path, 'w'));
+            }
         }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
@@ -466,6 +470,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
             }
         } 
 
+        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
             const archive_path = videoFolderPath + 'archive.txt';
 
@@ -476,8 +481,13 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
             if (jsonobj) id = jsonobj.id;
 
             // use subscriptions API to remove video from the archive file, and write it to the blacklist
-            const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
-            if (blacklistMode && line) writeToBlacklist('video', line);
+            if (fs.existsSync(archive_path)) {
+                const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+                if (blacklistMode && line) writeToBlacklist('video', line);
+            } else {
+                console.log('Could not find archive file for videos. Creating...');
+                fs.closeSync(fs.openSync(archive_path, 'w'));
+            }
         }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
@@ -671,6 +681,7 @@ app.post('/api/tomp3', async function(req, res) {
             downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
         }
 
+        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
             let archive_path = audioFolderPath + 'archive.txt';
             // create archive file if it doesn't exist
@@ -795,6 +806,7 @@ app.post('/api/tomp4', async function(req, res) {
             downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
         }
 
+        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
             let archive_path = videoFolderPath + 'archive.txt';
             // create archive file if it doesn't exist

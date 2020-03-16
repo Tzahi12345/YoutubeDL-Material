@@ -8,7 +8,7 @@ var path = require('path');
 var youtubedl = require('youtube-dl');
 const config_api = require('./config');
 
-const adapter = new FileSync('db.json');
+const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
 
 const debugMode = process.env.YTDL_MODE === 'debug';

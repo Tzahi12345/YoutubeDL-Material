@@ -1,5 +1,3 @@
-var config = require('config');
-
 let CONFIG_ITEMS = {
     // Host
     'ytdl_url': {
