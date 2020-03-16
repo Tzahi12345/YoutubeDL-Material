@@ -15,5 +15,10 @@
       </span>
     </div>
   </div>
-  <button (click)="deleteFile()" class="deleteButton" mat-icon-button><mat-icon>delete_forever</mat-icon></button>
+  <button *ngIf="!use_youtubedl_archive" (click)="deleteFile()" class="deleteButton" mat-icon-button><mat-icon>delete_forever</mat-icon></button>
+  <button [matMenuTriggerFor]="action_menu" *ngIf="use_youtubedl_archive" class="deleteButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+  <mat-menu #action_menu="matMenu">
+    <button (click)="deleteFile()" mat-menu-item><mat-icon>delete</mat-icon><ng-container i18n="Delete video button">Delete</ng-container></button>
+    <button (click)="deleteFile(true)" mat-menu-item><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete and blacklist video button">Delete and blacklist</ng-container></button>
+  </mat-menu>
 </mat-card>

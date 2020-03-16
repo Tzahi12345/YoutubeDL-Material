@@ -72,6 +72,7 @@ export class MainComponent implements OnInit {
   allowMultiDownloadMode = false;
   audioFolderPath;
   videoFolderPath;
+  use_youtubedl_archive = false;
   globalCustomArgs = null;
   allowAdvancedDownload = false;
   useDefaultDownloadingAgent = true;
@@ -241,6 +242,7 @@ export class MainComponent implements OnInit {
       this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
+      this.use_youtubedl_archive = result['YoutubeDLMaterial']['Downloader']['use_youtubedl_archive'];
       this.globalCustomArgs = result['YoutubeDLMaterial']['Downloader']['custom_args'];
       this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'] &&
           result['YoutubeDLMaterial']['API']['youtube_API_key'];
@@ -594,6 +596,8 @@ export class MainComponent implements OnInit {
           }
         }, error => { // can't access server
           this.downloadingfile = false;
+          this.current_download = null;
+          new_download['downloading'] = false;
           this.openSnackBar('Download failed!', 'OK.');
         });
       } else {
@@ -626,6 +630,8 @@ export class MainComponent implements OnInit {
           }
         }, error => { // can't access server
           this.downloadingfile = false;
+          this.current_download = null;
+          new_download['downloading'] = false;
           this.openSnackBar('Download failed!', 'OK.');
       });
       }

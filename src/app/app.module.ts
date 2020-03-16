@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
-import { LocaleService } from '@soluling/angular';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -111,9 +110,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     AppRoutingModule,
   ],
   providers: [
-    PostsService,
-    LocaleService,
-    { provide: LOCALE_ID, deps: [LocaleService], useFactory: (service: LocaleService) => service.localeId },
+    PostsService
   ],
   bootstrap: [AppComponent]
 })
