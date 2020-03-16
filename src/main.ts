@@ -13,7 +13,7 @@ if (environment.production) {
 }
 
 const locale = localStorage.getItem('locale');
-if (locale) {
+if (locale && locale !== 'en') {
     getTranslations(`./assets/i18n/messages.${locale}.json`).then(
       (data: ParsedTranslationBundle) => {
         loadTranslations(data as any);
@@ -31,7 +31,6 @@ if (locale) {
       });
     });
 } else {
-  console.log('no locale');
   import('./app/app.module').then(module => {
     platformBrowserDynamic()
       .bootstrapModule(module.AppModule)
