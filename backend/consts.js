@@ -34,6 +34,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_video_folder_path',
         'path': 'YoutubeDLMaterial.Downloader.path-video'
     },
+    'ytdl_use_youtubedl_archive': {
+        'key': 'ytdl_use_youtubedl_archive',
+        'path': 'YoutubeDLMaterial.Downloader.use_youtubedl_archive'
+    },
     'ytdl_custom_args': {
         'key': 'ytdl_custom_args',
         'path': 'YoutubeDLMaterial.Downloader.custom_args'

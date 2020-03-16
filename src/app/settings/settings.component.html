@@ -93,6 +93,11 @@
                     <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page.</ng-container></mat-hint>
                 </mat-form-field>
             </div>
+
+            <div class="col-12 mt-4">
+                <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
+                <p>Note: This setting only applies to downloads on the Home page. If you would like to use youtube-dl archive functionality in subscriptions, head down to the Subscriptions section.</p>
+            </div>
         </div>
     </div>
 </mat-expansion-panel>

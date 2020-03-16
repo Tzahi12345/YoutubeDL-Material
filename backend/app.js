@@ -8,6 +8,7 @@ var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
+var mergeFiles = require('merge-files');
 const low = require('lowdb')
 var URL = require('url').URL;
 const shortid = require('shortid')
@@ -40,6 +41,7 @@ var usingEncryption = null;
 var basePath = null;
 var audioFolderPath = null;
 var videoFolderPath = null;
+var useYoutubeDLArchive = null;
 var downloadOnlyMode = null;
 var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
@@ -132,6 +134,7 @@ async function loadConfig() {
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
         audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+        useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
         useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
         customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
@@ -382,7 +385,7 @@ async function createPlaylistZipFile(fileNames, type, outputName) {
 
 }
 
-function deleteAudioFile(name) {
+async function deleteAudioFile(name, blacklistMode = false) {
     return new Promise(resolve => {
         // TODO: split descriptors into audio and video descriptors, as deleting an audio file will close all video file streams
         var jsonPath = path.join(audioFolderPath,name+'.mp3.info.json');
@@ -403,7 +406,19 @@ function deleteAudioFile(name) {
             }
         } 
 
-        
+        if (useYoutubeDLArchive) {
+            const archive_path = audioFolderPath + 'archive.txt';
+
+            // get ID from JSON
+
+            var jsonobj = getJSONMp3(name);
+            let id = null;
+            if (jsonobj) id = jsonobj.id;
+
+            // use subscriptions API to remove video from the archive file, and write it to the blacklist
+            const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+            if (blacklistMode && line) writeToBlacklist('audio', line);
+        }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
         if (audioFileExists) {
@@ -422,7 +437,7 @@ function deleteAudioFile(name) {
     });
 }
 
-async function deleteVideoFile(name, customPath = null) {
+async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
         let filePath = customPath ? customPath : videoFolderPath;
         var jsonPath = path.join(filePath,name+'.info.json');
@@ -443,7 +458,19 @@ async function deleteVideoFile(name, customPath = null) {
             }
         } 
 
-        
+        if (useYoutubeDLArchive) {
+            const archive_path = videoFolderPath + 'archive.txt';
+
+            // get ID from JSON
+
+            var jsonobj = getJSONMp4(name);
+            let id = null;
+            if (jsonobj) id = jsonobj.id;
+
+            // use subscriptions API to remove video from the archive file, and write it to the blacklist
+            const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+            if (blacklistMode && line) writeToBlacklist('video', line);
+        }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
         if (videoFileExists) {
@@ -549,6 +576,13 @@ async function getUrlInfos(urls) {
     });
 }
 
+function writeToBlacklist(type, line) {
+    let blacklistBasePath = (type === 'audio') ? audioFolderPath : videoFolderPath;
+    // adds newline to the beginning of the line
+    line = '\n' + line;
+    fs.appendFileSync(blacklistBasePath + 'blacklist.txt', line);
+}
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", getOrigin());
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -583,7 +617,7 @@ app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
 });
 
-app.post('/api/tomp3', function(req, res) {
+app.post('/api/tomp3', async function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var audiopath = '%(title)s';
@@ -596,9 +630,10 @@ app.post('/api/tomp3', function(req, res) {
     var youtubeUsername = req.body.youtubeUsername;
     var youtubePassword = req.body.youtubePassword;
 
-
     let downloadConfig = null;
     let qualityPath = '-f bestaudio';
+
+    let merged_string = null;
 
     if (customArgs) {
         downloadConfig = customArgs.split(' ');
@@ -628,6 +663,29 @@ app.post('/api/tomp3', function(req, res) {
             downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
         }
 
+        if (useYoutubeDLArchive) {
+            let archive_path = audioFolderPath + 'archive.txt';
+            // create archive file if it doesn't exist
+            if (!fs.existsSync(archive_path)) {
+                fs.closeSync(fs.openSync(archive_path, 'w'));
+            }
+
+            let blacklist_path = audioFolderPath + 'blacklist.txt';
+            // create blacklist file if it doesn't exist
+            if (!fs.existsSync(blacklist_path)) {
+                fs.closeSync(fs.openSync(blacklist_path, 'w'));
+            }
+
+            let merged_path = audioFolderPath + 'merged.txt';
+            // merges blacklist and regular archive
+            let inputPathList = [archive_path, blacklist_path];
+            let status = await mergeFiles(inputPathList, merged_path);
+
+            merged_string = fs.readFileSync(merged_path, "utf8");
+
+            downloadConfig.push('--download-archive', merged_path);
+        }
+
         if (globalArgs && globalArgs !== '') {
             // adds global args
             downloadConfig = downloadConfig.concat(globalArgs.split(' '));
@@ -647,6 +705,10 @@ app.post('/api/tomp3', function(req, res) {
             throw err;
         } else if (output) {  
             var file_names = [];
+            if (output.length === 0 || output[0].length === 0) {
+                res.sendStatus(500);
+                return;
+            }
             for (let i = 0; i < output.length; i++) {
                 let output_json = null;
                 try {
@@ -660,13 +722,19 @@ app.post('/api/tomp3', function(req, res) {
                 }
                 var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
                 var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
-                var alternate_file_path = file_path.substring(0, file_path.length-4);
+                // remove extension from file path
+                var alternate_file_path = file_path.replace(/\.[^/.]+$/, "")
                 var alternate_file_name = file_name.substring(0, file_name.length-4);
                 if (alternate_file_path) file_names.push(alternate_file_path);
             }
 
             let is_playlist = file_names.length > 1;
-            // if (!is_playlist) audiopath = file_names[0];
+
+            if (merged_string !== null) {
+                let current_merged_archive = fs.readFileSync(audioFolderPath + 'merged.txt', 'utf8');
+                let diff = current_merged_archive.replace(merged_string, '');
+                fs.appendFileSync(audioFolderPath + 'archive.txt', diff);
+            }
 
             var audiopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
@@ -677,7 +745,7 @@ app.post('/api/tomp3', function(req, res) {
     });
 });
 
-app.post('/api/tomp4', function(req, res) {
+app.post('/api/tomp4', async function(req, res) {
     var url = req.body.url;
     var date = Date.now();
     var path = videoFolderPath;
@@ -690,6 +758,8 @@ app.post('/api/tomp4', function(req, res) {
     var customQualityConfiguration = req.body.customQualityConfiguration;
     var youtubeUsername = req.body.youtubeUsername;
     var youtubePassword = req.body.youtubePassword;
+
+    let merged_string = null;
 
     let downloadConfig = null;
     let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
@@ -717,10 +787,34 @@ app.post('/api/tomp4', function(req, res) {
             downloadConfig.splice(0, 0, '--external-downloader', 'aria2c');
         }
 
+        if (useYoutubeDLArchive) {
+            let archive_path = videoFolderPath + 'archive.txt';
+            // create archive file if it doesn't exist
+            if (!fs.existsSync(archive_path)) {
+                fs.closeSync(fs.openSync(archive_path, 'w'));
+            }
+
+            let blacklist_path = videoFolderPath + 'blacklist.txt';
+            // create blacklist file if it doesn't exist
+            if (!fs.existsSync(blacklist_path)) {
+                fs.closeSync(fs.openSync(blacklist_path, 'w'));
+            }
+
+            let merged_path = videoFolderPath + 'merged.txt';
+            // merges blacklist and regular archive
+            let inputPathList = [archive_path, blacklist_path];
+            let status = await mergeFiles(inputPathList, merged_path);
+
+            merged_string = fs.readFileSync(merged_path, "utf8");
+
+            downloadConfig.push('--download-archive', merged_path);
+        }
+
         if (globalArgs && globalArgs !== '') {
             // adds global args
             downloadConfig = downloadConfig.concat(globalArgs.split(' '));
         }
+
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
@@ -735,7 +829,11 @@ app.post('/api/tomp4', function(req, res) {
             res.sendStatus(500);
             throw err;
         } else if (output) {
-            var file_names = [];
+            if (output.length === 0 || output[0].length === 0) {
+                res.sendStatus(500);
+                return;
+            }
+             var file_names = [];
             for (let i = 0; i < output.length; i++) {
                 let output_json = null;
                 try {
@@ -759,12 +857,19 @@ app.post('/api/tomp4', function(req, res) {
                 }
                 var alternate_file_name = file_name.substring(0, file_name.length-4);
                 var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
-                var alternate_file_path = file_path.substring(0, file_path.length-4);
+                // remove extension from file path
+                var alternate_file_path = file_path.replace(/\.[^/.]+$/, "")
                 if (alternate_file_name) file_names.push(alternate_file_path);
             }
 
             let is_playlist = file_names.length > 1;
             if (!is_playlist) audiopath = file_names[0];
+
+            if (merged_string !== null) {
+                let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
+                let diff = current_merged_archive.replace(merged_string, '');
+                fs.appendFileSync(videoFolderPath + 'archive.txt', diff);
+            }
             
             var videopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
@@ -1091,11 +1196,12 @@ app.post('/api/deletePlaylist', async (req, res) => {
 // deletes mp3 file
 app.post('/api/deleteMp3', async (req, res) => {
     var name = req.body.name;
+    var blacklistMode = req.body.blacklistMode;
     var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        deleteAudioFile(name);
+        deleteAudioFile(name, blacklistMode);
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
@@ -1111,11 +1217,12 @@ app.post('/api/deleteMp3', async (req, res) => {
 // deletes mp4 file
 app.post('/api/deleteMp4', async (req, res) => {
     var name = req.body.name;
+    var blacklistMode = req.body.blacklistMode;
     var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        wasDeleted = await deleteVideoFile(name);
+        wasDeleted = await deleteVideoFile(name, null, blacklistMode);
         // wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");

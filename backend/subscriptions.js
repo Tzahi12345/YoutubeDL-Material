@@ -279,30 +279,30 @@ const deleteFolderRecursive = function(folder_to_delete) {
   };
 
 function removeIDFromArchive(archive_path, id) {
-    fs.readFile(archive_path, {encoding: 'utf-8'}, function(err, data) {
-        if (err) throw error;
-    
-        let dataArray = data.split('\n'); // convert file data in an array
-        const searchKeyword = id; // we are looking for a line, contains, key word id in the file
-        let lastIndex = -1; // let say, we have not found the keyword
-    
-        for (let index=0; index<dataArray.length; index++) {
-            if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
-                lastIndex = index; // found a line includes a id keyword
-                break; 
-            }
+    let data = fs.readFileSync(archive_path, {encoding: 'utf-8'});
+    if (!data) {
+        console.log('Archive could not be found.');
+        return;
+    }
+
+    let dataArray = data.split('\n'); // convert file data in an array
+    const searchKeyword = id; // we are looking for a line, contains, key word id in the file
+    let lastIndex = -1; // let say, we have not found the keyword
+
+    for (let index=0; index<dataArray.length; index++) {
+        if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
+            lastIndex = index; // found a line includes a id keyword
+            break; 
         }
-    
-        dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
-    
-        // UPDATE FILE WITH NEW DATA
-        const updatedData = dataArray.join('\n');
-        fs.writeFile(archive_path, updatedData, (err) => {
-            if (err) throw err;
-            // console.log ('Successfully updated the file data');
-        });
-    
-    });
+    }
+
+    const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
+
+    // UPDATE FILE WITH NEW DATA
+    const updatedData = dataArray.join('\n');
+    fs.writeFileSync(archive_path, updatedData);
+    if (line) return line;
+    if (err) throw err;
 }
 
 module.exports = {
@@ -311,5 +311,6 @@ module.exports = {
     subscribe              : subscribe,
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,
-    getVideosForSub        : getVideosForSub
+    getVideosForSub        : getVideosForSub,
+    removeIDFromArchive    : removeIDFromArchive
 }
