@@ -48,6 +48,7 @@ import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dia
 import { SettingsComponent } from './settings/settings.component';
 
 import es from '@angular/common/locales/es';
+import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -68,7 +69,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SubscriptionComponent,
     SubscriptionFileCardComponent,
     SubscriptionInfoDialogComponent,
-    SettingsComponent
+    SettingsComponent,
+    AboutDialogComponent
   ],
   imports: [
     BrowserModule,

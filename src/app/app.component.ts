@@ -21,6 +21,7 @@ import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
+import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -161,6 +162,12 @@ onSetTheme(theme, old_theme) {
 
   openSettingsDialog() {
     const dialogRef = this.dialog.open(SettingsComponent, {
+      width: '80vw'
+    });
+  }
+
+  openAboutDialog() {
+    const dialogRef = this.dialog.open(AboutDialogComponent, {
       width: '80vw'
     });
   }
