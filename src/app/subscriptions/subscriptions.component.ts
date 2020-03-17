@@ -33,6 +33,9 @@ export class SubscriptionsComponent implements OnInit {
     this.postsService.getAllSubscriptions().subscribe(res => {
     this.subscriptions_loading = false;
       this.subscriptions = res['subscriptions'];
+      if (!this.subscriptions) {
+        return;
+      }
 
       for (let i = 0; i < this.subscriptions.length; i++) {
         const sub = this.subscriptions[i];
