@@ -4,6 +4,7 @@
     </div>
     <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
     <mat-menu #action_menu="matMenu">
+        <button (click)="openSubscriptionInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Subscription video info button">Info</ng-container></button>
         <button (click)="deleteAndRedownload()" mat-menu-item><mat-icon>restore</mat-icon><ng-container i18n="Delete and redownload subscription video button">Delete and redownload</ng-container></button>
         <button (click)="deleteForever()" mat-menu-item *ngIf="sub.archive && use_youtubedl_archive"><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete forever subscription video button">Delete forever</ng-container></button>
     </mat-menu>

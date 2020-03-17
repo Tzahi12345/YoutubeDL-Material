@@ -1,0 +1,28 @@
+<h4 mat-dialog-title>{{file.title}}</h4>
+
+<mat-dialog-content>
+    <div class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Subscription video name property">Name:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value">{{file.title}}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Subscription video URL property">URL:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value"><a target="_blank" [href]="file.url">{{file.url}}</a></div>
+    </div>
+    <div class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Subscription video ID property">Uploader:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value">{{file.uploader ? file.uploader : 'N/A'}}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Subscription video file size property">File size:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value">{{filesize(file.size)}}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Subscription video path property">Path:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value">{{file.path}}</div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Close subscription info button">Close</ng-container></button>
+</mat-dialog-actions>

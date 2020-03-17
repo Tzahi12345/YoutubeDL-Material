@@ -5,6 +5,8 @@ import {EventEmitter} from '@angular/core';
 import { MainComponent } from 'app/main/main.component';
 import { Subject, Observable } from 'rxjs';
 import 'rxjs/add/observable/merge';
+import { MatDialog } from '@angular/material/dialog';
+import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
 @Component({
   selector: 'app-file-card',
@@ -12,7 +14,7 @@ import 'rxjs/add/observable/merge';
   styleUrls: ['./file-card.component.css']
 })
 export class FileCardComponent implements OnInit {
-
+  @Input() file: any;
   @Input() title: string;
   @Input() length: string;
   @Input() name: string;
@@ -29,8 +31,10 @@ export class FileCardComponent implements OnInit {
   scrollSubject;
   scrollAndLoad;
 
-  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) {
-    this.scrollSubject = new Subject();
+  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent, 
+    private dialog: MatDialog) {
+
+      this.scrollSubject = new Subject();
     this.scrollAndLoad = Observable.merge(
       Observable.fromEvent(window, 'scroll'),
       this.scrollSubject
@@ -55,6 +59,14 @@ export class FileCardComponent implements OnInit {
       this.removeFile.emit(this.name);
     }
 
+  }
+
+  openSubscriptionInfoDialog() {
+    const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
+      data: {
+        file: this.file,
+      }
+    });
   }
 
   onImgError(event) {

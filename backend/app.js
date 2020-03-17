@@ -84,12 +84,16 @@ app.use(bodyParser.json());
 
 // objects
 
-function File(id, title, thumbnailURL, isAudio, duration) {
+function File(id, title, thumbnailURL, isAudio, duration, url = null, uploader = null, size = null, path = null) {
     this.id = id;
     this.title = title;
     this.thumbnailURL = thumbnailURL;
     this.isAudio = isAudio;
     this.duration = duration;
+    this.url = url;
+    this.uploader = uploader;
+    this.size = size;
+    this.path = path;
 }
 
 // actual functions
@@ -951,20 +955,21 @@ app.post('/api/getMp3s', function(req, res) {
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(audioFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+
         var id = file_path.substring(0, file_path.length-4);
         var jsonobj = getJSONMp3(id);
         if (!jsonobj) continue;
         var title = jsonobj.title;
-
-        if (title.length > 14) // edits title if it's too long
-        {
-            title = title.substring(0,12) + "...";
-        }
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var size = stats.size;
 
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
         var isaudio = true;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration);
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file);
         mp3s.push(file_obj);
     }
 
@@ -984,20 +989,21 @@ app.post('/api/getMp4s', function(req, res) {
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(videoFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+        
         var id = file_path.substring(0, file_path.length-4);
         var jsonobj = getJSONMp4(id);
         if (!jsonobj) continue;
         var title = jsonobj.title;
-
-        if (title.length > 14) // edits title if it's too long
-        {
-            title = title.substring(0,12) + "...";
-        }
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var size = stats.size;
 
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
         var isaudio = false;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration);
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file);
         mp4s.push(file_obj);
     }
 
@@ -1101,6 +1107,8 @@ app.post('/api/getSubscription', async (req, res) => {
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             var file_path = file.substring(appended_base_path.length, file.length);
+            var stats = fs.statSync(file);
+
             var id = file_path.substring(0, file_path.length-4);
             var jsonobj = getJSONMp4(id, appended_base_path);
             if (!jsonobj) continue;
@@ -1108,8 +1116,12 @@ app.post('/api/getSubscription', async (req, res) => {
 
             var thumbnail = jsonobj.thumbnail;
             var duration = jsonobj.duration;
+            var url = jsonobj.webpage_url;
+            var uploader = jsonobj.uploader;
+            var size = stats.size;
+
             var isaudio = false;
-            var file_obj = new File(id, title, thumbnail, isaudio, duration);
+            var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file);
             parsed_files.push(file_obj);
         }
 
