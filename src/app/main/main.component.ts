@@ -477,7 +477,7 @@ export class MainComponent implements OnInit {
           this.downloadAudioFile(decodeURI(name));
         }
       } else {
-        localStorage.setItem('player_navigator', this.router.url);
+        localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
         } else {
@@ -515,7 +515,7 @@ export class MainComponent implements OnInit {
           this.downloadVideoFile(decodeURI(name));
         }
       } else {
-        localStorage.setItem('player_navigator', this.router.url);
+        localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
         } else {
