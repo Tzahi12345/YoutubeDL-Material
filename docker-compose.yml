@@ -8,7 +8,10 @@ services:
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: always
         volumes:
-            - ./appdata:/app/config
+            - ./appdata:/app/appdata
+            - ./audio:/app/audio
+            - ./video:/app/video
+            - ./subscriptions:/app/subscriptions
         ports:
             - "8998:17442"
         image: tzahi12345/youtubedl-material:experimental
