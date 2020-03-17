@@ -214,14 +214,6 @@ export class MainComponent implements OnInit {
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
-
-    this.configLoad();
-
-    this.postsService.settings_changed.subscribe(changed => {
-      if (changed) {
-        this.loadConfig();
-      }
-    });
   }
 
   async configLoad() {
@@ -299,6 +291,14 @@ export class MainComponent implements OnInit {
 
   // app initialization.
   ngOnInit() {
+    this.configLoad();
+
+    this.postsService.settings_changed.subscribe(changed => {
+      if (changed) {
+        this.loadConfig();
+      }
+    });
+
     this.iOS = this.platform.IOS;
 
     // get checkboxes
