@@ -61,7 +61,8 @@ export class SubscriptionFileCardComponent implements OnInit {
     const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
       data: {
         file: this.file,
-      }
+      },
+      minWidth: '50vw'
     });
   }
 

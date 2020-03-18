@@ -17,6 +17,30 @@ export class SubscriptionComponent implements OnInit {
   search_mode = false;
   search_text = '';
   searchIsFocused = false;
+  descendingMode = true;
+  filterProperties = {
+    'upload_date': {
+      'key': 'upload_date',
+      'label': 'Upload Date',
+      'property': 'upload_date'
+    },
+    'name': {
+      'key': 'name',
+      'label': 'Name',
+      'property': 'title'
+    },
+    'file_size': {
+      'key': 'file_size',
+      'label': 'File Size',
+      'property': 'size'
+    },
+    'duration': {
+      'key': 'duration',
+      'label': 'Duration',
+      'property': 'duration'
+    }
+  };
+  filterProperty = this.filterProperties['upload_date'];
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router) { }
 
@@ -26,6 +50,12 @@ export class SubscriptionComponent implements OnInit {
 
       this.getSubscription();
       this.getConfig();
+    }
+
+    // set filter property to cached
+    const cached_filter_property = localStorage.getItem('filter_property');
+    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
+      this.filterProperty = this.filterProperties[cached_filter_property];
     }
   }
 
@@ -42,6 +72,7 @@ export class SubscriptionComponent implements OnInit {
       } else {
         this.filtered_files = this.files;
       }
+      this.filterByProperty(this.filterProperty['property']);
     });
   }
 
@@ -70,6 +101,25 @@ export class SubscriptionComponent implements OnInit {
   private filterFiles(value: string) {
     const filterValue = value.toLowerCase();
     this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue));
+  }
+
+  filterByProperty(prop) {
+    if (this.descendingMode) {
+      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? -1 : 1));
+    } else {
+      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? 1 : -1));
+    }
+  }
+
+  filterOptionChanged(value) {
+    // this.filterProperty = value;
+    this.filterByProperty(value['property']);
+    localStorage.setItem('filter_property', value['key']);
+  }
+
+  toggleModeChange() {
+    this.descendingMode = !this.descendingMode;
+    this.filterByProperty(this.filterProperty['property']);
   }
 
 }

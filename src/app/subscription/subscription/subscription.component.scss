@@ -8,6 +8,13 @@
     left: 15px;
 }
 
+.filter-select-parent {
+    position: absolute;
+    top: 0px;
+    left: 20px;
+    display: block;
+}
+
 .search-bar {
     transition: all .5s ease;
     position: relative;
@@ -29,6 +36,7 @@
 .flex-grid {
     width: 100%;
     display: block;
+    position: relative;
 }
 .col {
     width: 33%;

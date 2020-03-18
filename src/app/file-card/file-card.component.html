@@ -19,7 +19,7 @@
   <button *ngIf="isPlaylist" (click)="deleteFile()" class="deleteButton" mat-icon-button><mat-icon>delete_forever</mat-icon></button>
   <button [matMenuTriggerFor]="action_menu" *ngIf="!isPlaylist" class="deleteButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
   <mat-menu #action_menu="matMenu">
-    <button (click)="openSubscriptionInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
+    <button (click)="openVideoInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
     <button (click)="deleteFile()" mat-menu-item><mat-icon>delete</mat-icon><ng-container i18n="Delete video button">Delete</ng-container></button>
     <button *ngIf="use_youtubedl_archive" (click)="deleteFile(true)" mat-menu-item><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete and blacklist video button">Delete and blacklist</ng-container></button>
   </mat-menu>

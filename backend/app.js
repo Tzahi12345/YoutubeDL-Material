@@ -84,7 +84,7 @@ app.use(bodyParser.json());
 
 // objects
 
-function File(id, title, thumbnailURL, isAudio, duration, url = null, uploader = null, size = null, path = null) {
+function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date) {
     this.id = id;
     this.title = title;
     this.thumbnailURL = thumbnailURL;
@@ -94,6 +94,7 @@ function File(id, title, thumbnailURL, isAudio, duration, url = null, uploader =
     this.uploader = uploader;
     this.size = size;
     this.path = path;
+    this.upload_date = upload_date;
 }
 
 // actual functions
@@ -964,12 +965,15 @@ app.post('/api/getMp3s', function(req, res) {
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+
         var size = stats.size;
 
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
         var isaudio = true;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file);
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
         mp3s.push(file_obj);
     }
 
@@ -998,12 +1002,15 @@ app.post('/api/getMp4s', function(req, res) {
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;
-        var size = stats.size;
-
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
+
+        var size = stats.size;
+
         var isaudio = false;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file);
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
         mp4s.push(file_obj);
     }
 
@@ -1118,10 +1125,12 @@ app.post('/api/getSubscription', async (req, res) => {
             var duration = jsonobj.duration;
             var url = jsonobj.webpage_url;
             var uploader = jsonobj.uploader;
+            var upload_date = jsonobj.upload_date;
+            upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
             var size = stats.size;
 
             var isaudio = false;
-            var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file);
+            var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
             parsed_files.push(file_obj);
         }
 
