@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "YoutubeDL-Material",
-    "version": "0.2",
+    "version": "0.3",
     "description": "The Official Firefox & Chrome Extension of YoutubeDL-Material, an open-source and self-hosted YouTube downloader.",
     "background": {
         "scripts": ["background.js"]

@@ -1,8 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { PostsService } from 'app/posts.services';
+import { MatDialog } from '@angular/material/dialog';
+import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
 @Component({
   selector: 'app-subscription-file-card',
@@ -25,7 +27,7 @@ export class SubscriptionFileCardComponent implements OnInit {
   @Output() goToFileEmit = new EventEmitter<any>();
   @Output() reloadSubscription = new EventEmitter<boolean>();
 
-  constructor(private snackBar: MatSnackBar, private postsService: PostsService) {
+  constructor(private snackBar: MatSnackBar, private postsService: PostsService, private dialog: MatDialog) {
     this.scrollSubject = new Subject();
     this.scrollAndLoad = Observable.merge(
       Observable.fromEvent(window, 'scroll'),
@@ -55,6 +57,15 @@ export class SubscriptionFileCardComponent implements OnInit {
     this.goToFileEmit.emit(this.file.id);
   }
 
+  openSubscriptionInfoDialog() {
+    const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
+      data: {
+        file: this.file,
+      },
+      minWidth: '50vw'
+    });
+  }
+
   deleteAndRedownload() {
     this.postsService.deleteSubscriptionFile(this.sub, this.file.id, false).subscribe(res => {
       this.reloadSubscription.emit(true);
@@ -77,8 +88,7 @@ export class SubscriptionFileCardComponent implements OnInit {
 
 }
 
-function fancyTimeFormat(time)
-{
+function fancyTimeFormat(time) {
     // Hours, minutes and seconds
     const hrs = ~~(time / 3600);
     const mins = ~~((time % 3600) / 60);

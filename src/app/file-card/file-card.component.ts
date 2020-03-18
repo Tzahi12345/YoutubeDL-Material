@@ -1,10 +1,12 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
 import {PostsService} from '../posts.services';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {EventEmitter} from '@angular/core';
 import { MainComponent } from 'app/main/main.component';
 import { Subject, Observable } from 'rxjs';
 import 'rxjs/add/observable/merge';
+import { MatDialog } from '@angular/material/dialog';
+import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
 @Component({
   selector: 'app-file-card',
@@ -12,7 +14,7 @@ import 'rxjs/add/observable/merge';
   styleUrls: ['./file-card.component.css']
 })
 export class FileCardComponent implements OnInit {
-
+  @Input() file: any;
   @Input() title: string;
   @Input() length: string;
   @Input() name: string;
@@ -21,6 +23,7 @@ export class FileCardComponent implements OnInit {
   @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
   @Input() isPlaylist = false;
   @Input() count = null;
+  @Input() use_youtubedl_archive = false;
   type;
   image_loaded = false;
   image_errored = false;
@@ -28,8 +31,10 @@ export class FileCardComponent implements OnInit {
   scrollSubject;
   scrollAndLoad;
 
-  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent) {
-    this.scrollSubject = new Subject();
+  constructor(private postsService: PostsService, public snackBar: MatSnackBar, public mainComponent: MainComponent, 
+    private dialog: MatDialog) {
+
+      this.scrollSubject = new Subject();
     this.scrollAndLoad = Observable.merge(
       Observable.fromEvent(window, 'scroll'),
       this.scrollSubject
@@ -40,9 +45,9 @@ export class FileCardComponent implements OnInit {
     this.type = this.isAudio ? 'audio' : 'video';
   }
 
-  deleteFile() {
+  deleteFile(blacklistMode = false) {
     if (!this.isPlaylist) {
-      this.postsService.deleteFile(this.name, this.isAudio).subscribe(result => {
+      this.postsService.deleteFile(this.name, this.isAudio, blacklistMode).subscribe(result => {
         if (result === true) {
           this.openSnackBar('Delete success!', 'OK.');
           this.removeFile.emit(this.name);
@@ -54,6 +59,15 @@ export class FileCardComponent implements OnInit {
       this.removeFile.emit(this.name);
     }
 
+  }
+
+  openVideoInfoDialog() {
+    const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
+      data: {
+        file: this.file,
+      },
+      minWidth: '50vw'
+    });
   }
 
   onImgError(event) {

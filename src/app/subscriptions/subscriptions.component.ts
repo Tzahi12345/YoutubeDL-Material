@@ -1,5 +1,6 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { SubscribeDialogComponent } from 'app/dialogs/subscribe-dialog/subscribe-dialog.component';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
@@ -32,6 +33,9 @@ export class SubscriptionsComponent implements OnInit {
     this.postsService.getAllSubscriptions().subscribe(res => {
     this.subscriptions_loading = false;
       this.subscriptions = res['subscriptions'];
+      if (!this.subscriptions) {
+        return;
+      }
 
       for (let i = 0; i < this.subscriptions.length; i++) {
         const sub = this.subscriptions[i];

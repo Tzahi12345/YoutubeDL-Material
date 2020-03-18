@@ -4,35 +4,14 @@ services:
     ytdl_material:
         build: .
         environment: 
-            # config items
-            ytdl_url: http://localhost:8998
-            ytdl_port: '17442'
-            ytdl_use_encryption: 'false'
-            ytdl_cert_file_path: /etc/letsencrypt/live/example.com/fullchain.pem
-            ytdl_key_file_path: /etc/letsencrypt/live/example.com/privkey.pem
-            ytdl_audio_folder_path: audio/
-            ytdl_video_folder_path: video/
-            ytdl_custom_args: ''
-            ytdl_title_top: Youtube Downloader
-            ytdl_file_manager_enabled: 'true'
-            ytdl_allow_quality_select: 'true'
-            ytdl_download_only_mode: 'false'
-            ytdl_allow_multi_download_mode: 'true'
-            ytdl_use_youtube_api: 'false'
-            ytdl_youtube_api_key: 'false'
-            ytdl_default_theme: default
-            ytdl_allow_theme_change: 'true'
-            ytdl_allow_subscriptions: 'true'
-            ytdl_subscriptions_base_path: subscriptions/
-            ytdl_subscriptions_check_interval: '300'
-            ytdl_subscriptions_use_youtubedl_archive: 'true'
-            ytdl_use_default_downloading_agent: 'true'
-            ytdl_custom_downloading_agent: 'false'
-            ytdl_allow_advanced_download: 'false'
-            # do not touch this
             write_ytdl_config: 'true'
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: always
+        volumes:
+            - ./appdata:/app/appdata
+            - ./audio:/app/audio
+            - ./video:/app/video
+            - ./subscriptions:/app/subscriptions
         ports:
             - "8998:17442"
-        image: tzahi12345/youtubedl-material:3.4
+        image: tzahi12345/youtubedl-material:experimental

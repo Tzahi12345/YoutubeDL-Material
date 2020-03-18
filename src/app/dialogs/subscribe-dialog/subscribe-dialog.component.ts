@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar, MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostsService } from 'app/posts.services';
 
 @Component({
