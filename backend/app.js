@@ -834,7 +834,6 @@ app.post('/api/tomp3', async function(req, res) {
                 }
                 
                 var full_file_path = output_json['_filename'].substring(0, output_json['_filename'].length-5) + '.mp3';
-                console.log(full_file_path);
                 if (fs.existsSync(full_file_path)) {
                     let tags = {
                         title: output_json['title'],
@@ -842,8 +841,7 @@ app.post('/api/tomp3', async function(req, res) {
                     }
                     // NodeID3.create(tags, function(frame) {  })
                     let success = NodeID3.write(tags, full_file_path);
-                    if (success) console.log('successfully tagged file');
-                    else console.log('failed to tag file');
+                    if (!success) console.log('ERROR: Failed to apply ID3 tag to audio file ' + full_file_path);
                 } else {
                     console.log('Output mp3 does not exist');
                 }
