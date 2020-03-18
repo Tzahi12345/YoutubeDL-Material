@@ -114,11 +114,12 @@ export class PostsService {
         return this.http.post(this.path + 'getMp4s', {});
     }
 
-    downloadFileFromServer(fileName, type, outputName = null) {
+    downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
                                                             type: type,
-                                                            is_playlist: Array.isArray(fileName),
-                                                            outputName: outputName},
+                                                            zip_mode: Array.isArray(fileName),
+                                                            outputName: outputName,
+                                                            fullPathProvided: fullPathProvided},
                                                           {responseType: 'blob'});
     }
 

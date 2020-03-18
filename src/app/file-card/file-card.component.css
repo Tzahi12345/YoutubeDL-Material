@@ -51,6 +51,14 @@
   -webkit-line-clamp: 2;
 }
 
+.file-link {
+  width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
 @media (max-width: 576px){
  
   .example-card {

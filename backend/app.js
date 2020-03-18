@@ -84,12 +84,17 @@ app.use(bodyParser.json());
 
 // objects
 
-function File(id, title, thumbnailURL, isAudio, duration) {
+function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date) {
     this.id = id;
     this.title = title;
     this.thumbnailURL = thumbnailURL;
     this.isAudio = isAudio;
     this.duration = duration;
+    this.url = url;
+    this.uploader = uploader;
+    this.size = size;
+    this.path = path;
+    this.upload_date = upload_date;
 }
 
 // actual functions
@@ -353,10 +358,16 @@ function getVideoFormatID(name)
     }
 }
 
-async function createPlaylistZipFile(fileNames, type, outputName) {
+async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvided = null) {
     return new Promise(async resolve => {
-        let zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
-        // let name = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
+        let zipFolderPath = null;
+
+        if (!fullPathProvided) {
+            zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
+        } else {
+            zipFolderPath = path.join(__dirname, config_api.getConfigItem('ytdl_subscriptions_base_path'));
+        }
+
         let ext = (type === 'audio') ? '.mp3' : '.mp4';
 
         let output = fs.createWriteStream(path.join(zipFolderPath, outputName + '.zip'));
@@ -376,7 +387,8 @@ async function createPlaylistZipFile(fileNames, type, outputName) {
 
         for (let i = 0; i < fileNames.length; i++) {
             let fileName = fileNames[i];
-            archive.file(zipFolderPath + fileName + ext, {name: fileName + ext})
+            let file_path = !fullPathProvided ? zipFolderPath + fileName + ext : fileName;
+            archive.file(file_path, {name: fileName + ext})
         }
 
         await archive.finalize();
@@ -951,20 +963,24 @@ app.post('/api/getMp3s', function(req, res) {
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(audioFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+
         var id = file_path.substring(0, file_path.length-4);
         var jsonobj = getJSONMp3(id);
         if (!jsonobj) continue;
         var title = jsonobj.title;
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
 
-        if (title.length > 14) // edits title if it's too long
-        {
-            title = title.substring(0,12) + "...";
-        }
+        var size = stats.size;
 
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
         var isaudio = true;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration);
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
         mp3s.push(file_obj);
     }
 
@@ -984,20 +1000,24 @@ app.post('/api/getMp4s', function(req, res) {
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(videoFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+        
         var id = file_path.substring(0, file_path.length-4);
         var jsonobj = getJSONMp4(id);
         if (!jsonobj) continue;
         var title = jsonobj.title;
-
-        if (title.length > 14) // edits title if it's too long
-        {
-            title = title.substring(0,12) + "...";
-        }
-
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
+
+        var size = stats.size;
+
         var isaudio = false;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration);
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
         mp4s.push(file_obj);
     }
 
@@ -1101,6 +1121,8 @@ app.post('/api/getSubscription', async (req, res) => {
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             var file_path = file.substring(appended_base_path.length, file.length);
+            var stats = fs.statSync(file);
+
             var id = file_path.substring(0, file_path.length-4);
             var jsonobj = getJSONMp4(id, appended_base_path);
             if (!jsonobj) continue;
@@ -1108,8 +1130,14 @@ app.post('/api/getSubscription', async (req, res) => {
 
             var thumbnail = jsonobj.thumbnail;
             var duration = jsonobj.duration;
+            var url = jsonobj.webpage_url;
+            var uploader = jsonobj.uploader;
+            var upload_date = jsonobj.upload_date;
+            upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+            var size = stats.size;
+
             var isaudio = false;
-            var file_obj = new File(id, title, thumbnail, isaudio, duration);
+            var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
             parsed_files.push(file_obj);
         }
 
@@ -1120,9 +1148,6 @@ app.post('/api/getSubscription', async (req, res) => {
     } else {
         res.sendStatus(500);
     }
-    
-
-    
 });
 
 app.post('/api/downloadVideosForSubscription', async (req, res) => {
@@ -1257,11 +1282,12 @@ app.post('/api/deleteMp4', async (req, res) => {
 
 app.post('/api/downloadFile', async (req, res) => {
     let fileNames = req.body.fileNames;
-    let is_playlist = req.body.is_playlist;
+    let zip_mode = req.body.zip_mode;
     let type = req.body.type;
     let outputName = req.body.outputName;
+    let fullPathProvided = req.body.fullPathProvided;
     let file = null;
-    if (!is_playlist) {
+    if (!zip_mode) {
         fileNames = decodeURIComponent(fileNames);
         if (type === 'audio') {
             file = __dirname + '/' + audioFolderPath + fileNames + '.mp3';
@@ -1272,10 +1298,20 @@ app.post('/api/downloadFile', async (req, res) => {
         for (let i = 0; i < fileNames.length; i++) {
             fileNames[i] = decodeURIComponent(fileNames[i]);
         }
-        file = await createPlaylistZipFile(fileNames, type, outputName);
+        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided);
     }
 
-    res.sendFile(file);
+    res.sendFile(file, function (err) {
+        if (err) {
+          next(err);
+        } else if (fullPathProvided) {
+          try {
+            fs.unlinkSync(file); 
+          } catch(e) {
+            console.log("ERROR: Failed to remove file", file); 
+          }
+        }
+    });
 });
 
 app.post('/api/deleteFile', async (req, res) => {
