@@ -636,18 +636,20 @@ async function autoUpdateYoutubeDL() {
         }
         let current_app_details = JSON.parse(fs.readFileSync(current_app_details_path));
         let current_version = current_app_details['version'];
+        let stored_binary_path = current_app_details['path'];
 
         // got version, now let's check the latest version from the youtube-dl API
         let youtubedl_api_path = 'https://api.github.com/repos/ytdl-org/youtube-dl/tags';
         fetch(youtubedl_api_path, {method: 'Get'})
-        .then(res => res.json())
-        .then((json) => {
+        .then(async res => res.json())
+        .then(async (json) => {
             // check if the versions are different
             const latest_update_version = json[0]['name'];    
             if (current_version !== latest_update_version) {
                 let binary_path = 'node_modules/youtube-dl/bin';
                 // versions different, download new update
                 console.log('INFO: Found new update for youtube-dl. Updating binary...');
+                await checkExistsWithTimeout(stored_binary_path, 10000);
                 downloader(binary_path, function error(err, done) {
                     'use strict'
                     if (err) {
@@ -659,6 +661,34 @@ async function autoUpdateYoutubeDL() {
                 });
             }
         
+        });
+    });
+}
+
+async function checkExistsWithTimeout(filePath, timeout) {
+    return new Promise(function (resolve, reject) {
+
+        var timer = setTimeout(function () {
+            watcher.close();
+            reject(new Error('File did not exists and was not created during the timeout.'));
+        }, timeout);
+
+        fs.access(filePath, fs.constants.R_OK, function (err) {
+            if (!err) {
+                clearTimeout(timer);
+                watcher.close();
+                resolve();
+            }
+        });
+
+        var dir = path.dirname(filePath);
+        var basename = path.basename(filePath);
+        var watcher = fs.watch(dir, function (eventType, filename) {
+            if (eventType === 'rename' && filename === basename) {
+                clearTimeout(timer);
+                watcher.close();
+                resolve();
+            }
         });
     });
 }
