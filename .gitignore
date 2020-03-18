@@ -57,3 +57,4 @@ backend/subscriptions/playlists/*
 backend/subscriptions/archives/*
 src/assets/default.json
 package-lock.json
+backend/package-lock.json
