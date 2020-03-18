@@ -10,6 +10,8 @@ var bodyParser = require("body-parser");
 var archiver = require('archiver');
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
+const downloader = require('youtube-dl/lib/downloader')
+const fetch = require('node-fetch');
 var URL = require('url').URL;
 const shortid = require('shortid')
 const url_api = require('url');
@@ -55,6 +57,9 @@ var url_domain = null;
 let debugMode = process.env.YTDL_MODE === 'debug';
 
 if (debugMode) console.log('YTDL-Material in debug mode!');
+
+// updates & starts youtubedl
+startYoutubeDL();
 
 var validDownloadingAgents = [
     'aria2c',
@@ -611,6 +616,81 @@ function writeToBlacklist(type, line) {
     // adds newline to the beginning of the line
     line = '\n' + line;
     fs.appendFileSync(blacklistBasePath + 'blacklist.txt', line);
+}
+
+async function startYoutubeDL() {
+    // auto update youtube-dl
+    await autoUpdateYoutubeDL();
+}
+
+// auto updates the underlying youtube-dl binary, not YoutubeDL-Material
+async function autoUpdateYoutubeDL() {
+    return new Promise(resolve => {
+        // get current version
+        let current_app_details_path = 'node_modules/youtube-dl/bin/details';
+        let current_app_details_exists = fs.existsSync(current_app_details_path);
+        if (!current_app_details_exists) {
+            console.log(`Failed to get youtube-dl binary details at location: ${current_app_details_path}. Cancelling update check.`);
+            resolve(false);
+            return;
+        }
+        let current_app_details = JSON.parse(fs.readFileSync(current_app_details_path));
+        let current_version = current_app_details['version'];
+        let stored_binary_path = current_app_details['path'];
+
+        // got version, now let's check the latest version from the youtube-dl API
+        let youtubedl_api_path = 'https://api.github.com/repos/ytdl-org/youtube-dl/tags';
+        fetch(youtubedl_api_path, {method: 'Get'})
+        .then(async res => res.json())
+        .then(async (json) => {
+            // check if the versions are different
+            const latest_update_version = json[0]['name'];    
+            if (current_version !== latest_update_version) {
+                let binary_path = 'node_modules/youtube-dl/bin';
+                // versions different, download new update
+                console.log('INFO: Found new update for youtube-dl. Updating binary...');
+                await checkExistsWithTimeout(stored_binary_path, 10000);
+                downloader(binary_path, function error(err, done) {
+                    'use strict'
+                    if (err) {
+                        resolve(false);
+                        throw err;
+                    }
+                    console.log(`INFO: Binary successfully updated: ${current_version} -> ${latest_update_version}`);
+                    resolve(true);
+                });
+            }
+        
+        });
+    });
+}
+
+async function checkExistsWithTimeout(filePath, timeout) {
+    return new Promise(function (resolve, reject) {
+
+        var timer = setTimeout(function () {
+            watcher.close();
+            reject(new Error('File did not exists and was not created during the timeout.'));
+        }, timeout);
+
+        fs.access(filePath, fs.constants.R_OK, function (err) {
+            if (!err) {
+                clearTimeout(timer);
+                watcher.close();
+                resolve();
+            }
+        });
+
+        var dir = path.dirname(filePath);
+        var basename = path.basename(filePath);
+        var watcher = fs.watch(dir, function (eventType, filename) {
+            if (eventType === 'rename' && filename === basename) {
+                clearTimeout(timer);
+                watcher.close();
+                resolve();
+            }
+        });
+    });
 }
 
 app.use(function(req, res, next) {
