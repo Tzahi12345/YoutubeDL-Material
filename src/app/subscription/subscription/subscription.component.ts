@@ -41,6 +41,7 @@ export class SubscriptionComponent implements OnInit {
     }
   };
   filterProperty = this.filterProperties['upload_date'];
+  downloading = false;
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router) { }
 
@@ -120,6 +121,23 @@ export class SubscriptionComponent implements OnInit {
   toggleModeChange() {
     this.descendingMode = !this.descendingMode;
     this.filterByProperty(this.filterProperty['property']);
+  }
+
+  downloadContent() {
+    const fileNames = [];
+    for (let i = 0; i < this.files.length; i++) {
+      fileNames.push(this.files[i].path);
+    }
+
+    this.downloading = true;
+    this.postsService.downloadFileFromServer(fileNames, 'video', this.subscription.name, true).subscribe(res => {
+      this.downloading = false;
+      const blob: Blob = res;
+      saveAs(blob, this.subscription.name + '.zip');
+    }, err => {
+      console.log(err);
+      this.downloading = false;
+    });
   }
 
 }
