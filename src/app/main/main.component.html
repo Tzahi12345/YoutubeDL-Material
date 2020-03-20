@@ -111,6 +111,7 @@
                                 Use custom args
                             </ng-container>
                         </mat-checkbox>
+                        <button class="edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                         <mat-form-field color="accent" style="margin-bottom: 42px;" class="advanced-input">
                             <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput placeholder="Custom args" i18n-placeholder="Custom args placeholder">
                             <mat-hint>

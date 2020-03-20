@@ -20,6 +20,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
+import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
@@ -42,7 +43,7 @@ export interface Download {
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
-  youtubeAuthDisabledOverride = true;
+  youtubeAuthDisabledOverride = false;
 
   iOS = false;
 
@@ -1085,6 +1086,20 @@ export class MainComponent implements OnInit {
         this.openSnackBar('Successfully created playlist!', '');
       } else if (result === false) {
         this.openSnackBar('ERROR: failed to create playlist!', '');
+      }
+    });
+  }
+
+  // modify custom args
+  openArgsModifierDialog() {
+    const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
+      data: {
+       initial_args: this.customArgs
+      }
+    });
+    dialogRef.afterClosed().subscribe(new_args => {
+      if (new_args) {
+       this.customArgs = new_args;
       }
     });
   }

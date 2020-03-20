@@ -1,10 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -13,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
@@ -24,7 +27,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
@@ -50,6 +52,7 @@ import { SettingsComponent } from './settings/settings.component';
 import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 import { VideoInfoDialogComponent } from './dialogs/video-info-dialog/video-info-dialog.component';
+import { ArgModifierDialogComponent, HighlightPipe } from './dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -72,7 +75,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SubscriptionInfoDialogComponent,
     SettingsComponent,
     AboutDialogComponent,
-    VideoInfoDialogComponent
+    VideoInfoDialogComponent,
+    ArgModifierDialogComponent,
+    HighlightPipe
   ],
   imports: [
     BrowserModule,
@@ -103,6 +108,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatDialogModule,
     MatSlideToggleModule,
     MatMenuModule,
+    MatAutocompleteModule,
+    MatTooltipModule,
     DragDropModule,
     VgCoreModule,
     VgControlsModule,
@@ -115,6 +122,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
   ],
   providers: [
     PostsService
+  ],
+  exports: [
+    HighlightPipe
   ],
   bootstrap: [AppComponent]
 })

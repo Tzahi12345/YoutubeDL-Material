@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { isoLangs } from './locales_list';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {DomSanitizer} from '@angular/platform-browser';
+import { MatDialog } from '@angular/material/dialog';
+import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -16,11 +19,15 @@ export class SettingsComponent implements OnInit {
   initial_config = null;
   new_config = null
   loading_config = false;
+  generated_bookmarklet_code = null;
 
-  constructor(private postsService: PostsService, private snackBar: MatSnackBar) { }
+  constructor(private postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
+    private dialog: MatDialog) { }
 
   ngOnInit() {
     this.getConfig();
+
+    this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());
   }
 
   getConfig() {
@@ -55,6 +62,52 @@ export class SettingsComponent implements OnInit {
     localStorage.setItem('locale', new_val);
     this.openSnackBar('Language successfully changed! Reload to update the page.')
   }
+
+  generateBookmarklet() {
+    this.bookmarksite('YTDL-Material', this.generated_bookmarklet_code);
+  }
+
+  generateBookmarkletCode() {
+    const currentURL = window.location.href.split('#')[0];
+    const homePageWithArgsURL = currentURL + '#/home;url=';
+    const bookmarkletCodeInside = `'${homePageWithArgsURL}' + window.location`
+    const bookmarkletCode = `javascript:(function()%7Bwindow.open('${homePageWithArgsURL}' + encodeURIComponent(window.location))%7D)()`;
+    return bookmarkletCode;
+  }
+
+  // not currently functioning on most platforms. hence not in use
+  bookmarksite(title, url) {
+    // Internet Explorer
+    if (document.all) {
+        window['external']['AddFavorite'](url, title);
+    } else if (window['chrome']) {
+        // Google Chrome
+       this.openSnackBar('Chrome users must drag the \'Alternate URL\' link to your bookmarks.');
+    } else if (window['sidebar']) {
+        // Firefox
+        window['sidebar'].addPanel(title, url, '');
+    } else if (window['opera'] && window.print) {
+        // Opera
+       const elem = document.createElement('a');
+       elem.setAttribute('href', url);
+       elem.setAttribute('title', title);
+       elem.setAttribute('rel', 'sidebar');
+       elem.click();
+    }
+ }
+
+ openArgsModifierDialog() {
+   const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
+     data: {
+      initial_args: this.new_config['Downloader']['custom_args']
+     }
+   });
+   dialogRef.afterClosed().subscribe(new_args => {
+     if (new_args) {
+      this.new_config['Downloader']['custom_args'] = new_args;
+     }
+   });
+ }
 
   // snackbar helper
   public openSnackBar(message: string, action: string = '') {

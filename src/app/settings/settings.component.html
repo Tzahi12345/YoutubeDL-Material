@@ -92,6 +92,7 @@
                     <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                     <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page.</ng-container></mat-hint>
                 </mat-form-field>
+                <button style="margin-left: 12px;" (click)="openArgsModifierDialog()" mat-stroked-button>Modify args</button>
             </div>
 
             <div class="col-12 mt-4">
@@ -210,6 +211,38 @@
         </div>
     </div>
 </mat-expansion-panel>
+
+<!-- Extensions -->
+<mat-expansion-panel class="settings-expansion-panel">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <ng-container i18n="Extensions settings title">Extensions</ng-container>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h6>Chrome</h6>
+                <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/chrome-extension/youtubedl-material-chrome-extension.zip?raw=true"><ng-container i18n="Chrome ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Chrome click here suffix">to download the official YoutubeDL-Material Chrome extension manually.</ng-container></p>
+                <p><ng-container i18n="Chrome setup suffix">You must manually load the extension and modify the extension's settings to set the frontend URL.</ng-container></p>
+                <mat-divider class="ext-divider"></mat-divider>
+            </div>
+            <div class="col-12">
+                <h6>Firefox</h6>
+                <p><a href="https://addons.mozilla.org/en-US/firefox/addon/youtubedl-material/" target="_blank"><ng-container i18n="Firefox ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Firefox click here suffix">to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</ng-container></p>
+                <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Firefox-Extension" target="_blank"><ng-container i18n="Firefox setup prefix link">Detailed setup instructions.</ng-container></a>&nbsp;<ng-container i18n="Firefox setup suffix">Not much is required other than changing the extension's settings to set the frontend URL.</ng-container></p>
+                <mat-divider class="ext-divider"></mat-divider>
+            </div>
+            <div class="col-12">
+                <h6>Bookmarklet</h6>
+                <p><ng-container i18n="Bookmarklet instructions">Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</ng-container></p>
+                <!--<button style="margin-bottom: 5px;" mat-stroked-button color="accent" (click)="generateBookmarklet()">Generate bookmarklet</button>-->
+                <p><a [href]="generated_bookmarklet_code" target="_blank">YTDL-Bookmarklet</a></p>
+            </div>
+        </div>
+    </div>
+</mat-expansion-panel>
+
 
 <!-- Advanced -->
 <mat-expansion-panel class="settings-expansion-panel">
