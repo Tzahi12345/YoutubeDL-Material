@@ -13,6 +13,9 @@ if (environment.production) {
 }
 
 const locale = localStorage.getItem('locale');
+if (!locale) {
+  localStorage.setItem('locale', 'en');
+}
 if (locale && locale !== 'en') {
     getTranslations(`./assets/i18n/messages.${locale}.json`).then(
       (data: ParsedTranslationBundle) => {

@@ -594,7 +594,7 @@ export const isoLangs = {
    },
    'es': {
        'name': 'Spanish; Castilian',
-       'nativeName': 'español, castellano'
+       'nativeName': 'español'
    },
    'su': {
        'name': 'Sundanese',
