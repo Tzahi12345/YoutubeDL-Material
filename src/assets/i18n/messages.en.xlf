@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" datatype="plaintext" original="ng2.template">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6" datatype="html">
         <source>Create a playlist</source>
@@ -34,9 +34,89 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscription/subscription/subscription.component.html</context>
-          <context context-type="linenumber">15</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <note priority="1" from="description">Videos title</note>
+      </trans-unit>
+      <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40" datatype="html">
+        <source>Modify youtube-dl args</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">Modify args title</note>
+      </trans-unit>
+      <trans-unit id="7fc1946abe2b40f60059c6cd19975d677095fd19" datatype="html">
+        <source>Simulated new args</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <note priority="1" from="description">Simulated args title</note>
+      </trans-unit>
+      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html">
+        <source>Add an arg</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <note priority="1" from="description">Add arg card title</note>
+      </trans-unit>
+      <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23" datatype="html">
+        <source>Search by category</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">Search args by category button</note>
+      </trans-unit>
+      <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377" datatype="html">
+        <source>Use arg value</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">Use arg value checkbox</note>
+      </trans-unit>
+      <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd" datatype="html">
+        <source>Arg value</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+        <note priority="1" from="description">Arg value placeholder</note>
+      </trans-unit>
+      <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b" datatype="html">
+        <source>Add arg</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Search args by category button</note>
+      </trans-unit>
+      <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">285</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+        <note priority="1" from="description">Arg modifier cancel button</note>
+      </trans-unit>
+      <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html">
+        <source>Modify</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <note priority="1" from="description">Arg modifier modify button</note>
       </trans-unit>
       <trans-unit id="038ebcb2a89155d90c24fa1c17bfe83dbadc3c20" datatype="html">
         <source>Youtube Downloader</source>
@@ -156,11 +236,11 @@
         <source>Custom args</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">115</context>
+          <context context-type="linenumber">116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">92</context>
         </context-group>
         <note priority="1" from="description">Custom args placeholder</note>
       </trans-unit>
@@ -170,7 +250,7 @@
                                 </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">117</context>
+          <context context-type="linenumber">118</context>
         </context-group>
         <note priority="1" from="description">Custom Args input hint</note>
       </trans-unit>
@@ -180,7 +260,7 @@
                             </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">126</context>
         </context-group>
         <note priority="1" from="description">Use custom output checkbox</note>
       </trans-unit>
@@ -188,7 +268,7 @@
         <source>Custom output</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">130</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note priority="1" from="description">Custom output placeholder</note>
       </trans-unit>
@@ -196,7 +276,7 @@
         <source>Documentation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">133</context>
         </context-group>
         <note priority="1" from="description">Youtube-dl output template documentation link</note>
       </trans-unit>
@@ -204,7 +284,7 @@
         <source>Path is relative to the config download path. Don&apos;t include extension.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">134</context>
         </context-group>
         <note priority="1" from="description">Custom Output input hint</note>
       </trans-unit>
@@ -214,7 +294,7 @@
                             </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">139</context>
+          <context context-type="linenumber">140</context>
         </context-group>
         <note priority="1" from="description">Use authentication checkbox</note>
       </trans-unit>
@@ -222,7 +302,7 @@
         <source>Username</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">145</context>
         </context-group>
         <note priority="1" from="description">YT Username placeholder</note>
       </trans-unit>
@@ -230,7 +310,7 @@
         <source>Password</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">149</context>
+          <context context-type="linenumber">150</context>
         </context-group>
         <note priority="1" from="description">YT Password placeholder</note>
       </trans-unit>
@@ -240,7 +320,7 @@
                     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">194</context>
         </context-group>
         <note priority="1" from="description">Audio files title</note>
       </trans-unit>
@@ -250,7 +330,7 @@
                     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">198</context>
+          <context context-type="linenumber">199</context>
         </context-group>
         <note priority="1" from="description">Audio files description</note>
       </trans-unit>
@@ -258,11 +338,11 @@
         <source>Playlists</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">213</context>
+          <context context-type="linenumber">214</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">255</context>
+          <context context-type="linenumber">256</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscriptions/subscriptions.component.html</context>
@@ -276,7 +356,7 @@
                     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">224</context>
+          <context context-type="linenumber">225</context>
         </context-group>
         <note priority="1" from="description">No video playlists available text</note>
       </trans-unit>
@@ -286,7 +366,7 @@
                     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">234</context>
+          <context context-type="linenumber">235</context>
         </context-group>
         <note priority="1" from="description">Video files title</note>
       </trans-unit>
@@ -296,7 +376,7 @@
                     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">239</context>
+          <context context-type="linenumber">240</context>
         </context-group>
         <note priority="1" from="description">Video files description</note>
       </trans-unit>
@@ -306,15 +386,79 @@
                     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
-          <context context-type="linenumber">268</context>
+          <context context-type="linenumber">269</context>
         </context-group>
         <note priority="1" from="description">No video playlists available text</note>
+      </trans-unit>
+      <trans-unit id="616e206cb4f25bd5885fc35925365e43cf5fb929" datatype="html">
+        <source>Name:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">Video name property</note>
+      </trans-unit>
+      <trans-unit id="c52db455cca9109ee47e1a612c3f4117c09eb71b" datatype="html">
+        <source>URL:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">Video URL property</note>
+      </trans-unit>
+      <trans-unit id="c6eb45d085384903e53ab001a3513d1de6a1dbac" datatype="html">
+        <source>Uploader:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">Video ID property</note>
+      </trans-unit>
+      <trans-unit id="109c6f4a5e46efb933612ededfaf52a13178b7e0" datatype="html">
+        <source>File size:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">Video file size property</note>
+      </trans-unit>
+      <trans-unit id="bd630d8669b16e5f264ec4649d9b469fe03e5ff4" datatype="html">
+        <source>Path:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <note priority="1" from="description">Video path property</note>
+      </trans-unit>
+      <trans-unit id="a67e7d843cef735c79d5ef1c8ba4af3e758912bb" datatype="html">
+        <source>Upload Date:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">Video upload date property</note>
+      </trans-unit>
+      <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
+        <source>Close</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">Close subscription info button</note>
       </trans-unit>
       <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1" datatype="html">
         <source>ID:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/file-card/file-card.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">7</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
@@ -330,9 +474,37 @@
         <source>Count:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/file-card/file-card.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">8</context>
         </context-group>
         <note priority="1" from="description">Playlist video count</note>
+      </trans-unit>
+      <trans-unit id="321e4419a943044e674beb55b8039f42a9761ca5" datatype="html">
+        <source>Info</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/file-card/file-card.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/subscription/subscription-file-card/subscription-file-card.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">Video info button</note>
+      </trans-unit>
+      <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html">
+        <source>Delete</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/file-card/file-card.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">Delete video button</note>
+      </trans-unit>
+      <trans-unit id="34504b488c24c27e68089be549f0eeae6ebaf30b" datatype="html">
+        <source>Delete and blacklist</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/file-card/file-card.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <note priority="1" from="description">Delete and blacklist video button</note>
       </trans-unit>
       <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716" datatype="html">
         <source>Settings</source>
@@ -350,7 +522,7 @@
         <source>Host</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">Host settings title</note>
       </trans-unit>
@@ -358,7 +530,7 @@
         <source>URL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">15</context>
+          <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
@@ -370,7 +542,7 @@
         <source>URL this app will be accessed from, without the port.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">16</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">URL setting input hint</note>
       </trans-unit>
@@ -378,7 +550,7 @@
         <source>Port</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <note priority="1" from="description">Port input placeholder</note>
       </trans-unit>
@@ -386,7 +558,7 @@
         <source>The desired port. Default is 17442.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <note priority="1" from="description">Port setting input hint</note>
       </trans-unit>
@@ -394,7 +566,7 @@
         <source>Encryption</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <note priority="1" from="description">Encryption settings title</note>
       </trans-unit>
@@ -402,7 +574,7 @@
         <source>Use encryption</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">49</context>
         </context-group>
         <note priority="1" from="description">Use encryption setting</note>
       </trans-unit>
@@ -410,7 +582,7 @@
         <source>Cert file path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">54</context>
         </context-group>
         <note priority="1" from="description">Cert file path input placeholder</note>
       </trans-unit>
@@ -418,7 +590,7 @@
         <source>Key file path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <note priority="1" from="description">Key file path input placeholder</note>
       </trans-unit>
@@ -426,7 +598,7 @@
         <source>Downloader</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <note priority="1" from="description">Downloader settings title</note>
       </trans-unit>
@@ -434,7 +606,7 @@
         <source>Audio folder path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">78</context>
         </context-group>
         <note priority="1" from="description">Audio folder path input placeholder</note>
       </trans-unit>
@@ -442,7 +614,7 @@
         <source>Path for audio only downloads. It is relative to YTDL-Material&apos;s root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">79</context>
         </context-group>
         <note priority="1" from="description">Aduio path setting input hint</note>
       </trans-unit>
@@ -450,7 +622,7 @@
         <source>Video folder path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">85</context>
         </context-group>
         <note priority="1" from="description">Video folder path input placeholder</note>
       </trans-unit>
@@ -458,7 +630,7 @@
         <source>Path for video downloads. It is relative to YTDL-Material&apos;s root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">86</context>
         </context-group>
         <note priority="1" from="description">Video path setting input hint</note>
       </trans-unit>
@@ -466,15 +638,27 @@
         <source>Global custom args for downloads on the home page.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">93</context>
         </context-group>
         <note priority="1" from="description">Custom args setting input hint</note>
+      </trans-unit>
+      <trans-unit id="78e49b7339b4fa7184dd21bcaae107ce9b7076f6" datatype="html">
+        <source>Use youtube-dl archive</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">99</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">207</context>
+        </context-group>
+        <note priority="1" from="description">Use youtubedl archive setting</note>
       </trans-unit>
       <trans-unit id="d5f69691f9f05711633128b5a3db696783266b58" datatype="html">
         <source>Extra</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">110</context>
         </context-group>
         <note priority="1" from="description">Extra settings title</note>
       </trans-unit>
@@ -482,7 +666,7 @@
         <source>Top title</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">102</context>
+          <context context-type="linenumber">117</context>
         </context-group>
         <note priority="1" from="description">Top title input placeholder</note>
       </trans-unit>
@@ -490,7 +674,7 @@
         <source>File manager enabled</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">122</context>
         </context-group>
         <note priority="1" from="description">File manager enabled setting</note>
       </trans-unit>
@@ -498,7 +682,7 @@
         <source>Allow quality select</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">125</context>
         </context-group>
         <note priority="1" from="description">Allow quality seelct setting</note>
       </trans-unit>
@@ -506,7 +690,7 @@
         <source>Download only mode</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">113</context>
+          <context context-type="linenumber">128</context>
         </context-group>
         <note priority="1" from="description">Download only mode setting</note>
       </trans-unit>
@@ -514,7 +698,7 @@
         <source>Allow multi-download mode</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">131</context>
         </context-group>
         <note priority="1" from="description">Allow multi-downloade mode setting</note>
       </trans-unit>
@@ -522,7 +706,7 @@
         <source>API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">126</context>
+          <context context-type="linenumber">141</context>
         </context-group>
         <note priority="1" from="description">API settings title</note>
       </trans-unit>
@@ -530,7 +714,7 @@
         <source>Use YouTube API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">147</context>
         </context-group>
         <note priority="1" from="description">Use YouTube API setting</note>
       </trans-unit>
@@ -538,7 +722,7 @@
         <source>Youtube API Key</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <note priority="1" from="description">Youtube API Key setting placeholder</note>
       </trans-unit>
@@ -546,7 +730,7 @@
         <source>Generating a key is easy!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <note priority="1" from="description">Youtube API Key setting hint</note>
       </trans-unit>
@@ -554,7 +738,7 @@
         <source>Themes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">163</context>
         </context-group>
         <note priority="1" from="description">Themes settings title</note>
       </trans-unit>
@@ -562,7 +746,7 @@
         <source>Default</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">155</context>
+          <context context-type="linenumber">170</context>
         </context-group>
         <note priority="1" from="description">Default theme label</note>
       </trans-unit>
@@ -570,7 +754,7 @@
         <source>Dark</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
@@ -582,7 +766,7 @@
         <source>Allow theme change</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">Allow theme change setting</note>
       </trans-unit>
@@ -590,11 +774,11 @@
         <source>Subscriptions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">186</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <note priority="1" from="description">Subscriptions settings title</note>
       </trans-unit>
@@ -602,7 +786,7 @@
         <source>Allow subscriptions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">192</context>
         </context-group>
         <note priority="1" from="description">Allow subscriptions setting</note>
       </trans-unit>
@@ -610,7 +794,7 @@
         <source>Subscriptions base path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">181</context>
+          <context context-type="linenumber">196</context>
         </context-group>
         <note priority="1" from="description">Subscriptions base path input setting placeholder</note>
       </trans-unit>
@@ -618,7 +802,7 @@
         <source>Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material&apos;s root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">182</context>
+          <context context-type="linenumber">197</context>
         </context-group>
         <note priority="1" from="description">Subscriptions base path setting input hint</note>
       </trans-unit>
@@ -626,7 +810,7 @@
         <source>Check interval</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">187</context>
+          <context context-type="linenumber">202</context>
         </context-group>
         <note priority="1" from="description">Check interval input setting placeholder</note>
       </trans-unit>
@@ -634,23 +818,15 @@
         <source>Unit is seconds, only include numbers.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">203</context>
         </context-group>
         <note priority="1" from="description">Check interval setting input hint</note>
-      </trans-unit>
-      <trans-unit id="78e49b7339b4fa7184dd21bcaae107ce9b7076f6" datatype="html">
-        <source>Use youtube-dl archive</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">192</context>
-        </context-group>
-        <note priority="1" from="description">Use youtube-dl archive setting</note>
       </trans-unit>
       <trans-unit id="fa9fe4255231dd1cc6b29d3d254a25cb7c764f0f" datatype="html">
         <source>With youtube-dl&apos;s archive</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <note priority="1" from="description">youtube-dl archive explanation prefix link</note>
       </trans-unit>
@@ -658,7 +834,7 @@
         <source>feature, downloaded videos from your subscriptions get recorded in a text file in the subscriptions archive sub-directory.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <note priority="1" from="description">youtube-dl archive explanation middle</note>
       </trans-unit>
@@ -666,15 +842,87 @@
         <source>This enables the ability to permanently delete videos from your subscriptions without unsubscribing, and allows you to record which videos you downloaded in case of data loss.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">194</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <note priority="1" from="description">youtube-dl archive explanation suffix</note>
+      </trans-unit>
+      <trans-unit id="0feab442129ba239106e55cf029069d3d4adeadc" datatype="html">
+        <source>Extensions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">219</context>
+        </context-group>
+        <note priority="1" from="description">Extensions settings title</note>
+      </trans-unit>
+      <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7" datatype="html">
+        <source>Click here</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">226</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">232</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">Chrome ext click here</note>
+      </trans-unit>
+      <trans-unit id="7f09776373995003161235c0c8d02b7f91dbc4df" datatype="html">
+        <source>to download the official YoutubeDL-Material Chrome extension manually.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">226</context>
+        </context-group>
+        <note priority="1" from="description">Chrome click here suffix</note>
+      </trans-unit>
+      <trans-unit id="5b5296423906ab3371fdb2b5a5aaa83acaa2ee52" datatype="html">
+        <source>You must manually load the extension and modify the extension&apos;s settings to set the frontend URL.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">227</context>
+        </context-group>
+        <note priority="1" from="description">Chrome setup suffix</note>
+      </trans-unit>
+      <trans-unit id="9a2ec6da48771128384887525bdcac992632c863" datatype="html">
+        <source>to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">232</context>
+        </context-group>
+        <note priority="1" from="description">Firefox click here suffix</note>
+      </trans-unit>
+      <trans-unit id="eb81be6b49e195e5307811d1d08a19259d411f37" datatype="html">
+        <source>Detailed setup instructions.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">233</context>
+        </context-group>
+        <note priority="1" from="description">Firefox setup prefix link</note>
+      </trans-unit>
+      <trans-unit id="cb17ff8fe3961cf90f44bee97c88a3f3347a7e55" datatype="html">
+        <source>Not much is required other than changing the extension&apos;s settings to set the frontend URL.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">233</context>
+        </context-group>
+        <note priority="1" from="description">Firefox setup suffix</note>
+      </trans-unit>
+      <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2" datatype="html">
+        <source>Drag the link below to your bookmarks, and you&apos;re good to go! Just navigate to the YouTube video you&apos;d like to download, and click the bookmark.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">238</context>
+        </context-group>
+        <note priority="1" from="description">Bookmarklet instructions</note>
       </trans-unit>
       <trans-unit id="bc2e854e111ecf2bd7db170da5e3c2ed08181d88" datatype="html">
         <source>Advanced</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">204</context>
+          <context context-type="linenumber">251</context>
         </context-group>
         <note priority="1" from="description">Advanced settings title</note>
       </trans-unit>
@@ -682,23 +930,15 @@
         <source>Use default downloading agent</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">210</context>
+          <context context-type="linenumber">257</context>
         </context-group>
         <note priority="1" from="description">Use default downloading agent setting</note>
-      </trans-unit>
-      <trans-unit id="cdf75b1bdda80487e2ce1ff264ae171cbc5dc3b1" datatype="html">
-        <source>Custom agent</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">214</context>
-        </context-group>
-        <note priority="1" from="description">Custom agent setting placeholder</note>
       </trans-unit>
       <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html">
         <source>Allow advanced download</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">219</context>
+          <context context-type="linenumber">272</context>
         </context-group>
         <note priority="1" from="description">Allow advanced downloading setting</note>
       </trans-unit>
@@ -706,27 +946,79 @@
         <source>Save</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">229</context>
+          <context context-type="linenumber">282</context>
         </context-group>
         <note priority="1" from="description">Settings save button</note>
       </trans-unit>
-      <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7" datatype="html">
-        <source>Cancel</source>
+      <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
+        <source>About YoutubeDL-Material</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">1</context>
         </context-group>
+        <note priority="1" from="description">About dialog title</note>
+      </trans-unit>
+      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
+        <source>is an open-source YouTube downloader built under Google&apos;s Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">6</context>
         </context-group>
-        <note priority="1" from="description">Settings cancel button</note>
+        <note priority="1" from="description">About first paragraph</note>
+      </trans-unit>
+      <trans-unit id="c072eebcb5b1f1eef6fb2ee1756e839dd302f3de" datatype="html">
+        <source>has some awesome features included! An extensive API, Docker support, and localization (translation) support. Read up on all the supported features by clicking on the GitHub icon below.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <note priority="1" from="description">About second paragraph</note>
+      </trans-unit>
+      <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html">
+        <source>Found a bug or have a suggestion?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">About bug prefix</note>
+      </trans-unit>
+      <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html">
+        <source>to create an issue!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">About bug suffix</note>
+      </trans-unit>
+      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
+        <source>Installed version:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">Version label</note>
+      </trans-unit>
+      <trans-unit id="effdc7dfbbc49c08d25ea1748fca00c38c918abd" datatype="html">
+        <source>View latest update</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">View latest update</note>
+      </trans-unit>
+      <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
+        <source>About</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/app.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">About menu label</note>
       </trans-unit>
       <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html">
         <source>Home</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <note priority="1" from="description">Navigation menu Home Page title</note>
       </trans-unit>
@@ -794,14 +1086,6 @@
         </context-group>
         <note priority="1" from="description">Subscription type property</note>
       </trans-unit>
-      <trans-unit id="c52db455cca9109ee47e1a612c3f4117c09eb71b" datatype="html">
-        <source>URL:</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
-          <context context-type="linenumber">9</context>
-        </context-group>
-        <note priority="1" from="description">Subscription URL property</note>
-      </trans-unit>
       <trans-unit id="a44d86aa1e6c20ced07aca3a7c081d8db9ded1c6" datatype="html">
         <source>Archive:</source>
         <context-group purpose="location">
@@ -809,14 +1093,6 @@
           <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">Subscription ID property</note>
-      </trans-unit>
-      <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
-        <source>Close</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
-          <context context-type="linenumber">23</context>
-        </context-group>
-        <note priority="1" from="description">Close subscription info button</note>
       </trans-unit>
       <trans-unit id="8efc77bf327659c0fec1f518cf48a98cdcd9dddf" datatype="html">
         <source>Export Archive</source>
@@ -886,7 +1162,7 @@
         <source>Search</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscription/subscription/subscription.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <note priority="1" from="description">Subscription videos search placeholder</note>
       </trans-unit>
@@ -902,7 +1178,7 @@
         <source>Delete and redownload</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscription/subscription-file-card/subscription-file-card.component.html</context>
-          <context context-type="linenumber">7</context>
+          <context context-type="linenumber">8</context>
         </context-group>
         <note priority="1" from="description">Delete and redownload subscription video button</note>
       </trans-unit>
@@ -910,7 +1186,7 @@
         <source>Delete forever</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscription/subscription-file-card/subscription-file-card.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">Delete forever subscription video button</note>
       </trans-unit>
