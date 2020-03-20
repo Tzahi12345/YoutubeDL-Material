@@ -393,8 +393,9 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
 
         for (let i = 0; i < fileNames.length; i++) {
             let fileName = fileNames[i];
+            let fileNamePathRemoved = path.parse(fileName).base;
             let file_path = !fullPathProvided ? zipFolderPath + fileName + ext : fileName;
-            archive.file(file_path, {name: fileName + ext})
+            archive.file(file_path, {name: fileNamePathRemoved + ext})
         }
 
         await archive.finalize();
@@ -744,6 +745,7 @@ app.post('/api/tomp3', async function(req, res) {
     let downloadConfig = null;
     let qualityPath = '-f bestaudio';
 
+    let merged_path = null;
     let merged_string = null;
 
     if (customArgs) {
@@ -788,7 +790,8 @@ app.post('/api/tomp3', async function(req, res) {
                 fs.closeSync(fs.openSync(blacklist_path, 'w'));
             }
 
-            let merged_path = audioFolderPath + 'merged.txt';
+            // creates merged folder
+            merged_path = audioFolderPath + `merged_${uuid()}.txt`;
             // merges blacklist and regular archive
             let inputPathList = [archive_path, blacklist_path];
             let status = await mergeFiles(inputPathList, merged_path);
@@ -853,9 +856,10 @@ app.post('/api/tomp3', async function(req, res) {
             let is_playlist = file_names.length > 1;
 
             if (merged_string !== null) {
-                let current_merged_archive = fs.readFileSync(audioFolderPath + 'merged.txt', 'utf8');
+                let current_merged_archive = fs.readFileSync(merged_path, 'utf8');
                 let diff = current_merged_archive.replace(merged_string, '');
                 fs.appendFileSync(audioFolderPath + 'archive.txt', diff);
+                fs.unlinkSync(merged_path)
             }
 
             var audiopathEncoded = encodeURIComponent(file_names[0]);
