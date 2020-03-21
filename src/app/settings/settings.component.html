@@ -132,7 +132,7 @@
             </div>
             <div class="col-12">
                 <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']"><ng-container i18n="Require pin for settings setting">Require pin for settings</ng-container></mat-checkbox>
-                <button mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']"><ng-container i18n="Set new pin button">Set New Pin</ng-container></button>
+                <button style="margin-left: 15px;" mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']"><ng-container i18n="Set new pin button">Set New Pin</ng-container></button>
             </div>
         </div>
     </div>
