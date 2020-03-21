@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { PostsService } from 'app/posts.services';
-import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-check-or-set-pin-dialog',
