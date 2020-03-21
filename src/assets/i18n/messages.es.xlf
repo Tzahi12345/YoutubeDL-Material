@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd" xmlns:soluling="http://www.soluling.com">
   <file original="..\Documents\YoutubeDL-Material\src\assets\i18n\messages.en.xlf" source-language="en-US" target-language="es" datatype="plaintext">
     <body>
         <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6">
@@ -27,6 +27,69 @@
           <source>Videos</source>
           <target state="translated" state-qualifier="leveraged-glossary">Archivos de video</target>
           <nt:scannedcomment>Videos title</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40">
+          <source>Modify youtube-dl args</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Modificar args de youtube-dl</target>
+          <nt:scannedcomment>Modify args title</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="7fc1946abe2b40f60059c6cd19975d677095fd19">
+          <source>Simulated new args</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Args nuevos simulados</target>
+          <nt:scannedcomment>Simulated args title</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570">
+          <source>Add an arg</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Añadir un arg</target>
+          <nt:scannedcomment>Add arg card title</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23">
+          <source>Search by category</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Busqueda por categoria</target>
+          <nt:scannedcomment>Search args by category button</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377">
+          <source>Use arg value</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Usar valor de arg</target>
+          <nt:scannedcomment>Use arg value checkbox</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd">
+          <source>Arg value</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Valor de arg</target>
+          <nt:scannedcomment>Arg value placeholder</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b">
+          <source>Add arg</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Añadir arg</target>
+          <nt:scannedcomment>Search args by category button</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7">
+          <source>Cancel</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Cancelar</target>
+          <nt:scannedcomment>Arg modifier cancel button</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974">
+          <source>Modify</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Modificar</target>
+          <nt:scannedcomment>Arg modifier modify button</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
@@ -228,7 +291,7 @@
         </trans-unit>
         <trans-unit id="616e206cb4f25bd5885fc35925365e43cf5fb929">
           <source>Name:</source>
-          <target state="translated">Nombre:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Nombre:</target>
           <nt:scannedcomment>Video name property</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
@@ -242,28 +305,28 @@
         </trans-unit>
         <trans-unit id="c6eb45d085384903e53ab001a3513d1de6a1dbac">
           <source>Uploader:</source>
-          <target state="translated">Cargador:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Cargador:</target>
           <nt:scannedcomment>Video ID property</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
         <trans-unit id="109c6f4a5e46efb933612ededfaf52a13178b7e0">
           <source>File size:</source>
-          <target state="translated">Tamaño del archivo:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Tamaño del archivo:</target>
           <nt:scannedcomment>Video file size property</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
         <trans-unit id="bd630d8669b16e5f264ec4649d9b469fe03e5ff4">
           <source>Path:</source>
-          <target state="translated">Ruta:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Ruta:</target>
           <nt:scannedcomment>Video path property</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
         <trans-unit id="a67e7d843cef735c79d5ef1c8ba4af3e758912bb">
           <source>Upload Date:</source>
-          <target state="translated">Subido:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Subido:</target>
           <nt:scannedcomment>Video upload date property</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
@@ -284,14 +347,14 @@
         </trans-unit>
         <trans-unit id="e684046d73bcee88e82f7ff01e2852789a05fc32">
           <source>Count:</source>
-          <target state="translated">Cuenta:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Cuenta:</target>
           <nt:scannedcomment>Playlist video count</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
         <trans-unit id="321e4419a943044e674beb55b8039f42a9761ca5">
           <source>Info</source>
-          <target state="translated">Información</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Información</target>
           <nt:scannedcomment>Video info button</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
@@ -305,7 +368,7 @@
         </trans-unit>
         <trans-unit id="34504b488c24c27e68089be549f0eeae6ebaf30b">
           <source>Delete and blacklist</source>
-          <target state="translated">Eliminar y pones en la lista negra</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Eliminar y pones en la lista negra</target>
           <nt:scannedcomment>Delete and blacklist video button</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
@@ -471,6 +534,20 @@
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
+        <trans-unit id="d8b47221b5af9e9e4cd5cb434d76fc0c91611409">
+          <source>Require pin for settings</source>
+          <target state="translated">Requiere pin para la configuración</target>
+          <nt:scannedcomment>Require pin for settings setting</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="f5ec7b2cdf87d41154f4fcbc86e856314409dcb9">
+          <source>Set New Pin</source>
+          <target state="translated">Establecer nuevo pin</target>
+          <nt:scannedcomment>Set new pin button</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
         <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4">
           <source>API</source>
           <target state="translated" state-qualifier="leveraged-glossary">API</target>
@@ -590,6 +667,62 @@
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
+        <trans-unit id="0feab442129ba239106e55cf029069d3d4adeadc">
+          <source>Extensions</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Extensiones</target>
+          <nt:scannedcomment>Extensions settings title</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7">
+          <source>Click here</source>
+          <target state="translated" state-qualifier="leveraged-glossary">¡Haga clic aquí</target>
+          <nt:scannedcomment>Chrome ext click here</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="7f09776373995003161235c0c8d02b7f91dbc4df">
+          <source>to download the official YoutubeDL-Material Chrome extension manually.</source>
+          <target state="translated" state-qualifier="leveraged-glossary">para descargar la extensión Chrome oficial de YoutubeDL-Material manualmente.</target>
+          <nt:scannedcomment>Chrome click here suffix</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="5b5296423906ab3371fdb2b5a5aaa83acaa2ee52">
+          <source>You must manually load the extension and modify the extension's settings to set the frontend URL.</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Debe cargar manualmente la extensión y modificar la configuración de la extensión para establecer la URL de la interfaz.</target>
+          <nt:scannedcomment>Chrome setup suffix</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="9a2ec6da48771128384887525bdcac992632c863">
+          <source>to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</source>
+          <target state="translated" state-qualifier="leveraged-glossary">para instalar la extensión Firefox oficial de YoutubeDL-Material directamente desde la página de extensiones de Firefox.</target>
+          <nt:scannedcomment>Firefox click here suffix</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="eb81be6b49e195e5307811d1d08a19259d411f37">
+          <source>Detailed setup instructions.</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Instrucciones detalladas de configuración.</target>
+          <nt:scannedcomment>Firefox setup prefix link</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="cb17ff8fe3961cf90f44bee97c88a3f3347a7e55">
+          <source>Not much is required other than changing the extension's settings to set the frontend URL.</source>
+          <target state="translated" state-qualifier="leveraged-glossary">No se requiere mucho más que cambiar la configuración de la extensión para establecer la URL de la interfaz.</target>
+          <nt:scannedcomment>Firefox setup suffix</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
+        <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2">
+          <source>Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</source>
+          <target state="translated" state-qualifier="leveraged-glossary">Arrastra el enlace de abajo a tus marcadores, ¡y listo! Simplemente navegue hasta el video de YouTube que desea descargar y haga clic en el marcador.</target>
+          <nt:scannedcomment>Bookmarklet instructions</nt:scannedcomment>
+          <nt:datatype>string</nt:datatype>
+          <nt:rowstatus>rsNew</nt:rowstatus>
+        </trans-unit>
         <trans-unit id="bc2e854e111ecf2bd7db170da5e3c2ed08181d88">
           <source>Advanced</source>
           <target state="translated" state-qualifier="leveraged-glossary">Avanzado</target>
@@ -619,13 +752,6 @@
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
-        <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7">
-          <source>Cancel</source>
-          <target state="translated" state-qualifier="leveraged-glossary">Cancelar</target>
-          <nt:scannedcomment>Settings cancel button</nt:scannedcomment>
-          <nt:datatype>string</nt:datatype>
-          <nt:rowstatus>rsNew</nt:rowstatus>
-        </trans-unit>
         <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e">
           <source>About YoutubeDL-Material</source>
           <target state="translated" state-qualifier="leveraged-glossary">Sobre YoutubeDL-Material</target>
@@ -651,13 +777,6 @@
           <source>Found a bug or have a suggestion?</source>
           <target state="translated" state-qualifier="leveraged-glossary">¿Encontró un error o tiene una sugerencia?</target>
           <nt:scannedcomment>About bug prefix</nt:scannedcomment>
-          <nt:datatype>string</nt:datatype>
-          <nt:rowstatus>rsNew</nt:rowstatus>
-        </trans-unit>
-        <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7">
-          <source>Click here</source>
-          <target state="translated" state-qualifier="leveraged-glossary">¡Haga clic aquí</target>
-          <nt:scannedcomment>About bug click here</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>
         </trans-unit>
@@ -824,7 +943,7 @@
         </trans-unit>
         <trans-unit id="2054791b822475aeaea95c0119113de3200f5e1c">
           <source>Length:</source>
-          <target state="translated">Duración:</target>
+          <target state="translated" state-qualifier="leveraged-glossary">Duración:</target>
           <nt:scannedcomment>Video duration label</nt:scannedcomment>
           <nt:datatype>string</nt:datatype>
           <nt:rowstatus>rsNew</nt:rowstatus>

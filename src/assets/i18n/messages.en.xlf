@@ -102,7 +102,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">285</context>
+          <context context-type="linenumber">289</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
@@ -650,7 +650,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">211</context>
         </context-group>
         <note priority="1" from="description">Use youtubedl archive setting</note>
       </trans-unit>
@@ -702,11 +702,27 @@
         </context-group>
         <note priority="1" from="description">Allow multi-downloade mode setting</note>
       </trans-unit>
+      <trans-unit id="d8b47221b5af9e9e4cd5cb434d76fc0c91611409" datatype="html">
+        <source>Require pin for settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">134</context>
+        </context-group>
+        <note priority="1" from="description">Require pin for settings setting</note>
+      </trans-unit>
+      <trans-unit id="f5ec7b2cdf87d41154f4fcbc86e856314409dcb9" datatype="html">
+        <source>Set New Pin</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">135</context>
+        </context-group>
+        <note priority="1" from="description">Set new pin button</note>
+      </trans-unit>
       <trans-unit id="e351b40b3869a5c7d19c3d4918cb1ac7aaab95c4" datatype="html">
         <source>API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">141</context>
+          <context context-type="linenumber">145</context>
         </context-group>
         <note priority="1" from="description">API settings title</note>
       </trans-unit>
@@ -714,7 +730,7 @@
         <source>Use YouTube API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <note priority="1" from="description">Use YouTube API setting</note>
       </trans-unit>
@@ -722,7 +738,7 @@
         <source>Youtube API Key</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">155</context>
         </context-group>
         <note priority="1" from="description">Youtube API Key setting placeholder</note>
       </trans-unit>
@@ -730,7 +746,7 @@
         <source>Generating a key is easy!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">156</context>
         </context-group>
         <note priority="1" from="description">Youtube API Key setting hint</note>
       </trans-unit>
@@ -738,7 +754,7 @@
         <source>Themes</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">167</context>
         </context-group>
         <note priority="1" from="description">Themes settings title</note>
       </trans-unit>
@@ -746,7 +762,7 @@
         <source>Default</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">174</context>
         </context-group>
         <note priority="1" from="description">Default theme label</note>
       </trans-unit>
@@ -754,7 +770,7 @@
         <source>Dark</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">175</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
@@ -766,7 +782,7 @@
         <source>Allow theme change</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">176</context>
+          <context context-type="linenumber">180</context>
         </context-group>
         <note priority="1" from="description">Allow theme change setting</note>
       </trans-unit>
@@ -774,7 +790,7 @@
         <source>Subscriptions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">190</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
@@ -786,7 +802,7 @@
         <source>Allow subscriptions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">192</context>
+          <context context-type="linenumber">196</context>
         </context-group>
         <note priority="1" from="description">Allow subscriptions setting</note>
       </trans-unit>
@@ -794,7 +810,7 @@
         <source>Subscriptions base path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">196</context>
+          <context context-type="linenumber">200</context>
         </context-group>
         <note priority="1" from="description">Subscriptions base path input setting placeholder</note>
       </trans-unit>
@@ -802,7 +818,7 @@
         <source>Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material&apos;s root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">197</context>
+          <context context-type="linenumber">201</context>
         </context-group>
         <note priority="1" from="description">Subscriptions base path setting input hint</note>
       </trans-unit>
@@ -810,7 +826,7 @@
         <source>Check interval</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">202</context>
+          <context context-type="linenumber">206</context>
         </context-group>
         <note priority="1" from="description">Check interval input setting placeholder</note>
       </trans-unit>
@@ -818,7 +834,7 @@
         <source>Unit is seconds, only include numbers.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">203</context>
+          <context context-type="linenumber">207</context>
         </context-group>
         <note priority="1" from="description">Check interval setting input hint</note>
       </trans-unit>
@@ -826,7 +842,7 @@
         <source>With youtube-dl&apos;s archive</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">208</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <note priority="1" from="description">youtube-dl archive explanation prefix link</note>
       </trans-unit>
@@ -834,7 +850,7 @@
         <source>feature, downloaded videos from your subscriptions get recorded in a text file in the subscriptions archive sub-directory.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">208</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <note priority="1" from="description">youtube-dl archive explanation middle</note>
       </trans-unit>
@@ -842,7 +858,7 @@
         <source>This enables the ability to permanently delete videos from your subscriptions without unsubscribing, and allows you to record which videos you downloaded in case of data loss.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">209</context>
+          <context context-type="linenumber">213</context>
         </context-group>
         <note priority="1" from="description">youtube-dl archive explanation suffix</note>
       </trans-unit>
@@ -850,7 +866,7 @@
         <source>Extensions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">219</context>
+          <context context-type="linenumber">223</context>
         </context-group>
         <note priority="1" from="description">Extensions settings title</note>
       </trans-unit>
@@ -858,11 +874,11 @@
         <source>Click here</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">226</context>
+          <context context-type="linenumber">230</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="linenumber">236</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
@@ -874,7 +890,7 @@
         <source>to download the official YoutubeDL-Material Chrome extension manually.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">226</context>
+          <context context-type="linenumber">230</context>
         </context-group>
         <note priority="1" from="description">Chrome click here suffix</note>
       </trans-unit>
@@ -882,7 +898,7 @@
         <source>You must manually load the extension and modify the extension&apos;s settings to set the frontend URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">227</context>
+          <context context-type="linenumber">231</context>
         </context-group>
         <note priority="1" from="description">Chrome setup suffix</note>
       </trans-unit>
@@ -890,7 +906,7 @@
         <source>to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="linenumber">236</context>
         </context-group>
         <note priority="1" from="description">Firefox click here suffix</note>
       </trans-unit>
@@ -898,7 +914,7 @@
         <source>Detailed setup instructions.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">233</context>
+          <context context-type="linenumber">237</context>
         </context-group>
         <note priority="1" from="description">Firefox setup prefix link</note>
       </trans-unit>
@@ -906,7 +922,7 @@
         <source>Not much is required other than changing the extension&apos;s settings to set the frontend URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">233</context>
+          <context context-type="linenumber">237</context>
         </context-group>
         <note priority="1" from="description">Firefox setup suffix</note>
       </trans-unit>
@@ -914,7 +930,7 @@
         <source>Drag the link below to your bookmarks, and you&apos;re good to go! Just navigate to the YouTube video you&apos;d like to download, and click the bookmark.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">238</context>
+          <context context-type="linenumber">242</context>
         </context-group>
         <note priority="1" from="description">Bookmarklet instructions</note>
       </trans-unit>
@@ -922,7 +938,7 @@
         <source>Advanced</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">251</context>
+          <context context-type="linenumber">255</context>
         </context-group>
         <note priority="1" from="description">Advanced settings title</note>
       </trans-unit>
@@ -930,7 +946,7 @@
         <source>Use default downloading agent</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">257</context>
+          <context context-type="linenumber">261</context>
         </context-group>
         <note priority="1" from="description">Use default downloading agent setting</note>
       </trans-unit>
@@ -938,7 +954,7 @@
         <source>Allow advanced download</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">272</context>
+          <context context-type="linenumber">276</context>
         </context-group>
         <note priority="1" from="description">Allow advanced downloading setting</note>
       </trans-unit>
@@ -946,7 +962,7 @@
         <source>Save</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">282</context>
+          <context context-type="linenumber">286</context>
         </context-group>
         <note priority="1" from="description">Settings save button</note>
       </trans-unit>

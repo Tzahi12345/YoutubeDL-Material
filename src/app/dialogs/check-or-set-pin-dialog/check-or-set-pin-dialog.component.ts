@@ -23,7 +23,6 @@ export class CheckOrSetPinDialogComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
-      console.log('is reset mode');
       this.resetMode = this.data.resetMode;
     }
 

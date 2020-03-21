@@ -131,8 +131,8 @@
                 <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_multi_download_mode']"><ng-container i18n="Allow multi-downloade mode setting">Allow multi-download mode</ng-container></mat-checkbox>
             </div>
             <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']">Require pin for settings</mat-checkbox>
-                <button mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']">Set New Pin</button>
+                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']"><ng-container i18n="Require pin for settings setting">Require pin for settings</ng-container></mat-checkbox>
+                <button mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']"><ng-container i18n="Set new pin button">Set New Pin</ng-container></button>
             </div>
         </div>
     </div>
