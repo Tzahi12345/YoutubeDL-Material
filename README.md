@@ -88,8 +88,8 @@ Finally, port forward the port specified in the config (defaults to `17442`) and
 
 If you are looking to setup YoutubeDL-Material with Docker, this section is for you. And you're in luck! Docker setup is quite simple.
 
-1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml -o docker-compose.yml` to download the latest release of `docker-compose.yml`, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
-2. Modify the config items in the `environment` section of `docker-compose.yml` to your liking. The default options will work, however, and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
+1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/youtubedl-material-docker.zip -o youtubedl-material-docker.zip` to download the latest Docker zip release, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
+2. Modify the config items in the `appdata` folder to your liking. The default options will work, however, and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
 3. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
 4. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar. 
 5. Make sure you can connect to the specified URL + port, and if so, you are done!
