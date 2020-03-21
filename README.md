@@ -10,21 +10,21 @@ Check out the prerequisites, and go to the installation section. Easy as pie!
 
 Here's an image of what it'll look like once you're done:
 
-![frontpage](https://i.imgur.com/rOxWIys.png)
+![frontpage](https://i.imgur.com/w8iofbb)
 
 With optional file management enabled (default):
 
-![frontpage_with_files](https://i.imgur.com/UTUROLl.png)
+![frontpage_with_files](https://i.imgur.com/FTATqBM)
 
 Dark mode:
 
-![dark_mode](https://i.imgur.com/9TMkHF6.png?1)
+![dark_mode](https://i.imgur.com/r5ZtBqd)
 
 ### Prerequisites
 
 NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker) section for a setup guide.
 
-You need to have a functioning web server for this to work. Also make sure you have these dependencies installed on your system: nodejs and youtube-dl. If you don't, run this command:
+Make sure you have these dependencies installed on your system: nodejs and youtube-dl. If you don't, run this command:
 
 ```
 sudo apt-get install nodejs youtube-dl
@@ -34,7 +34,7 @@ sudo apt-get install nodejs youtube-dl
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
 
-2. Drag the `youtubedl-material` directory to an easily accessible directory. Navigate to the `config` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
+2. Drag the `youtubedl-material` directory to an easily accessible directory. Navigate to the `appdata` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
 
 NOTE: If you are intending to use a reverse proxy, this next step is not necessary
 
@@ -72,15 +72,15 @@ Here is an explanation for the configuration entries. Check out the [default con
 | custom_downloading_agent | If not using the default downloader, this is the downloader you want to use | "" |
 | allow_advanced_download | true if you want to use the Advanced download options | false |
 
-## Deployment
+## Build it yourself
 
 If you'd like to install YoutubeDL-Material, go to the Installation section. If you want to build it yourself and/or develop the repository, then this section is for you.
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/config`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
 
-The frontend is now complete. The backend is much easier. Just go into the `youtubedl-material` folder, and type `nodejs app.js`.
+The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `nodejs app.js`.
 
 Finally, port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
 
@@ -96,7 +96,7 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 
 ## API
 
-View how to use the backend API on the [API Wiki page]().
+View how to use the backend API on the [API Wiki page](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/API).
 
 ## Contributing
 
