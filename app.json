@@ -1,0 +1,7 @@
+{
+    "name": "YoutubeDL-Material",
+    "description": "An open-source and self-hosted YouTube downloader based on Google's Material Design specifications.",
+    "repository": "https://github.com/Tzahi12345/YoutubeDL-Material",
+    "logo": "https://i.imgur.com/GPzvPiU.png",
+    "keywords": ["youtube-dl", "youtubedl-material", "nodejs"]
+  }
