@@ -48,6 +48,7 @@ import { SubscriptionComponent } from './subscription//subscription/subscription
 import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
+import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 
 import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
@@ -74,6 +75,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SubscriptionFileCardComponent,
     SubscriptionInfoDialogComponent,
     SettingsComponent,
+    CheckOrSetPinDialogComponent,
     AboutDialogComponent,
     VideoInfoDialogComponent,
     ArgModifierDialogComponent,
@@ -120,6 +122,14 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     RouterModule,
     AppRoutingModule,
   ],
+  entryComponents: [
+    InputDialogComponent,
+    CreatePlaylistComponent,
+    SubscribeDialogComponent,
+    SubscriptionInfoDialogComponent,
+    SettingsComponent,
+    CheckOrSetPinDialogComponent
+  ],
   providers: [
     PostsService
   ],
@@ -128,4 +138,5 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

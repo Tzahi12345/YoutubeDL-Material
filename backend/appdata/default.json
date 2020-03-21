@@ -20,7 +20,8 @@
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
-        "allow_multi_download_mode": true
+        "allow_multi_download_mode": true,
+        "settings_pin_required": false
       },
       "API": {
         "use_youtube_API": false,

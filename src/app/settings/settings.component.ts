@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
+import { CheckOrSetPinDialogComponent } from 'app/dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 import { isoLangs } from './locales_list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -56,6 +57,14 @@ export class SettingsComponent implements OnInit {
     }, err => {
       console.error('Failed to save config!');
     })
+  }
+
+  setNewPin() {
+    const dialogRef = this.dialog.open(CheckOrSetPinDialogComponent, {
+      data: {
+        resetMode: true
+      }
+    });
   }
 
   localeSelectChanged(new_val) {

@@ -10,6 +10,7 @@ var bodyParser = require("body-parser");
 var archiver = require('archiver');
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
+var md5 = require('md5');
 const NodeID3 = require('node-id3')
 const downloader = require('youtube-dl/lib/downloader')
 const fetch = require('node-fetch');
@@ -33,7 +34,8 @@ db.defaults(
             video: []
         },
         configWriteFlag: false,
-        subscriptions: []
+        subscriptions: [],
+        pin_md5: ''
 }).write();
 
 // config values
@@ -1432,6 +1434,47 @@ app.post('/api/downloadArchive', async (req, res) => {
         res.sendStatus(404);
     }
 
+});
+
+app.post('/api/isPinSet', async (req, res) => {
+    let stored_pin = db.get('pin_md5').value();
+    let is_set = false;
+    if (!stored_pin || stored_pin.length === 0) {
+    } else {
+        is_set = true;
+    }
+
+    res.send({
+        is_set: is_set
+    });
+});
+
+app.post('/api/setPin', async (req, res) => {
+    let unhashed_pin = req.body.pin;
+    let hashed_pin = md5(unhashed_pin);
+
+    db.set('pin_md5', hashed_pin).write();
+
+    res.send({
+        success: true
+    });
+});
+
+app.post('/api/checkPin', async (req, res) => {
+    let input_pin = req.body.input_pin;
+    let input_pin_md5 = md5(input_pin);
+
+    let stored_pin = db.get('pin_md5').value();
+
+    let successful = false;
+    
+    if (input_pin_md5 === stored_pin) {
+        successful = true;
+    }
+
+    res.send({
+        success: successful
+    });
 });
 
 app.get('/api/video/:id', function(req , res){

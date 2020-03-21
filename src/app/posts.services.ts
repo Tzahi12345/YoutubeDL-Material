@@ -131,6 +131,18 @@ export class PostsService {
         return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode});
     }
 
+    isPinSet() {
+        return this.http.post(this.path + 'isPinSet', {});
+    }
+
+    setPin(unhashed_pin) {
+        return this.http.post(this.path + 'setPin', {pin: unhashed_pin});
+    }
+
+    checkPin(unhashed_pin) {
+        return this.http.post(this.path + 'checkPin', {input_pin: unhashed_pin});
+    }
+
     createPlaylist(playlistName, fileNames, type, thumbnailURL) {
         return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
                                                             fileNames: fileNames,

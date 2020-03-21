@@ -62,6 +62,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_allow_multi_download_mode',
         'path': 'YoutubeDLMaterial.Extra.allow_multi_download_mode'
     },
+    'ytdl_settings_pin_required': {
+        'key': 'ytdl_settings_pin_required',
+        'path': 'YoutubeDLMaterial.Extra.settings_pin_required'
+    },
 
     // API
     'ytdl_use_youtube_api': {
