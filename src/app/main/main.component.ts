@@ -4,7 +4,8 @@ import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatSnackBar, MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
@@ -19,6 +20,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
+import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
@@ -41,7 +43,7 @@ export interface Download {
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
-  youtubeAuthDisabledOverride = true;
+  youtubeAuthDisabledOverride = false;
 
   iOS = false;
 
@@ -71,6 +73,7 @@ export class MainComponent implements OnInit {
   allowMultiDownloadMode = false;
   audioFolderPath;
   videoFolderPath;
+  use_youtubedl_archive = false;
   globalCustomArgs = null;
   allowAdvancedDownload = false;
   useDefaultDownloadingAgent = true;
@@ -192,7 +195,7 @@ export class MainComponent implements OnInit {
   selectedQuality = '';
   formats_loading = false;
 
-  @ViewChild('urlinput', { read: ElementRef, static: false }) urlInput: ElementRef;
+  @ViewChild('urlinput', { read: ElementRef }) urlInput: ElementRef;
   @ViewChildren('audiofilecard') audioFileCards: QueryList<FileCardComponent>;
   @ViewChildren('videofilecard') videoFileCards: QueryList<FileCardComponent>;
   last_valid_url = '';
@@ -212,14 +215,6 @@ export class MainComponent implements OnInit {
   constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
-
-    this.configLoad();
-
-    this.postsService.settings_changed.subscribe(changed => {
-      if (changed) {
-        this.loadConfig();
-      }
-    });
   }
 
   async configLoad() {
@@ -240,6 +235,7 @@ export class MainComponent implements OnInit {
       this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
+      this.use_youtubedl_archive = result['YoutubeDLMaterial']['Downloader']['use_youtubedl_archive'];
       this.globalCustomArgs = result['YoutubeDLMaterial']['Downloader']['custom_args'];
       this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'] &&
           result['YoutubeDLMaterial']['API']['youtube_API_key'];
@@ -296,6 +292,14 @@ export class MainComponent implements OnInit {
 
   // app initialization.
   ngOnInit() {
+    this.configLoad();
+
+    this.postsService.settings_changed.subscribe(changed => {
+      if (changed) {
+        this.loadConfig();
+      }
+    });
+
     this.iOS = this.platform.IOS;
 
     // get checkboxes
@@ -474,7 +478,7 @@ export class MainComponent implements OnInit {
           this.downloadAudioFile(decodeURI(name));
         }
       } else {
-        localStorage.setItem('player_navigator', this.router.url);
+        localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
         } else {
@@ -512,7 +516,7 @@ export class MainComponent implements OnInit {
           this.downloadVideoFile(decodeURI(name));
         }
       } else {
-        localStorage.setItem('player_navigator', this.router.url);
+        localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
         } else {
@@ -593,6 +597,8 @@ export class MainComponent implements OnInit {
           }
         }, error => { // can't access server
           this.downloadingfile = false;
+          this.current_download = null;
+          new_download['downloading'] = false;
           this.openSnackBar('Download failed!', 'OK.');
         });
       } else {
@@ -625,6 +631,8 @@ export class MainComponent implements OnInit {
           }
         }, error => { // can't access server
           this.downloadingfile = false;
+          this.current_download = null;
+          new_download['downloading'] = false;
           this.openSnackBar('Download failed!', 'OK.');
       });
       }
@@ -878,6 +886,10 @@ export class MainComponent implements OnInit {
       full_string_array.push(...additional_params);
     }
 
+    if (this.use_youtubedl_archive) {
+      full_string_array.push('--download-archive', 'archive.txt');
+    }
+
     if (globalArgsExists) {
       full_string_array = full_string_array.concat(this.globalCustomArgs.split(' '));
     }
@@ -1074,6 +1086,20 @@ export class MainComponent implements OnInit {
         this.openSnackBar('Successfully created playlist!', '');
       } else if (result === false) {
         this.openSnackBar('ERROR: failed to create playlist!', '');
+      }
+    });
+  }
+
+  // modify custom args
+  openArgsModifierDialog() {
+    const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
+      data: {
+       initial_args: this.customArgs
+      }
+    });
+    dialogRef.afterClosed().subscribe(new_args => {
+      if (new_args) {
+       this.customArgs = new_args;
       }
     });
   }

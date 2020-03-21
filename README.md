@@ -1,6 +1,6 @@
 # YoutubeDL-Material
 
-YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 8](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 9](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
 Now with [Docker](#Docker) support!
 
@@ -96,17 +96,7 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 
 ## API
 
-You can use the internal API on your server to run downloads on your instance without using the frontend. All of the available endpoints can be seen over [here](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/backend/app.js) -- search for '/api/' on the page to find all the endpoints. I will expand on the available endpoints in the future, but for now I'd like to highlight the two most useful ones:
-
-#### Downloading audio files 
-`curl -XPOST -H "Content-type: application/json" -d '{"url": "<your youtube url>"}' 'http://localhost:17442/api/tomp3'`
-
-Remember to replace `<your video url>` with the actual URL. 
-
-#### Downloading video files
-`curl -XPOST -H "Content-type: application/json" -d '{"url": "<your youtube url>"}' 'http://localhost:17442/api/tomp4'`
-
-Remember to replace `<your video url>` with the actual URL. 
+View how to use the backend API on the [API Wiki page]().
 
 ## Contributing
 

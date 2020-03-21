@@ -7,10 +7,17 @@
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "es": "src/locale/messages.es.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -30,6 +37,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -45,6 +58,9 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "es": {
+              "localize": ["es"]
             }
           }
         },
@@ -56,6 +72,9 @@
           "configurations": {
             "production": {
               "browserTarget": "youtube-dl-material:build:production"
+            },
+            "es": {
+              "browserTarget": "youtube-dl-material:build:es"
             }
           }
         },
@@ -176,7 +195,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "scss"
+      "style": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "app"

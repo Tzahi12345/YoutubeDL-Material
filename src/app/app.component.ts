@@ -4,7 +4,9 @@ import {FileCardComponent} from './file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatSnackBar, MatDialog, MatSidenav} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mapTo';
@@ -20,6 +22,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
 import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
+import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -39,8 +42,8 @@ export class AppComponent implements OnInit {
   // defaults to true to prevent attack
   settingsPinRequired = true;
 
-  @ViewChild('sidenav', {static: false}) sidenav: MatSidenav;
-  @ViewChild('hamburgerMenu', {static: false, read: ElementRef}) hamburgerMenuButton: ElementRef;
+  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('hamburgerMenu', { read: ElementRef }) hamburgerMenuButton: ElementRef;
   navigator: string = null;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
@@ -183,7 +186,14 @@ onSetTheme(theme, old_theme) {
       if (res) {
         this.actuallyOpenSettingsDialog();
       }
-    })
+    });
+
+  }
+
+  openAboutDialog() {
+    const dialogRef = this.dialog.open(AboutDialogComponent, {
+      width: '80vw'
+    });
   }
 
 }

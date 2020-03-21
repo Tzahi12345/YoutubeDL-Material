@@ -2,7 +2,7 @@
 <div class="big demo-basic">
     <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
         <mat-card-title>
-            Youtube Downloader
+            <ng-container i18n="Youtube downloader home page label">Youtube Downloader</ng-container>
         </mat-card-title>
         <mat-card-content>
             <div style="position: relative;">
@@ -12,13 +12,19 @@
                             <div [ngClass]="allowQualitySelect ? 'col-sm-9' : null" class="col-12">
                                 <mat-form-field color="accent" class="example-full-width">
                                     <input style="padding-right: 25px;" matInput  (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" [formControl]="urlForm" required #urlinput>
-                                    <mat-error *ngIf="urlError || urlForm.invalid">Please enter a valid URL!</mat-error>
+                                    <mat-error *ngIf="urlError || urlForm.invalid">
+                                        <ng-container i18n="Enter valid URL error">Please enter a valid URL!</ng-container>
+                                    </mat-error>
                                     <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
                                 </mat-form-field>
                             </div>
                             <div *ngIf="allowQualitySelect" class="col-7 col-sm-3">
                                 <mat-form-field color="accent" style="display: inline-block; width: inherit; min-width: 120px;">
-                                    <mat-label>Quality</mat-label>
+                                    <mat-label>
+                                        <ng-container i18n="Quality select label">
+                                            Quality
+                                        </ng-container>
+                                    </mat-label>
                                     <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality">
                                       <ng-container *ngFor="let option of qualityOptions[(audioOnly) ? 'audio' : 'video']">
                                         <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats'] && cachedAvailableFormats[url]['formats'][(audioOnly) ? 'audio' : 'video'][option.value]" [value]="option.value">
@@ -42,22 +48,43 @@
                                 <div style="font-size: 12px; margin-bottom: 10px;">
                                     {{result.uploaded}}
                                 </div>
-                                <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">Use URL</button>
-                                <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">View</button>
+                                <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">
+                                    <ng-container i18n="YT search Use URL button for searched video">Use URL</ng-container>
+                                </button>
+                                <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">
+                                    <ng-container i18n="YT search View button for searched video">
+                                        View
+                                    </ng-container>
+                                </button>
                             </mat-card>
                         </span>
                     </div>
                 </form>
                 <br/>
-                <mat-checkbox [disabled]="current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">Only Audio</mat-checkbox>
-                <mat-checkbox *ngIf="allowMultiDownloadMode" [disabled]="current_download" (change)="multiDownloadModeChanged($event)" [(ngModel)]="multiDownloadMode" style="float: right; margin-top: -12px">Multi-download mode</mat-checkbox>
+                <mat-checkbox [disabled]="current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">
+                    <ng-container i18n="Only Audio checkbox">
+                        Only Audio
+                    </ng-container>
+                </mat-checkbox>
+                <mat-checkbox *ngIf="allowMultiDownloadMode" [disabled]="current_download" (change)="multiDownloadModeChanged($event)" [(ngModel)]="multiDownloadMode" style="float: right; margin-top: -12px">
+                    <ng-container i18n="Multi-download Mode checkbox">
+                        Multi-download Mode
+                    </ng-container>
+                </mat-checkbox>
                 
             </div>
         </mat-card-content>
         <mat-card-actions>
-            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-stroked-button
-                color="accent">Download</button>
-                <button (click)="cancelDownload()" style="float: right" *ngIf="!!current_download" mat-stroked-button color="warn">Cancel</button>
+            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-stroked-button color="accent">
+                <ng-container i18n="Main download button">
+                    Download
+                </ng-container>
+            </button>
+            <button (click)="cancelDownload()" style="float: right" *ngIf="!!current_download" mat-stroked-button color="warn">
+                <ng-container i18n="Cancel download button">
+                    Cancel
+                </ng-container>
+            </button>
         </mat-card-actions>
     </mat-card>
 </div>
@@ -66,35 +93,61 @@
         <mat-expansion-panel class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    Advanced
+                    <ng-container i18n="Advanced download mode panel">
+                        Advanced
+                    </ng-container>
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <p *ngIf="this.simulatedOutput">Simulated command: <i>{{this.simulatedOutput}}</i></p>
+            <p *ngIf="this.simulatedOutput">
+                <ng-container i18n="Simulated command label">
+                    Simulated command:
+                </ng-container>
+                &nbsp;<i>{{this.simulatedOutput}}</i></p>
             <div class="container" style="padding-bottom: 20px;">
                 <div class="row">
                     <div class="col-12 col-sm-6">
-                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">Use custom args</mat-checkbox>
+                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                            <ng-container i18n="Use custom args checkbox">
+                                Use custom args
+                            </ng-container>
+                        </mat-checkbox>
+                        <button class="edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                         <mat-form-field color="accent" style="margin-bottom: 42px;" class="advanced-input">
-                            <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput placeholder="Custom args">
-                            <mat-hint>No need to include URL, just everything after.</mat-hint>
+                            <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput placeholder="Custom args" i18n-placeholder="Custom args placeholder">
+                            <mat-hint>
+                                <ng-container i18n="Custom Args input hint">
+                                    No need to include URL, just everything after.
+                                </ng-container>
+                            </mat-hint>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-sm-6">
-                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">Use custom output</mat-checkbox>
+                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                            <ng-container i18n="Use custom output checkbox">
+                                Use custom output
+                            </ng-container>
+                        </mat-checkbox>
                         <mat-form-field style="margin-bottom: 42px;" color="accent" class="advanced-input">
-                            <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput placeholder="Custom output">
-                            <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">Documentation</a>. Path is relative to the config download path. Don't include extension.</mat-hint>
+                            <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput placeholder="Custom output" i18n-placeholder="Custom output placeholder">
+                            <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+                                <ng-container i18n="Youtube-dl output template documentation link">Documentation</ng-container></a>.
+                                <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
+                            </mat-hint>
                         </mat-form-field>
                     </div>
                     <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-2">
-                        <mat-checkbox color="accent" [disabled]="current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">Use authentication</mat-checkbox>
+                        <mat-checkbox color="accent" [disabled]="current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                            <ng-container i18n="Use authentication checkbox">
+                                Use authentication
+                            </ng-container>
+                        </mat-checkbox>
                         <mat-form-field color="accent" class="advanced-input">
-                            <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Username">
+                            <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Username" i18n-placeholder="YT Username placeholder">
                         </mat-form-field>
                     </div>
                     <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-2">
                         <mat-form-field style="margin-top: 31px;" color="accent" class="advanced-input">
-                            <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Password">
+                            <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Password" i18n-placeholder="YT Password placeholder">
                         </mat-form-field>
                     </div>
                 </div>
@@ -138,34 +191,40 @@
         <mat-expansion-panel (opened)="accordionOpened('audio')" (closed)="accordionClosed('audio')" (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    Audio
+                    <ng-container i18n="Audio files title">
+                        Audio
+                    </ng-container>
                 </mat-panel-title>
                 <mat-panel-description>
-                    Your audio files are here
+                    <ng-container i18n="Audio files description">
+                        Your audio files are here
+                    </ng-container>
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngIf="mp3s.length > 0;else nomp3s">
                 <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp3s; index as i;">
-                        <app-file-card #audiofilecard (removeFile)="removeFromMp3($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
-                                [length]="file.duration" [isAudio]="true"></app-file-card>
+                        <app-file-card #audiofilecard (removeFile)="removeFromMp3($event)" [file]="file" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                                [length]="file.duration" [isAudio]="true" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
                 <mat-divider></mat-divider>
                 <div style="width: 100%; text-align: center; margin-top: 10px;">
-                    <h6>Playlists</h6>
+                    <h6 i18n="Playlists title">Playlists</h6>
                 </div>
                 <mat-grid-list *ngIf="playlists.audio.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.audio; let i = index;">
                         <app-file-card #audiofilecard (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
-                            [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
+                            [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
                 <div class="add-playlist-button"><button (click)="openCreatePlaylistDialog('audio')" mat-fab><mat-icon>add</mat-icon></button></div>
                 <div *ngIf="playlists.audio.length === 0">
-                    No playlists available. Create one from your downloading audio files by clicking the blue plus button.
+                    <ng-container i18n="No video playlists available text">
+                        No playlists available. Create one from your downloading audio files by clicking the blue plus button.
+                    </ng-container>
                 </div>
             </div>
 
@@ -173,29 +232,33 @@
         <mat-expansion-panel (opened)="accordionOpened('video')" (closed)="accordionClosed('video')" (mouseleave)="accordionLeft('video')" (mouseenter)="accordionEntered('video')" class="big">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    Video
+                    <ng-container i18n="Video files title">
+                        Video
+                    </ng-container>
                 </mat-panel-title>
                 <mat-panel-description>
-                    Your video files are here
+                    <ng-container i18n="Video files description">
+                        Your video files are here
+                    </ng-container>
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngIf="mp4s.length > 0;else nomp4s">
                 <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp4s; index as i;">
-                        <app-file-card #videofilecard (removeFile)="removeFromMp4($event)" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
-                            [length]="file.duration" [isAudio]="false"></app-file-card>
+                        <app-file-card #videofilecard (removeFile)="removeFromMp4($event)" [file]="file" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                            [length]="file.duration" [isAudio]="false" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
                 <mat-divider></mat-divider>
 
                 <div style="width: 100%; text-align: center; margin-top: 10px;">
-                    <h6>Playlists</h6>
+                    <h6 i18n="Playlists title">Playlists</h6>
                 </div>
                 <mat-grid-list *ngIf="playlists.video.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.video; let i = index;">
                         <app-file-card #videofilecard (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
-                            [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length"></app-file-card>
+                            [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
@@ -203,7 +266,9 @@
                 <!-- Add video playlist button -->
                 <div class="add-playlist-button"><button (click)="openCreatePlaylistDialog('video')" mat-fab><mat-icon>add</mat-icon></button></div>
                 <div *ngIf="playlists.video.length === 0">
-                    No playlists available. Create one from your downloading video files by clicking the blue plus button.
+                    <ng-container i18n="No video playlists available text">
+                        No playlists available. Create one from your downloading video files by clicking the blue plus button.
+                    </ng-container>
                 </div>
             </div>
         </mat-expansion-panel>

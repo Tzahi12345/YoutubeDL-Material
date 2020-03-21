@@ -4,7 +4,7 @@
             <h5 style="display: inline-block; margin-right: 5px; position: relative; top: 5px;">{{queueNumber}}.</h5>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="6">
-            <div style="display: inline-block; text-align: center;">ID: {{url_id}}</div>
+            <div style="display: inline-block; text-align: center;"><ng-container i18n="Download ID">ID:</ng-container>&nbsp;{{url_id}}</div>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="13">
                 <mat-progress-bar style="width: 80%" [value]="download.percent_complete" [mode]="(download.percent_complete === 0) ? 'indeterminate' : 'determinate'"></mat-progress-bar>

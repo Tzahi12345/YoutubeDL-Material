@@ -3,7 +3,7 @@ const fs = require('fs');
 let CONFIG_ITEMS = require('./consts.js')['CONFIG_ITEMS'];
 const debugMode = process.env.YTDL_MODE === 'debug';
 
-let configPath = debugMode ? '../src/assets/default.json' : 'config/default.json';
+let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.json';
 
 // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
 Object.byString = function(o, s) {

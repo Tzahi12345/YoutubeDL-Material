@@ -120,3 +120,8 @@ mat-form-field.mat-form-field {
 .advanced-input {
     width: 100%;
 }
+
+.edit-button {
+    margin-left: 10px;
+    top: -5px;
+}

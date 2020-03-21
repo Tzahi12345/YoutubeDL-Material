@@ -1,18 +1,32 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import {MatNativeDateModule, MatRadioModule, MatInputModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule,
-  MatSnackBarModule, MatCardModule, MatSelectModule, MatToolbarModule, MatCheckboxModule, MatGridListModule,
-  MatProgressBarModule, MatExpansionModule,
-  MatProgressSpinnerModule,
-  MatButtonToggleModule,
-  MatDialogModule,
-  MatRippleModule,
-  MatSlideToggleModule,
-  MatMenuModule} from '@angular/material';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { NgModule, LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
@@ -21,10 +35,7 @@ import {RouterModule} from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
 import { PlayerComponent } from './player/player.component';
-import {VgCoreModule} from 'videogular2/compiled/core';
-import {VgControlsModule} from 'videogular2/compiled/controls';
-import {VgOverlayPlayModule} from 'videogular2/compiled/overlay-play';
-import {VgBufferingModule} from 'videogular2/compiled/buffering';
+import {VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule} from 'ngx-videogular';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { NgxContentLoadingModule } from 'ngx-content-loading';
@@ -38,6 +49,12 @@ import { SubscriptionFileCardComponent } from './subscription/subscription-file-
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
+
+import es from '@angular/common/locales/es';
+import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
+import { VideoInfoDialogComponent } from './dialogs/video-info-dialog/video-info-dialog.component';
+import { ArgModifierDialogComponent, HighlightPipe } from './dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
+registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
   return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
@@ -58,7 +75,11 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SubscriptionFileCardComponent,
     SubscriptionInfoDialogComponent,
     SettingsComponent,
-    CheckOrSetPinDialogComponent
+    CheckOrSetPinDialogComponent,
+    AboutDialogComponent,
+    VideoInfoDialogComponent,
+    ArgModifierDialogComponent,
+    HighlightPipe
   ],
   imports: [
     BrowserModule,
@@ -89,6 +110,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatDialogModule,
     MatSlideToggleModule,
     MatMenuModule,
+    MatAutocompleteModule,
+    MatTooltipModule,
     DragDropModule,
     VgCoreModule,
     VgControlsModule,
@@ -107,7 +130,13 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SettingsComponent,
     CheckOrSetPinDialogComponent
   ],
-  providers: [PostsService],
+  providers: [
+    PostsService
+  ],
+  exports: [
+    HighlightPipe
+  ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

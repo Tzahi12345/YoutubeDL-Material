@@ -1,17 +1,18 @@
 {
     "YoutubeDLMaterial": {
-        "Host": {
-            "url": "http://example.com",
-            "port": "17442"
-        },
+      "Host": {
+        "url": "https://example.com",
+        "port": "17442"
+      },
       "Encryption": {
-        "use-encryption": false,
+        "use-encryption": true,
         "cert-file-path": "/etc/letsencrypt/live/example.com/fullchain.pem",
         "key-file-path": "/etc/letsencrypt/live/example.com/privkey.pem"
       },
       "Downloader": {
         "path-audio": "audio/",
         "path-video": "video/",
+        "use_youtubedl_archive": false,
         "custom_args": ""
       },
       "Extra": {

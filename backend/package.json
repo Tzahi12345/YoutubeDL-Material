@@ -26,6 +26,9 @@
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
+    "node-id3": "^0.1.14",
+    "merge-files": "^0.1.2",
+    "node-fetch": "^2.6.0",
     "shortid": "^2.2.15",
     "uuidv4": "^6.0.6",
     "youtube-dl": "^3.0.2"

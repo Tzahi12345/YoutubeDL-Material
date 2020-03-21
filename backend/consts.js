@@ -1,5 +1,3 @@
-var config = require('config');
-
 let CONFIG_ITEMS = {
     // Host
     'ytdl_url': {
@@ -33,6 +31,10 @@ let CONFIG_ITEMS = {
     'ytdl_video_folder_path': {
         'key': 'ytdl_video_folder_path',
         'path': 'YoutubeDLMaterial.Downloader.path-video'
+    },
+    'ytdl_use_youtubedl_archive': {
+        'key': 'ytdl_use_youtubedl_archive',
+        'path': 'YoutubeDLMaterial.Downloader.use_youtubedl_archive'
     },
     'ytdl_custom_args': {
         'key': 'ytdl_custom_args',

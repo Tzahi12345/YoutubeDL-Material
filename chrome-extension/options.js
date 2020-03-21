@@ -7,11 +7,10 @@ function save_options() {
         audio_only: audio_only
     }, function() {
       // Update status to let user know options were saved.
-      var status = document.getElementById('status');
-      status.textContent = 'Options saved.';
+      $('#collapseExample').collapse('show');
       setTimeout(function() {
-        status.textContent = '';
-      }, 750);
+        $('#collapseExample').collapse('hide');
+      }, 2000);
     });
   }
   

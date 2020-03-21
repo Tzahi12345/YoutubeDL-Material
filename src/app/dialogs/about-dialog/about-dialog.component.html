@@ -1,0 +1,23 @@
+<h4 mat-dialog-title i18n="About dialog title">About YoutubeDL-Material</h4>
+
+<mat-dialog-content>
+    <div style="margin-bottom: 5px;">
+        <p>
+            <i>YoutubeDL-Material</i>&nbsp;<ng-container i18n="About first paragraph">is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</ng-container>
+        </p>
+        <p>
+            <i>YoutubeDL-Material</i>&nbsp;<ng-container i18n="About second paragraph">has some awesome features included! An extensive API, Docker support, and localization (translation) support. Read up on all the supported features by clicking on the GitHub icon below.</ng-container>
+        </p>
+        <p>
+            <ng-container i18n="About bug prefix">Found a bug or have a suggestion?</ng-container>&nbsp;<a [href]="issuesLink" target="_blank"><ng-container i18n="About bug click here">Click here</ng-container></a>&nbsp;<ng-container i18n="About bug suffix">to create an issue!</ng-container>
+        </p>
+        <a [href]="projectLink" target="_blank">
+            <img style="width: 32px; margin-bottom: 10px;" src="assets/images/GitHub-64px.png">
+        </a>
+        <p><ng-container i18n="Version label">Installed version:</ng-container>&nbsp;{{version}} - <a [href]="latestUpdateLink" target="_blank"><ng-container i18n="View latest update">View latest update</ng-container></a></p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>
