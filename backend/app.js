@@ -107,13 +107,13 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
 
 // actual functions
 
-function startServer() {
+async function startServer() {
     if (process.env.USING_HEROKU && process.env.PORT) {
         // default to heroku port if using heroku
         backendPort = process.env.PORT || backendPort;
 
         // set config to port
-        config_api.setConfigItem('ytdl_port', backendPort);
+        await setPortItemFromENV();
     }
     if (usingEncryption)
     {
@@ -127,6 +127,13 @@ function startServer() {
             console.log("HTTP: Started on PORT " + backendPort);
         });
     }
+}
+
+async function setPortItemFromENV() {
+    return new Promise(resolve => {
+        config_api.setConfigItem('ytdl_port', backendPort.toString());
+        setTimeout(() => resolve(true), 100);
+    });
 }
 
 async function setAndLoadConfig() {
