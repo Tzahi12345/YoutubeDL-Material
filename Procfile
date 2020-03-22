@@ -1,1 +1,1 @@
-web: cd backend && npm install && npm start app.js --prefix backend
+web: npm install --prefix backend && npm start app.js --prefix backend
