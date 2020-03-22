@@ -4,7 +4,6 @@ services:
     ytdl_material:
         build: .
         environment: 
-            write_ytdl_config: 'true'
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: always
         volumes:
