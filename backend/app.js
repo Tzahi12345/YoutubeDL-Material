@@ -109,10 +109,11 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
 
 function startServer() {
     if (process.env.USING_HEROKU && process.env.PORT) {
-        // default to port 80 on heroku
+        // default to heroku port if using heroku
         backendPort = process.env.PORT || backendPort;
 
-        // TODO: set config to port 80?
+        // set config to port
+        config_api.setConfigItem('ytdl_port', backendPort);
     }
     if (usingEncryption)
     {
