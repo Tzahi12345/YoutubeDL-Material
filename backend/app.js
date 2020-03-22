@@ -131,6 +131,7 @@ async function startServer() {
 
 async function setPortItemFromENV() {
     return new Promise(resolve => {
+        console.log(backendPort.toString());
         config_api.setConfigItem('ytdl_port', backendPort.toString());
         setTimeout(() => resolve(true), 100);
     });
