@@ -78,8 +78,6 @@ function setConfigItem(key, value) {
     } else {
         parent_object[element_name] = value;
     }
-    console.log('setting file to');
-    console.log(config_json);
     success = setConfigFile(config_json);
 
     return success;
