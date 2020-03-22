@@ -108,9 +108,9 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
 // actual functions
 
 function startServer() {
-    if (process.env.USING_HEROKU) {
+    if (process.env.USING_HEROKU && process.env.PORT) {
         // default to port 80 on heroku
-        backendPort = 80;
+        backendPort = process.env.PORT || backendPort;
 
         // TODO: set config to port 80?
     }
