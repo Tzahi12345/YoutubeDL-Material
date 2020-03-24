@@ -30,7 +30,7 @@ $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
 @include angular-material-theme($my-app-theme);
 
 // Dark theme
-$dark-primary: mat-palette($mat-indigo);
+$dark-primary: mat-palette($mat-light-blue);
 $dark-accent:  mat-palette($mat-blue);
 $dark-warn:    mat-palette($mat-deep-orange);
 

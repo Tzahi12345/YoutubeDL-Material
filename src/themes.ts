@@ -8,7 +8,7 @@ const THEMES_CONFIG = {
     },
     'dark': {
         'key': 'dark',
-        'background_color': '#757575',
+        'background_color': '#141414',
         'alternate_color': '#695959',
         'css_label': 'dark-theme',
         'social_theme': 'material-dark'
