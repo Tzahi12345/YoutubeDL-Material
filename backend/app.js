@@ -655,6 +655,11 @@ async function autoUpdateYoutubeDL() {
         let current_app_details = JSON.parse(fs.readFileSync(current_app_details_path));
         let current_version = current_app_details['version'];
         let stored_binary_path = current_app_details['path'];
+        if (!stored_binary_path || typeof stored_binary_path !== 'string') {
+            console.log(`Failed to get youtube-dl binary path at location: ${current_app_details_path}. Cancelling update check.`);
+            resolve(false);
+            return;
+        }
 
         // got version, now let's check the latest version from the youtube-dl API
         let youtubedl_api_path = 'https://api.github.com/repos/ytdl-org/youtube-dl/tags';
