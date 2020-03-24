@@ -667,7 +667,11 @@ async function autoUpdateYoutubeDL() {
                 let binary_path = 'node_modules/youtube-dl/bin';
                 // versions different, download new update
                 console.log('INFO: Found new update for youtube-dl. Updating binary...');
-                await checkExistsWithTimeout(stored_binary_path, 10000);
+                try {
+                    await checkExistsWithTimeout(stored_binary_path, 10000);
+                } catch(e) {
+                    console.log(`ERROR: Failed to update youtube-dl - ${e}`);
+                }
                 downloader(binary_path, function error(err, done) {
                     'use strict'
                     if (err) {
@@ -687,7 +691,7 @@ async function checkExistsWithTimeout(filePath, timeout) {
     return new Promise(function (resolve, reject) {
 
         var timer = setTimeout(function () {
-            watcher.close();
+            if (watcher) watcher.close();
             reject(new Error('File did not exists and was not created during the timeout.'));
         }, timeout);
 
