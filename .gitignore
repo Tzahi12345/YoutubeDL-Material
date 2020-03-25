@@ -48,6 +48,8 @@ backend/subscriptions/archives/*
 backend/subscriptions/playlists/*
 backend/subscriptions/channels/*
 backend/db.json
+backend/public/assets/i18n/*.xlf
+backend/public/assets/default.json
 backend/subscriptions/channels/*
 backend/subscriptions/playlists/*
 backend/subscriptions/archives/*
