@@ -32,6 +32,16 @@ function getElementNameInConfig(path) {
     return elements[elements.length - 1];
 }
 
+/**
+ * Check if config exists. If not, write default config to config path
+ */
+function configExistsCheck() {
+    let exists = fs.existsSync(configPath);
+    if (!exists) {
+        setConfigFile(DEFAULT_CONFIG);
+    }
+}
+
 /*
 * Gets config file and returns as a json
 */
@@ -113,5 +123,53 @@ module.exports = {
     setConfigItems: setConfigItems,
     getConfigFile: getConfigFile,
     setConfigFile: setConfigFile,
+    configExistsCheck: configExistsCheck,
     CONFIG_ITEMS: CONFIG_ITEMS
 }
+
+DEFAULT_CONFIG = {
+    "YoutubeDLMaterial": {
+        "Host": {
+            "url": "http://example.com",
+            "port": "17442"
+        },
+      "Encryption": {
+        "use-encryption": false,
+        "cert-file-path": "/etc/letsencrypt/live/example.com/fullchain.pem",
+        "key-file-path": "/etc/letsencrypt/live/example.com/privkey.pem"
+      },
+      "Downloader": {
+        "path-audio": "audio/",
+        "path-video": "video/",
+        "use_youtubedl_archive": false,
+        "custom_args": ""
+      },
+      "Extra": {
+        "title_top": "Youtube Downloader",
+        "file_manager_enabled": true,
+        "allow_quality_select": true,
+        "download_only_mode": false,
+        "allow_multi_download_mode": true,
+        "settings_pin_required": false
+      },
+      "API": {
+        "use_youtube_API": false,
+        "youtube_API_key": ""
+      },
+      "Themes": {
+        "default_theme": "default",
+        "allow_theme_change": true
+      },
+      "Subscriptions": {
+        "allow_subscriptions": true,
+        "subscriptions_base_path": "subscriptions/",
+        "subscriptions_check_interval": "300",
+        "subscriptions_use_youtubedl_archive": true
+      },
+      "Advanced": {
+        "use_default_downloading_agent": true,
+        "custom_downloading_agent": "",
+        "allow_advanced_download": false
+      }
+    }
+  }

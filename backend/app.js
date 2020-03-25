@@ -79,6 +79,9 @@ var validDownloadingAgents = [
 let writeConfigMode = process.env.write_ytdl_config;
 var config = null;
 
+// checks if config exists, if not, a config is auto generated
+config_api.configExistsCheck();
+
 if (writeConfigMode) {
     setAndLoadConfig();
 } else {
