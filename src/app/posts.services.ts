@@ -179,6 +179,11 @@ export class PostsService {
     getAllSubscriptions() {
         return this.http.post(this.path + 'getAllSubscriptions', {});
     }
+
+    // gets tag of the latest version of youtubedl-material
+    getLatestGithubRelease() {
+        return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest');
+    }
 }
 
 
