@@ -1625,8 +1625,12 @@ app.use(function(req, res, next) {
         return next();
     }
 
-    fs.createReadStream('./public/index.html').pipe(res);
+    let index_path = path.join(__dirname, 'public', 'index.html');
+
+    fs.createReadStream(index_path).pipe(res);
 
 });
 
-app.use(express.static('./public'));
+let public_dir = path.join(__dirname, 'public');
+
+app.use(express.static(public_dir));
