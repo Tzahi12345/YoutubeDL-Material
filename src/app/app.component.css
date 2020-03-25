@@ -17,3 +17,11 @@
     left: 10px;
     position: relative;
 }
+
+.sidenav-container {
+    z-index: -1 !important;
+}
+
+.top-toolbar {
+    height: 64px;
+}

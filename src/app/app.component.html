@@ -1,13 +1,13 @@
 <div [style.background]="postsService.theme ? postsService.theme.background_color : null" style="width: 100%; height: 100%;">
-    <div>
-        <mat-toolbar color="primary" class="top">
+    <div class="mat-elevation-z3" style="position: relative; z-index: 10;">
+        <mat-toolbar color="primary" class="sticky-toolbar top-toolbar">
             <div class="flex-row" width="100%" height="100%">
                 <div class="flex-column" style="text-align: left; margin-top: 1px;">
                     <button #hamburgerMenu style="outline: none" *ngIf="router.url.split(';')[0] !== '/player' && allowSubscriptions" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
                     <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
                 </div>
                 <div class="flex-column" style="text-align: center; margin-top: 5px;">
-                    <div>{{topBarTitle}}</div>
+                    <div style="font-size: 22px;">{{topBarTitle}}</div>
                 </div>
                 <div class="flex-column" style="text-align: right; align-items: flex-end;">
                     <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
@@ -30,7 +30,7 @@
             </div>
         </mat-toolbar>
     </div>
-    <div style="height: calc(100% - 64px)">
+    <div class="sidenav-container" style="height: calc(100% - 64px)">
         <mat-sidenav-container style="height: 100%">
             <mat-sidenav #sidenav>
                 <mat-nav-list>
