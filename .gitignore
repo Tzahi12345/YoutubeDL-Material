@@ -43,9 +43,7 @@ Thumbs.db
 
 node_modules/*
 backend/node_modules/*
-backend/public/*
 YoutubeDL-Material/node_modules/*
-backend/public/*
 backend/subscriptions/archives/*
 backend/subscriptions/playlists/*
 backend/subscriptions/channels/*
