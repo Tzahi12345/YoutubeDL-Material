@@ -10,7 +10,14 @@ i {
 }
 
 .version-checked-icon {
-    top: 4px;
+    top: 5px;
     margin-left: 2px;
     position: relative;
+    margin-right: -3px;
+}
+
+.logo-image {
+    position: absolute;
+    top: -10px;
+    right: -10px;
 }

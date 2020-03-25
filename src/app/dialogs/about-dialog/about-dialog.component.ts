@@ -26,7 +26,6 @@ export class AboutDialogComponent implements OnInit {
     this.postsService.getLatestGithubRelease().subscribe(res => {
       this.checking_for_updates = false;
       this.latestGithubRelease = res;
-      console.log(this.latestGithubRelease)
     });
   }
 
