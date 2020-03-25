@@ -691,6 +691,9 @@ export class MainComponent implements OnInit {
   }
 
   removeDownloadFromCurrentDownloads(download_to_remove) {
+    if (this.current_download === download_to_remove) {
+      this.current_download = null;
+    }
     const index = this.downloads.indexOf(download_to_remove);
     if (index !== -1) {
       this.downloads.splice(index, 1);
