@@ -7,7 +7,9 @@
                     <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
                 </div>
                 <div class="flex-column" style="text-align: center; margin-top: 5px;">
-                    <div style="font-size: 22px;">{{topBarTitle}}</div>
+                    <div style="font-size: 22px; text-shadow: #141414 0.25px 0.25px 1px;">
+                        {{topBarTitle}}
+                    </div>
                 </div>
                 <div class="flex-column" style="text-align: right; align-items: flex-end;">
                     <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
