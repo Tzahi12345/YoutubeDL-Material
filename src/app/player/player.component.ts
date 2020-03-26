@@ -264,7 +264,7 @@ export class PlayerComponent implements OnInit {
     this.playlist_updating = false;
       if (res['success']) {
         const fileNamesEncoded = fileNames.join('|nvr|');
-        this.router.navigate(['/player', {fileNames: fileNamesEncoded, type: 'video', id: this.id}]);
+        this.router.navigate(['/player', {fileNames: fileNamesEncoded, type: this.type, id: this.id}]);
         this.openSnackBar('Successfully updated playlist.', '');
         this.original_playlist = JSON.stringify(this.playlist);
       } else {
