@@ -125,3 +125,11 @@ mat-form-field.mat-form-field {
     margin-left: 10px;
     top: -5px;
 }
+
+.no-border-radius-bottom {
+    border-radius: 4px 4px 0px 0px;
+}
+
+.no-border-radius-top {
+    border-radius: 0px 0px 4px 4px;
+}

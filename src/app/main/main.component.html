@@ -1,6 +1,6 @@
 <br/>
 <div class="big demo-basic">
-    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
+    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;" [ngClass]="(allowAdvancedDownload) ? 'no-border-radius-bottom' : null">
         <mat-card-title>
             <ng-container i18n="Youtube downloader home page label">Youtube Downloader</ng-container>
         </mat-card-title>
@@ -90,7 +90,7 @@
 </div>
 <div *ngIf="allowAdvancedDownload" class="big demo-basic">
     <form style="margin-left: 20px; margin-right: 20px;">
-        <mat-expansion-panel class="big">
+        <mat-expansion-panel class="big no-border-radius-top">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     <ng-container i18n="Advanced download mode panel">
@@ -159,7 +159,7 @@
     <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
         <div class="container">
             <div *ngFor="let download of downloads; let i = index;" class="row">
-                <ng-container *ngIf="current_download !== download">
+                <ng-container *ngIf="current_download !== download && download['downloading']">
                     <app-download-item style="width: 100%" [download]="download" [queueNumber]="i+1" (cancelDownload)="cancelDownload($event)"></app-download-item>
                     <mat-divider style="position: relative" *ngIf="i !== downloads.length - 1"></mat-divider>
                 </ng-container>
