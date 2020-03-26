@@ -51,6 +51,7 @@ var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
 var allowSubscriptions = null;
 var subscriptionsCheckInterval = null;
+var archivePath = path.join(__dirname, 'appdata', 'archives');
 
 // other needed values
 var options = null; // encryption options
@@ -196,6 +197,11 @@ async function loadConfig() {
         }
 
         url_domain = new URL(url);
+
+        // creates archive path if missing
+        if (!fs.existsSync(archivePath)){
+            fs.mkdirSync(archivePath);
+        }
 
         // get subscriptions
         if (allowSubscriptions) {
@@ -452,7 +458,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            const archive_path = audioFolderPath + 'archive.txt';
+            const archive_path = path.join(archivePath, 'archive_audio.txt');
 
             // get ID from JSON
 
@@ -510,7 +516,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            const archive_path = videoFolderPath + 'archive.txt';
+            const archive_path = path.join(archivePath, 'archive_video.txt');
 
             // get ID from JSON
 
@@ -633,10 +639,10 @@ async function getUrlInfos(urls) {
 }
 
 function writeToBlacklist(type, line) {
-    let blacklistBasePath = (type === 'audio') ? audioFolderPath : videoFolderPath;
+    let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
     // adds newline to the beginning of the line
     line = '\n' + line;
-    fs.appendFileSync(blacklistBasePath + 'blacklist.txt', line);
+    fs.appendFileSync(blacklistPath, line);
 }
 
 async function startYoutubeDL() {
@@ -806,13 +812,13 @@ app.post('/api/tomp3', async function(req, res) {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            let archive_path = audioFolderPath + 'archive.txt';
+            const archive_path = path.join(archivePath, 'archive_audio.txt');
             // create archive file if it doesn't exist
             if (!fs.existsSync(archive_path)) {
                 fs.closeSync(fs.openSync(archive_path, 'w'));
             }
 
-            let blacklist_path = audioFolderPath + 'blacklist.txt';
+            let blacklist_path = path.join(archivePath, 'blacklist_audio.txt');
             // create blacklist file if it doesn't exist
             if (!fs.existsSync(blacklist_path)) {
                 fs.closeSync(fs.openSync(blacklist_path, 'w'));
@@ -886,7 +892,8 @@ app.post('/api/tomp3', async function(req, res) {
             if (merged_string !== null) {
                 let current_merged_archive = fs.readFileSync(merged_path, 'utf8');
                 let diff = current_merged_archive.replace(merged_string, '');
-                fs.appendFileSync(audioFolderPath + 'archive.txt', diff);
+                const archive_path = path.join(archivePath, 'archive_audio.txt');
+                fs.appendFileSync(archive_path, diff);
                 fs.unlinkSync(merged_path)
             }
 
@@ -902,7 +909,6 @@ app.post('/api/tomp3', async function(req, res) {
 app.post('/api/tomp4', async function(req, res) {
     var url = req.body.url;
     var date = Date.now();
-    var path = videoFolderPath;
     var videopath = '%(title)s';
     var globalArgs = config_api.getConfigItem('ytdl_custom_args');
     var customArgs = req.body.customArgs;
@@ -928,9 +934,9 @@ app.post('/api/tomp4', async function(req, res) {
         }
 
         if (customOutput) {
-            downloadConfig = ['-o', path + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+            downloadConfig = ['-o', videoFolderPath + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
         } else {
-            downloadConfig = ['-o', path + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+            downloadConfig = ['-o', videoFolderPath + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
         }
 
         if (youtubeUsername && youtubePassword) {
@@ -943,13 +949,13 @@ app.post('/api/tomp4', async function(req, res) {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            let archive_path = videoFolderPath + 'archive.txt';
+            const archive_path = path.join(archivePath, 'archive_video.txt');
             // create archive file if it doesn't exist
             if (!fs.existsSync(archive_path)) {
                 fs.closeSync(fs.openSync(archive_path, 'w'));
             }
 
-            let blacklist_path = videoFolderPath + 'blacklist.txt';
+            let blacklist_path = path.join(archivePath, 'blacklist_video.txt');
             // create blacklist file if it doesn't exist
             if (!fs.existsSync(blacklist_path)) {
                 fs.closeSync(fs.openSync(blacklist_path, 'w'));
@@ -1023,7 +1029,8 @@ app.post('/api/tomp4', async function(req, res) {
             if (merged_string !== null) {
                 let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
                 let diff = current_merged_archive.replace(merged_string, '');
-                fs.appendFileSync(videoFolderPath + 'archive.txt', diff);
+                const archive_path = path.join(archivePath, 'archive_video.txt');
+                fs.appendFileSync(archive_path, diff);
             }
             
             var videopathEncoded = encodeURIComponent(file_names[0]);
