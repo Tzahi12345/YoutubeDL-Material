@@ -845,7 +845,7 @@ export class MainComponent implements OnInit {
     // gets output
     let output_string_array = ['-o', base_path + '%(title)s' + ext];
     if (this.customOutputEnabled && this.customOutput) {
-      output_string_array = ['-o', this.customOutput + ext];
+      output_string_array = ['-o', base_path + this.customOutput + ext];
     }
     // before pushing output, should check if using an external downloader
     if (!this.useDefaultDownloadingAgent && this.customDownloadingAgent === 'aria2c') {
