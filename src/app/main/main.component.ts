@@ -595,10 +595,15 @@ export class MainComponent implements OnInit {
           if (this.path !== '-1') {
             this.downloadHelperMp3(this.path, is_playlist, false, new_download);
           }
-        }, error => { // can't access server
+        }, error => { // can't access server or failed to download for other reasons
           this.downloadingfile = false;
           this.current_download = null;
           new_download['downloading'] = false;
+          // removes download from list of downloads
+          const downloads_index = this.downloads.indexOf(new_download);
+          if (downloads_index !== -1) {
+            this.downloads.splice(downloads_index)
+          }
           this.openSnackBar('Download failed!', 'OK.');
         });
       } else {
@@ -633,6 +638,11 @@ export class MainComponent implements OnInit {
           this.downloadingfile = false;
           this.current_download = null;
           new_download['downloading'] = false;
+          // removes download from list of downloads
+          const downloads_index = this.downloads.indexOf(new_download);
+          if (downloads_index !== -1) {
+            this.downloads.splice(downloads_index)
+          }
           this.openSnackBar('Download failed!', 'OK.');
       });
       }
