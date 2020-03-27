@@ -467,7 +467,7 @@ export class MainComponent implements OnInit {
     this.downloadingfile = false;
 
     if (this.multiDownloadMode && !this.downloadOnlyMode) {
-      // console.log('mismatched downloads');
+      // do nothing
     } else {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode && !this.iOS) {
@@ -504,7 +504,7 @@ export class MainComponent implements OnInit {
   downloadHelperMp4(name, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
     if (this.multiDownloadMode && !this.downloadOnlyMode) {
-      // console.log('mismatched downloads');
+      // do nothing
     } else {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode) {
