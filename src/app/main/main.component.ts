@@ -815,6 +815,10 @@ export class MainComponent implements OnInit {
   }
 
   getURLInfo(url) {
+    // if url is a youtube playlist, skip getting url info
+    if (url.includes('playlist')) {
+      return;
+    }
     if (!this.cachedAvailableFormats[url]) {
       this.cachedAvailableFormats[url] = {};
     }
