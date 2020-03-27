@@ -22,6 +22,17 @@ export class SettingsComponent implements OnInit {
   loading_config = false;
   generated_bookmarklet_code = null;
 
+  _settingsSame = true;
+
+  get settingsAreTheSame() {
+    this._settingsSame = this.settingsSame()
+    return this._settingsSame;
+  }
+
+  set settingsAreTheSame(val) {
+    this._settingsSame = val;
+  }
+
   constructor(private postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
     private dialog: MatDialog) { }
 
