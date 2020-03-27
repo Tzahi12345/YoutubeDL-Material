@@ -466,9 +466,9 @@ export class MainComponent implements OnInit {
   downloadHelperMp3(name, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
 
-    if (new_download && this.current_download !== new_download) {
+    if (this.multiDownloadMode && !this.downloadOnlyMode) {
       // console.log('mismatched downloads');
-    } else if (!this.multiDownloadMode || !new_download) {
+    } else {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode && !this.iOS) {
         if (is_playlist) {
@@ -503,10 +503,9 @@ export class MainComponent implements OnInit {
 
   downloadHelperMp4(name, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
-
-    if (new_download && this.current_download !== new_download) {
+    if (this.multiDownloadMode && !this.downloadOnlyMode) {
       // console.log('mismatched downloads');
-    } else if (!this.multiDownloadMode || !new_download) {
+    } else {
       // if download only mode, just download the file. no redirect
       if (forceView === false && this.downloadOnlyMode) {
         if (is_playlist) {
