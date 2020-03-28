@@ -14,7 +14,7 @@ export class AboutDialogComponent implements OnInit {
   latestGithubRelease = null;
   checking_for_updates = true;
 
-  current_version_tag = 'v3.5';
+  current_version_tag = 'v3.5.1';
 
   constructor(private postsService: PostsService) { }
 
