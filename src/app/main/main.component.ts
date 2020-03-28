@@ -717,7 +717,7 @@ export class MainComponent implements OnInit {
     this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
       this.downloading_content['audio'][name] = false;
       const blob: Blob = res;
-      saveAs(blob, name + '.mp3');
+      saveAs(blob, decodeURIComponent(name) + '.mp3');
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
@@ -734,7 +734,7 @@ export class MainComponent implements OnInit {
     this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
       this.downloading_content['video'][name] = false;
       const blob: Blob = res;
-      saveAs(blob, name + '.mp4');
+      saveAs(blob, decodeURIComponent(name) + '.mp4');
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
