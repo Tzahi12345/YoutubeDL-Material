@@ -101,10 +101,6 @@
           <context context-type="linenumber">66</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">289</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
@@ -514,7 +510,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">24</context>
         </context-group>
         <note priority="1" from="description">Settings title</note>
       </trans-unit>
@@ -774,7 +770,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">Dark theme label</note>
       </trans-unit>
@@ -794,7 +790,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">40</context>
         </context-group>
         <note priority="1" from="description">Subscriptions settings title</note>
       </trans-unit>
@@ -882,7 +878,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Chrome ext click here</note>
       </trans-unit>
@@ -966,6 +962,14 @@
         </context-group>
         <note priority="1" from="description">Settings save button</note>
       </trans-unit>
+      <trans-unit id="fe8fd36dbf5deee1d56564965787a782a66eba44" datatype="html">
+        <source>{VAR_SELECT, select, true {Close} false {Cancel} other {otha} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">289</context>
+        </context-group>
+        <note priority="1" from="description">Settings cancel and close button</note>
+      </trans-unit>
       <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
         <source>About YoutubeDL-Material</source>
         <context-group purpose="location">
@@ -978,23 +982,47 @@
         <source>is an open-source YouTube downloader built under Google&apos;s Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">12</context>
         </context-group>
         <note priority="1" from="description">About first paragraph</note>
       </trans-unit>
-      <trans-unit id="c072eebcb5b1f1eef6fb2ee1756e839dd302f3de" datatype="html">
-        <source>has some awesome features included! An extensive API, Docker support, and localization (translation) support. Read up on all the supported features by clicking on the GitHub icon below.</source>
+      <trans-unit id="bc0ad0ee6630acb7fcb7802ec79f5a0ee943c1a7" datatype="html">
+        <source>has some awesome features included! An extensive API, Docker support, and localization (translation) support. Read up on all the supported features by clicking on the GitHub icon above.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">About second paragraph</note>
+      </trans-unit>
+      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
+        <source>Installed version:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note priority="1" from="description">Version label</note>
+      </trans-unit>
+      <trans-unit id="e22f3a5351944f3a1a10cfc7da6f65dfbe0037fe" datatype="html">
+        <source>Checking for updates...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note priority="1" from="description">Checking for updates text</note>
+      </trans-unit>
+      <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html">
+        <source>Update available</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <note priority="1" from="description">View latest update</note>
       </trans-unit>
       <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html">
         <source>Found a bug or have a suggestion?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">About bug prefix</note>
       </trans-unit>
@@ -1002,31 +1030,15 @@
         <source>to create an issue!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">12</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">About bug suffix</note>
-      </trans-unit>
-      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
-        <source>Installed version:</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
-        <note priority="1" from="description">Version label</note>
-      </trans-unit>
-      <trans-unit id="effdc7dfbbc49c08d25ea1748fca00c38c918abd" datatype="html">
-        <source>View latest update</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
-        <note priority="1" from="description">View latest update</note>
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <note priority="1" from="description">About menu label</note>
       </trans-unit>
@@ -1034,7 +1046,7 @@
         <source>Home</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <note priority="1" from="description">Navigation menu Home Page title</note>
       </trans-unit>
