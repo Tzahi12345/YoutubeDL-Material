@@ -68,10 +68,16 @@ function setConfigFile(config) {
 function getConfigItem(key) {
     let config_json = getConfigFile();
     if (!CONFIG_ITEMS[key]) {
-        console.log('cannot find config with key ' + key);
+        console.log(`ERROR: Config item with key '${key}' is not recognized.`);
         return null;
     }
     let path = CONFIG_ITEMS[key]['path'];
+    const val = Object.byString(config_json, path);
+    if (val === undefined && Object.byString(DEFAULT_CONFIG, path)) {
+        console.log(`WARNING: Cannot find config with key '${key}'. Creating one with the default value...`);
+        setConfigItem(key, Object.byString(DEFAULT_CONFIG, path));
+        return Object.byString(DEFAULT_CONFIG, path);
+    }
     return Object.byString(config_json, path);
 };
 

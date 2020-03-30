@@ -1,6 +1,6 @@
 var async = require('async');
 const { uuid } = require('uuidv4');
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var youtubedl = require('youtube-dl');
 var compression = require('compression');
@@ -8,6 +8,7 @@ var https = require('https');
 var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
+var unzipper = require('unzipper');
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
 var md5 = require('md5');
@@ -19,12 +20,15 @@ const shortid = require('shortid')
 const url_api = require('url');
 var config_api = require('./config.js'); 
 var subscriptions_api = require('./subscriptions')
+const CONSTS = require('./consts')
 
 var app = express();
 
 const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
+
+// var GithubContent = require('github-content');
 
 // Set some defaults
 db.defaults(
@@ -131,6 +135,170 @@ async function startServer() {
             console.log("HTTP: Started on PORT " + backendPort);
         });
     }
+
+    // getLatestVersion();
+    // updateServer();
+}
+
+async function restartServer() {
+    const restartProcess = () => {
+        spawn(process.argv[1], process.argv.slice(2), {
+          detached: true, 
+          stdio: ['ignore', out, err]
+        }).unref()
+        process.exit()
+      }
+}
+
+async function updateServer() {
+    const new_version_available = await isNewVersionAvailable();
+    if (!new_version_available) {
+        console.log('ERROR: Failed to update - no update is available.');
+        return false;
+    }
+    return new Promise(async resolve => {
+        // backup current dir
+        let backup_succeeded = await backupServerLite();
+        if (!backup_succeeded) {
+            resolve(false);
+            return false;
+        }
+
+        // grab new package.json and public folder
+        await downloadUpdateFiles();
+    });
+}
+
+async function downloadUpdateFiles() {
+    let tag = await getLatestVersion();
+    return new Promise(async resolve => {
+        var options = {
+            owner: 'tzahi12345',
+            repo: 'YoutubeDL-Material',
+            branch: tag
+        };
+
+        // downloads the latest release zip file
+        await downloadLatestRelease(tag);
+
+        // deletes contents of public dir
+        fs.removeSync(path.join(__dirname, 'public'));
+        fs.mkdirSync(path.join(__dirname, 'public'));
+
+        // downloads new package.json and adds new public dir files from the downloaded zip
+        fs.createReadStream(path.join(__dirname, 'youtubedl-material-latest-release.zip')).pipe(unzipper.Parse())
+        .on('entry', function (entry) {
+            var fileName = entry.path;
+            var type = entry.type; // 'Directory' or 'File'
+            var size = entry.size;
+            if (fileName.includes('youtubedl-material/public/')) {
+                // get public folder files
+                var actualFileName = fileName.replace('youtubedl-material/public/', '');
+                if (actualFileName.length !== 0 && actualFileName.substring(actualFileName.length-1, actualFileName.length) !== '/') {
+                    fs.ensureDirSync(path.join(__dirname, 'public', path.dirname(actualFileName)));
+                    entry.pipe(fs.createWriteStream(path.join(__dirname, 'public', actualFileName)));
+                } else {
+                    entry.autodrain();
+                }
+            } else if (fileName === 'youtubedl-material/package.json') {
+                // get package.json
+                entry.pipe(fs.createWriteStream(path.join(__dirname, 'package.json')));
+            } else {
+                entry.autodrain();
+            }
+        });
+    });
+}
+
+async function downloadLatestRelease(tag) {
+    return new Promise(async resolve => {
+        // get name of latest zip file, which depends on the version
+        const latest_release_link = 'https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/';
+        const tag_without_v = tag.substring(1, tag.length);
+        const zip_file_name = `youtubedl-material-${tag_without_v}.zip`
+        const latest_zip_link = latest_release_link + zip_file_name;
+        let output_path = path.join(__dirname, `youtubedl-material-latest-release.zip`);
+
+        // download zip from release
+        await fetchFile(latest_zip_link, output_path);
+        resolve(true);
+    });
+    
+}
+// helper function to download file using fetch
+const fetchFile = (async (url, path) => {
+    const res = await fetch(url);
+    const fileStream = fs.createWriteStream(path);
+    await new Promise((resolve, reject) => {
+        res.body.pipe(fileStream);
+        res.body.on("error", (err) => {
+          reject(err);
+        });
+        fileStream.on("finish", function() {
+          resolve();
+        });
+      });
+  });
+
+async function backupServerLite() {
+    return new Promise(async resolve => {
+        let output_path = `backup-${Date.now()}.zip`;
+        console.log(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
+        let output = fs.createWriteStream(path.join(__dirname, output_path));
+        var archive = archiver('zip', {
+            gzip: true,
+            zlib: { level: 9 } // Sets the compression level.
+        });
+        
+        archive.on('error', function(err) {
+            console.log(err);
+            resolve(false);
+        });
+        
+        // pipe archive data to the output file
+        archive.pipe(output);
+
+        // ignore certain directories (ones with video or audio files)
+        const files_to_ignore = [path.join(config_api.getConfigItem('ytdl_subscriptions_base_path'), '**'),
+                                path.join(config_api.getConfigItem('ytdl_audio_folder_path'), '**'),
+                                path.join(config_api.getConfigItem('ytdl_video_folder_path'), '**'),
+                                'backup-*.zip'];
+
+        archive.glob('**/*', {
+            ignore: files_to_ignore
+        });
+
+        await archive.finalize();
+
+        // wait a tiny bit for the zip to reload in fs
+        setTimeout(function() {
+            resolve(true);
+        }, 100);
+    });
+}
+
+async function isNewVersionAvailable() {
+    return new Promise(async resolve => {
+        // gets tag of the latest version of youtubedl-material, compare to current version
+        const latest_tag = await getLatestVersion();
+        const current_tag = CONSTS['CURRENT_VERSION'];
+        if (latest_tag > current_tag) {
+            resolve(true);
+        } else {
+            resolve(false);
+        }
+    });
+}
+
+async function getLatestVersion() {
+    return new Promise(resolve => {
+        fetch('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest', {method: 'Get'})
+        .then(async res => res.json())
+        .then(async (json) => {
+            resolve(json['tag_name']);
+            return;
+        });
+    });
 }
 
 async function setPortItemFromENV() {
@@ -143,7 +311,6 @@ async function setPortItemFromENV() {
 async function setAndLoadConfig() {
     await setConfigFromEnv();
     await loadConfig();
-    // console.log(backendUrl);
 }
 
 async function setConfigFromEnv() {
@@ -162,9 +329,6 @@ async function setConfigFromEnv() {
 
 async function loadConfig() {
     return new Promise(resolve => {
-        // get config library
-        // config = require('config');
-
         url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
         backendPort = config_api.getConfigItem('ytdl_port');
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
@@ -676,7 +840,11 @@ async function autoUpdateYoutubeDL() {
         .then(async res => res.json())
         .then(async (json) => {
             // check if the versions are different
-            const latest_update_version = json[0]['name'];    
+            if (!json || !json[0]) {
+                resolve(false);
+                return false;
+            }
+            const latest_update_version = json[0]['name'];   
             if (current_version !== latest_update_version) {
                 let binary_path = 'node_modules/youtube-dl/bin';
                 // versions different, download new update
@@ -728,6 +896,21 @@ async function checkExistsWithTimeout(filePath, timeout) {
         });
     });
 }
+
+// https://stackoverflow.com/a/32197381/8088021
+const deleteFolderRecursive = function(folder_to_delete) {
+    if (fs.existsSync(folder_to_delete)) {
+      fs.readdirSync(folder_to_delete).forEach((file, index) => {
+        const curPath = path.join(folder_to_delete, file);
+        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+          deleteFolderRecursive(curPath);
+        } else { // delete file
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(folder_to_delete);
+    }
+};
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", getOrigin());
