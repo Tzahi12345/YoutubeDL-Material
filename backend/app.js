@@ -21,6 +21,7 @@ const url_api = require('url');
 var config_api = require('./config.js'); 
 var subscriptions_api = require('./subscriptions')
 const CONSTS = require('./consts')
+const { spawn } = require('child_process')
 
 var app = express();
 
@@ -126,29 +127,33 @@ async function startServer() {
     if (usingEncryption)
     {
         https.createServer(options, app).listen(backendPort, function() {
-            console.log('HTTPS: Started on PORT ' + backendPort);
+            console.log(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on port ${backendPort} - using SSL`);
         });
     }
     else
     {
         app.listen(backendPort,function(){
-            console.log("HTTP: Started on PORT " + backendPort);
+            console.log(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
         });
     }
 
     // getLatestVersion();
+    // restartServer();
     updateServer();
 }
 
 async function restartServer() {
-    console.log('Restarting server...');
     const restartProcess = () => {
-        spawn(process.argv[1], process.argv.slice(2), {
+        spawn('node', ['app.js'], {
           detached: true, 
-          stdio: ['ignore', out, err]
+          stdio: 'inherit'
         }).unref()
         process.exit()
-      }
+    }
+    console.log('Update complete! Restarting server...');
+
+    // the following line restarts the server through nodemon
+    fs.writeFileSync('restart.json', 'internal use only');
 }
 
 async function updateServer() {
@@ -309,6 +314,12 @@ async function getLatestVersion() {
         fetch('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest', {method: 'Get'})
         .then(async res => res.json())
         .then(async (json) => {
+            if (json['message']) {
+                // means there's an error in getting latest version
+                console.log(`ERROR: Received the following message from GitHub's API:`);
+                console.log(json['message']);
+                if (json['documentation_url']) console.log(`Associated URL: ${json['documentation_url']}`)
+            }
             resolve(json['tag_name']);
             return;
         });
