@@ -199,7 +199,7 @@ async function downloadUpdateFiles() {
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
             var size = entry.size;
-            var is_dir = fileName.substring(fileName.length-1, fileName.length) !== '/'
+            var is_dir = fileName.substring(fileName.length-1, fileName.length) === '/'
             if (!is_dir && fileName.includes('youtubedl-material/public/')) {
                 // get public folder files
                 var actualFileName = fileName.replace('youtubedl-material/public/', '');
@@ -211,8 +211,9 @@ async function downloadUpdateFiles() {
                 }
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
-                console.log('Downloading file ' + fileName);
-                entry.pipe(fs.createWriteStream(path.join(__dirname, 'package.json')));
+                var actualFileName = fileName.replace('youtubedl-material/', '');
+                if (debugMode) console.log('Downloading file ' + actualFileName);
+                entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
             } else {
                 entry.autodrain();
             }
