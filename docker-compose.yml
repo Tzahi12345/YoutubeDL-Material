@@ -1,7 +1,7 @@
 
 version: "2"
 services:
-    ytdl_material:
+    youtubedl-material-docker-rpi:
         build: .
         environment: 
             ALLOW_CONFIG_MUTATIONS: 'true'
