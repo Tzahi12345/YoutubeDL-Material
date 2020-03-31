@@ -137,7 +137,7 @@ async function startServer() {
     }
 
     // getLatestVersion();
-    // updateServer();
+    updateServer();
 }
 
 async function restartServer() {
@@ -194,7 +194,8 @@ async function downloadUpdateFiles() {
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
             var size = entry.size;
-            if (fileName.includes('youtubedl-material/public/')) {
+            var is_dir = fileName.substring(fileName.length-1, fileName.length) !== '/'
+            if (!is_dir && fileName.includes('youtubedl-material/public/')) {
                 // get public folder files
                 var actualFileName = fileName.replace('youtubedl-material/public/', '');
                 if (actualFileName.length !== 0 && actualFileName.substring(actualFileName.length-1, actualFileName.length) !== '/') {
@@ -203,8 +204,9 @@ async function downloadUpdateFiles() {
                 } else {
                     entry.autodrain();
                 }
-            } else if (!replace_ignore_list.includes(fileName)) {
+            } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
+                console.log('Downloading file ' + fileName);
                 entry.pipe(fs.createWriteStream(path.join(__dirname, 'package.json')));
             } else {
                 entry.autodrain();
