@@ -141,6 +141,7 @@ async function startServer() {
 }
 
 async function restartServer() {
+    console.log('Restarting server...');
     const restartProcess = () => {
         spawn(process.argv[1], process.argv.slice(2), {
           detached: true, 
@@ -166,12 +167,15 @@ async function updateServer() {
 
         // grab new package.json and public folder
         await downloadUpdateFiles();
+
+        restartServer();
     });
 }
 
 async function downloadUpdateFiles() {
     let tag = await getLatestVersion();
     return new Promise(async resolve => {
+        console.log('Downloading new files...')
         var options = {
             owner: 'tzahi12345',
             repo: 'YoutubeDL-Material',
@@ -185,8 +189,12 @@ async function downloadUpdateFiles() {
         fs.removeSync(path.join(__dirname, 'public'));
         fs.mkdirSync(path.join(__dirname, 'public'));
 
+<<<<<<< HEAD
         let replace_ignore_list = ['youtubedl-material/appdata/default.json',
                                     'youtubedl-material/appdata/db.json']
+=======
+        console.log(`Installing update ${tag}...`)
+>>>>>>> 785306c59a8211b83a12b07f141a175e4d85dea8
 
         // downloads new package.json and adds new public dir files from the downloaded zip
         fs.createReadStream(path.join(__dirname, 'youtubedl-material-latest-release.zip')).pipe(unzipper.Parse())
@@ -211,6 +219,9 @@ async function downloadUpdateFiles() {
             } else {
                 entry.autodrain();
             }
+        })
+        .on('close', function () {
+            resolve(true);
         });
     });
 }
