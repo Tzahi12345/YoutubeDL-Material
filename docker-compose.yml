@@ -13,4 +13,4 @@ services:
             - ./subscriptions:/app/subscriptions
         ports:
             - "8998:17442"
-        image: tzahi12345/youtubedl-material:experimental
+        image: volcan96/youtubedl-material-docker-rpi
