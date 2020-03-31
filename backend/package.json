@@ -5,10 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --verbose app.js"
+    "start": "nodemon app.js"
   },
   "nodemonConfig": {
-    "ignore": ["*"]
+    "ignore": [
+      "*.js",
+      "appdata/*",
+      "public/*"
+    ],
+    "watch": [
+      "restart.json"
+    ]
   },
   "repository": {
     "type": "git",
