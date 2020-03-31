@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM arm32v7/alpine:3.11
 
 RUN apk add --update npm python ffmpeg
 
@@ -16,6 +16,10 @@ RUN npm install
 
 # Expose the port the app runs in
 EXPOSE 17442
+
+##added to change directory to backend to launch app##
+WORKDIR backend/
+RUN ls -acl
 
 # Run the specified command within the container.
 CMD [ "node", "app.js" ]
