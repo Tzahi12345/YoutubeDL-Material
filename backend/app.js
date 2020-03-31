@@ -189,12 +189,9 @@ async function downloadUpdateFiles() {
         fs.removeSync(path.join(__dirname, 'public'));
         fs.mkdirSync(path.join(__dirname, 'public'));
 
-<<<<<<< HEAD
         let replace_ignore_list = ['youtubedl-material/appdata/default.json',
                                     'youtubedl-material/appdata/db.json']
-=======
         console.log(`Installing update ${tag}...`)
->>>>>>> 785306c59a8211b83a12b07f141a175e4d85dea8
 
         // downloads new package.json and adds new public dir files from the downloaded zip
         fs.createReadStream(path.join(__dirname, 'youtubedl-material-latest-release.zip')).pipe(unzipper.Parse())
