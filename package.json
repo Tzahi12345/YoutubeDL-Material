@@ -1,6 +1,6 @@
 {
   "name": "youtube-dl-material",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -47,8 +47,8 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.900.6",
-    "@angular/cli": "^9.0.6",
+    "@angular-devkit/build-angular": "^0.901.0",
+    "@angular/cli": "^9.1.0",
     "@angular/compiler-cli": "^9.0.6",
     "@angular/language-service": "^9.0.6",
     "@locl/cli": "0.0.1-beta.6",
