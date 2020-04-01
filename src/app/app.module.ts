@@ -27,7 +27,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { FileCardComponent } from './file-card/file-card.component';
@@ -90,7 +89,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
-    HttpModule,
     HttpClientModule,
     MatToolbarModule,
     MatCardModule,
