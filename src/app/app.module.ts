@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgModule, LOCALE_ID } from '@angular/core';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -37,7 +37,6 @@ import { PlayerComponent } from './player/player.component';
 import {VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule} from 'ngx-videogular';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
-import { NgxContentLoadingModule } from 'ngx-content-loading';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { DownloadItemComponent } from './download-item/download-item.component';
@@ -81,6 +80,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     HighlightPipe
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatNativeDateModule,
@@ -116,7 +116,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     VgOverlayPlayModule,
     VgBufferingModule,
     LazyLoadImageModule.forRoot({ isVisible }),
-    NgxContentLoadingModule,
     RouterModule,
     AppRoutingModule,
   ],

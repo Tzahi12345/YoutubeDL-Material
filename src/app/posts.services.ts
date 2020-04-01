@@ -94,6 +94,10 @@ export class PostsService {
         }
     }
 
+    loadAsset(name) {
+        return this.http.get(`./assets/${name}`);
+    }
+
     setConfig(config) {
         return this.http.post(this.path + 'setConfig', {new_config_file: config});
     }
@@ -178,6 +182,11 @@ export class PostsService {
 
     getAllSubscriptions() {
         return this.http.post(this.path + 'getAllSubscriptions', {});
+    }
+
+    // updates the server to the latest version
+    updateServer() {
+        return this.http.post(this.path + 'updateServer', {});
     }
 
     // gets tag of the latest version of youtubedl-material
