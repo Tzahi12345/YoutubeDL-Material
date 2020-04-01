@@ -137,9 +137,6 @@ async function startServer() {
         });
     }
 
-    // getLatestVersion();
-    // restartServer();
-    updateServer();
 }
 
 async function restartServer() {
@@ -172,6 +169,9 @@ async function updateServer() {
 
         // grab new package.json and public folder
         await downloadUpdateFiles();
+
+        // run npm install
+        await installDependencies();
 
         restartServer();
     });
@@ -244,6 +244,16 @@ async function downloadLatestRelease(tag) {
     });
     
 }
+
+async function installDependencies() {
+    return new Promise(resolve => {
+        var child_process = require('child_process');
+        child_process.execSync('npm install',{stdio:[0,1,2]});
+        resolve(true);
+    });
+    
+}
+
 // helper function to download file using fetch
 const fetchFile = (async (url, path) => {
     const res = await fetch(url);
