@@ -13,4 +13,4 @@ services:
             - ./subscriptions:/app/subscriptions
         ports:
             - "8998:17442"
-        image: tzahi12345/youtubedl-material:3.5
+        image: tzahi12345/youtubedl-material:latest
