@@ -13,6 +13,9 @@ const db = low(adapter)
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
+var logger = null;
+function setLogger(input_logger) { logger = input_logger; }
+
 async function subscribe(sub) {
     const result_obj = {
         success: false,
@@ -23,7 +26,7 @@ async function subscribe(sub) {
         sub.isPlaylist = sub.url.includes('playlist');
 
         if (db.get('subscriptions').find({url: sub.url}).value()) {
-            console.log('Sub already exists');
+            logger.info('Sub already exists');
             result_obj.error = 'Subcription with URL ' + sub.url + ' already exists!';
             resolve(result_obj);
             return;
@@ -48,14 +51,14 @@ async function getSubscriptionInfo(sub) {
         let downloadConfig = ['--dump-json', '--playlist-end', '1']
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             if (debugMode) {
-                console.log('Subscribe: got info for subscription ' + sub.id);
+                logger.info('Subscribe: got info for subscription ' + sub.id);
             }
             if (err) {
-                console.log(err.stderr);
+                logger.error(err.stderr);
                 resolve(false);
             } else if (output) {
                 if (output.length === 0 || (output.length === 1 && output[0] === '')) {
-                    if (debugMode) console.log('Could not get info for ' + sub.id);
+                    logger.verbose('Could not get info for ' + sub.id);
                     resolve(false);
                 }
                 for (let i = 0; i < output.length; i++) {
@@ -213,15 +216,13 @@ async function getVideosForSub(sub) {
 
         // get videos 
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
-            if (debugMode) {
-                console.log('Subscribe: got videos for subscription ' + sub.name);
-            }
+            logger.verbose('Subscribe: got videos for subscription ' + sub.name);
             if (err) {
-                console.log(err.stderr);
+                logger.error(err.stderr);
                 resolve(false);
             } else if (output) {
                 if (output.length === 0 || (output.length === 1 && output[0] === '')) {
-                    if (debugMode) console.log('No additional videos to download for ' + sub.name);
+                    logger.debug('No additional videos to download for ' + sub.name);
                     resolve(true);
                 }
                 for (let i = 0; i < output.length; i++) {
@@ -281,7 +282,7 @@ const deleteFolderRecursive = function(folder_to_delete) {
 function removeIDFromArchive(archive_path, id) {
     let data = fs.readFileSync(archive_path, {encoding: 'utf-8'});
     if (!data) {
-        console.log('Archive could not be found.');
+        logger.error('Archive could not be found.');
         return;
     }
 
@@ -312,5 +313,6 @@ module.exports = {
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
-    removeIDFromArchive    : removeIDFromArchive
+    removeIDFromArchive    : removeIDFromArchive,
+    setLogger              : setLogger
 }

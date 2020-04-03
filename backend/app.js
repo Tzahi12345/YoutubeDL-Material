@@ -53,6 +53,9 @@ const logger = winston.createLogger({
     ]
 });
 
+config_api.setLogger(logger);
+subscriptions_api.setLogger(logger);
+
 // var GithubContent = require('github-content');
 
 // Set some defaults
@@ -1630,7 +1633,7 @@ app.post('/api/updatePlaylist', async (req, res) => {
         logger.info(new_val);*/
         success = true;
     } catch(e) {
-        console.error(`Failed to find playlist with ID ${playlistID}`);
+        logger.error(`Failed to find playlist with ID ${playlistID}`);
     }
     
     res.send({

@@ -5,6 +5,9 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 
 let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.json';
 
+var logger = null;
+function setLogger(input_logger) { logger = input_logger; }
+
 // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
 Object.byString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
@@ -51,7 +54,7 @@ function getConfigFile() {
         let parsed_data = JSON.parse(raw_data);
         return parsed_data;
     } catch(e) {
-        console.log('ERROR: Failed to get config file');
+        logger.error('Failed to get config file');
         return null;
     }
 }
@@ -68,13 +71,13 @@ function setConfigFile(config) {
 function getConfigItem(key) {
     let config_json = getConfigFile();
     if (!CONFIG_ITEMS[key]) {
-        console.log(`ERROR: Config item with key '${key}' is not recognized.`);
+        logger.error(`Config item with key '${key}' is not recognized.`);
         return null;
     }
     let path = CONFIG_ITEMS[key]['path'];
     const val = Object.byString(config_json, path);
     if (val === undefined && Object.byString(DEFAULT_CONFIG, path)) {
-        console.log(`WARNING: Cannot find config with key '${key}'. Creating one with the default value...`);
+        logger.warning(`Cannot find config with key '${key}'. Creating one with the default value...`);
         setConfigItem(key, Object.byString(DEFAULT_CONFIG, path));
         return Object.byString(DEFAULT_CONFIG, path);
     }
@@ -130,7 +133,8 @@ module.exports = {
     getConfigFile: getConfigFile,
     setConfigFile: setConfigFile,
     configExistsCheck: configExistsCheck,
-    CONFIG_ITEMS: CONFIG_ITEMS
+    CONFIG_ITEMS: CONFIG_ITEMS,
+    setLogger: setLogger
 }
 
 DEFAULT_CONFIG = {
