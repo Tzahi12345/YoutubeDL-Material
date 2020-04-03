@@ -6,7 +6,6 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { environment } from './environments/environment';
 
 import { loadTranslations } from '@angular/localize';
-import { getTranslations, ParsedTranslationBundle } from '@locl/core';
 
 if (environment.production) {
   enableProdMode();
@@ -17,8 +16,7 @@ if (!locale) {
   localStorage.setItem('locale', 'en');
 }
 if (locale && locale !== 'en') {
-    getTranslations(`./assets/i18n/messages.${locale}.json`).then(
-      (data: ParsedTranslationBundle) => {
+  fetch(`./assets/i18n/messages.${locale}.json`).then(res => res.json()).then((data) => {
         loadTranslations(data as any);
         import('./app/app.module').then(module => {
           platformBrowserDynamic()

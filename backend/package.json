@@ -5,7 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "nodemon -q app.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "*.js",
+      "appdata/*",
+      "public/*"
+    ],
+    "watch": [
+      "restart.json"
+    ]
   },
   "repository": {
     "type": "git",
@@ -24,12 +34,16 @@
     "config": "^3.2.3",
     "exe": "^1.0.2",
     "express": "^4.17.1",
+    "fs-extra": "^9.0.0",
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
-    "node-id3": "^0.1.14",
     "merge-files": "^0.1.2",
     "node-fetch": "^2.6.0",
+    "node-id3": "^0.1.14",
+    "nodemon": "^2.0.2",
+    "progress": "^2.0.3",
     "shortid": "^2.2.15",
+    "unzipper": "^0.10.10",
     "uuidv4": "^6.0.6",
     "youtube-dl": "^3.0.2"
   }

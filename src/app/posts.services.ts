@@ -94,6 +94,10 @@ export class PostsService {
         }
     }
 
+    loadAsset(name) {
+        return this.http.get(`./assets/${name}`);
+    }
+
     setConfig(config) {
         return this.http.post(this.path + 'setConfig', {new_config_file: config});
     }
@@ -180,10 +184,24 @@ export class PostsService {
         return this.http.post(this.path + 'getAllSubscriptions', {});
     }
 
+    // updates the server to the latest version
+    updateServer(tag) {
+        return this.http.post(this.path + 'updateServer', {tag: tag});
+    }
+
+    getUpdaterStatus() {
+        return this.http.get(this.path + 'updaterStatus');
+    }
+
     // gets tag of the latest version of youtubedl-material
     getLatestGithubRelease() {
         return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest');
     }
+
+    getAvailableRelease() {
+        return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases');
+    }
+
 }
 
 

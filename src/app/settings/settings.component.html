@@ -247,6 +247,18 @@
     </div>
 </mat-expansion-panel>
 
+<!-- Version Control -->
+<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <ng-container i18n="Version settings title">Version</ng-container>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="new_config" class="container-fluid">
+        <app-updater></app-updater>
+    </div>
+</mat-expansion-panel>
+
 
 <!-- Advanced -->
 <mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
