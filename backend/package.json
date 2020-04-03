@@ -45,6 +45,7 @@
     "shortid": "^2.2.15",
     "unzipper": "^0.10.10",
     "uuidv4": "^6.0.6",
+    "winston": "^3.2.1",
     "youtube-dl": "^3.0.2"
   }
 }
