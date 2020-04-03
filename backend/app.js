@@ -1,6 +1,7 @@
 var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
+var winston = require('winston');
 var path = require('path');
 var youtubedl = require('youtube-dl');
 var compression = require('compression');
@@ -26,9 +27,34 @@ const { spawn } = require('child_process')
 
 var app = express();
 
+// database setup
 const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
+
+// logging setup
+
+// console format
+const defaultFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+    return `${timestamp} ${level.toUpperCase()}: ${message}`;
+});
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(winston.format.timestamp(), defaultFormat),
+    defaultMeta: {},
+    transports: [
+      //
+      // - Write to all logs with level `info` and below to `combined.log` 
+      // - Write all logs error (and below) to `error.log`.
+      //
+      new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
+      new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
+      new winston.transports.Console({level: 'info'})
+    ]
+});
+
+config_api.setLogger(logger);
+subscriptions_api.setLogger(logger);
 
 // var GithubContent = require('github-content');
 
@@ -67,7 +93,7 @@ var updaterStatus = null;
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
 
-if (debugMode) console.log('YTDL-Material in debug mode!');
+if (debugMode) logger.info('YTDL-Material in debug mode!');
 
 // check if just updated
 const just_restarted = fs.existsSync('restart.json');
@@ -139,13 +165,13 @@ async function startServer() {
     if (usingEncryption)
     {
         https.createServer(options, app).listen(backendPort, function() {
-            console.log(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on port ${backendPort} - using SSL`);
+            logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on port ${backendPort} - using SSL`);
         });
     }
     else
     {
         app.listen(backendPort,function(){
-            console.log(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
+            logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
         });
     }
 
@@ -159,7 +185,7 @@ async function restartServer() {
         }).unref()
         process.exit()
     }
-    console.log('Update complete! Restarting server...');
+    logger.info('Update complete! Restarting server...');
 
     // the following line restarts the server through nodemon
     fs.writeFileSync('restart.json', 'internal use only');
@@ -170,7 +196,7 @@ async function updateServer(tag) {
     if (!tag) {
         const new_version_available = await isNewVersionAvailable();
         if (!new_version_available) {
-            console.log('ERROR: Failed to update - no update is available.');
+            logger.error('ERROR: Failed to update - no update is available.');
             return false;
         }
     }
@@ -218,7 +244,7 @@ async function updateServer(tag) {
 async function downloadReleaseFiles(tag) {
     tag = tag ? tag : await getLatestVersion();
     return new Promise(async resolve => {
-        console.log('Downloading new files...')
+        logger.info('Downloading new files...')
 
         // downloads the latest release zip file
         await downloadReleaseZip(tag);
@@ -229,7 +255,7 @@ async function downloadReleaseFiles(tag) {
 
         let replace_ignore_list = ['youtubedl-material/appdata/default.json',
                                     'youtubedl-material/appdata/db.json']
-        console.log(`Installing update ${tag}...`)
+        logger.info(`Installing update ${tag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
         fs.createReadStream(path.join(__dirname, `youtubedl-material-latest-release-${tag}.zip`)).pipe(unzipper.Parse())
@@ -250,7 +276,7 @@ async function downloadReleaseFiles(tag) {
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
                 var actualFileName = fileName.replace('youtubedl-material/', '');
-                if (debugMode) console.log('Downloading file ' + actualFileName);
+                if (debugMode) logger.verbose('Downloading file ' + actualFileName);
                 entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
             } else {
                 entry.autodrain();
@@ -291,7 +317,6 @@ async function fetchFile(url, path, file_label) {
   }
 
 async function downloadReleaseZip(tag) {
-    console.log('downloading');
     return new Promise(async resolve => {
         // get name of zip file, which depends on the version
         const latest_release_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${tag}/`;
@@ -319,7 +344,7 @@ async function installDependencies() {
 async function backupServerLite() {
     return new Promise(async resolve => {
         let output_path = `backup-${Date.now()}.zip`;
-        console.log(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
+        logger.info(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
         let output = fs.createWriteStream(path.join(__dirname, output_path));
         var archive = archiver('zip', {
             gzip: true,
@@ -327,7 +352,7 @@ async function backupServerLite() {
         });
         
         archive.on('error', function(err) {
-            console.log(err);
+            logger.error(err);
             resolve(false);
         });
         
@@ -373,9 +398,9 @@ async function getLatestVersion() {
         .then(async (json) => {
             if (json['message']) {
                 // means there's an error in getting latest version
-                console.log(`ERROR: Received the following message from GitHub's API:`);
-                console.log(json['message']);
-                if (json['documentation_url']) console.log(`Associated URL: ${json['documentation_url']}`)
+                logger.error(`ERROR: Received the following message from GitHub's API:`);
+                logger.error(json['message']);
+                if (json['documentation_url']) logger.error(`Associated URL: ${json['documentation_url']}`)
             }
             resolve(json['tag_name']);
             return;
@@ -400,10 +425,10 @@ async function setConfigFromEnv() {
         let config_items = getEnvConfigItems();
         let success = config_api.setConfigItems(config_items);
         if (success) {
-            console.log('Config items set using ENV variables.');
+            logger.info('Config items set using ENV variables.');
             setTimeout(() => resolve(true), 100);
         } else {
-            console.log('ERROR: Failed to set config items using ENV variables.');
+            logger.error('ERROR: Failed to set config items using ENV variables.');
             resolve(false);
         }
     });
@@ -423,7 +448,7 @@ async function loadConfig() {
         subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
 
         if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
-            console.log(`INFO: Using non-default downloading agent \'${customDownloadingAgent}\'`)
+            logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
         } else {
             customDownloadingAgent = null;
         }
@@ -485,7 +510,7 @@ function watchSubscriptions() {
     let current_delay = 0;
     for (let i = 0; i < subscriptions.length; i++) {
         let sub = subscriptions[i];
-        if (debugMode) console.log('watching ' + sub.name + ' with delay interval of ' + delay_interval);
+        logger.debug('watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(() => {
             subscriptions_api.getVideosForSub(sub);
         }, current_delay);
@@ -655,7 +680,7 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
         });
         
         archive.on('error', function(err) {
-            console.log(err);
+            logger.error(err);
             throw err;
         });
         
@@ -717,7 +742,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
                 const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
                 if (blacklistMode && line) writeToBlacklist('audio', line);
             } else {
-                console.log('Could not find archive file for audio files. Creating...');
+                logger.info('Could not find archive file for audio files. Creating...');
                 fs.closeSync(fs.openSync(archive_path, 'w'));
             }
         }
@@ -775,7 +800,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
                 const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
                 if (blacklistMode && line) writeToBlacklist('video', line);
             } else {
-                console.log('Could not find archive file for videos. Creating...');
+                logger.info('Could not find archive file for videos. Creating...');
                 fs.closeSync(fs.openSync(archive_path, 'w'));
             }
         }
@@ -831,7 +856,7 @@ function getAudioInfos(fileNames) {
             try {
                 result.push(JSON.parse(data));
             } catch(e) {
-                console.log(`ERROR: Could not find info for file ${fileName}.mp3`);
+                logger.error(`Could not find info for file ${fileName}.mp3`);
             }
         }
     }
@@ -848,7 +873,7 @@ function getVideoInfos(fileNames) {
             try {
                 result.push(JSON.parse(data));
             } catch(e) {
-                console.log(`ERROR: Could not find info for file ${fileName}.mp4`);
+                logger.error(`Could not find info for file ${fileName}.mp4`);
             }
         }
     }
@@ -864,10 +889,10 @@ async function getUrlInfos(urls) {
             if (debugMode) {
                 let new_date = Date.now();
                 let difference = (new_date - startDate)/1000;
-                console.log(`URL info retrieval delay: ${difference} seconds.`);
+                logger.info(`URL info retrieval delay: ${difference} seconds.`);
             }
             if (err) {
-                console.log('Error during parsing:' + err);
+                logger.error('Error during parsing:' + err);
                 resolve(null);
             }
             let try_putput = null;
@@ -876,8 +901,8 @@ async function getUrlInfos(urls) {
                 result = try_putput;
             } catch(e) {
                 // probably multiple urls
-                console.log('failed to parse for urls starting with ' + urls[0]);
-                // console.log(output);
+                logger.error('failed to parse for urls starting with ' + urls[0]);
+                // logger.info(output);
             }
             resolve(result);
         });
@@ -903,7 +928,7 @@ async function autoUpdateYoutubeDL() {
         let current_app_details_path = 'node_modules/youtube-dl/bin/details';
         let current_app_details_exists = fs.existsSync(current_app_details_path);
         if (!current_app_details_exists) {
-            console.log(`ERROR: Failed to get youtube-dl binary details at location '${current_app_details_path}'. Cancelling update check.`);
+            logger.error(`Failed to get youtube-dl binary details at location '${current_app_details_path}'. Cancelling update check.`);
             resolve(false);
             return;
         }
@@ -911,14 +936,14 @@ async function autoUpdateYoutubeDL() {
         let current_version = current_app_details['version'];
         let stored_binary_path = current_app_details['path'];
         if (!stored_binary_path || typeof stored_binary_path !== 'string') {
-            // console.log(`INFO: Failed to get youtube-dl binary path at location: ${current_app_details_path}, attempting to guess actual path...`);
+            // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${current_app_details_path}, attempting to guess actual path...`);
             const guessed_base_path = 'node_modules/youtube-dl/bin/';
             const guessed_file_path = guessed_base_path + 'youtube-dl' + (process.platform === 'win32' ? '.exe' : '');
             if (fs.existsSync(guessed_file_path)) {
                 stored_binary_path = guessed_file_path;
-                // console.log('INFO: Guess successful! Update process continuing...')
+                // logger.info('INFO: Guess successful! Update process continuing...')
             } else {
-                console.log(`ERROR: Guess '${guessed_file_path}' is not correct. Cancelling update check. Verify that your youtube-dl binaries exist by running npm install.`);
+                logger.error(`Guess '${guessed_file_path}' is not correct. Cancelling update check. Verify that your youtube-dl binaries exist by running npm install.`);
                 resolve(false);
                 return;
             }
@@ -938,11 +963,11 @@ async function autoUpdateYoutubeDL() {
             if (current_version !== latest_update_version) {
                 let binary_path = 'node_modules/youtube-dl/bin';
                 // versions different, download new update
-                console.log('INFO: Found new update for youtube-dl. Updating binary...');
+                logger.info('Found new update for youtube-dl. Updating binary...');
                 try {
                     await checkExistsWithTimeout(stored_binary_path, 10000);
                 } catch(e) {
-                    console.log(`ERROR: Failed to update youtube-dl - ${e}`);
+                    logger.error(`Failed to update youtube-dl - ${e}`);
                 }
                 downloader(binary_path, function error(err, done) {
                     'use strict'
@@ -950,7 +975,7 @@ async function autoUpdateYoutubeDL() {
                         resolve(false);
                         throw err;
                     }
-                    console.log(`INFO: Binary successfully updated: ${current_version} -> ${latest_update_version}`);
+                    logger.info(`Binary successfully updated: ${current_version} -> ${latest_update_version}`);
                     resolve(true);
                 });
             }
@@ -1026,7 +1051,7 @@ app.post('/api/setConfig', function(req, res) {
             success: success
         });
     } else {
-        console.log('ERROR: Tried to save invalid config file!')
+        logger.error('Tried to save invalid config file!')
         res.sendStatus(400);
     }
     
@@ -1115,14 +1140,12 @@ app.post('/api/tomp3', async function(req, res) {
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        if (debugMode) {
-            let new_date = Date.now();
-            let difference = (new_date - date)/1000;
-            console.log(`Audio download delay: ${difference} seconds.`);
-        }
+        let new_date = Date.now();
+        let difference = (new_date - date)/1000;
+        logger.debug(`Audio download delay: ${difference} seconds.`);
         if (err) {
             audiopath = "-1";
-            console.log(err.stderr);
+            logger.error(err.stderr);
             res.sendStatus(500);
             throw err;
         } else if (output) {  
@@ -1151,9 +1174,9 @@ app.post('/api/tomp3', async function(req, res) {
                     }
                     // NodeID3.create(tags, function(frame) {  })
                     let success = NodeID3.write(tags, full_file_path);
-                    if (!success) console.log('ERROR: Failed to apply ID3 tag to audio file ' + full_file_path);
+                    if (!success) logger.error('Failed to apply ID3 tag to audio file ' + full_file_path);
                 } else {
-                    console.log('Output mp3 does not exist');
+                    logger.info('Output mp3 does not exist');
                 }
 
                 var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length-5);
@@ -1252,14 +1275,12 @@ app.post('/api/tomp4', async function(req, res) {
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        if (debugMode) {
-            let new_date = Date.now();
-            let difference = (new_date - date)/1000;
-            console.log(`Video download delay: ${difference} seconds.`);
-        }
+        let new_date = Date.now();
+        let difference = (new_date - date)/1000;
+        logger.debug(`Video download delay: ${difference} seconds.`);
         if (err) {
             videopath = "-1";
-            console.log(err.stderr);
+            logger.error(err.stderr);
             res.sendStatus(500);
             throw err;
         } else if (output) {
@@ -1285,7 +1306,7 @@ app.post('/api/tomp4', async function(req, res) {
                 if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
                     try {
                         fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
-                        console.log('Renamed ' + file_name + '.webm to ' + file_name);
+                        logger.info('Renamed ' + file_name + '.webm to ' + file_name);
                     } catch(e) {
                     }
                 }
@@ -1333,7 +1354,7 @@ app.post('/api/fileStatusMp3', function(req, res) {
             percent = downloaded/size;
         exists = ["failed", getFileSizeMp3(name), percent];
     }
-    //console.log(exists + " " + name);
+    //logger.info(exists + " " + name);
     res.send(exists);
     res.end("yes");
 });
@@ -1353,7 +1374,7 @@ app.post('/api/fileStatusMp4', function(req, res) {
             percent = downloaded/size;
         exists = ["failed", getFileSizeMp4(name), percent];
     }
-    //console.log(exists + " " + name);
+    //logger.info(exists + " " + name);
     res.send(exists);
     res.end("yes");
 });
@@ -1516,7 +1537,7 @@ app.post('/api/getSubscription', async (req, res) => {
             files = recFindByExt(appended_base_path, 'mp4');
         } catch(e) {
             files = null;
-            console.log('Failed to get folder for subscription: ' + subscription.name + ' at path ' + appended_base_path);
+            logger.info('Failed to get folder for subscription: ' + subscription.name + ' at path ' + appended_base_path);
             res.sendStatus(500);
             return;
         }
@@ -1605,14 +1626,14 @@ app.post('/api/updatePlaylist', async (req, res) => {
             .find({id: playlistID})
             .assign({fileNames: fileNames})
             .write();
-        /*console.log('success!');
+        /*logger.info('success!');
         let new_val = db.get(`playlists.${type}`)
             .find({id: playlistID})
             .value();
-        console.log(new_val);*/
+        logger.info(new_val);*/
         success = true;
     } catch(e) {
-        console.error(`Failed to find playlist with ID ${playlistID}`);
+        logger.error(`Failed to find playlist with ID ${playlistID}`);
     }
     
     res.send({
@@ -1711,7 +1732,7 @@ app.post('/api/downloadFile', async (req, res) => {
           try {
             fs.unlinkSync(file); 
           } catch(e) {
-            console.log("ERROR: Failed to remove file", file); 
+            logger.error("Failed to remove file", file); 
           }
         }
     });
@@ -1836,7 +1857,7 @@ app.get('/api/video/:id', function(req , res){
         file.on('close', function() {
             let index = descriptors[id].indexOf(file);
             descriptors[id].splice(index, 1);
-            if (debugMode) console.log('Successfully closed stream and removed file reference.');
+            logger.debug('Successfully closed stream and removed file reference.');
         });
         head = {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -1877,7 +1898,7 @@ app.get('/api/audio/:id', function(req , res){
     file.on('close', function() {
         let index = descriptors[id].indexOf(file);
         descriptors[id].splice(index, 1);
-        if (debugMode) console.log('Successfully closed stream and removed file reference.');
+        logger.debug('Successfully closed stream and removed file reference.');
     });
     head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
