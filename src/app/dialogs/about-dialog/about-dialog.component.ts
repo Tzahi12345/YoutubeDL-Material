@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
+import { CURRENT_VERSION } from 'app/consts';
 
 @Component({
   selector: 'app-about-dialog',
@@ -14,7 +15,7 @@ export class AboutDialogComponent implements OnInit {
   latestGithubRelease = null;
   checking_for_updates = true;
 
-  current_version_tag = 'v3.5.1';
+  current_version_tag = CURRENT_VERSION;
 
   constructor(private postsService: PostsService) { }
 

@@ -41,6 +41,7 @@
     "node-fetch": "^2.6.0",
     "node-id3": "^0.1.14",
     "nodemon": "^2.0.2",
+    "progress": "^2.0.3",
     "shortid": "^2.2.15",
     "unzipper": "^0.10.10",
     "uuidv4": "^6.0.6",

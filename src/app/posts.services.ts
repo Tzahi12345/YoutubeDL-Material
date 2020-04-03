@@ -185,14 +185,23 @@ export class PostsService {
     }
 
     // updates the server to the latest version
-    updateServer() {
-        return this.http.post(this.path + 'updateServer', {});
+    updateServer(tag) {
+        return this.http.post(this.path + 'updateServer', {tag: tag});
+    }
+
+    getUpdaterStatus() {
+        return this.http.get(this.path + 'updaterStatus');
     }
 
     // gets tag of the latest version of youtubedl-material
     getLatestGithubRelease() {
         return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest');
     }
+
+    getAvailableRelease() {
+        return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases');
+    }
+
 }
 
 

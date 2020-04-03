@@ -52,6 +52,8 @@ import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 import { VideoInfoDialogComponent } from './dialogs/video-info-dialog/video-info-dialog.component';
 import { ArgModifierDialogComponent, HighlightPipe } from './dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
+import { UpdaterComponent } from './updater/updater.component';
+import { UpdateProgressDialogComponent } from './dialogs/update-progress-dialog/update-progress-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -77,7 +79,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     AboutDialogComponent,
     VideoInfoDialogComponent,
     ArgModifierDialogComponent,
-    HighlightPipe
+    HighlightPipe,
+    UpdaterComponent,
+    UpdateProgressDialogComponent
   ],
   imports: [
     CommonModule,

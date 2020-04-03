@@ -11,6 +11,7 @@ var archiver = require('archiver');
 var unzipper = require('unzipper');
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
+var ProgressBar = require('progress');
 var md5 = require('md5');
 const NodeID3 = require('node-id3')
 const downloader = require('youtube-dl/lib/downloader')
@@ -61,11 +62,22 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 // other needed values
 var options = null; // encryption options
 var url_domain = null;
+var updaterStatus = null;
 
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
 
 if (debugMode) console.log('YTDL-Material in debug mode!');
+
+// check if just updated
+const just_restarted = fs.existsSync('restart.json');
+if (just_restarted) {
+    updaterStatus = {
+        updating: false,
+        details: 'Update complete! You are now on ' + CONSTS['CURRENT_VERSION']
+    }
+    fs.unlinkSync('restart.json');
+}
 
 // updates & starts youtubedl
 startYoutubeDL();
@@ -153,42 +165,63 @@ async function restartServer() {
     fs.writeFileSync('restart.json', 'internal use only');
 }
 
-async function updateServer() {
-    const new_version_available = await isNewVersionAvailable();
-    if (!new_version_available) {
-        console.log('ERROR: Failed to update - no update is available.');
-        return false;
+async function updateServer(tag) {
+    // no tag provided means update to the latest version
+    if (!tag) {
+        const new_version_available = await isNewVersionAvailable();
+        if (!new_version_available) {
+            console.log('ERROR: Failed to update - no update is available.');
+            return false;
+        }
     }
+    
     return new Promise(async resolve => {
         // backup current dir
+        updaterStatus = {
+            updating: true,
+            'details': 'Backing up key server files...'
+        }
         let backup_succeeded = await backupServerLite();
         if (!backup_succeeded) {
             resolve(false);
             return false;
         }
 
+        updaterStatus = {
+            updating: true,
+            'details': 'Downloading requested release...'
+        }
         // grab new package.json and public folder
-        await downloadUpdateFiles();
+        // await downloadReleaseFiles(tag);
 
+        updaterStatus = {
+            updating: true,
+            'details': 'Installing new dependencies...'
+        }
         // run npm install
         await installDependencies();
 
+        updaterStatus = {
+            updating: true,
+            'details': 'Update complete! Restarting server...'
+        }
         restartServer();
+    }, err => {
+        updaterStatus = {
+            updating: false,
+            error: true,
+            'details': 'Update failed. Check error logs for more info.'
+        }
     });
 }
 
-async function downloadUpdateFiles() {
-    let tag = await getLatestVersion();
+async function downloadReleaseFiles(tag) {
+    tag = tag ? tag : await getLatestVersion();
     return new Promise(async resolve => {
         console.log('Downloading new files...')
-        var options = {
-            owner: 'tzahi12345',
-            repo: 'YoutubeDL-Material',
-            branch: tag
-        };
 
         // downloads the latest release zip file
-        await downloadLatestRelease(tag);
+        await downloadReleaseZip(tag);
 
         // deletes contents of public dir
         fs.removeSync(path.join(__dirname, 'public'));
@@ -199,7 +232,7 @@ async function downloadUpdateFiles() {
         console.log(`Installing update ${tag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
-        fs.createReadStream(path.join(__dirname, 'youtubedl-material-latest-release.zip')).pipe(unzipper.Parse())
+        fs.createReadStream(path.join(__dirname, `youtubedl-material-latest-release-${tag}.zip`)).pipe(unzipper.Parse())
         .on('entry', function (entry) {
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
@@ -229,17 +262,46 @@ async function downloadUpdateFiles() {
     });
 }
 
-async function downloadLatestRelease(tag) {
+// helper function to download file using fetch
+async function fetchFile(url, path, file_label) {
+    var len = null;
+    const res = await fetch(url);
+
+    len = parseInt(res.headers.get("Content-Length"), 10);
+
+    var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
+        complete: '=',
+        incomplete: ' ',
+        width: 20,
+        total: len
+    });
+    const fileStream = fs.createWriteStream(path);
+    await new Promise((resolve, reject) => {
+        res.body.pipe(fileStream);
+        res.body.on("error", (err) => {
+          reject(err);
+        });
+        res.body.on('data', function (chunk) {
+            bar.tick(chunk.length);
+        });
+        fileStream.on("finish", function() {
+          resolve();
+        });
+      });
+  }
+
+async function downloadReleaseZip(tag) {
+    console.log('downloading');
     return new Promise(async resolve => {
-        // get name of latest zip file, which depends on the version
-        const latest_release_link = 'https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/';
+        // get name of zip file, which depends on the version
+        const latest_release_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${tag}/`;
         const tag_without_v = tag.substring(1, tag.length);
         const zip_file_name = `youtubedl-material-${tag_without_v}.zip`
         const latest_zip_link = latest_release_link + zip_file_name;
-        let output_path = path.join(__dirname, `youtubedl-material-latest-release.zip`);
+        let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
 
         // download zip from release
-        await fetchFile(latest_zip_link, output_path);
+        await fetchFile(latest_zip_link, output_path, 'update ' + tag);
         resolve(true);
     });
     
@@ -253,21 +315,6 @@ async function installDependencies() {
     });
     
 }
-
-// helper function to download file using fetch
-const fetchFile = (async (url, path) => {
-    const res = await fetch(url);
-    const fileStream = fs.createWriteStream(path);
-    await new Promise((resolve, reject) => {
-        res.body.pipe(fileStream);
-        res.body.on("error", (err) => {
-          reject(err);
-        });
-        fileStream.on("finish", function() {
-          resolve();
-        });
-      });
-  });
 
 async function backupServerLite() {
     return new Promise(async resolve => {
@@ -1694,6 +1741,32 @@ app.post('/api/downloadArchive', async (req, res) => {
     }
 
 });
+
+// Updater API calls
+
+app.get('/api/updaterStatus', async (req, res) => {
+    let status = updaterStatus;
+
+    if (status) {
+        res.send(updaterStatus);
+    } else {
+        res.sendStatus(404);
+    }
+
+});
+
+app.post('/api/updateServer', async (req, res) => {
+    let tag = req.body.tag;
+    
+    updateServer(tag);
+
+    res.send({
+        success: true
+    });
+
+});
+
+// Pin API calls
 
 app.post('/api/isPinSet', async (req, res) => {
     let stored_pin = db.get('pin_md5').value();
