@@ -10,9 +10,7 @@
     <div *ngIf="!image_errored && thumbnailURL" class="img-div">
       <img class="image" (error) ="onImgError($event)" [id]="type" [lazyLoad]="thumbnailURL" [customObservable]="scrollAndLoad" (onLoad)="imageLoaded($event)" alt="Thumbnail">
       <span *ngIf="!image_loaded">
-        <ngx-content-loading [width]="500" [height]="360">
-          <svg:g ngx-rect width="500" height="360" y="0" x="0" rx="4" ry="4"></svg:g>
-        </ngx-content-loading>
+        
       </span>
     </div>
   </div>

@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {DomSanitizer} from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
+import { CURRENT_VERSION } from 'app/consts';
 
 @Component({
   selector: 'app-settings',
@@ -24,6 +25,9 @@ export class SettingsComponent implements OnInit {
 
   _settingsSame = true;
 
+  latestGithubRelease = null;
+  CURRENT_VERSION = CURRENT_VERSION
+
   get settingsAreTheSame() {
     this._settingsSame = this.settingsSame()
     return this._settingsSame;
@@ -40,6 +44,8 @@ export class SettingsComponent implements OnInit {
     this.getConfig();
 
     this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());
+
+    this.getLatestGithubRelease();
   }
 
   getConfig() {
@@ -128,6 +134,12 @@ export class SettingsComponent implements OnInit {
      }
    });
  }
+
+ getLatestGithubRelease() {
+    this.postsService.getLatestGithubRelease().subscribe(res => {
+      this.latestGithubRelease = res;
+    });
+  }
 
   // snackbar helper
   public openSnackBar(message: string, action: string = '') {

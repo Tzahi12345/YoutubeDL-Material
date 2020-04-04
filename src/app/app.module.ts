@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgModule, LOCALE_ID } from '@angular/core';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -27,7 +27,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpModule } from '@angular/http';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { FileCardComponent } from './file-card/file-card.component';
@@ -38,7 +37,6 @@ import { PlayerComponent } from './player/player.component';
 import {VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule} from 'ngx-videogular';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
-import { NgxContentLoadingModule } from 'ngx-content-loading';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { DownloadItemComponent } from './download-item/download-item.component';
@@ -54,6 +52,8 @@ import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 import { VideoInfoDialogComponent } from './dialogs/video-info-dialog/video-info-dialog.component';
 import { ArgModifierDialogComponent, HighlightPipe } from './dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
+import { UpdaterComponent } from './updater/updater.component';
+import { UpdateProgressDialogComponent } from './dialogs/update-progress-dialog/update-progress-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -79,9 +79,12 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     AboutDialogComponent,
     VideoInfoDialogComponent,
     ArgModifierDialogComponent,
-    HighlightPipe
+    HighlightPipe,
+    UpdaterComponent,
+    UpdateProgressDialogComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     MatNativeDateModule,
@@ -90,7 +93,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,
-    HttpModule,
     HttpClientModule,
     MatToolbarModule,
     MatCardModule,
@@ -118,7 +120,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     VgOverlayPlayModule,
     VgBufferingModule,
     LazyLoadImageModule.forRoot({ isVisible }),
-    NgxContentLoadingModule,
     RouterModule,
     AppRoutingModule,
   ],

@@ -124,4 +124,7 @@ let CONFIG_ITEMS = {
     },
 };
 
-module.exports.CONFIG_ITEMS = CONFIG_ITEMS;
+module.exports = {
+    CONFIG_ITEMS: CONFIG_ITEMS,
+    CURRENT_VERSION: 'v3.5.1'
+}
