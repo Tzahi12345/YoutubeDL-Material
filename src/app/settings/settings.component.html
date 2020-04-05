@@ -210,6 +210,7 @@
                     <div class="col-12">
                         <h6>Bookmarklet</h6>
                         <p><ng-container i18n="Bookmarklet instructions">Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</ng-container></p>
+                        <mat-checkbox (change)="bookmarkletAudioOnlyChanged($event)"><ng-container i18n="Generate audio only bookmarklet checkbox">Generate 'audio only' bookmarklet</ng-container></mat-checkbox>
                         <!--<button style="margin-bottom: 5px;" mat-stroked-button color="accent" (click)="generateBookmarklet()">Generate bookmarklet</button>-->
                         <p><a [href]="generated_bookmarklet_code" target="_blank">YTDL-Bookmarklet</a></p>
                     </div>

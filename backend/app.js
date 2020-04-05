@@ -710,11 +710,21 @@ async function deleteAudioFile(name, blacklistMode = false) {
     return new Promise(resolve => {
         // TODO: split descriptors into audio and video descriptors, as deleting an audio file will close all video file streams
         var jsonPath = path.join(audioFolderPath,name+'.mp3.info.json');
+        var altJSONPath = path.join(audioFolderPath,name+'.info.json');
         var audioFilePath = path.join(audioFolderPath,name+'.mp3');
         jsonPath = path.join(__dirname, jsonPath);
+        altJSONPath = path.join(__dirname, altJSONPath);
         audioFilePath = path.join(__dirname, audioFilePath);
 
         let jsonExists = fs.existsSync(jsonPath);
+
+        if (!jsonExists) {
+            if (fs.existsSync(altJSONPath)) {
+                jsonExists = true;
+                jsonPath = altJSONPath;
+            }
+        }
+
         let audioFileExists = fs.existsSync(audioFilePath);
 
         if (descriptors[name]) {
@@ -1012,6 +1022,12 @@ async function checkExistsWithTimeout(filePath, timeout) {
     });
 }
 
+function removeFileExtension(filename) {
+    const filename_parts = filename.split('.');
+    filename_parts.splice(filename_parts.length - 1)
+    return filename_parts.join('.');
+}
+
 // https://stackoverflow.com/a/32197381/8088021
 const deleteFolderRecursive = function(folder_to_delete) {
     if (fs.existsSync(folder_to_delete)) {
@@ -1165,8 +1181,10 @@ app.post('/api/tomp3', async function(req, res) {
                     // if invalid, continue onto the next
                     continue;
                 }
+
+                const filename_no_extension = removeFileExtension(output_json['_filename']);
                 
-                var full_file_path = output_json['_filename'].substring(0, output_json['_filename'].length-5) + '.mp3';
+                var full_file_path = filename_no_extension + '.mp3';
                 if (fs.existsSync(full_file_path)) {
                     let tags = {
                         title: output_json['title'],
@@ -1179,7 +1197,7 @@ app.post('/api/tomp3', async function(req, res) {
                     logger.info('Output mp3 does not exist');
                 }
 
-                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length-5);
+                var file_path = filename_no_extension.substring(audioFolderPath.length, filename_no_extension.length);
                 if (file_path) file_names.push(file_path);
             }
 
