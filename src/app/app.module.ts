@@ -24,6 +24,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTabsModule } from '@angular/material/tabs';
   import {DragDropModule} from '@angular/cdk/drag-drop';
   import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
@@ -113,6 +114,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatSlideToggleModule,
     MatMenuModule,
     MatAutocompleteModule,
+    MatTabsModule,
     MatTooltipModule,
     DragDropModule,
     VgCoreModule,
