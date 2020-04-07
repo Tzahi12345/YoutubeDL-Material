@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ShareMediaDialogComponent } from 'app/dialogs/share-media-dialog/share-media-dialog.component';
+import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
 
 export interface IMedia {
   title: string;
