@@ -986,6 +986,7 @@ function registerFileDB(full_file_path, type) {
     db.get(`files.${type}`)
       .push(file_object)
       .write();
+    return file_object['uid'];
 }
 
 function generateFileObject(id, type) {
@@ -1328,6 +1329,7 @@ app.post('/api/tomp3', async function(req, res) {
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
         logger.debug(`Audio download delay: ${difference} seconds.`);
@@ -1368,7 +1370,7 @@ app.post('/api/tomp3', async function(req, res) {
                     if (!success) logger.error('Failed to apply ID3 tag to audio file ' + full_file_path);
 
                     // registers file in DB
-                    registerFileDB(full_file_path.substring(audioFolderPath.length, full_file_path.length), 'audio');
+                    uid = registerFileDB(full_file_path.substring(audioFolderPath.length, full_file_path.length), 'audio');
                 } else {
                     logger.error('Download failed: Output mp3 does not exist');
                 }
@@ -1389,7 +1391,8 @@ app.post('/api/tomp3', async function(req, res) {
             var audiopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
                 audiopathEncoded: audiopathEncoded,
-                file_names: is_playlist ? file_names : null
+                file_names: is_playlist ? file_names : null,
+                uid: uid
             });
         }
     });
@@ -1468,6 +1471,7 @@ app.post('/api/tomp4', async function(req, res) {
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
         logger.debug(`Video download delay: ${difference} seconds.`);
@@ -1510,7 +1514,7 @@ app.post('/api/tomp4', async function(req, res) {
                 }
 
                 // registers file in DB
-                registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
+                uid = registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
 
                 if (file_name) file_names.push(file_name);
             }
@@ -1528,7 +1532,8 @@ app.post('/api/tomp4', async function(req, res) {
             var videopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
                 videopathEncoded: videopathEncoded,
-                file_names: is_playlist ? file_names : null
+                file_names: is_playlist ? file_names : null,
+                uid: uid
             });
             res.end("yes");
         }
@@ -1599,6 +1604,101 @@ app.post('/api/getMp4s', function(req, res) {
         playlists: playlists
     });
     res.end("yes");
+});
+
+app.post('/api/getFile', function (req, res) {
+    var uid = req.body.uid;
+    var type = req.body.type;
+
+    var file = null;
+
+    if (!type) {
+        file = db.get('files.audio').find({uid: uid}).value();
+        if (!file) {
+            file = db.get('files.video').find({uid: uid}).value();
+            if (file) type = 'video';
+        } else {
+            type = 'audio';
+        }
+    }
+
+    if (!file && type) db.get(`files.${type}`).find({uid: uid}).value();
+
+    if (file) {
+        res.send({
+            success: true,
+            file: file
+        });
+    } else {
+        res.send({
+            success: false
+        });
+    }
+});
+
+// video sharing
+app.post('/api/enableSharing', function(req, res) {
+    var type = req.body.type;
+    var uid = req.body.uid;
+    try {
+        success = true;
+        if (type === 'audio' || type === 'video') {
+            db.get(`files.${type}`)
+                .find({uid: uid})
+                .assign({sharingEnabled: true})
+                .write();
+        } else if (type === 'playlist') {
+            db.get(`playlists.${type}`)
+                .find({id: uid})
+                .assign({sharingEnabled: true})
+                .write();
+        } else if (type === 'subscription') {
+            // TODO: Implement. Main blocker right now is subscription videos are not stored in the DB, they are searched for every
+            //          time they are requested from the subscription directory. 
+        } else {
+            // error
+            success = false;
+        }
+        
+    } catch(err) {
+        success = false;
+    }
+
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/disableSharing', function(req, res) {
+    var type = req.body.type;
+    var uid = req.body.uid;
+    try {
+        success = true;
+        if (type === 'audio' || type === 'video') {
+            db.get(`files.${type}`)
+                .find({uid: uid})
+                .assign({sharingEnabled: false})
+                .write();
+        } else if (type === 'playlist') {
+            db.get(`playlists.${type}`)
+                .find({id: uid})
+                .assign({sharingEnabled: false})
+                .write();
+        } else if (type === 'subscription') {
+            // TODO: Implement. Main blocker right now is subscription videos are not stored in the DB, they are searched for every
+            //          time they are requested from the subscription directory. 
+        } else {
+            // error
+            success = false;
+        }
+        
+    } catch(err) {
+        success = false;
+    }
+
+    res.send({
+        success: success
+    });
 });
 
 app.post('/api/subscribe', async (req, res) => {

@@ -1,4 +1,4 @@
-<div *ngIf="playlist.length > 0">
+<div *ngIf="playlist.length > 0 && show_player">
     <div [ngClass]="(type === 'audio') ? null : 'container-video'" class="container">
         <div style="max-width: 100%; margin-left: 0px;" class="row">
             <div [ngClass]="(type === 'audio') ? 'my-2 px-1' : 'video-col'" class="col">

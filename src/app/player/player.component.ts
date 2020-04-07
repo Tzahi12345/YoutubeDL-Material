@@ -25,6 +25,8 @@ export class PlayerComponent implements OnInit {
   original_playlist: string = null;
   playlist_updating = false;
 
+  show_player = false;
+
   currentIndex = 0;
   currentItem: IMedia = null;
   api: VgAPI;
@@ -33,6 +35,7 @@ export class PlayerComponent implements OnInit {
   fileNames: string[];
   type: string;
   id = null; // used for playlists (not subscription)
+  uid = null; // used for non-subscription files (audio, video, playlist)
   subscriptionName = null;
   subPlaylist = null;
 
@@ -53,9 +56,9 @@ export class PlayerComponent implements OnInit {
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
 
-    this.fileNames = this.route.snapshot.paramMap.get('fileNames').split('|nvr|');
     this.type = this.route.snapshot.paramMap.get('type');
     this.id = this.route.snapshot.paramMap.get('id');
+    this.uid = this.route.snapshot.paramMap.get('uid');
     this.subscriptionName = this.route.snapshot.paramMap.get('subscriptionName');
     this.subPlaylist = this.route.snapshot.paramMap.get('subPlaylist');
 
@@ -66,53 +69,16 @@ export class PlayerComponent implements OnInit {
       this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
       this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
       this.subscriptionFolderPath = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_base_path'];
+      this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
 
-
-      let fileType = null;
-      if (this.type === 'audio') {
-        fileType = 'audio/mp3';
-      } else if (this.type === 'video') {
-        fileType = 'video/mp4';
-      } else if (this.type === 'subscription') {
-        // only supports mp4 for now
-        fileType = 'video/mp4';
-      } else {
-        // error
-        console.error('Must have valid file type! Use \'audio\', \'video\', or \'subscription\'.');
+      if (this.uid) {
+        this.getFile();
       }
 
-      for (let i = 0; i < this.fileNames.length; i++) {
-        const fileName = this.fileNames[i];
-        let baseLocation = null;
-        let fullLocation = null;
-        if (!this.subscriptionName) {
-          baseLocation = this.type + '/';
-          fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
-        } else {
-          // default to video but include subscription name param
-          baseLocation = 'video/';
-          fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
-                          '&subPlaylist=' + this.subPlaylist;
-        }
-        // if it has a slash (meaning it's in a directory), only get the file name for the label
-        let label = null;
-        const decodedName = decodeURIComponent(fileName);
-        const hasSlash = decodedName.includes('/') || decodedName.includes('\\');
-        if (hasSlash) {
-          label = decodedName.replace(/^.*[\\\/]/, '');
-        } else {
-          label = decodedName;
-        }
-        const mediaObject: IMedia = {
-          title: fileName,
-          src: fullLocation,
-          type: fileType,
-          label: label
-        }
-        this.playlist.push(mediaObject);
+      if (this.type === 'subscription' || this.fileNames) {
+        this.show_player = true;
+        this.parseFileNames();
       }
-      this.currentItem = this.playlist[this.currentIndex];
-      this.original_playlist = JSON.stringify(this.playlist);
     });
 
     // this.getFileInfos();
@@ -122,6 +88,69 @@ export class PlayerComponent implements OnInit {
   constructor(private postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
               public snackBar: MatSnackBar) {
 
+  }
+
+  getFile() {
+    this.postsService.getFile(this.uid, null).subscribe(res => {
+      if (!this.fileNames) {
+        // means it's a shared video
+        if (!this.id) {
+          // regular video/audio file (not playlist)
+          this.fileNames = [res['file']['id']];
+          this.type = res['file']['isAudio'] ? 'audio' : 'video';
+          this.parseFileNames();
+        }
+      }
+      this.show_player = true;
+    });
+  }
+
+  parseFileNames() {
+    let fileType = null;
+    if (this.type === 'audio') {
+      fileType = 'audio/mp3';
+    } else if (this.type === 'video') {
+      fileType = 'video/mp4';
+    } else if (this.type === 'subscription') {
+      // only supports mp4 for now
+      fileType = 'video/mp4';
+    } else {
+      // error
+      console.error('Must have valid file type! Use \'audio\', \'video\', or \'subscription\'.');
+    }
+
+    for (let i = 0; i < this.fileNames.length; i++) {
+      const fileName = this.fileNames[i];
+      let baseLocation = null;
+      let fullLocation = null;
+      if (!this.subscriptionName) {
+        baseLocation = this.type + '/';
+        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
+      } else {
+        // default to video but include subscription name param
+        baseLocation = 'video/';
+        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
+                        '&subPlaylist=' + this.subPlaylist;
+      }
+      // if it has a slash (meaning it's in a directory), only get the file name for the label
+      let label = null;
+      const decodedName = decodeURIComponent(fileName);
+      const hasSlash = decodedName.includes('/') || decodedName.includes('\\');
+      if (hasSlash) {
+        label = decodedName.replace(/^.*[\\\/]/, '');
+      } else {
+        label = decodedName;
+      }
+      const mediaObject: IMedia = {
+        title: fileName,
+        src: fullLocation,
+        type: fileType,
+        label: label
+      }
+      this.playlist.push(mediaObject);
+    }
+    this.currentItem = this.playlist[this.currentIndex];
+    this.original_playlist = JSON.stringify(this.playlist);
   }
 
   onPlayerReady(api: VgAPI) {

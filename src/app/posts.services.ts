@@ -118,6 +118,10 @@ export class PostsService {
         return this.http.post(this.path + 'getMp4s', {});
     }
 
+    getFile(uid, type) {
+        return this.http.post(this.path + 'getFile', {uid: uid, type: type});
+    }
+
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
                                                             type: type,
@@ -145,6 +149,14 @@ export class PostsService {
 
     checkPin(unhashed_pin) {
         return this.http.post(this.path + 'checkPin', {input_pin: unhashed_pin});
+    }
+
+    enableSharing(uid, type) {
+        return this.http.post(this.path + 'enableSharing', {uid: uid, type: type});
+    }
+
+    disableSharing(uid, type) {
+        return this.http.post(this.path + 'disableSharing', {uid: uid, type: type});
     }
 
     createPlaylist(playlistName, fileNames, type, thumbnailURL) {
