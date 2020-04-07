@@ -19,6 +19,9 @@ export class SubscribeDialogComponent implements OnInit {
   // state
   subscribing = false;
 
+  // no videos actually downloaded, just streamed
+  streamingOnlyMode = false;
+
   time_units = [
     'day',
     'week',

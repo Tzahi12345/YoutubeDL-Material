@@ -29,6 +29,9 @@
                     </mat-option>
                 </mat-select>
             </div>
+            <div>
+                <mat-checkbox [(ngModel)]="streamingOnlyMode">Streaming-only mode</mat-checkbox>
+            </div>
         </div>
     </div>
 </mat-dialog-content>
@@ -36,7 +39,7 @@
 <mat-dialog-actions>
     <button mat-button mat-dialog-close><ng-container i18n="Subscribe cancel button">Cancel</ng-container></button>
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-    <button mat-button [disabled]="!url" type="submit" (click)="subscribeClicked()">Subscribe</button>
+    <button mat-button [disabled]="!url" type="submit" (click)="subscribeClicked()"><ng-container i18n="Subscribe button">Subscribe</ng-container></button>
     <div class="mat-spinner" *ngIf="subscribing">
       <mat-spinner [diameter]="25"></mat-spinner>
     </div>
