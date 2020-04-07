@@ -102,11 +102,11 @@ export class PostsService {
         return this.http.post(this.path + 'setConfig', {new_config_file: config});
     }
 
-    deleteFile(name: string, isAudio: boolean, blacklistMode = false) {
+    deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
         if (isAudio) {
-            return this.http.post(this.path + 'deleteMp3', {name: name, blacklistMode: blacklistMode});
+            return this.http.post(this.path + 'deleteMp3', {uid: uid, blacklistMode: blacklistMode});
         } else {
-            return this.http.post(this.path + 'deleteMp4', {name: name, blacklistMode: blacklistMode});
+            return this.http.post(this.path + 'deleteMp4', {uid: uid, blacklistMode: blacklistMode});
         }
     }
 
