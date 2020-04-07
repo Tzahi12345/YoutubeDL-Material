@@ -151,12 +151,12 @@ export class PostsService {
         return this.http.post(this.path + 'checkPin', {input_pin: unhashed_pin});
     }
 
-    enableSharing(uid, type) {
-        return this.http.post(this.path + 'enableSharing', {uid: uid, type: type});
+    enableSharing(uid, type, is_playlist) {
+        return this.http.post(this.path + 'enableSharing', {uid: uid, type: type, is_playlist: is_playlist});
     }
 
-    disableSharing(uid, type) {
-        return this.http.post(this.path + 'disableSharing', {uid: uid, type: type});
+    disableSharing(uid, type, is_playlist) {
+        return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist});
     }
 
     createPlaylist(playlistName, fileNames, type, thumbnailURL) {
@@ -164,6 +164,11 @@ export class PostsService {
                                                             fileNames: fileNames,
                                                             type: type,
                                                             thumbnailURL: thumbnailURL});
+    }
+
+    getPlaylist(playlistID, type) {
+        return this.http.post(this.path + 'getPlaylist', {playlistID: playlistID,
+                                                            type: type});
     }
 
     updatePlaylist(playlistID, fileNames, type) {

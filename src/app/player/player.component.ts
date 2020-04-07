@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ShareMediaDialogComponent } from 'app/dialogs/share-media-dialog/share-media-dialog.component';
 
 export interface IMedia {
   title: string;
@@ -39,6 +40,11 @@ export class PlayerComponent implements OnInit {
   subscriptionName = null;
   subPlaylist = null;
 
+  is_shared = false;
+  
+  db_playlist = null;
+  db_file = null;
+
   baseStreamPath = null;
   audioFolderPath = null;
   videoFolderPath = null;
@@ -71,8 +77,14 @@ export class PlayerComponent implements OnInit {
       this.subscriptionFolderPath = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_base_path'];
       this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
 
-      if (this.uid) {
+      if (!this.fileNames) {
+        this.is_shared = true;
+      }
+
+      if (this.uid && !this.id) {
         this.getFile();
+      } else if (this.id) {
+        this.getPlaylistFiles();
       }
 
       if (this.type === 'subscription' || this.fileNames) {
@@ -91,17 +103,33 @@ export class PlayerComponent implements OnInit {
   }
 
   getFile() {
+    const already_has_filenames = !!this.fileNames;
     this.postsService.getFile(this.uid, null).subscribe(res => {
+      this.db_file = res['file'];
       if (!this.fileNames) {
         // means it's a shared video
         if (!this.id) {
           // regular video/audio file (not playlist)
-          this.fileNames = [res['file']['id']];
-          this.type = res['file']['isAudio'] ? 'audio' : 'video';
-          this.parseFileNames();
+          this.fileNames = [this.db_file['id']];
+          this.type = this.db_file['isAudio'] ? 'audio' : 'video';
+          if (!already_has_filenames) { this.parseFileNames(); }
         }
       }
+      if (this.db_file['sharingEnabled']) {
+        this.show_player = true;
+      } else if (!already_has_filenames) {
+        this.openSnackBar('Error: Sharing has been disabled for this video!', 'Dismiss');
+      }
+    });
+  }
+
+  getPlaylistFiles() {
+    this.postsService.getPlaylist(this.id, null).subscribe(res => {
+      this.db_playlist = res['playlist'];
+      this.fileNames = this.db_playlist['fileNames'];
+      this.type = res['type'];
       this.show_player = true;
+      this.parseFileNames();
     });
   }
 
@@ -118,7 +146,7 @@ export class PlayerComponent implements OnInit {
       // error
       console.error('Must have valid file type! Use \'audio\', \'video\', or \'subscription\'.');
     }
-
+    this.playlist = [];
     for (let i = 0; i < this.fileNames.length; i++) {
       const fileName = this.fileNames[i];
       let baseLocation = null;
@@ -300,6 +328,26 @@ export class PlayerComponent implements OnInit {
         this.openSnackBar('ERROR: Failed to update playlist.', '');
       }
     })
+  }
+
+  openShareDialog() {
+    const dialogRef = this.dialog.open(ShareMediaDialogComponent, {
+      data: {
+        uid: this.id ? this.id : this.uid,
+        type: this.type,
+        sharing_enabled: this.id ? this.db_playlist.sharingEnabled : this.db_file.sharingEnabled,
+        is_playlist: !!this.id
+      },
+      width: '60vw'
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (!this.id) {
+        this.getFile();
+      } else {
+        this.getPlaylistFiles();
+      }
+    });
   }
 
   // snackbar helper

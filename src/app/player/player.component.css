@@ -45,13 +45,19 @@
 
 .save-button {
     right: 25px;
-    position: absolute;
+    position: fixed;
+    bottom: 25px;
+}
+
+.share-button {
+    left: 25px;
+    position: fixed;
     bottom: 25px;
 }
 
 .favorite-button {
     left: 25px;
-    position: absolute;
+    position: fixed;
     bottom: 25px;
 }
 

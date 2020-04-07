@@ -1640,14 +1640,15 @@ app.post('/api/getFile', function (req, res) {
 app.post('/api/enableSharing', function(req, res) {
     var type = req.body.type;
     var uid = req.body.uid;
+    var is_playlist = req.body.is_playlist;
     try {
         success = true;
-        if (type === 'audio' || type === 'video') {
+        if (!is_playlist && type !== 'subscription') {
             db.get(`files.${type}`)
                 .find({uid: uid})
                 .assign({sharingEnabled: true})
                 .write();
-        } else if (type === 'playlist') {
+        } else if (is_playlist) {
             db.get(`playlists.${type}`)
                 .find({id: uid})
                 .assign({sharingEnabled: true})
@@ -1672,15 +1673,16 @@ app.post('/api/enableSharing', function(req, res) {
 app.post('/api/disableSharing', function(req, res) {
     var type = req.body.type;
     var uid = req.body.uid;
+    var is_playlist = req.body.is_playlist;
     try {
         success = true;
-        if (type === 'audio' || type === 'video') {
+        if (!is_playlist && type !== 'subscription') {
             db.get(`files.${type}`)
                 .find({uid: uid})
                 .assign({sharingEnabled: false})
                 .write();
-        } else if (type === 'playlist') {
-            db.get(`playlists.${type}`)
+        } else if (is_playlist) {
+                db.get(`playlists.${type}`)
                 .find({id: uid})
                 .assign({sharingEnabled: false})
                 .write();
@@ -1851,7 +1853,8 @@ app.post('/api/createPlaylist', async (req, res) => {
         'name': playlistName,
         fileNames: fileNames,
         id: shortid.generate(),
-        thumbnailURL: thumbnailURL
+        thumbnailURL: thumbnailURL,
+        type: type
     };
 
     db.get(`playlists.${type}`)
@@ -1862,6 +1865,31 @@ app.post('/api/createPlaylist', async (req, res) => {
         new_playlist: new_playlist,
         success: !!new_playlist // always going to be true
     })
+});
+
+app.post('/api/getPlaylist', async (req, res) => {
+    let playlistID = req.body.playlistID;
+    let type = req.body.type;
+
+    let playlist = null;
+
+    if (!type) {
+        playlist = db.get('playlists.audio').find({id: playlistID}).value();
+        if (!playlist) {
+            playlist = db.get('playlists.video').find({id: playlistID}).value();
+            if (playlist) type = 'video';
+        } else {
+            type = 'audio';
+        }
+    }
+
+    if (!playlist) playlist = db.get(`playlists.${type}`).find({id: playlistID}).value();
+    
+    res.send({
+        playlist: playlist,
+        type: type,
+        success: !!playlist 
+    });
 });
 
 app.post('/api/updatePlaylist', async (req, res) => {
