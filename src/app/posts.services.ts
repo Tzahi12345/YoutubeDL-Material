@@ -122,12 +122,15 @@ export class PostsService {
         return this.http.post(this.path + 'getFile', {uid: uid, type: type});
     }
 
-    downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null) {
+    downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
                                                             type: type,
                                                             zip_mode: Array.isArray(fileName),
                                                             outputName: outputName,
-                                                            fullPathProvided: fullPathProvided},
+                                                            fullPathProvided: fullPathProvided,
+                                                            subscriptionName: subscriptionName,
+                                                            subPlaylist: subPlaylist
+                                                            },
                                                           {responseType: 'blob'});
     }
 

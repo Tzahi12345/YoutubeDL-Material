@@ -250,7 +250,7 @@ export class PlayerComponent implements OnInit {
     const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
     const filename = this.playlist[0].title;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(filename, this.type).subscribe(res => {
+    this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);

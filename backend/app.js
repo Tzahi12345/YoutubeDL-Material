@@ -1997,13 +1997,26 @@ app.post('/api/downloadFile', async (req, res) => {
     let type = req.body.type;
     let outputName = req.body.outputName;
     let fullPathProvided = req.body.fullPathProvided;
+    let subscriptionName = req.body.subscriptionName;
+    let subscriptionPlaylist = req.body.subscriptionPlaylist;
     let file = null;
     if (!zip_mode) {
         fileNames = decodeURIComponent(fileNames);
         if (type === 'audio') {
-            file = __dirname + '/' + audioFolderPath + fileNames + '.mp3';
-        } else if (type === 'video') {
-            file = __dirname + '/' + videoFolderPath + fileNames + '.mp4';
+            if (!subscriptionName) {
+                file = path.join(__dirname, audioFolderPath, fileNames + '.mp3');
+            } else {
+                let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+                file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp3')
+            } 
+        } else {
+            // if type is 'subscription' or 'video', it's a video
+            if (!subscriptionName) {
+                file = path.join(__dirname, videoFolderPath, fileNames + '.mp4');
+            } else {
+                let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+                file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
+            }
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
@@ -2011,10 +2024,9 @@ app.post('/api/downloadFile', async (req, res) => {
         }
         file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided);
     }
-
     res.sendFile(file, function (err) {
         if (err) {
-          next(err);
+          logger.error(err);
         } else if (fullPathProvided) {
           try {
             fs.unlinkSync(file); 
