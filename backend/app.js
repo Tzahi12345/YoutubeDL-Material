@@ -32,6 +32,9 @@ const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
 
+// check if debug mode
+let debugMode = process.env.YTDL_MODE === 'debug';
+
 // logging setup
 
 // console format
@@ -39,7 +42,7 @@ const defaultFormat = winston.format.printf(({ level, message, label, timestamp 
     return `${timestamp} ${level.toUpperCase()}: ${message}`;
 });
 const logger = winston.createLogger({
-    level: 'info',
+    level: !debugMode ? 'info' : 'debug',
     format: winston.format.combine(winston.format.timestamp(), defaultFormat),
     defaultMeta: {},
     transports: [
@@ -65,9 +68,14 @@ db.defaults(
             audio: [],
             video: []
         },
+        files: {
+            audio: [],
+            video: []
+        },
         configWriteFlag: false,
         subscriptions: [],
-        pin_md5: ''
+        pin_md5: '',
+        files_to_db_migration_complete: false
 }).write();
 
 // config values
@@ -89,9 +97,6 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 var options = null; // encryption options
 var url_domain = null;
 var updaterStatus = null;
-
-// check if debug mode
-let debugMode = process.env.YTDL_MODE === 'debug';
 
 if (debugMode) logger.info('YTDL-Material in debug mode!');
 
@@ -153,6 +158,56 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
 }
 
 // actual functions
+
+async function checkMigrations() {
+    return new Promise(async resolve => {
+        // 3.5->3.6 migration
+        const files_to_db_migration_complete = db.get('files_to_db_migration_complete').value();
+
+        if (!files_to_db_migration_complete) {
+            logger.info('Beginning migration: 3.5->3.6+')
+            runFilesToDBMigration().then(success => {
+                if (success) { logger.info('3.5->3.6+ migration complete!'); }
+                else { logger.error('Migration failed: 3.5->3.6+'); }
+            });
+        }
+
+        resolve(true);
+    });
+}
+
+async function runFilesToDBMigration() {
+    return new Promise(async resolve => {
+        try {
+            let mp3s = getMp3s();
+            let mp4s = getMp4s();
+
+            for (let i = 0; i < mp3s.length; i++) {
+                let file_obj = mp3s[i];
+                const file_already_in_db = db.get('files.audio').find({id: file_obj.id}).value();
+                if (!file_already_in_db) {
+                    logger.verbose(`Migrating file ${file_obj.id}`);
+                    registerFileDB(file_obj.id + '.mp3', 'audio');
+                }
+            }
+
+            for (let i = 0; i < mp4s.length; i++) {
+                let file_obj = mp4s[i];
+                const file_already_in_db = db.get('files.video').find({id: file_obj.id}).value();
+                if (!file_already_in_db) {
+                    logger.verbose(`Migrating file ${file_obj.id}`);
+                    registerFileDB(file_obj.id + '.mp4', 'video');
+                }
+            }
+
+            // sets migration to complete
+            db.set('files_to_db_migration_complete', true).write();
+            resolve(true);
+        } catch(err) {
+            resolve(false);
+        }
+    });
+}
 
 async function startServer() {
     if (process.env.USING_HEROKU && process.env.PORT) {
@@ -435,7 +490,7 @@ async function setConfigFromEnv() {
 }
 
 async function loadConfig() {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
         url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
         backendPort = config_api.getConfigItem('ytdl_port');
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
@@ -482,6 +537,9 @@ async function loadConfig() {
                 watchSubscriptions();
             }, subscriptionsCheckInterval * 1000);
         }
+
+        // check migrations
+        await checkMigrations();
 
         // start the server here
         startServer();
@@ -542,6 +600,64 @@ function getEnvConfigItems() {
 // gets value of a config item and stores it in an object
 function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
+}
+
+function getMp3s() {
+    let mp3s = [];
+    var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        var file_path = file.substring(audioFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONMp3(id);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+
+        var size = stats.size;
+
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+        var isaudio = true;
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+        mp3s.push(file_obj);
+    }
+    return mp3s;
+}
+
+function getMp4s(relative_path = true) {
+    let mp4s = [];
+    var files = recFindByExt(videoFolderPath, 'mp4');
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        var file_path = file.substring(videoFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+        
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONMp4(id);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+
+        var size = stats.size;
+
+        var isaudio = false;
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+        mp4s.push(file_obj);
+    }
+    return mp4s;
 }
 
 function getThumbnailMp3(name)
@@ -854,6 +970,62 @@ function recFindByExt(base,ext,files,result)
         }
     )
     return result
+}
+
+function registerFileDB(full_file_path, type) {
+    const file_id = full_file_path.substring(0, full_file_path.length-4);
+    const file_object = generateFileObject(file_id, type);
+    if (!file_object) {
+        logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
+        return false;
+    }
+
+    file_object['uid'] = uuid();
+    path_object = path.parse(file_object['path']);
+    file_object['path'] = path.format(path_object);
+    db.get(`files.${type}`)
+      .push(file_object)
+      .write();
+}
+
+function generateFileObject(id, type) {
+    var jsonobj = (type === 'audio') ? getJSONMp3(id) : getJSONMp4(id);
+    if (!jsonobj) {
+        return null;
+    }
+    const ext = (type === 'audio') ? '.mp3' : '.mp4'
+    const file_path = getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
+    var stats = fs.statSync(path.join(__dirname, file_path));
+
+    var title = jsonobj.title;
+    var url = jsonobj.webpage_url;
+    var uploader = jsonobj.uploader;
+    var upload_date = jsonobj.upload_date;
+    upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+
+    var size = stats.size;
+
+    var thumbnail = jsonobj.thumbnail;
+    var duration = jsonobj.duration;
+    var isaudio = type === 'audio';
+    var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
+    return file_obj;
+}
+
+// replaces .webm with appropriate extension
+function getTrueFileName(unfixed_path, type) {
+    let fixed_path = unfixed_path;
+
+    const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
+    let unfixed_parts = unfixed_path.split('.');
+    const old_ext = unfixed_parts[unfixed_parts.length-1];
+
+
+    if (old_ext !== new_ext) {
+        unfixed_parts[unfixed_parts.length-1] = new_ext;
+        fixed_path = unfixed_parts.join('.');
+    }
+    return fixed_path;
 }
 
 function getAudioInfos(fileNames) {
@@ -1182,9 +1354,10 @@ app.post('/api/tomp3', async function(req, res) {
                     continue;
                 }
 
-                const filename_no_extension = removeFileExtension(output_json['_filename']);
+                const filepath_no_extension = removeFileExtension(output_json['_filename']);
                 
-                var full_file_path = filename_no_extension + '.mp3';
+                var full_file_path = filepath_no_extension + '.mp3';
+                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
                 if (fs.existsSync(full_file_path)) {
                     let tags = {
                         title: output_json['title'],
@@ -1193,12 +1366,14 @@ app.post('/api/tomp3', async function(req, res) {
                     // NodeID3.create(tags, function(frame) {  })
                     let success = NodeID3.write(tags, full_file_path);
                     if (!success) logger.error('Failed to apply ID3 tag to audio file ' + full_file_path);
+
+                    // registers file in DB
+                    registerFileDB(full_file_path.substring(audioFolderPath.length, full_file_path.length), 'audio');
                 } else {
-                    logger.info('Output mp3 does not exist');
+                    logger.error('Download failed: Output mp3 does not exist');
                 }
 
-                var file_path = filename_no_extension.substring(audioFolderPath.length, filename_no_extension.length);
-                if (file_path) file_names.push(file_path);
+                if (file_name) file_names.push(file_name);
             }
 
             let is_playlist = file_names.length > 1;
@@ -1318,7 +1493,13 @@ app.post('/api/tomp4', async function(req, res) {
                 if (!output_json) {
                     continue;
                 } 
-                var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
+                // var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
+
+                // get filepath with no extension
+                const filepath_no_extension = removeFileExtension(output_json['_filename']);
+                
+                var full_file_path = filepath_no_extension + '.mp4';
+                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
 
                 // renames file if necessary due to bug
                 if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
@@ -1328,11 +1509,11 @@ app.post('/api/tomp4', async function(req, res) {
                     } catch(e) {
                     }
                 }
-                var alternate_file_name = file_name.substring(0, file_name.length-4);
-                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
-                // remove extension from file path
-                var alternate_file_path = file_path.replace(/\.[^/.]+$/, "")
-                if (alternate_file_name) file_names.push(alternate_file_path);
+
+                // registers file in DB
+                registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
+
+                if (file_name) file_names.push(file_name);
             }
 
             let is_playlist = file_names.length > 1;
@@ -1399,32 +1580,8 @@ app.post('/api/fileStatusMp4', function(req, res) {
 
 // gets all download mp3s
 app.post('/api/getMp3s', function(req, res) {
-    var mp3s = [];
+    var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
-    var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(audioFolderPath.length, file.length);
-
-        var stats = fs.statSync(file);
-
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = getJSONMp3(id);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
-
-        var size = stats.size;
-
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-        var isaudio = true;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp3s.push(file_obj);
-    }
 
     res.send({
         mp3s: mp3s,
@@ -1435,33 +1592,8 @@ app.post('/api/getMp3s', function(req, res) {
 
 // gets all download mp4s
 app.post('/api/getMp4s', function(req, res) {
-    var mp4s = [];
+    var mp4s = db.get('files.video').value(); // getMp4s();
     var playlists = db.get('playlists.video').value();
-    var fullpath = videoFolderPath;
-    var files = recFindByExt(videoFolderPath, 'mp4');
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(videoFolderPath.length, file.length);
-
-        var stats = fs.statSync(file);
-        
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = getJSONMp4(id);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-
-        var size = stats.size;
-
-        var isaudio = false;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp4s.push(file_obj);
-    }
 
     res.send({
         mp4s: mp4s,
