@@ -102,11 +102,11 @@ export class PostsService {
         return this.http.post(this.path + 'setConfig', {new_config_file: config});
     }
 
-    deleteFile(name: string, isAudio: boolean, blacklistMode = false) {
+    deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
         if (isAudio) {
-            return this.http.post(this.path + 'deleteMp3', {name: name, blacklistMode: blacklistMode});
+            return this.http.post(this.path + 'deleteMp3', {uid: uid, blacklistMode: blacklistMode});
         } else {
-            return this.http.post(this.path + 'deleteMp4', {name: name, blacklistMode: blacklistMode});
+            return this.http.post(this.path + 'deleteMp4', {uid: uid, blacklistMode: blacklistMode});
         }
     }
 
@@ -116,6 +116,10 @@ export class PostsService {
 
     getMp4s() {
         return this.http.post(this.path + 'getMp4s', {});
+    }
+
+    getFile(uid, type) {
+        return this.http.post(this.path + 'getFile', {uid: uid, type: type});
     }
 
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null) {
@@ -147,11 +151,24 @@ export class PostsService {
         return this.http.post(this.path + 'checkPin', {input_pin: unhashed_pin});
     }
 
+    enableSharing(uid, type, is_playlist) {
+        return this.http.post(this.path + 'enableSharing', {uid: uid, type: type, is_playlist: is_playlist});
+    }
+
+    disableSharing(uid, type, is_playlist) {
+        return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist});
+    }
+
     createPlaylist(playlistName, fileNames, type, thumbnailURL) {
         return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
                                                             fileNames: fileNames,
                                                             type: type,
                                                             thumbnailURL: thumbnailURL});
+    }
+
+    getPlaylist(playlistID, type) {
+        return this.http.post(this.path + 'getPlaylist', {playlistID: playlistID,
+                                                            type: type});
     }
 
     updatePlaylist(playlistID, fileNames, type) {

@@ -2,7 +2,7 @@
   <div style="padding:5px">
     <div style="height: 52px;">
       <div>
-        <b><a class="file-link" href="javascript:void(0)" (click)="!isPlaylist ? mainComponent.goToFile(name, isAudio) : mainComponent.goToPlaylist(name, type)">{{title}}</a></b>
+        <b><a class="file-link" href="javascript:void(0)" (click)="!isPlaylist ? mainComponent.goToFile(name, isAudio, uid) : mainComponent.goToPlaylist(name, type)">{{title}}</a></b>
       </div>
       <span class="max-two-lines"><ng-container i18n="File or playlist ID">ID:</ng-container>&nbsp;{{name}}</span>
       <div *ngIf="isPlaylist"><ng-container i18n="Playlist video count">Count:</ng-container>&nbsp;{{count}}</div>

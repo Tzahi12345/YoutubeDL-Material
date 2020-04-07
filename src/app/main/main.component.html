@@ -204,7 +204,7 @@
             <div *ngIf="mp3s.length > 0;else nomp3s">
                 <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp3s; index as i;">
-                        <app-file-card #audiofilecard (removeFile)="removeFromMp3($event)" [file]="file" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                        <app-file-card #audiofilecard (removeFile)="removeFromMp3($event)" [file]="file" [title]="file.title" [name]="file.id" [uid]="file.uid" [thumbnailURL]="file.thumbnailURL"
                                 [length]="file.duration" [isAudio]="true" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
@@ -245,7 +245,7 @@
             <div *ngIf="mp4s.length > 0;else nomp4s">
                 <mat-grid-list style="margin-bottom: 15px;" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let file of mp4s; index as i;">
-                        <app-file-card #videofilecard (removeFile)="removeFromMp4($event)" [file]="file" [title]="file.title" [name]="file.id" [thumbnailURL]="file.thumbnailURL"
+                        <app-file-card #videofilecard (removeFile)="removeFromMp4($event)" [file]="file" [title]="file.title" [name]="file.id" [uid]="file.uid" [thumbnailURL]="file.thumbnailURL"
                             [length]="file.duration" [isAudio]="false" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][file.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
