@@ -1493,7 +1493,6 @@ app.post('/api/tomp4', async function(req, res) {
                 if (!output_json) {
                     continue;
                 } 
-                // var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
 
                 // get filepath with no extension
                 const filepath_no_extension = removeFileExtension(output_json['_filename']);
@@ -1814,40 +1813,50 @@ app.post('/api/deletePlaylist', async (req, res) => {
 
 // deletes mp3 file
 app.post('/api/deleteMp3', async (req, res) => {
-    var name = req.body.name;
+    // var name = req.body.name;
+    var uid = req.body.uid;
+    var audio_obj = db.get('files.audio').find({uid: uid}).value();
+    var name = audio_obj.id;
     var blacklistMode = req.body.blacklistMode;
     var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
         deleteAudioFile(name, blacklistMode);
+        db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
-    }
-    else
-    {
+    } else if (audio_obj) {
+        db.get('files.audio').remove({uid: uid}).write();
+        wasDeleted = true;
+        res.send(wasDeleted);
+    } else {
         wasDeleted = false;
         res.send(wasDeleted);
-        res.end("yes");
     }
 });
 
 // deletes mp4 file
 app.post('/api/deleteMp4', async (req, res) => {
-    var name = req.body.name;
+    var uid = req.body.uid;
+    var video_obj = db.get('files.video').find({uid: uid}).value();
+    var name = video_obj.id;
     var blacklistMode = req.body.blacklistMode;
     var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
         wasDeleted = await deleteVideoFile(name, null, blacklistMode);
+        db.get('files.video').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
-    }
-    else
-    {
+    } else if (video_obj) {
+        db.get('files.video').remove({uid: uid}).write();
+        wasDeleted = true;
+        res.send(wasDeleted);
+    } else {
         wasDeleted = false;
         res.send(wasDeleted);
         res.end("yes");
