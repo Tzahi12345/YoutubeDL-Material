@@ -398,7 +398,8 @@ async function installDependencies() {
 
 async function backupServerLite() {
     return new Promise(async resolve => {
-        let output_path = `backup-${Date.now()}.zip`;
+        fs.ensureDirSync(path.join(__dirname, 'appdata', 'backups'));
+        let output_path = path.join('appdata', 'backups', `backup-${Date.now()}.zip`);
         logger.info(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
         let output = fs.createWriteStream(path.join(__dirname, output_path));
         var archive = archiver('zip', {
