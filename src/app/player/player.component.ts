@@ -281,6 +281,7 @@ export class PlayerComponent implements OnInit {
             if (res['success']) {
               dialogRef.close();
               const new_playlist = res['new_playlist'];
+              this.db_playlist = new_playlist;
               this.openSnackBar('Playlist \'' + name + '\' successfully created!', '')
               this.playlistPostCreationHandler(new_playlist.id);
             }
