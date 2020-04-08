@@ -42,7 +42,7 @@ const defaultFormat = winston.format.printf(({ level, message, label, timestamp 
     return `${timestamp} ${level.toUpperCase()}: ${message}`;
 });
 const logger = winston.createLogger({
-    level: !debugMode ? 'info' : 'debug',
+    level: 'info',
     format: winston.format.combine(winston.format.timestamp(), defaultFormat),
     defaultMeta: {},
     transports: [
@@ -52,7 +52,7 @@ const logger = winston.createLogger({
       //
       new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
       new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
-      new winston.transports.Console({level: 'info'})
+      new winston.transports.Console({level: !debugMode ? 'info' : 'debug'})
     ]
 });
 
@@ -331,7 +331,7 @@ async function downloadReleaseFiles(tag) {
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
                 var actualFileName = fileName.replace('youtubedl-material/', '');
-                if (debugMode) logger.verbose('Downloading file ' + actualFileName);
+                logger.verbose('Downloading file ' + actualFileName);
                 entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
             } else {
                 entry.autodrain();
@@ -568,7 +568,7 @@ function watchSubscriptions() {
     let current_delay = 0;
     for (let i = 0; i < subscriptions.length; i++) {
         let sub = subscriptions[i];
-        logger.debug('watching ' + sub.name + ' with delay interval of ' + delay_interval);
+        logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(() => {
             subscriptions_api.getVideosForSub(sub);
         }, current_delay);

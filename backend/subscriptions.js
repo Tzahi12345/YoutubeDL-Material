@@ -215,14 +215,14 @@ async function getVideosForSub(sub) {
         }
 
         // get videos 
+        logger.verbose('Subscribe: getting videos for subscription ' + sub.name);
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
-            logger.verbose('Subscribe: got videos for subscription ' + sub.name);
             if (err) {
                 logger.error(err.stderr);
                 resolve(false);
             } else if (output) {
                 if (output.length === 0 || (output.length === 1 && output[0] === '')) {
-                    logger.debug('No additional videos to download for ' + sub.name);
+                    logger.verbose('No additional videos to download for ' + sub.name);
                     resolve(true);
                 }
                 for (let i = 0; i < output.length; i++) {
