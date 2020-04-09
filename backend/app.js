@@ -419,7 +419,7 @@ async function backupServerLite() {
         const files_to_ignore = [path.join(config_api.getConfigItem('ytdl_subscriptions_base_path'), '**'),
                                 path.join(config_api.getConfigItem('ytdl_audio_folder_path'), '**'),
                                 path.join(config_api.getConfigItem('ytdl_video_folder_path'), '**'),
-                                'backup-*.zip'];
+                                'appdata/backups/backup-*.zip'];
 
         archive.glob('**/*', {
             ignore: files_to_ignore
