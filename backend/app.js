@@ -273,7 +273,7 @@ async function updateServer(tag) {
             'details': 'Downloading requested release...'
         }
         // grab new package.json and public folder
-        // await downloadReleaseFiles(tag);
+        await downloadReleaseFiles(tag);
 
         updaterStatus = {
             updating: true,
