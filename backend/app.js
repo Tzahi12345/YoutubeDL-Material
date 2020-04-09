@@ -313,7 +313,7 @@ async function downloadReleaseFiles(tag) {
         logger.info(`Installing update ${tag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
-        fs.createReadStream(path.join(__dirname, `youtubedl-material-latest-release-${tag}.zip`)).pipe(unzipper.Parse())
+        fs.createReadStream(path.join(__dirname, `youtubedl-material-release-${tag}.zip`)).pipe(unzipper.Parse())
         .on('entry', function (entry) {
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
