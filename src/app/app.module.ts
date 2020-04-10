@@ -24,8 +24,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-  import {DragDropModule} from '@angular/cdk/drag-drop';
-  import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {ClipboardModule} from '@angular/cdk/clipboard';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
@@ -54,6 +56,7 @@ import { VideoInfoDialogComponent } from './dialogs/video-info-dialog/video-info
 import { ArgModifierDialogComponent, HighlightPipe } from './dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { UpdaterComponent } from './updater/updater.component';
 import { UpdateProgressDialogComponent } from './dialogs/update-progress-dialog/update-progress-dialog.component';
+import { ShareMediaDialogComponent } from './dialogs/share-media-dialog/share-media-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -81,7 +84,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     ArgModifierDialogComponent,
     HighlightPipe,
     UpdaterComponent,
-    UpdateProgressDialogComponent
+    UpdateProgressDialogComponent,
+    ShareMediaDialogComponent
   ],
   imports: [
     CommonModule,
@@ -113,8 +117,10 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatSlideToggleModule,
     MatMenuModule,
     MatAutocompleteModule,
+    MatTabsModule,
     MatTooltipModule,
     DragDropModule,
+    ClipboardModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

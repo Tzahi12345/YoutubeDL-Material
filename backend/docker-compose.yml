@@ -2,7 +2,6 @@
 version: "2"
 services:
     ytdl_material:
-        build: .
         environment: 
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: always

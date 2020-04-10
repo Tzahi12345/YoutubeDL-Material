@@ -1,295 +1,287 @@
 <h4 i18n="Settings title" mat-dialog-title>Settings</h4>
 <!-- <ng-container i18n="Allow subscriptions setting"></ng-container> -->
 <mat-dialog-content>
-<!-- Language -->
+
+<!-- Language 
 <div style="margin-bottom: 10px;">
-    Language:&nbsp;&nbsp;&nbsp;<mat-select class="locale-select" (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
-        <mat-option *ngFor="let locale of supported_locales" [value]="locale">
-            {{all_locales[locale]['nativeName']}}
-        </mat-option>
-    </mat-select>
-</div>
+    
+</div> -->
 
-<!-- Host -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Host settings title">Host</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input [(ngModel)]="new_config['Host']['url']" matInput placeholder="URL" i18n-placeholder="URL input placeholder" required>
-                    <mat-hint><ng-container i18n="URL setting input hint">URL this app will be accessed from, without the port.</ng-container></mat-hint>
-                </mat-form-field>
+<mat-tab-group>
+    <!-- Server -->
+    <mat-tab label="Main" i18n-label="Main settings label">
+        <ng-template matTabContent style="padding: 15px;">
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-form-field color="accent">
+                            <input [(ngModel)]="new_config['Host']['url']" matInput placeholder="URL" i18n-placeholder="URL input placeholder" required>
+                            <mat-hint><ng-container i18n="URL setting input hint">URL this app will be accessed from, without the port.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mb-4">
+                        <mat-form-field color="accent">
+                            <input [(ngModel)]="new_config['Host']['port']" matInput placeholder="Port" i18n-placeholder="Port input placeholder" required>
+                            <mat-hint><ng-container i18n="Port setting input hint">The desired port. Default is 17442.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
             </div>
-            <div class="col-12 mt-4">
-                <mat-form-field color="accent">
-                    <input [(ngModel)]="new_config['Host']['port']" matInput placeholder="Port" i18n-placeholder="Port input placeholder" required>
-                    <mat-hint><ng-container i18n="Port setting input hint">The desired port. Default is 17442.</ng-container></mat-hint>
-                </mat-form-field>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Encryption']['use-encryption']"><ng-container i18n="Use encryption setting">Use encryption</ng-container></mat-checkbox>
+                    </div>
+                    
+                    <div class="col-12">
+                        <mat-form-field color="accent">
+                            <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['cert-file-path']" matInput placeholder="Cert file path" i18n-placeholder="Cert file path input placeholder">
+                        </mat-form-field>
+                    </div>
+                    
+                    <div class="col-12">
+                        <mat-form-field color="accent">
+                            <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['key-file-path']" matInput placeholder="Key file path" i18n-placeholder="Key file path input placeholder">
+                        </mat-form-field>
+                    </div>
+                </div>
             </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['allow_subscriptions']"><ng-container i18n="Allow subscriptions setting">Allow subscriptions</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field color="accent">
+                            <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_base_path']" matInput placeholder="Subscriptions base path" i18n-placeholder="Subscriptions base path input setting placeholder">
+                            <mat-hint><ng-container i18n="Subscriptions base path setting input hint">Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-5">
+                        <mat-form-field color="accent">
+                            <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_check_interval']" matInput placeholder="Check interval" i18n-placeholder="Check interval input setting placeholder">
+                            <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <mat-checkbox color="accent" [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_use_youtubedl_archive']"><ng-container i18n="Use youtube-dl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
+                        <p><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#how-do-i-download-only-new-videos-from-a-playlist"><ng-container i18n="youtube-dl archive explanation prefix link">With youtube-dl's archive</ng-container></a>&nbsp;<ng-container i18n="youtube-dl archive explanation middle">feature, downloaded videos from your subscriptions get recorded in a text file in the subscriptions archive sub-directory.</ng-container></p>
+                        <p><ng-container i18n="youtube-dl archive explanation suffix">This enables the ability to permanently delete videos from your subscriptions without unsubscribing, and allows you to record which videos you downloaded in case of data loss.</ng-container></p>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-form-field>
+                            <mat-label><ng-container i18n="Theme select label">Theme</ng-container></mat-label>
+                            <mat-select color="accent" [(ngModel)]="new_config['Themes']['default_theme']">
+                                <mat-option value="default"><ng-container i18n="Default theme label">Default</ng-container></mat-option>
+                                <mat-option value="dark"><ng-container i18n="Dark theme label">Dark</ng-container></mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Themes']['allow_theme_change']"><ng-container i18n="Allow theme change setting">Allow theme change</ng-container></mat-checkbox>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-form-field>
+                            <mat-label><ng-container i18n="Language select label">Language</ng-container></mat-label>
+                            <mat-select (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
+                                <mat-option *ngFor="let locale of supported_locales" [value]="locale">
+                                    {{all_locales[locale]['nativeName']}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </mat-tab>
+    <!-- Encryption 
+    <mat-tab label="Encryption" i18n-label="Host settings label">
+        <ng-template matTabContent>
             
-        </div>
-    </div>
-</mat-expansion-panel>
+        </ng-template>
+    </mat-tab>
+    -->
+    <!-- Downloader -->
+    <mat-tab label="Downloader" i18n-label="Downloader settings label">
+        <ng-template matTabContent>
+            <!-- Downloader -->
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-form-field color="accent">
+                            <input matInput [(ngModel)]="new_config['Downloader']['path-audio']" placeholder="Audio folder path" i18n-placeholder="Audio folder path input placeholder" required>
+                            <mat-hint><ng-container i18n="Aduio path setting input hint">Path for audio only downloads. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    
+                    <div class="col-12 mt-5">
+                        <mat-form-field color="accent">
+                            <input matInput [(ngModel)]="new_config['Downloader']['path-video']" placeholder="Video folder path" i18n-placeholder="Video folder path input placeholder" required>
+                            <mat-hint><ng-container i18n="Video path setting input hint">Path for video downloads. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
 
-<!-- Encryption -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Encryption settings title">Encryption</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Encryption']['use-encryption']"><ng-container i18n="Use encryption setting">Use encryption</ng-container></mat-checkbox>
+                    <div class="col-12 mt-5">
+                        <mat-form-field style="margin-right: 12px;" color="accent">
+                            <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
+                            <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page.</ng-container></mat-hint>
+                            <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
+                        <p>Note: This setting only applies to downloads on the Home page. If you would like to use youtube-dl archive functionality in subscriptions, head down to the Subscriptions section.</p>
+                    </div>
+                </div>
             </div>
+        </ng-template>
+    </mat-tab>
+    <!-- Extra -->
+    <mat-tab label="Extra" i18n-label="Extra settings label">
+        <ng-template matTabContent>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-form-field color="accent">
+                            <input [(ngModel)]="new_config['Extra']['title_top']" matInput placeholder="Top title" i18n-placeholder="Top title input placeholder" required>
+                            <mat-hint></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['file_manager_enabled']"><ng-container i18n="File manager enabled setting">File manager enabled</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_quality_select']"><ng-container i18n="Allow quality seelct setting">Allow quality select</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['download_only_mode']"><ng-container i18n="Download only mode setting">Download only mode</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_multi_download_mode']"><ng-container i18n="Allow multi-downloade mode setting">Allow multi-download mode</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']"><ng-container i18n="Require pin for settings setting">Require pin for settings</ng-container></mat-checkbox>
+                        <button style="margin-left: 15px; margin-bottom: 10px;" mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']"><ng-container i18n="Set new pin button">Set New Pin</ng-container></button>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_youtube_API']"><ng-container i18n="Use YouTube API setting">Use YouTube API</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <mat-form-field color="accent">
+                            <input [disabled]="!new_config['API']['use_youtube_API']" [(ngModel)]="new_config['API']['youtube_API_key']" matInput placeholder="Youtube API Key" i18n-placeholder="Youtube API Key setting placeholder" required>
+                            <mat-hint><a target="_blank" href="https://developers.google.com/youtube/v3/getting-started"><ng-container i18n="Youtube API Key setting hint">Generating a key is easy!</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <h6>Chrome</h6>
+                        <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/chrome-extension/youtubedl-material-chrome-extension.zip?raw=true"><ng-container i18n="Chrome ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Chrome click here suffix">to download the official YoutubeDL-Material Chrome extension manually.</ng-container></p>
+                        <p><ng-container i18n="Chrome setup suffix">You must manually load the extension and modify the extension's settings to set the frontend URL.</ng-container></p>
+                        <mat-divider class="ext-divider"></mat-divider>
+                    </div>
+                    <div class="col-12">
+                        <h6>Firefox</h6>
+                        <p><a href="https://addons.mozilla.org/en-US/firefox/addon/youtubedl-material/" target="_blank"><ng-container i18n="Firefox ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Firefox click here suffix">to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</ng-container></p>
+                        <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Firefox-Extension" target="_blank"><ng-container i18n="Firefox setup prefix link">Detailed setup instructions.</ng-container></a>&nbsp;<ng-container i18n="Firefox setup suffix">Not much is required other than changing the extension's settings to set the frontend URL.</ng-container></p>
+                        <mat-divider class="ext-divider"></mat-divider>
+                    </div>
+                    <div class="col-12">
+                        <h6>Bookmarklet</h6>
+                        <p><ng-container i18n="Bookmarklet instructions">Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</ng-container></p>
+                        <mat-checkbox (change)="bookmarkletAudioOnlyChanged($event)"><ng-container i18n="Generate audio only bookmarklet checkbox">Generate 'audio only' bookmarklet</ng-container></mat-checkbox>
+                        <!--<button style="margin-bottom: 5px;" mat-stroked-button color="accent" (click)="generateBookmarklet()">Generate bookmarklet</button>-->
+                        <p><a [href]="generated_bookmarklet_code" target="_blank">YTDL-Bookmarklet</a></p>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </mat-tab>
+    <!-- API 
+    <mat-tab label="API" i18n-label="Host settings label">
+        <ng-template matTabContent>
             
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['cert-file-path']" matInput placeholder="Cert file path" i18n-placeholder="Cert file path input placeholder">
-                </mat-form-field>
-            </div>
+        </ng-template>
+    </mat-tab>-->
+    <!-- Themes 
+    <mat-tab label="Themes" i18n-label="Host settings label">
+        <ng-template matTabContent>
             
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['key-file-path']" matInput placeholder="Key file path" i18n-placeholder="Key file path input placeholder">
-                </mat-form-field>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- Downloader -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Downloader settings title">Downloader</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input matInput [(ngModel)]="new_config['Downloader']['path-audio']" placeholder="Audio folder path" i18n-placeholder="Audio folder path input placeholder" required>
-                    <mat-hint><ng-container i18n="Aduio path setting input hint">Path for audio only downloads. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
-                </mat-form-field>
-            </div>
+        </ng-template>
+    </mat-tab> -->
+    <!-- Subscriptions
+    <mat-tab label="Subscriptions" i18n-label="Host settings label">
+        <ng-template matTabContent>
             
-            <div class="col-12 mt-4">
-                <mat-form-field color="accent">
-                    <input matInput [(ngModel)]="new_config['Downloader']['path-video']" placeholder="Video folder path" i18n-placeholder="Video folder path input placeholder" required>
-                    <mat-hint><ng-container i18n="Video path setting input hint">Path for video downloads. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
-                </mat-form-field>
-            </div>
-
-            <div class="col-12 mt-4">
-                <mat-form-field color="accent">
-                    <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
-                    <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page.</ng-container></mat-hint>
-                </mat-form-field>
-                <button style="margin-left: 12px;" (click)="openArgsModifierDialog()" mat-stroked-button>Modify args</button>
-            </div>
-
-            <div class="col-12 mt-4">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
-                <p>Note: This setting only applies to downloads on the Home page. If you would like to use youtube-dl archive functionality in subscriptions, head down to the Subscriptions section.</p>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- Extra -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Extra settings title">Extra</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input [(ngModel)]="new_config['Extra']['title_top']" matInput placeholder="Top title" i18n-placeholder="Top title input placeholder" required>
-                    <mat-hint></mat-hint>
-                </mat-form-field>
-            </div>
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['file_manager_enabled']"><ng-container i18n="File manager enabled setting">File manager enabled</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_quality_select']"><ng-container i18n="Allow quality seelct setting">Allow quality select</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['download_only_mode']"><ng-container i18n="Download only mode setting">Download only mode</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_multi_download_mode']"><ng-container i18n="Allow multi-downloade mode setting">Allow multi-download mode</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']"><ng-container i18n="Require pin for settings setting">Require pin for settings</ng-container></mat-checkbox>
-                <button style="margin-left: 15px;" mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']"><ng-container i18n="Set new pin button">Set New Pin</ng-container></button>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- API -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="API settings title">API</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_youtube_API']"><ng-container i18n="Use YouTube API setting">Use YouTube API</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input [disabled]="!new_config['API']['use_youtube_API']" [(ngModel)]="new_config['API']['youtube_API_key']" matInput placeholder="Youtube API Key" i18n-placeholder="Youtube API Key setting placeholder" required>
-                    <mat-hint><a target="_blank" href="https://developers.google.com/youtube/v3/getting-started"><ng-container i18n="Youtube API Key setting hint">Generating a key is easy!</ng-container></a></mat-hint>
-                </mat-form-field>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- Themes -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Themes settings title">Themes</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-select color="accent" style="width: 100px" [(ngModel)]="new_config['Themes']['default_theme']">
-                    <mat-option value="default"><ng-container i18n="Default theme label">Default</ng-container></mat-option>
-                    <mat-option value="dark"><ng-container i18n="Dark theme label">Dark</ng-container></mat-option>
-                </mat-select>
-            </div>
+        </ng-template>
+    </mat-tab> -->
+    <!-- Extensions 
+    <mat-tab label="Extensions" i18n-label="Host settings label">
+        <ng-template matTabContent>
             
-            <div class="col-12 mt-4">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Themes']['allow_theme_change']"><ng-container i18n="Allow theme change setting">Allow theme change</ng-container></mat-checkbox>
+        </ng-template>
+    </mat-tab> -->
+    <!-- Version Control
+    <mat-tab label="Versions" i18n-label="Host settings label">
+        <ng-template matTabContent>
+            
+        </ng-template>
+    </mat-tab> -->
+    <!-- Advanced -->
+    <mat-tab label="Advanced" i18n-label="Host settings label">
+        <ng-template matTabContent>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['use_default_downloading_agent']"><ng-container i18n="Use default downloading agent setting">Use default downloading agent</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field>
+                            <mat-label><ng-container i18n="Custom downloader select label">Select a downloader</ng-container></mat-label>
+                            <mat-select [disabled]="new_config['Advanced']['use_default_downloading_agent']" color="accent" [(ngModel)]="new_config['Advanced']['custom_downloading_agent']">
+                                <mat-option value="aria2c">aria2c</mat-option>
+                                <mat-option value="avconv">avconv</mat-option>
+                                <mat-option value="axel">axel</mat-option>
+                                <mat-option value="curl">curl</mat-option>
+                                <mat-option value="ffmpeg">ffmpeg</mat-option>
+                                <mat-option value="httpie">httpie</mat-option>
+                                <mat-option value="wget">wget</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['allow_advanced_download']"><ng-container i18n="Allow advanced downloading setting">Allow advanced download</ng-container></mat-checkbox>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- Subscriptions -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Subscriptions settings title">Subscriptions</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['allow_subscriptions']"><ng-container i18n="Allow subscriptions setting">Allow subscriptions</ng-container></mat-checkbox>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid mt-1">
+                <app-updater></app-updater>
             </div>
-            <div class="col-12">
-                <mat-form-field color="accent">
-                    <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_base_path']" matInput placeholder="Subscriptions base path" i18n-placeholder="Subscriptions base path input setting placeholder">
-                    <mat-hint><ng-container i18n="Subscriptions base path setting input hint">Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
-                </mat-form-field>
-            </div>
-            <div class="col-12 mt-5">
-                <mat-form-field color="accent">
-                    <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_check_interval']" matInput placeholder="Check interval" i18n-placeholder="Check interval input setting placeholder">
-                    <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
-                </mat-form-field>
-            </div>
-            <div class="col-12 mt-4">
-                <mat-checkbox color="accent" [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_use_youtubedl_archive']"><ng-container i18n="Use youtube-dl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
-                <p><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#how-do-i-download-only-new-videos-from-a-playlist"><ng-container i18n="youtube-dl archive explanation prefix link">With youtube-dl's archive</ng-container></a>&nbsp;<ng-container i18n="youtube-dl archive explanation middle">feature, downloaded videos from your subscriptions get recorded in a text file in the subscriptions archive sub-directory.</ng-container></p>
-                <p><ng-container i18n="youtube-dl archive explanation suffix">This enables the ability to permanently delete videos from your subscriptions without unsubscribing, and allows you to record which videos you downloaded in case of data loss.</ng-container></p>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- Extensions -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Extensions settings title">Extensions</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <h6>Chrome</h6>
-                <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/chrome-extension/youtubedl-material-chrome-extension.zip?raw=true"><ng-container i18n="Chrome ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Chrome click here suffix">to download the official YoutubeDL-Material Chrome extension manually.</ng-container></p>
-                <p><ng-container i18n="Chrome setup suffix">You must manually load the extension and modify the extension's settings to set the frontend URL.</ng-container></p>
-                <mat-divider class="ext-divider"></mat-divider>
-            </div>
-            <div class="col-12">
-                <h6>Firefox</h6>
-                <p><a href="https://addons.mozilla.org/en-US/firefox/addon/youtubedl-material/" target="_blank"><ng-container i18n="Firefox ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Firefox click here suffix">to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</ng-container></p>
-                <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Firefox-Extension" target="_blank"><ng-container i18n="Firefox setup prefix link">Detailed setup instructions.</ng-container></a>&nbsp;<ng-container i18n="Firefox setup suffix">Not much is required other than changing the extension's settings to set the frontend URL.</ng-container></p>
-                <mat-divider class="ext-divider"></mat-divider>
-            </div>
-            <div class="col-12">
-                <h6>Bookmarklet</h6>
-                <p><ng-container i18n="Bookmarklet instructions">Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</ng-container></p>
-                <!--<button style="margin-bottom: 5px;" mat-stroked-button color="accent" (click)="generateBookmarklet()">Generate bookmarklet</button>-->
-                <p><a [href]="generated_bookmarklet_code" target="_blank">YTDL-Bookmarklet</a></p>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
-
-<!-- Version Control -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Version settings title">Version</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <app-updater></app-updater>
-    </div>
-</mat-expansion-panel>
-
-
-<!-- Advanced -->
-<mat-expansion-panel class="settings-expansion-panel mat-elevation-z4">
-    <mat-expansion-panel-header>
-        <mat-panel-title>
-            <ng-container i18n="Advanced settings title">Advanced</ng-container>
-        </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf="new_config" class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['use_default_downloading_agent']"><ng-container i18n="Use default downloading agent setting">Use default downloading agent</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12 my-2">
-                <mat-select [disabled]="new_config['Advanced']['use_default_downloading_agent']" color="accent" style="width: 200px" [(ngModel)]="new_config['Advanced']['custom_downloading_agent']">
-                    <mat-option value="">Select a downloader</mat-option>
-                    <mat-option value="aria2c">aria2c</mat-option>
-                    <mat-option value="avconv">avconv</mat-option>
-                    <mat-option value="axel">axel</mat-option>
-                    <mat-option value="curl">curl</mat-option>
-                    <mat-option value="ffmpeg">ffmpeg</mat-option>
-                    <mat-option value="httpie">httpie</mat-option>
-                    <mat-option value="wget">wget</mat-option>
-                </mat-select>
-            </div>
-            <div class="col-12 mt-2">
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['allow_advanced_download']"><ng-container i18n="Allow advanced downloading setting">Allow advanced download</ng-container></mat-checkbox>
-            </div>
-        </div>
-    </div>
-</mat-expansion-panel>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group>    
 </mat-dialog-content>
 
 <mat-dialog-actions>

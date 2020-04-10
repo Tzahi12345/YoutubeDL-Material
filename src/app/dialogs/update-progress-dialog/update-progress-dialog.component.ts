@@ -18,19 +18,17 @@ export class UpdateProgressDialogComponent implements OnInit {
   ngOnInit(): void {
     this.getUpdateProgress();
     setInterval(() => {
-      this.getUpdateProgress();
+      if (this.updateStatus['updating']) { this.getUpdateProgress(); }
     }, 250);
   }
 
   getUpdateProgress() {
     this.postsService.getUpdaterStatus().subscribe(res => {
-      this.updateStatus = res;
-      if (!this.updateStatus) {
-        // update complete?
-        console.log('Update complete? or not started');
-      }
-      if (this.updateStatus && this.updateStatus['error']) {
-        this.openSnackBar('Update failed. Check logs for more details.');
+      if (res) {
+        this.updateStatus = res;
+        if (this.updateStatus && this.updateStatus['error']) {
+          this.openSnackBar('Update failed. Check logs for more details.');
+        }
       }
     });
   }

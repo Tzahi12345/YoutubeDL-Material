@@ -16,6 +16,7 @@
     top: 2px;
     left: 10px;
     position: relative;
+    pointer-events: none;
 }
 
 .sidenav-container {

@@ -4,11 +4,11 @@
     </div>
     <div *ngIf="availableVersions" style="display: inline-block; margin-left: 15px;">
         <mat-form-field>
-        <mat-select [(ngModel)]="selectedVersion">
-            <mat-option *ngFor="let version of availableVersionsFiltered" [value]="version['tag_name']">
-                {{version['tag_name'] + (version === latestStableRelease ? ' - Latest Stable' : '') + (version['tag_name'] === CURRENT_VERSION ? ' - Current Version' : '')}}
-            </mat-option>
-        </mat-select>
+            <mat-select [(ngModel)]="selectedVersion">
+                <mat-option *ngFor="let version of availableVersionsFiltered" [value]="version['tag_name']">
+                    {{version['tag_name'] + (version === latestStableRelease ? ' - Latest Stable' : '') + (version['tag_name'] === CURRENT_VERSION ? ' - Current Version' : '')}}
+                </mat-option>
+            </mat-select>
         </mat-form-field>
     </div>
     <div *ngIf="selectedVersion && selectedVersion !== CURRENT_VERSION" style="display: inline-block; margin-left: 15px;">

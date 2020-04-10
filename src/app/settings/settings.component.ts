@@ -7,6 +7,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { CURRENT_VERSION } from 'app/consts';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-settings',
@@ -22,6 +23,7 @@ export class SettingsComponent implements OnInit {
   new_config = null
   loading_config = false;
   generated_bookmarklet_code = null;
+  bookmarkletAudioOnly = false;
 
   _settingsSame = true;
 
@@ -96,9 +98,15 @@ export class SettingsComponent implements OnInit {
   generateBookmarkletCode() {
     const currentURL = window.location.href.split('#')[0];
     const homePageWithArgsURL = currentURL + '#/home;url=';
-    const bookmarkletCodeInside = `'${homePageWithArgsURL}' + window.location`
-    const bookmarkletCode = `javascript:(function()%7Bwindow.open('${homePageWithArgsURL}' + encodeURIComponent(window.location))%7D)()`;
+    const audioOnly = this.bookmarkletAudioOnly;
+    // tslint:disable-next-line: max-line-length
+    const bookmarkletCode = `javascript:(function()%7Bwindow.open('${homePageWithArgsURL}' + encodeURIComponent(window.location) + ';audioOnly=${audioOnly}')%7D)()`;
     return bookmarkletCode;
+  }
+
+  bookmarkletAudioOnlyChanged(event:  MatCheckboxChange): void {
+    this.bookmarkletAudioOnly = event.checked;
+    this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());
   }
 
   // not currently functioning on most platforms. hence not in use

@@ -54,7 +54,11 @@ export class SubscriptionFileCardComponent implements OnInit {
   }
 
   goToFile() {
-    this.goToFileEmit.emit(this.file.id);
+    const emit_obj = {
+      name: this.file.id,
+      url: this.file.requested_formats ? this.file.requested_formats[0].url : this.file.url
+    }
+    this.goToFileEmit.emit(emit_obj);
   }
 
   openSubscriptionInfoDialog() {
