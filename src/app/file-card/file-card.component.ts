@@ -18,6 +18,7 @@ export class FileCardComponent implements OnInit {
   @Input() title: string;
   @Input() length: string;
   @Input() name: string;
+  @Input() uid: string;
   @Input() thumbnailURL: string;
   @Input() isAudio = true;
   @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
@@ -47,7 +48,7 @@ export class FileCardComponent implements OnInit {
 
   deleteFile(blacklistMode = false) {
     if (!this.isPlaylist) {
-      this.postsService.deleteFile(this.name, this.isAudio, blacklistMode).subscribe(result => {
+      this.postsService.deleteFile(this.uid, this.isAudio, blacklistMode).subscribe(result => {
         if (result === true) {
           this.openSnackBar('Delete success!', 'OK.');
           this.removeFile.emit(this.name);

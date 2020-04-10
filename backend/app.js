@@ -32,6 +32,9 @@ const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
 
+// check if debug mode
+let debugMode = process.env.YTDL_MODE === 'debug';
+
 // logging setup
 
 // console format
@@ -49,7 +52,7 @@ const logger = winston.createLogger({
       //
       new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
       new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
-      new winston.transports.Console({level: 'info'})
+      new winston.transports.Console({level: !debugMode ? 'info' : 'debug'})
     ]
 });
 
@@ -65,9 +68,14 @@ db.defaults(
             audio: [],
             video: []
         },
+        files: {
+            audio: [],
+            video: []
+        },
         configWriteFlag: false,
         subscriptions: [],
-        pin_md5: ''
+        pin_md5: '',
+        files_to_db_migration_complete: false
 }).write();
 
 // config values
@@ -89,9 +97,6 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 var options = null; // encryption options
 var url_domain = null;
 var updaterStatus = null;
-
-// check if debug mode
-let debugMode = process.env.YTDL_MODE === 'debug';
 
 if (debugMode) logger.info('YTDL-Material in debug mode!');
 
@@ -153,6 +158,56 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
 }
 
 // actual functions
+
+async function checkMigrations() {
+    return new Promise(async resolve => {
+        // 3.5->3.6 migration
+        const files_to_db_migration_complete = db.get('files_to_db_migration_complete').value();
+
+        if (!files_to_db_migration_complete) {
+            logger.info('Beginning migration: 3.5->3.6+')
+            runFilesToDBMigration().then(success => {
+                if (success) { logger.info('3.5->3.6+ migration complete!'); }
+                else { logger.error('Migration failed: 3.5->3.6+'); }
+            });
+        }
+
+        resolve(true);
+    });
+}
+
+async function runFilesToDBMigration() {
+    return new Promise(async resolve => {
+        try {
+            let mp3s = getMp3s();
+            let mp4s = getMp4s();
+
+            for (let i = 0; i < mp3s.length; i++) {
+                let file_obj = mp3s[i];
+                const file_already_in_db = db.get('files.audio').find({id: file_obj.id}).value();
+                if (!file_already_in_db) {
+                    logger.verbose(`Migrating file ${file_obj.id}`);
+                    registerFileDB(file_obj.id + '.mp3', 'audio');
+                }
+            }
+
+            for (let i = 0; i < mp4s.length; i++) {
+                let file_obj = mp4s[i];
+                const file_already_in_db = db.get('files.video').find({id: file_obj.id}).value();
+                if (!file_already_in_db) {
+                    logger.verbose(`Migrating file ${file_obj.id}`);
+                    registerFileDB(file_obj.id + '.mp4', 'video');
+                }
+            }
+
+            // sets migration to complete
+            db.set('files_to_db_migration_complete', true).write();
+            resolve(true);
+        } catch(err) {
+            resolve(false);
+        }
+    });
+}
 
 async function startServer() {
     if (process.env.USING_HEROKU && process.env.PORT) {
@@ -218,7 +273,7 @@ async function updateServer(tag) {
             'details': 'Downloading requested release...'
         }
         // grab new package.json and public folder
-        // await downloadReleaseFiles(tag);
+        await downloadReleaseFiles(tag);
 
         updaterStatus = {
             updating: true,
@@ -258,7 +313,7 @@ async function downloadReleaseFiles(tag) {
         logger.info(`Installing update ${tag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
-        fs.createReadStream(path.join(__dirname, `youtubedl-material-latest-release-${tag}.zip`)).pipe(unzipper.Parse())
+        fs.createReadStream(path.join(__dirname, `youtubedl-material-release-${tag}.zip`)).pipe(unzipper.Parse())
         .on('entry', function (entry) {
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
@@ -276,7 +331,7 @@ async function downloadReleaseFiles(tag) {
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
                 var actualFileName = fileName.replace('youtubedl-material/', '');
-                if (debugMode) logger.verbose('Downloading file ' + actualFileName);
+                logger.verbose('Downloading file ' + actualFileName);
                 entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
             } else {
                 entry.autodrain();
@@ -343,7 +398,8 @@ async function installDependencies() {
 
 async function backupServerLite() {
     return new Promise(async resolve => {
-        let output_path = `backup-${Date.now()}.zip`;
+        fs.ensureDirSync(path.join(__dirname, 'appdata', 'backups'));
+        let output_path = path.join('appdata', 'backups', `backup-${Date.now()}.zip`);
         logger.info(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
         let output = fs.createWriteStream(path.join(__dirname, output_path));
         var archive = archiver('zip', {
@@ -363,7 +419,7 @@ async function backupServerLite() {
         const files_to_ignore = [path.join(config_api.getConfigItem('ytdl_subscriptions_base_path'), '**'),
                                 path.join(config_api.getConfigItem('ytdl_audio_folder_path'), '**'),
                                 path.join(config_api.getConfigItem('ytdl_video_folder_path'), '**'),
-                                'backup-*.zip'];
+                                'appdata/backups/backup-*.zip'];
 
         archive.glob('**/*', {
             ignore: files_to_ignore
@@ -435,7 +491,7 @@ async function setConfigFromEnv() {
 }
 
 async function loadConfig() {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
         url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
         backendPort = config_api.getConfigItem('ytdl_port');
         usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
@@ -483,6 +539,9 @@ async function loadConfig() {
             }, subscriptionsCheckInterval * 1000);
         }
 
+        // check migrations
+        await checkMigrations();
+
         // start the server here
         startServer();
 
@@ -510,7 +569,7 @@ function watchSubscriptions() {
     let current_delay = 0;
     for (let i = 0; i < subscriptions.length; i++) {
         let sub = subscriptions[i];
-        logger.debug('watching ' + sub.name + ' with delay interval of ' + delay_interval);
+        logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(() => {
             subscriptions_api.getVideosForSub(sub);
         }, current_delay);
@@ -542,6 +601,64 @@ function getEnvConfigItems() {
 // gets value of a config item and stores it in an object
 function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
+}
+
+function getMp3s() {
+    let mp3s = [];
+    var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        var file_path = file.substring(audioFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONMp3(id);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+
+        var size = stats.size;
+
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+        var isaudio = true;
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+        mp3s.push(file_obj);
+    }
+    return mp3s;
+}
+
+function getMp4s(relative_path = true) {
+    let mp4s = [];
+    var files = recFindByExt(videoFolderPath, 'mp4');
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        var file_path = file.substring(videoFolderPath.length, file.length);
+
+        var stats = fs.statSync(file);
+        
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONMp4(id);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+
+        var size = stats.size;
+
+        var isaudio = false;
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+        mp4s.push(file_obj);
+    }
+    return mp4s;
 }
 
 function getThumbnailMp3(name)
@@ -856,6 +973,63 @@ function recFindByExt(base,ext,files,result)
     return result
 }
 
+function registerFileDB(full_file_path, type) {
+    const file_id = full_file_path.substring(0, full_file_path.length-4);
+    const file_object = generateFileObject(file_id, type);
+    if (!file_object) {
+        logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
+        return false;
+    }
+
+    file_object['uid'] = uuid();
+    path_object = path.parse(file_object['path']);
+    file_object['path'] = path.format(path_object);
+    db.get(`files.${type}`)
+      .push(file_object)
+      .write();
+    return file_object['uid'];
+}
+
+function generateFileObject(id, type) {
+    var jsonobj = (type === 'audio') ? getJSONMp3(id) : getJSONMp4(id);
+    if (!jsonobj) {
+        return null;
+    }
+    const ext = (type === 'audio') ? '.mp3' : '.mp4'
+    const file_path = getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
+    var stats = fs.statSync(path.join(__dirname, file_path));
+
+    var title = jsonobj.title;
+    var url = jsonobj.webpage_url;
+    var uploader = jsonobj.uploader;
+    var upload_date = jsonobj.upload_date;
+    upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+
+    var size = stats.size;
+
+    var thumbnail = jsonobj.thumbnail;
+    var duration = jsonobj.duration;
+    var isaudio = type === 'audio';
+    var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
+    return file_obj;
+}
+
+// replaces .webm with appropriate extension
+function getTrueFileName(unfixed_path, type) {
+    let fixed_path = unfixed_path;
+
+    const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
+    let unfixed_parts = unfixed_path.split('.');
+    const old_ext = unfixed_parts[unfixed_parts.length-1];
+
+
+    if (old_ext !== new_ext) {
+        unfixed_parts[unfixed_parts.length-1] = new_ext;
+        fixed_path = unfixed_parts.join('.');
+    }
+    return fixed_path;
+}
+
 function getAudioInfos(fileNames) {
     let result = [];
     for (let i = 0; i < fileNames.length; i++) {
@@ -1156,6 +1330,7 @@ app.post('/api/tomp3', async function(req, res) {
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
         logger.debug(`Audio download delay: ${difference} seconds.`);
@@ -1182,9 +1357,10 @@ app.post('/api/tomp3', async function(req, res) {
                     continue;
                 }
 
-                const filename_no_extension = removeFileExtension(output_json['_filename']);
+                const filepath_no_extension = removeFileExtension(output_json['_filename']);
                 
-                var full_file_path = filename_no_extension + '.mp3';
+                var full_file_path = filepath_no_extension + '.mp3';
+                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
                 if (fs.existsSync(full_file_path)) {
                     let tags = {
                         title: output_json['title'],
@@ -1193,12 +1369,14 @@ app.post('/api/tomp3', async function(req, res) {
                     // NodeID3.create(tags, function(frame) {  })
                     let success = NodeID3.write(tags, full_file_path);
                     if (!success) logger.error('Failed to apply ID3 tag to audio file ' + full_file_path);
+
+                    // registers file in DB
+                    uid = registerFileDB(full_file_path.substring(audioFolderPath.length, full_file_path.length), 'audio');
                 } else {
-                    logger.info('Output mp3 does not exist');
+                    logger.error('Download failed: Output mp3 does not exist');
                 }
 
-                var file_path = filename_no_extension.substring(audioFolderPath.length, filename_no_extension.length);
-                if (file_path) file_names.push(file_path);
+                if (file_name) file_names.push(file_name);
             }
 
             let is_playlist = file_names.length > 1;
@@ -1214,7 +1392,8 @@ app.post('/api/tomp3', async function(req, res) {
             var audiopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
                 audiopathEncoded: audiopathEncoded,
-                file_names: is_playlist ? file_names : null
+                file_names: is_playlist ? file_names : null,
+                uid: uid
             });
         }
     });
@@ -1293,6 +1472,7 @@ app.post('/api/tomp4', async function(req, res) {
     }
 
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
         logger.debug(`Video download delay: ${difference} seconds.`);
@@ -1318,7 +1498,12 @@ app.post('/api/tomp4', async function(req, res) {
                 if (!output_json) {
                     continue;
                 } 
-                var file_name = output_json['_filename'].replace(/^.*[\\\/]/, '');
+
+                // get filepath with no extension
+                const filepath_no_extension = removeFileExtension(output_json['_filename']);
+                
+                var full_file_path = filepath_no_extension + '.mp4';
+                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
 
                 // renames file if necessary due to bug
                 if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
@@ -1328,11 +1513,11 @@ app.post('/api/tomp4', async function(req, res) {
                     } catch(e) {
                     }
                 }
-                var alternate_file_name = file_name.substring(0, file_name.length-4);
-                var file_path = output_json['_filename'].substring(audioFolderPath.length, output_json['_filename'].length);
-                // remove extension from file path
-                var alternate_file_path = file_path.replace(/\.[^/.]+$/, "")
-                if (alternate_file_name) file_names.push(alternate_file_path);
+
+                // registers file in DB
+                uid = registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
+
+                if (file_name) file_names.push(file_name);
             }
 
             let is_playlist = file_names.length > 1;
@@ -1348,7 +1533,8 @@ app.post('/api/tomp4', async function(req, res) {
             var videopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
                 videopathEncoded: videopathEncoded,
-                file_names: is_playlist ? file_names : null
+                file_names: is_playlist ? file_names : null,
+                uid: uid
             });
             res.end("yes");
         }
@@ -1399,32 +1585,8 @@ app.post('/api/fileStatusMp4', function(req, res) {
 
 // gets all download mp3s
 app.post('/api/getMp3s', function(req, res) {
-    var mp3s = [];
+    var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
-    var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(audioFolderPath.length, file.length);
-
-        var stats = fs.statSync(file);
-
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = getJSONMp3(id);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
-
-        var size = stats.size;
-
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-        var isaudio = true;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp3s.push(file_obj);
-    }
 
     res.send({
         mp3s: mp3s,
@@ -1435,39 +1597,111 @@ app.post('/api/getMp3s', function(req, res) {
 
 // gets all download mp4s
 app.post('/api/getMp4s', function(req, res) {
-    var mp4s = [];
+    var mp4s = db.get('files.video').value(); // getMp4s();
     var playlists = db.get('playlists.video').value();
-    var fullpath = videoFolderPath;
-    var files = recFindByExt(videoFolderPath, 'mp4');
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(videoFolderPath.length, file.length);
-
-        var stats = fs.statSync(file);
-        
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = getJSONMp4(id);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-
-        var size = stats.size;
-
-        var isaudio = false;
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp4s.push(file_obj);
-    }
 
     res.send({
         mp4s: mp4s,
         playlists: playlists
     });
     res.end("yes");
+});
+
+app.post('/api/getFile', function (req, res) {
+    var uid = req.body.uid;
+    var type = req.body.type;
+
+    var file = null;
+
+    if (!type) {
+        file = db.get('files.audio').find({uid: uid}).value();
+        if (!file) {
+            file = db.get('files.video').find({uid: uid}).value();
+            if (file) type = 'video';
+        } else {
+            type = 'audio';
+        }
+    }
+
+    if (!file && type) db.get(`files.${type}`).find({uid: uid}).value();
+
+    if (file) {
+        res.send({
+            success: true,
+            file: file
+        });
+    } else {
+        res.send({
+            success: false
+        });
+    }
+});
+
+// video sharing
+app.post('/api/enableSharing', function(req, res) {
+    var type = req.body.type;
+    var uid = req.body.uid;
+    var is_playlist = req.body.is_playlist;
+    try {
+        success = true;
+        if (!is_playlist && type !== 'subscription') {
+            db.get(`files.${type}`)
+                .find({uid: uid})
+                .assign({sharingEnabled: true})
+                .write();
+        } else if (is_playlist) {
+            db.get(`playlists.${type}`)
+                .find({id: uid})
+                .assign({sharingEnabled: true})
+                .write();
+        } else if (type === 'subscription') {
+            // TODO: Implement. Main blocker right now is subscription videos are not stored in the DB, they are searched for every
+            //          time they are requested from the subscription directory. 
+        } else {
+            // error
+            success = false;
+        }
+        
+    } catch(err) {
+        success = false;
+    }
+
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/disableSharing', function(req, res) {
+    var type = req.body.type;
+    var uid = req.body.uid;
+    var is_playlist = req.body.is_playlist;
+    try {
+        success = true;
+        if (!is_playlist && type !== 'subscription') {
+            db.get(`files.${type}`)
+                .find({uid: uid})
+                .assign({sharingEnabled: false})
+                .write();
+        } else if (is_playlist) {
+                db.get(`playlists.${type}`)
+                .find({id: uid})
+                .assign({sharingEnabled: false})
+                .write();
+        } else if (type === 'subscription') {
+            // TODO: Implement. Main blocker right now is subscription videos are not stored in the DB, they are searched for every
+            //          time they are requested from the subscription directory. 
+        } else {
+            // error
+            success = false;
+        }
+        
+    } catch(err) {
+        success = false;
+    }
+
+    res.send({
+        success: success
+    });
 });
 
 app.post('/api/subscribe', async (req, res) => {
@@ -1620,7 +1854,8 @@ app.post('/api/createPlaylist', async (req, res) => {
         'name': playlistName,
         fileNames: fileNames,
         id: shortid.generate(),
-        thumbnailURL: thumbnailURL
+        thumbnailURL: thumbnailURL,
+        type: type
     };
 
     db.get(`playlists.${type}`)
@@ -1631,6 +1866,31 @@ app.post('/api/createPlaylist', async (req, res) => {
         new_playlist: new_playlist,
         success: !!new_playlist // always going to be true
     })
+});
+
+app.post('/api/getPlaylist', async (req, res) => {
+    let playlistID = req.body.playlistID;
+    let type = req.body.type;
+
+    let playlist = null;
+
+    if (!type) {
+        playlist = db.get('playlists.audio').find({id: playlistID}).value();
+        if (!playlist) {
+            playlist = db.get('playlists.video').find({id: playlistID}).value();
+            if (playlist) type = 'video';
+        } else {
+            type = 'audio';
+        }
+    }
+
+    if (!playlist) playlist = db.get(`playlists.${type}`).find({id: playlistID}).value();
+    
+    res.send({
+        playlist: playlist,
+        type: type,
+        success: !!playlist 
+    });
 });
 
 app.post('/api/updatePlaylist', async (req, res) => {
@@ -1682,40 +1942,50 @@ app.post('/api/deletePlaylist', async (req, res) => {
 
 // deletes mp3 file
 app.post('/api/deleteMp3', async (req, res) => {
-    var name = req.body.name;
+    // var name = req.body.name;
+    var uid = req.body.uid;
+    var audio_obj = db.get('files.audio').find({uid: uid}).value();
+    var name = audio_obj.id;
     var blacklistMode = req.body.blacklistMode;
     var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
         deleteAudioFile(name, blacklistMode);
+        db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
-    }
-    else
-    {
+    } else if (audio_obj) {
+        db.get('files.audio').remove({uid: uid}).write();
+        wasDeleted = true;
+        res.send(wasDeleted);
+    } else {
         wasDeleted = false;
         res.send(wasDeleted);
-        res.end("yes");
     }
 });
 
 // deletes mp4 file
 app.post('/api/deleteMp4', async (req, res) => {
-    var name = req.body.name;
+    var uid = req.body.uid;
+    var video_obj = db.get('files.video').find({uid: uid}).value();
+    var name = video_obj.id;
     var blacklistMode = req.body.blacklistMode;
     var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
         wasDeleted = await deleteVideoFile(name, null, blacklistMode);
+        db.get('files.video').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
         res.end("yes");
-    }
-    else
-    {
+    } else if (video_obj) {
+        db.get('files.video').remove({uid: uid}).write();
+        wasDeleted = true;
+        res.send(wasDeleted);
+    } else {
         wasDeleted = false;
         res.send(wasDeleted);
         res.end("yes");
@@ -1728,13 +1998,26 @@ app.post('/api/downloadFile', async (req, res) => {
     let type = req.body.type;
     let outputName = req.body.outputName;
     let fullPathProvided = req.body.fullPathProvided;
+    let subscriptionName = req.body.subscriptionName;
+    let subscriptionPlaylist = req.body.subscriptionPlaylist;
     let file = null;
     if (!zip_mode) {
         fileNames = decodeURIComponent(fileNames);
         if (type === 'audio') {
-            file = __dirname + '/' + audioFolderPath + fileNames + '.mp3';
-        } else if (type === 'video') {
-            file = __dirname + '/' + videoFolderPath + fileNames + '.mp4';
+            if (!subscriptionName) {
+                file = path.join(__dirname, audioFolderPath, fileNames + '.mp3');
+            } else {
+                let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+                file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp3')
+            } 
+        } else {
+            // if type is 'subscription' or 'video', it's a video
+            if (!subscriptionName) {
+                file = path.join(__dirname, videoFolderPath, fileNames + '.mp4');
+            } else {
+                let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+                file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
+            }
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
@@ -1742,10 +2025,9 @@ app.post('/api/downloadFile', async (req, res) => {
         }
         file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided);
     }
-
     res.sendFile(file, function (err) {
         if (err) {
-          next(err);
+          logger.error(err);
         } else if (fullPathProvided) {
           try {
             fs.unlinkSync(file); 

@@ -390,11 +390,11 @@ export class MainComponent implements OnInit {
     }
   }
 
-  public goToFile(name, isAudio) {
+  public goToFile(name, isAudio, uid) {
     if (isAudio) {
-      this.downloadHelperMp3(name, false, false);
+      this.downloadHelperMp3(name, uid, false, false);
     } else {
-      this.downloadHelperMp4(name, false, false);
+      this.downloadHelperMp4(name, uid, false, false);
     }
   }
 
@@ -407,7 +407,7 @@ export class MainComponent implements OnInit {
       } else {
         localStorage.setItem('player_navigator', this.router.url);
         const fileNames = playlist.fileNames;
-        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID}]);
+        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID, uid: playlistID}]);
       }
     } else {
       // playlist not found
@@ -463,7 +463,7 @@ export class MainComponent implements OnInit {
 
   // download helpers
 
-  downloadHelperMp3(name, is_playlist = false, forceView = false, new_download = null) {
+  downloadHelperMp3(name, uid, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
 
     if (this.multiDownloadMode && !this.downloadOnlyMode) {
@@ -482,7 +482,7 @@ export class MainComponent implements OnInit {
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
         } else {
-          this.router.navigate(['/player', {fileNames: name, type: 'audio'}]);
+          this.router.navigate(['/player', {fileNames: name, type: 'audio', uid: uid}]);
         }
       }
     }
@@ -501,7 +501,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadHelperMp4(name, is_playlist = false, forceView = false, new_download = null) {
+  downloadHelperMp4(name, uid, is_playlist = false, forceView = false, new_download = null) {
     this.downloadingfile = false;
     if (this.multiDownloadMode && !this.downloadOnlyMode) {
       // do nothing
@@ -519,7 +519,7 @@ export class MainComponent implements OnInit {
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
         } else {
-          this.router.navigate(['/player', {fileNames: name, type: 'video'}]);
+          this.router.navigate(['/player', {fileNames: name, type: 'video', uid: uid}]);
         }
       }
     }
@@ -592,7 +592,7 @@ export class MainComponent implements OnInit {
           this.path = is_playlist ? posts['file_names'] : posts['audiopathEncoded'];
 
           if (this.path !== '-1') {
-            this.downloadHelperMp3(this.path, is_playlist, false, new_download);
+            this.downloadHelperMp3(this.path, posts['uid'], is_playlist, false, new_download);
           }
         }, error => { // can't access server or failed to download for other reasons
           this.downloadingfile = false;
@@ -631,7 +631,7 @@ export class MainComponent implements OnInit {
           this.path = is_playlist ? posts['file_names'] : posts['videopathEncoded'];
 
           if (this.path !== '-1') {
-            this.downloadHelperMp4(this.path, is_playlist, false, new_download);
+            this.downloadHelperMp4(this.path, posts['uid'], is_playlist, false, new_download);
           }
         }, error => { // can't access server
           this.downloadingfile = false;
