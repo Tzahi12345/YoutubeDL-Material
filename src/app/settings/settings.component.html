@@ -106,13 +106,6 @@
             </div>
         </ng-template>
     </mat-tab>
-    <!-- Encryption 
-    <mat-tab label="Encryption" i18n-label="Host settings label">
-        <ng-template matTabContent>
-            
-        </ng-template>
-    </mat-tab>
-    -->
     <!-- Downloader -->
     <mat-tab label="Downloader" i18n-label="Downloader settings label">
         <ng-template matTabContent>
@@ -178,6 +171,25 @@
                     </div>
                 </div>
             </div>
+            <mat-divider></mat-divider> 
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_API_key']"><ng-container i18n="Enable Public API key setting">Enable Public API</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="enable-api-key-div">
+                            <mat-form-field color="accent">
+                                <input [disabled]="!new_config['API']['use_API_key']" [(ngModel)]="new_config['API']['API_key']" matInput placeholder="Public API Key" i18n-placeholder="Public API Key setting placeholder" required>
+                                <mat-hint><a target="_blank" href="https://developers.google.com/youtube/v3/getting-started"><ng-container i18n="View API docs setting hint">View documentation</ng-container></a></mat-hint>
+                            </mat-form-field>
+                        </div>
+                        <div class="api-key-div">
+                            <button matTooltip-i18n matTooltip="This will delete your old API key!" mat-stroked-button (click)="generateAPIKey()"><ng-container i18n="Generate key button">Generate</ng-container></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <mat-divider></mat-divider>
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
@@ -218,36 +230,6 @@
             </div>
         </ng-template>
     </mat-tab>
-    <!-- API 
-    <mat-tab label="API" i18n-label="Host settings label">
-        <ng-template matTabContent>
-            
-        </ng-template>
-    </mat-tab>-->
-    <!-- Themes 
-    <mat-tab label="Themes" i18n-label="Host settings label">
-        <ng-template matTabContent>
-            
-        </ng-template>
-    </mat-tab> -->
-    <!-- Subscriptions
-    <mat-tab label="Subscriptions" i18n-label="Host settings label">
-        <ng-template matTabContent>
-            
-        </ng-template>
-    </mat-tab> -->
-    <!-- Extensions 
-    <mat-tab label="Extensions" i18n-label="Host settings label">
-        <ng-template matTabContent>
-            
-        </ng-template>
-    </mat-tab> -->
-    <!-- Version Control
-    <mat-tab label="Versions" i18n-label="Host settings label">
-        <ng-template matTabContent>
-            
-        </ng-template>
-    </mat-tab> -->
     <!-- Advanced -->
     <mat-tab label="Advanced" i18n-label="Host settings label">
         <ng-template matTabContent>

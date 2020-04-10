@@ -86,6 +86,15 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  generateAPIKey() {
+    this.postsService.generateNewAPIKey().subscribe(res => {
+      if (res['new_api_key']) {
+        this.initial_config.API.API_key = res['new_api_key'];
+        this.new_config.API.API_key = res['new_api_key'];
+      }
+    });
+  }
+
   localeSelectChanged(new_val) {
     localStorage.setItem('locale', new_val);
     this.openSnackBar('Language successfully changed! Reload to update the page.')

@@ -68,6 +68,14 @@ let CONFIG_ITEMS = {
     },
 
     // API
+    'ytdl_use_api_key': {
+        'key': 'ytdl_use_api_key',
+        'path': 'YoutubeDLMaterial.API.use_API_key'
+    },
+    'ytdl_api_key': {
+        'key': 'ytdl_api_key',
+        'path': 'YoutubeDLMaterial.API.API_key'
+    },
     'ytdl_use_youtube_api': {
         'key': 'ytdl_use_youtube_api',
         'path': 'YoutubeDLMaterial.API.use_youtube_API'

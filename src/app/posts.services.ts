@@ -111,11 +111,11 @@ export class PostsService {
     }
 
     getMp3s() {
-        return this.http.post(this.path + 'getMp3s', {});
+        return this.http.get(this.path + 'getMp3s', {});
     }
 
     getMp4s() {
-        return this.http.post(this.path + 'getMp4s', {});
+        return this.http.get(this.path + 'getMp4s', {});
     }
 
     getFile(uid, type) {
@@ -152,6 +152,10 @@ export class PostsService {
 
     checkPin(unhashed_pin) {
         return this.http.post(this.path + 'checkPin', {input_pin: unhashed_pin});
+    }
+
+    generateNewAPIKey() {
+        return this.http.post(this.path + 'generateNewAPIKey', {});
     }
 
     enableSharing(uid, type, is_playlist) {

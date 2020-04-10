@@ -163,6 +163,8 @@ DEFAULT_CONFIG = {
         "settings_pin_required": false
       },
       "API": {
+        "use_API_key": false,
+        "API_key": "",
         "use_youtube_API": false,
         "youtube_API_key": ""
       },

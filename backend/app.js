@@ -1218,7 +1218,10 @@ const deleteFolderRecursive = function(folder_to_delete) {
 };
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", getOrigin());
+    var client_origin = req.get('origin');
+    if (client_origin === getOrigin() || (req.headers.authorization && config_api.getConfigItem('ytdl_use_api_key') && req.headers.authorization === config_api.getConfigItem('ytdl_api_key'))) {
+        res.header("Access-Control-Allow-Origin", client_origin);
+    }
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
@@ -1584,7 +1587,7 @@ app.post('/api/fileStatusMp4', function(req, res) {
 });
 
 // gets all download mp3s
-app.post('/api/getMp3s', function(req, res) {
+app.get('/api/getMp3s', function(req, res) {
     var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
 
@@ -1596,7 +1599,7 @@ app.post('/api/getMp3s', function(req, res) {
 });
 
 // gets all download mp4s
-app.post('/api/getMp4s', function(req, res) {
+app.get('/api/getMp4s', function(req, res) {
     var mp4s = db.get('files.video').value(); // getMp4s();
     var playlists = db.get('playlists.video').value();
 
@@ -2061,7 +2064,7 @@ app.post('/api/deleteFile', async (req, res) => {
     } else if (type === 'video') {
         deleteVideoFile(fileName);
     }
-    res.send()
+    res.send({});
 });
 
 app.post('/api/downloadArchive', async (req, res) => {
@@ -2144,6 +2147,16 @@ app.post('/api/checkPin', async (req, res) => {
         success: successful
     });
 });
+
+// API Key API calls
+
+app.post('/api/generateNewAPIKey', function (req, res) {
+    const new_api_key = uuid();
+    config_api.setConfigItem('ytdl_api_key', new_api_key);
+    res.send({new_api_key: new_api_key});
+});
+
+// Streaming API calls
 
 app.get('/api/video/:id', function(req , res){
     var head;
