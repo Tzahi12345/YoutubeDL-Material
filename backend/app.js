@@ -1708,11 +1708,13 @@ app.post('/api/subscribe', async (req, res) => {
     let name = req.body.name;
     let url = req.body.url;
     let timerange = req.body.timerange;
+    let streamingOnly = req.body.streamingOnly;
 
     const new_sub = {
                         name: name,
                         url: url,
-                        id: uuid()
+                        id: uuid(),
+                        streamingOnly: streamingOnly
                     };
 
     // adds timerange if it exists, otherwise all videos will be downloaded
@@ -1781,7 +1783,7 @@ app.post('/api/getSubscription', async (req, res) => {
     }
 
     // get sub videos
-    if (subscription.name) {
+    if (subscription.name && !subscription.streamingOnly) {
         let base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
         let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
         let files;
@@ -1817,6 +1819,19 @@ app.post('/api/getSubscription', async (req, res) => {
             parsed_files.push(file_obj);
         }
 
+        res.send({
+            subscription: subscription,
+            files: parsed_files
+        });
+    } else if (subscription.name && subscription.streamingOnly) {
+        // return list of videos
+        let parsed_files = [];
+        if (subscription.videos) {
+            for (let i = 0; i < subscription.videos.length; i++) {
+                const video = subscription.videos[i];
+                parsed_files.push(new File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date));
+            }
+        }
         res.send({
             subscription: subscription,
             files: parsed_files

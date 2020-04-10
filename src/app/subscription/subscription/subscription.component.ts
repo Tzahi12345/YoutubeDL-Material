@@ -84,10 +84,16 @@ export class SubscriptionComponent implements OnInit {
     });
   }
 
-  goToFile(name) {
+  goToFile(emit_obj) {
+    const name = emit_obj['name'];
+    const url = emit_obj['url'];
     localStorage.setItem('player_navigator', this.router.url);
-    this.router.navigate(['/player', {fileNames: name, type: 'subscription', subscriptionName: this.subscription.name,
-                                      subPlaylist: this.subscription.isPlaylist}]);
+    if (this.subscription.streamingOnly) {
+      this.router.navigate(['/player', {name: name, url: url}]);
+    } else {
+      this.router.navigate(['/player', {fileNames: name, type: 'subscription', subscriptionName: this.subscription.name,
+                                        subPlaylist: this.subscription.isPlaylist}]);
+    }
   }
 
   onSearchInputChanged(newvalue) {
