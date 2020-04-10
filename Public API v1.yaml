@@ -1,0 +1,1216 @@
+openapi: 3.0.0
+info:
+  title: Version 1
+  version: "1.0"
+servers:
+- url: http://localhost:17442
+paths:
+  /api/tomp3:
+    post:
+      tags:
+      - downloader
+      summary: Download audio file
+      description: Downloads an audio file with the given URL. Will include global
+        args if they exist.
+      operationId: post-tomp3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+  /api/tomp4:
+    post:
+      tags:
+      - downloader
+      summary: Download video file
+      description: Downloads a video file with the given URL. Will include global
+        args if they exist.
+      operationId: post-tomp4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_1'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+  /api/getMp3s:
+    get:
+      tags:
+      - files
+      summary: Get all mp3 files
+      description: Gets all mp3 files and audio playlists stored in the db
+      operationId: get-getMp3s
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+  /api/getMp4s:
+    get:
+      tags:
+      - files
+      summary: Get all mp4 files
+      description: Gets all mp4 files and video playlists stored in the db
+      operationId: get-getMp4s
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+  /api/getFile:
+    post:
+      tags:
+      - files
+      summary: Get file database object
+      description: Gets a file db object by its uid and type. Type will be found if
+        not provided
+      operationId: post-getFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_2'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_4'
+  /api/enableSharing:
+    post:
+      tags:
+      - files
+      - playlists
+      summary: Enable sharing
+      description: Enables sharing for a video or playlist
+      operationId: post-enableSharing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_3'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/disableSharing:
+    post:
+      tags:
+      - files
+      - playlists
+      summary: Disable sharing
+      description: Disables sharing for a video or playlist
+      operationId: post-disableSharing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_4'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/subscribe:
+    post:
+      tags:
+      - subscriptions
+      summary: Subscribe to channel or playlist
+      description: Allows you to subscribe to channels and playlists. Name is optional
+        (will use the channel/playlist name)
+      operationId: post-api-subscribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_5'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+  /api/unsubscribe:
+    post:
+      tags:
+      - subscriptions
+      summary: Unsubscribe from channel or playlist
+      description: Unsubscribes from a subscription
+      operationId: post-api-unsubscribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_6'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7'
+  /api/deleteSubscriptionFile:
+    post:
+      tags:
+      - subscriptions
+      summary: Delete video from subscription
+      description: Deletes a file from a subscription
+      operationId: post-api-deleteSubscriptionFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_7'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
+        "500":
+          description: Internal Server Error
+  /api/getSubscription:
+    post:
+      tags:
+      - subscriptions
+      summary: Get subscription
+      description: Gets a subscription from its ID
+      operationId: post-api-getSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_8'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_9'
+  /api/downloadVideosForSubscription:
+    post:
+      tags:
+      - subscriptions
+      summary: Download videos for subscription
+      description: Manually check the subscription for new videos. When used on newly
+        created subscriptions, it will grab all  possible videos
+      operationId: post-api-downloadVideosForSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_9'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_10'
+  /api/getAllSubscriptions:
+    post:
+      tags:
+      - subscriptions
+      summary: Get all subscriptions
+      operationId: post-api-getAllSubscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_11'
+  /api/createPlaylist:
+    post:
+      tags:
+      - playlists
+      summary: Create a playlist
+      description: Creates a playlist from existing downloaded videos
+      operationId: post-api-createPlaylist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_10'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_12'
+  /api/getPlaylist:
+    post:
+      tags:
+      - playlists
+      summary: Get playlist
+      description: Gets a playlist object from the database from its ID
+      operationId: post-api-getPlaylist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_11'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_13'
+  /api/updatePlaylist:
+    post:
+      tags:
+      - playlists
+      summary: Update playlist files
+      description: Updates the list of filenames in the playlist object
+      operationId: post-api-updatePlaylist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_12'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/deletePlaylist:
+    post:
+      tags:
+      - playlists
+      summary: Delete playlist
+      description: Deletes a playlist from the database by its ID
+      operationId: post-api-deletePlaylist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_13'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/deleteMp4:
+    post:
+      tags:
+      - playlists
+      summary: Delete mp4 file
+      description: Deletes an mp4 file by its uid
+      operationId: post-api-deleteMp4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_14'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+                description: Whether the operation succeeded
+  /api/downloadFile:
+    post:
+      tags:
+      - files
+      summary: Download downloaded file from server
+      operationId: post-api-downloadFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/body_15'
+      responses:
+        "200":
+          description: The file itself is in the response, as well as an options object.
+  /api/deleteFile:
+    post:
+      tags:
+      - files
+      summary: Delete downloaded file (unused)
+      operationId: post-api-deleteFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_16'
+      responses:
+        "200":
+          description: OK
+  /api/downloadArchive:
+    post:
+      tags:
+      - subscriptions
+      summary: Download subscription archive
+      description: Downloads the archive file of a subscription
+      operationId: post-api-downloadArchive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_17'
+      responses:
+        "200":
+          description: The archive text file is sent as a response
+  /api/updaterStatus:
+    get:
+      tags:
+      - updating
+      summary: Get updater status
+      description: Gets the status of an update that is in progress
+      operationId: get-api-updaterStatus
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_14'
+  /api/updateServer:
+    post:
+      tags:
+      - updating
+      summary: Update server
+      description: Updates the server. If no tag is provided, the latest version will
+        be used.
+      operationId: post-api-updateServer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_18'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/isPinSet:
+    post:
+      tags:
+      - security
+      summary: Check if pin is set
+      description: Checks if the pin is set for settings
+      operationId: post-api-isPinSet
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_15'
+  /api/checkPin:
+    post:
+      tags:
+      - security
+      summary: Check if pin is correct
+      description: Checks the pin against an inputted one. Will return true if they
+        match
+      operationId: post-api-checkPin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_19'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/setPin:
+    post:
+      tags:
+      - security
+      summary: Set pin
+      operationId: post-api-setPin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_20'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+  /api/generateNewAPIKey:
+    post:
+      tags:
+      - security
+      summary: Generate new API key
+      description: Generates and sets a new API key
+      operationId: post-genapikey
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_16'
+  /api/deleteMp3:
+    post:
+      tags:
+      - files
+      summary: Delete mp3 file
+      description: Deletes an mp3 file by its uid
+      operationId: post-api-deleteMp3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_21'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+                description: Whether the operation succeeded
+  /api/config:
+    get:
+      tags: []
+      summary: Get config
+      description: Gets the config file stored in 'default.json'
+      operationId: get-config
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_17'
+  /api/setConfig:
+    post:
+      summary: Set config
+      description: Sets the 'default.json' config file to the 'new_config_file' object
+      operationId: post-api-setConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_22'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+components:
+  schemas:
+    body:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+        customQualityConfiguration:
+          type: string
+          example: "251"
+        maxBitrate:
+          type: string
+          example: "160"
+        customArgs:
+          type: string
+        customOutput:
+          type: string
+        youtubeUsername:
+          type: string
+        youtubePassword:
+          type: string
+    inline_response_200:
+      required:
+      - audiopathEncoded
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+        file_names:
+          type: string
+        audiopathEncoded:
+          type: string
+    body_1:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+        customQualityConfiguration:
+          type: string
+          example: 242+251
+        selectedHeight:
+          type: string
+          example: "1080"
+        customArgs:
+          type: string
+        customOutput:
+          type: string
+        youtubeUsername:
+          type: string
+        youtubePassword:
+          type: string
+    inline_response_200_1:
+      required:
+      - uid
+      - videopathEncoded
+      type: object
+      properties:
+        uid:
+          type: string
+        file_names:
+          type: string
+        videopathEncoded:
+          type: string
+    inline_response_200_2:
+      required:
+      - mp3s
+      - playlists
+      type: object
+      properties:
+        mp3s:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_200_2_mp3s'
+        playlists:
+          type: array
+          description: All audio playlists
+          items:
+            $ref: '#/components/schemas/inline_response_200_2_playlists'
+    inline_response_200_3:
+      required:
+      - mp4s
+      type: object
+      properties:
+        mp4s:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_200_3_mp4s'
+        playlists:
+          type: array
+          description: All video playlists
+          items:
+            type: object
+    body_2:
+      required:
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+        type:
+          type: string
+    inline_response_200_4:
+      required:
+      - file
+      - success
+      type: object
+      properties:
+        success:
+          type: string
+        file:
+          $ref: '#/components/schemas/inline_response_200_2_mp3s'
+    body_3:
+      required:
+      - is_playlist
+      - type
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+        type:
+          type: string
+        is_playlist:
+          type: boolean
+    inline_response_200_5:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+    body_4:
+      required:
+      - type
+      - uid
+      type: object
+      properties:
+        type:
+          type: string
+        uid:
+          type: string
+          description: uid is either the video uid or the playlist ID
+        is_playlist:
+          type: boolean
+    body_5:
+      required:
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        timerange:
+          type: string
+        streamingOnly:
+          type: boolean
+    inline_response_200_6:
+      required:
+      - new_sub
+      type: object
+      properties:
+        new_sub:
+          $ref: '#/components/schemas/inline_response_200_6_new_sub'
+        error:
+          type: string
+    apiunsubscribe_sub:
+      required:
+      - id
+      - name
+      - url
+      - videos
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        id:
+          type: string
+        streamingOnly:
+          type: boolean
+        videos:
+          type: array
+          items:
+            type: object
+    body_6:
+      required:
+      - sub
+      type: object
+      properties:
+        sub:
+          $ref: '#/components/schemas/apiunsubscribe_sub'
+        deleteMode:
+          type: boolean
+          description: Defaults to false
+    inline_response_200_7:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    apideleteSubscriptionFile_sub:
+      required:
+      - id
+      - isPlaylist
+      - name
+      - url
+      - videos
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        id:
+          type: string
+        streamingOnly:
+          type: boolean
+        isPlaylist:
+          type: boolean
+        videos:
+          type: array
+          items:
+            type: object
+    body_7:
+      required:
+      - file
+      - sub
+      type: object
+      properties:
+        file:
+          type: string
+        sub:
+          $ref: '#/components/schemas/apideleteSubscriptionFile_sub'
+        deleteForever:
+          type: boolean
+          description: If true, does not remove id from archive. Only valid if youtube-dl
+            archive is enabled in settings.
+    inline_response_200_8:
+      type: object
+      properties:
+        success:
+          type: boolean
+    body_8:
+      required:
+      - subID
+      type: object
+      properties:
+        subID:
+          type: string
+    inline_response_200_9:
+      required:
+      - files
+      - subscription
+      type: object
+      properties:
+        subscription:
+          $ref: '#/components/schemas/inline_response_200_9_subscription'
+        files:
+          type: array
+          items:
+            type: object
+    body_9:
+      required:
+      - subID
+      type: object
+      properties:
+        subID:
+          type: string
+    inline_response_200_10:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: number
+    inline_response_200_11:
+      required:
+      - subscriptions
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_200_11_subscriptions'
+    body_10:
+      required:
+      - fileNames
+      - playlistName
+      - thumbnailURL
+      - type
+      type: object
+      properties:
+        playlistName:
+          type: string
+        fileNames:
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+        thumbnailURL:
+          type: string
+    inline_response_200_12:
+      required:
+      - new_playlist
+      - success
+      type: object
+      properties:
+        new_playlist:
+          $ref: '#/components/schemas/inline_response_200_12_new_playlist'
+        success:
+          type: boolean
+    body_11:
+      required:
+      - playlistID
+      - type
+      type: object
+      properties:
+        playlistID:
+          type: string
+        type:
+          type: string
+    inline_response_200_13:
+      required:
+      - playlist
+      - success
+      - type
+      type: object
+      properties:
+        playlist:
+          $ref: '#/components/schemas/inline_response_200_2_playlists'
+        type:
+          type: string
+        success:
+          type: boolean
+    body_12:
+      required:
+      - fileNames
+      - playlistID
+      - type
+      type: object
+      properties:
+        playlistID:
+          type: string
+        fileNames:
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+    body_13:
+      required:
+      - playlistID
+      - type
+      type: object
+      properties:
+        playlistID:
+          type: string
+        type:
+          type: string
+    body_14:
+      required:
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+    body_15:
+      required:
+      - fileNames
+      - type
+      type: object
+      properties:
+        fileNames:
+          type: array
+          description: Array of 1 or more files to download
+          items:
+            type: string
+        zip_mode:
+          type: boolean
+        type:
+          type: string
+        outputName:
+          type: string
+        fullPathProvided:
+          type: string
+        subscriptionName:
+          type: boolean
+          description: Only used for subscriptions
+        subscriptionPlaylist:
+          type: boolean
+          description: Only used for subscriptions
+    body_16:
+      required:
+      - fileName
+      - type
+      type: object
+      properties:
+        fileName:
+          type: string
+        type:
+          type: string
+    apidownloadArchive_sub:
+      required:
+      - archive_dir
+      type: object
+      properties:
+        archive_dir:
+          type: string
+    body_17:
+      required:
+      - sub
+      type: object
+      properties:
+        sub:
+          $ref: '#/components/schemas/apidownloadArchive_sub'
+    inline_response_200_14:
+      required:
+      - details
+      - updating
+      type: object
+      properties:
+        updating:
+          type: boolean
+        details:
+          type: string
+    body_18:
+      type: object
+      properties:
+        tag:
+          type: string
+    inline_response_200_15:
+      required:
+      - is_set
+      type: object
+      properties:
+        is_set:
+          type: boolean
+    body_19:
+      required:
+      - input_pin
+      type: object
+      properties:
+        input_pin:
+          type: string
+    body_20:
+      required:
+      - unhashed_pin
+      type: object
+      properties:
+        unhashed_pin:
+          type: string
+    inline_response_200_16:
+      required:
+      - new_api_key
+      type: object
+      properties:
+        new_api_key:
+          type: string
+          example: 4241b401-7236-493e-92b5-b72696b9d853
+    body_21:
+      required:
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+    inline_response_200_17:
+      required:
+      - config_file
+      - success
+      type: object
+      properties:
+        config_file:
+          type: object
+        success:
+          type: boolean
+    body_22:
+      required:
+      - new_config_file
+      type: object
+      properties:
+        new_config_file:
+          type: object
+    inline_response_200_2_mp3s:
+      required:
+      - duration
+      - id
+      - isAudio
+      - path
+      - size
+      - thumbnailURL
+      - title
+      - uid
+      - upload_date
+      - uploader
+      - url
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        thumbnailURL:
+          type: string
+        isAudio:
+          type: boolean
+        duration:
+          type: number
+          description: In seconds
+        url:
+          type: string
+        uploader:
+          type: string
+        size:
+          type: number
+        path:
+          type: string
+        upload_date:
+          type: string
+        uid:
+          type: string
+        sharingEnabled:
+          type: boolean
+    inline_response_200_2_playlists:
+      required:
+      - fileNames
+      - id
+      - name
+      - thumbnailURL
+      type: object
+      properties:
+        name:
+          type: string
+        fileNames:
+          type: array
+          items:
+            type: string
+        id:
+          type: string
+        thumbnailURL:
+          type: string
+    inline_response_200_3_mp4s:
+      required:
+      - duration
+      - id
+      - isAudio
+      - path
+      - size
+      - thumbnailURL
+      - title
+      - uid
+      - upload_date
+      - uploader
+      - url
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        thumbnailURL:
+          type: string
+        isAudio:
+          type: boolean
+        duration:
+          type: number
+        url:
+          type: string
+        uploader:
+          type: string
+        size:
+          type: number
+        path:
+          type: string
+        upload_date:
+          type: string
+        uid:
+          type: string
+        sharingEnabled:
+          type: boolean
+    inline_response_200_6_new_sub:
+      required:
+      - id
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        id:
+          type: string
+        streamingOnly:
+          type: boolean
+        timerange:
+          type: string
+    inline_response_200_9_subscription:
+      required:
+      - archive
+      - id
+      - isPlaylist
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        id:
+          type: string
+        streamingOnly:
+          type: boolean
+        isPlaylist:
+          type: boolean
+        archive:
+          type: string
+    inline_response_200_11_subscriptions:
+      required:
+      - archive
+      - id
+      - isPlaylist
+      - name
+      - streamingOnly
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        id:
+          type: string
+        streamingOnly:
+          type: boolean
+        isPlaylist:
+          type: boolean
+        archive:
+          type: string
+    inline_response_200_12_new_playlist:
+      required:
+      - fileNames
+      - id
+      - name
+      - thumbnailURL
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+        fileNames:
+          type: string
+        id:
+          type: string
+        thumbnailURL:
+          type: string
+        type:
+          type: string
+  securitySchemes: {}
