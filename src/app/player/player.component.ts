@@ -41,7 +41,7 @@ export class PlayerComponent implements OnInit {
   subPlaylist = null;
 
   is_shared = false;
-  
+
   db_playlist = null;
   db_file = null;
 
@@ -49,6 +49,10 @@ export class PlayerComponent implements OnInit {
   audioFolderPath = null;
   videoFolderPath = null;
   subscriptionFolderPath = null;
+
+  // url-mode params
+  url = null;
+  name = null;
 
   innerWidth: number;
 
@@ -67,6 +71,8 @@ export class PlayerComponent implements OnInit {
     this.uid = this.route.snapshot.paramMap.get('uid');
     this.subscriptionName = this.route.snapshot.paramMap.get('subscriptionName');
     this.subPlaylist = this.route.snapshot.paramMap.get('subPlaylist');
+    this.url = this.route.snapshot.paramMap.get('url');
+    this.name = this.route.snapshot.paramMap.get('name');
 
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
@@ -87,7 +93,20 @@ export class PlayerComponent implements OnInit {
         this.getPlaylistFiles();
       }
 
-      if (this.type === 'subscription' || this.fileNames) {
+      if (this.url) {
+        // if a url is given, just stream the URL
+        this.playlist = [];
+        const imedia: IMedia = {
+          title: this.name,
+          label: this.name,
+          src: this.url,
+          type: 'video/mp4'
+        }
+        this.playlist.push(imedia);
+        this.currentItem = this.playlist[0];
+        this.currentIndex = 0;
+        this.show_player = true;
+      } else if (this.type === 'subscription' || this.fileNames) {
         this.show_player = true;
         this.parseFileNames();
       }
