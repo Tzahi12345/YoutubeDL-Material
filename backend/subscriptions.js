@@ -187,6 +187,7 @@ async function getVideosForSub(sub) {
             resolve(false);
             return;
         }
+        const sub_db = db.get('subscriptions').find({id: sub.id});
         const basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
 
@@ -199,10 +200,6 @@ async function getVideosForSub(sub) {
 
         let downloadConfig = ['-o', appendedBasePath + '/%(title)s.mp4', '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '-ciw', '--write-annotations', '--write-thumbnail', '--write-info-json', '--print-json'];
 
-        if (sub.timerange) {
-            downloadConfig.push('--dateafter', sub.timerange);
-        }
-
         let archive_dir = null;
         let archive_path = null;
 
@@ -212,6 +209,15 @@ async function getVideosForSub(sub) {
                 archive_path = path.join(archive_dir, 'archive.txt')
             }
             downloadConfig.push('--download-archive', archive_path);
+        }
+
+        // if streaming only mode, just get the list of videos
+        if (sub.streamingOnly) {
+            downloadConfig = ['-f', 'best', '--dump-json'];
+        }
+
+        if (sub.timerange) {
+            downloadConfig.push('--dateafter', sub.timerange);
         }
 
         // get videos 
@@ -234,6 +240,18 @@ async function getVideosForSub(sub) {
                     }
                     if (!output_json) {
                         continue;
+                    }
+
+                    if (sub.streamingOnly) {
+                        if (i === 0) {
+                            sub_db.assign({videos: []}).write();
+                        }
+
+                        // remove unnecessary info
+                        output_json.formats = null;
+
+                        // add to db
+                        sub_db.get('videos').push(output_json).write();
                     }
 
                     // TODO: Potentially store downloaded files in db?

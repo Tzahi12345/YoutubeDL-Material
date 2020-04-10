@@ -184,8 +184,8 @@ export class PostsService {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type});
     }
 
-    createSubscription(url, name, timerange = null) {
-        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange})
+    createSubscription(url, name, timerange = null, streamingOnly = false) {
+        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly});
     }
 
     unsubscribe(sub, deleteMode = false) {
