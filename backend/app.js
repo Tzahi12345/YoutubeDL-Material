@@ -35,6 +35,8 @@ const db = low(adapter)
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
 
+const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
+
 // logging setup
 
 // console format
@@ -1218,12 +1220,25 @@ const deleteFolderRecursive = function(folder_to_delete) {
 };
 
 app.use(function(req, res, next) {
-    var client_origin = req.get('origin');
-    if (client_origin === getOrigin() || (req.headers.authorization && config_api.getConfigItem('ytdl_use_api_key') && req.headers.authorization === config_api.getConfigItem('ytdl_api_key'))) {
-        res.header("Access-Control-Allow-Origin", client_origin);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Origin", getOrigin());
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
     }
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+});
+
+app.use(function(req, res, next) {  
+    if (req.headers.authorization === admin_token) {
+        next();
+    } else if (req.headers.authorization && config_api.getConfigItem('ytdl_use_api_key') && req.headers.authorization === config_api.getConfigItem('ytdl_api_key')) {
+        next();
+    } else if (req.path.includes('/api/video/') || req.path.includes('/api/audio/')) {
+        next();
+    } else {
+        req.socket.end();
+    }
 });
 
 app.use(compression());

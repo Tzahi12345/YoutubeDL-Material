@@ -134,5 +134,5 @@ let CONFIG_ITEMS = {
 
 module.exports = {
     CONFIG_ITEMS: CONFIG_ITEMS,
-    CURRENT_VERSION: 'v3.6.0'
+    CURRENT_VERSION: 'v3.6'
 }
