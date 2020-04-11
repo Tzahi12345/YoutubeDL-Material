@@ -49,12 +49,14 @@ export class FileCardComponent implements OnInit {
   deleteFile(blacklistMode = false) {
     if (!this.isPlaylist) {
       this.postsService.deleteFile(this.uid, this.isAudio, blacklistMode).subscribe(result => {
-        if (result === true) {
+        if (result) {
           this.openSnackBar('Delete success!', 'OK.');
           this.removeFile.emit(this.name);
         } else {
           this.openSnackBar('Delete failed!', 'OK.');
         }
+      }, err => {
+        this.openSnackBar('Delete failed!', 'OK.');
       });
     } else {
       this.removeFile.emit(this.name);
