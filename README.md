@@ -1,4 +1,10 @@
 # YoutubeDL-Material
+[![](https://img.shields.io/docker/pulls/tzahi12345/youtubedl-material.svg)](https://hub.docker.com/repository/docker/tzahi12345/youtubedl-material)
+[![](https://img.shields.io/docker/image-size/tzahi12345/youtubedl-material?sort=date)](https://hub.docker.com/repository/docker/tzahi12345/youtubedl-material)
+[![](https://img.shields.io/badge/%E2%86%91_Deploy_to-Heroku-7056bf.svg)](https://heroku.com/deploy?template=https://github.com/Tzahi12345/YoutubeDL-Material)
+[![](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
+[![](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
+
 
 YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 9](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
@@ -36,7 +42,7 @@ sudo apt-get install nodejs youtube-dl
 
 2. Drag the `youtubedl-material` directory to an easily accessible directory. Navigate to the `appdata` folder and edit the `default.json` file. If you're using SSL encryption, look at the `encrypted.json` file for a template.
 
-NOTE: If you are intending to use a reverse proxy, this next step is not necessary
+NOTE: If you are intending to use a [reverse proxy](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Reverse-Proxy-Setup), this next step is not necessary
 
 3. Port forward the port listed in `default.json`, which defaults to `17442`.
 
@@ -82,7 +88,9 @@ Once you do that, you're almost up and running. All you need to do is edit the c
 
 The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `nodejs app.js`.
 
-Finally, port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
+Finally, if you want your instance to be available from outside your network, you can set up a [reverse proxy](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Reverse-Proxy-Setup).
+
+Alternatively, you can port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
 
 ## Docker
 
@@ -97,7 +105,11 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 
 ## API
 
-View how to use the backend API on the [API Wiki page](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/API).
+[API Docs](https://stoplight.io/p/docs/gh/tzahi12345/youtubedl-material?group=master&utm_campaign=publish_dialog&utm_source=studio)
+
+To get started, go to the settings menu and enable the public API from the *Extra* tab. You can generate an API key if one is missing.
+
+Once you have enabled the API and have the key, you can start sending requests with the key as the Authorization header. That's it! Nearly all of the backend should be at your disposal. View available endpoints in the link above.
 
 ## Contributing
 
