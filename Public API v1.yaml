@@ -1,7 +1,19 @@
 openapi: 3.0.0
 info:
-  title: Version 1
+  title: YoutubeDL-Material API Docs - Official
   version: '1.0'
+  description: |-
+    Welcome to the official docs for YoutubeDL-Material.
+
+    You can check out all the available endpoints. Remember to authenticate with your API key using the "Authorization" header with your requests.
+
+    To do so, simply add this header to your API calls:
+
+    `Authorization: API_KEY`
+
+    Note the space between 'Authorization:' and the API_KEY. This is required.
+
+    Reaplce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.
 servers:
   - url: 'http://localhost:17442'
 paths:
@@ -10,7 +22,10 @@ paths:
       tags:
         - downloader
       summary: Download audio file
-      description: Downloads an audio file with the given URL. Will include global args if they exist.
+      description: |-
+        Downloads an audio file with the given URL. Will include global args if they exist.
+
+        HTTP requests will return once the audio file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
       operationId: post-tomp3
       requestBody:
         content:
@@ -24,12 +39,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
+      security:
+        - Authenticate: []
   /api/tomp4:
     post:
       tags:
         - downloader
       summary: Download video file
-      description: Downloads a video file with the given URL. Will include global args if they exist.
+      description: |-
+        Downloads a video file with the given URL. Will include global args if they exist.
+
+        HTTP requests will return once the video file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
       operationId: post-tomp4
       requestBody:
         content:
@@ -43,6 +63,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
+      security:
+        - Authenticate: []
   /api/getMp3s:
     get:
       tags:
@@ -57,6 +79,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_2'
+      requestBody: {}
+      security:
+        - Authenticate: []
   /api/getMp4s:
     get:
       tags:
@@ -71,6 +96,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_3'
+      security:
+        - Authenticate: []
   /api/getFile:
     post:
       tags:
@@ -90,6 +117,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_4'
+      security:
+        - Authenticate: []
   /api/enableSharing:
     post:
       tags:
@@ -110,6 +139,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/disableSharing:
     post:
       tags:
@@ -130,6 +161,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/subscribe:
     post:
       tags:
@@ -149,6 +182,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_6'
+      security:
+        - Authenticate: []
   /api/unsubscribe:
     post:
       tags:
@@ -168,6 +203,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_7'
+      security:
+        - Authenticate: []
   /api/deleteSubscriptionFile:
     post:
       tags:
@@ -189,6 +226,8 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_8'
         '500':
           description: Internal Server Error
+      security:
+        - Authenticate: []
   /api/getSubscription:
     post:
       tags:
@@ -208,6 +247,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_9'
+      security:
+        - Authenticate: []
   /api/downloadVideosForSubscription:
     post:
       tags:
@@ -227,6 +268,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_10'
+      security:
+        - Authenticate: []
   /api/getAllSubscriptions:
     post:
       tags:
@@ -245,6 +288,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_11'
+      security:
+        - Authenticate: []
   /api/createPlaylist:
     post:
       tags:
@@ -264,6 +309,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_12'
+      security:
+        - Authenticate: []
   /api/getPlaylist:
     post:
       tags:
@@ -283,6 +330,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_13'
+      security:
+        - Authenticate: []
   /api/updatePlaylist:
     post:
       tags:
@@ -302,6 +351,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/deletePlaylist:
     post:
       tags:
@@ -321,6 +372,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/deleteMp4:
     post:
       tags:
@@ -341,6 +394,8 @@ paths:
               schema:
                 type: boolean
                 description: Whether the operation succeeded
+      security:
+        - Authenticate: []
   /api/downloadFile:
     post:
       tags:
@@ -359,6 +414,8 @@ paths:
       responses:
         '200':
           description: 'The file itself is in the response, as well as an options object.'
+      security:
+        - Authenticate: []
   /api/deleteFile:
     post:
       tags:
@@ -373,6 +430,8 @@ paths:
       responses:
         '200':
           description: OK
+      security:
+        - Authenticate: []
   /api/downloadArchive:
     post:
       tags:
@@ -388,6 +447,8 @@ paths:
       responses:
         '200':
           description: The archive text file is sent as a response
+      security:
+        - Authenticate: []
   /api/updaterStatus:
     get:
       tags:
@@ -402,6 +463,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_14'
+      security:
+        - Authenticate: []
   /api/updateServer:
     post:
       tags:
@@ -421,6 +484,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/isPinSet:
     post:
       tags:
@@ -435,6 +500,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_15'
+      security:
+        - Authenticate: []
   /api/checkPin:
     post:
       tags:
@@ -454,6 +521,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/setPin:
     post:
       tags:
@@ -472,6 +541,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
   /api/generateNewAPIKey:
     post:
       tags:
@@ -486,6 +557,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_16'
+      security:
+        - Authenticate: []
   /api/deleteMp3:
     post:
       tags:
@@ -506,6 +579,8 @@ paths:
               schema:
                 type: boolean
                 description: Whether the operation succeeded
+      security:
+        - Authenticate: []
   /api/config:
     get:
       tags: []
@@ -519,6 +594,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_17'
+      security:
+        - Authenticate: []
   /api/setConfig:
     post:
       summary: Set config
@@ -536,6 +613,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+      security:
+        - Authenticate: []
 components:
   schemas:
     body:
@@ -1205,4 +1284,9 @@ components:
           type: string
         type:
           type: string
-  securitySchemes: {}
+  securitySchemes:
+    Authenticate:
+      name: Authorization
+      type: apiKey
+      in: header
+      description: Use your public API key generated from the settings menu
