@@ -34,6 +34,8 @@ export class SubscriptionsComponent implements OnInit {
     this.subscriptions_loading = false;
       this.subscriptions = res['subscriptions'];
       if (!this.subscriptions) {
+        // set it to an empty array so it can notify the user there are no subscriptions
+        this.subscriptions = [];
         return;
       }
 

@@ -1,7 +1,7 @@
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 
-var fs = require('fs');
+var fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 var path = require('path');
 
@@ -82,16 +82,12 @@ async function getSubscriptionInfo(sub) {
 
                     if (!sub.archive) {
                         // must create the archive
-                        const archive_dir = basePath + 'archives/' + sub.name;
+                        const archive_dir = path.join(__dirname, basePath, 'archives', sub.name);
                         const archive_path = path.join(archive_dir, 'archive.txt');
 
                         // creates archive directory and text file if it doesn't exist
-                        if (!fs.existsSync(archive_dir)) {
-                            fs.mkdirSync(archive_dir);
-                            fs.closeSync(fs.openSync(archive_path, 'w'));
-                        } else if (!fs.existsSync(archive_path)) {
-                            fs.closeSync(fs.openSync(archive_path, 'w'));
-                        }
+                        fs.ensureDirSync(archive_dir);
+                        fs.ensureFileSync(archive_path);
 
                         // updates subscription
                         sub.archive = archive_dir;
