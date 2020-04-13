@@ -13,7 +13,7 @@ info:
 
     Note the space between 'Authorization:' and the API_KEY. This is required.
 
-    Reaplce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.
+    Replce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.
 servers:
   - url: 'http://localhost:17442'
 paths:
