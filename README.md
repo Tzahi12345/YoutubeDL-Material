@@ -46,7 +46,7 @@ NOTE: If you are intending to use a [reverse proxy](https://github.com/Tzahi1234
 
 3. Port forward the port listed in `default.json`, which defaults to `17442`.
 
-4. Once the configuration is done, run `npm install` to install all the backend dependencies. Once that is finished, type `nodejs app.js`. This will run the backend server, which serves the frontend as well. On your browser, navigate to to the server (url with the specified port). Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
+4. Once the configuration is done, run `npm install` to install all the backend dependencies. Once that is finished, type `npm start`. This will run the backend server, which serves the frontend as well. On your browser, navigate to to the server (url with the specified port). Try putting in a youtube link to see if it works. If it does, viola! YoutubeDL-Material is now up and running.
 
 If you experience problems, know that it's usually caused by a configuration problem. The first thing you should do is check the console. To get there, right click anywhere on the page and click "Inspect element." Then on the menu that pops up, click console. Look at the error there, and try to investigate.
 
@@ -86,7 +86,7 @@ To deploy, simply clone the repository, and go into the `youtubedl-material` dir
 
 Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
 
-The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `nodejs app.js`.
+The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
 
 Finally, if you want your instance to be available from outside your network, you can set up a [reverse proxy](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Reverse-Proxy-Setup).
 
