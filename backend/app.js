@@ -713,30 +713,37 @@ function getJSONMp3(name)
 {
     var jsonPath = audioFolderPath+name+".info.json";
     var alternateJsonPath = audioFolderPath+name+".mp3.info.json";
+    var obj = null;
     if (fs.existsSync(jsonPath))
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
     else if (fs.existsSync(alternateJsonPath))
-        var obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
+        obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
     else
-        var obj = 0;
+        obj = 0;
     
     return obj;
 }
 
 function getJSONMp4(name, customPath = null)
 {
+    var obj = null; // output
     let jsonPath = null;
+    var alternateJsonPath = videoFolderPath + name + ".mp4.info.json";
     if (!customPath) {
-        jsonPath = videoFolderPath+name+".info.json";
+        jsonPath = videoFolderPath + name + ".info.json";
     } else {
         jsonPath = customPath + name + ".info.json";
+        alternateJsonPath = customPath + name + ".mp4.info.json";
     }
     if (fs.existsSync(jsonPath))
     {
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
         return obj;
+    } else if (fs.existsSync(alternateJsonPath)) {
+        obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
     }
-    else return 0;
+    else obj = 0;
+    return obj;
 }
 
 function getAmountDownloadedMp3(name)
@@ -1005,7 +1012,7 @@ function generateFileObject(id, type) {
     var url = jsonobj.webpage_url;
     var uploader = jsonobj.uploader;
     var upload_date = jsonobj.upload_date;
-    upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+    upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : 'N/A';
 
     var size = stats.size;
 
@@ -1436,6 +1443,11 @@ app.post('/api/tomp4', async function(req, res) {
 
     let downloadConfig = null;
     let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
+
+    if (url.includes('tiktok') || url.includes('pscp.tv')) {
+        // tiktok videos fail when using the default format
+        qualityPath = 'best';
+    }
 
     if (customArgs) {
         downloadConfig = customArgs.split(' ');
