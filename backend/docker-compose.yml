@@ -1,9 +1,20 @@
+<<<<<<< HEAD
+version: "2"
+services:
+    youtubedl-material-docker-rpi:
+        build: .
+        environment: 
+            ALLOW_CONFIG_MUTATIONS: 'true'
+        restart: unless-stopped
+=======
+
 version: "2"
 services:
     ytdl_material:
         environment: 
             ALLOW_CONFIG_MUTATIONS: 'true'
-        restart: unless-stopped
+        restart: always
+>>>>>>> 5ac67508b222b23a24cb982897e69ef143274fd3
         volumes:
             - ./appdata:/app/appdata
             - ./audio:/app/audio
@@ -11,4 +22,12 @@ services:
             - ./subscriptions:/app/subscriptions
         ports:
             - "8998:17442"
+<<<<<<< HEAD
+<<<<<<<< HEAD:backend/docker-compose.yml
         image: volcan96/youtubedl-material-docker-rpi:3.6rev1
+========
+        image: volcan96/youtubedl-material-docker-rpi:3.51rev1
+>>>>>>>> 5ac67508b222b23a24cb982897e69ef143274fd3:docker-compose.yml
+=======
+        image: volcan96/youtubedl-material-docker-rpi:3.51rev1
+>>>>>>> 5ac67508b222b23a24cb982897e69ef143274fd3
