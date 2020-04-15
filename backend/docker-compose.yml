@@ -3,7 +3,7 @@ services:
     ytdl_material:
         environment: 
             ALLOW_CONFIG_MUTATIONS: 'true'
-        restart: always
+        restart: unless-stopped
         volumes:
             - ./appdata:/app/appdata
             - ./audio:/app/audio
@@ -11,4 +11,4 @@ services:
             - ./subscriptions:/app/subscriptions
         ports:
             - "8998:17442"
-        image: tzahi12345/youtubedl-material:latest
+        image: volcan96/youtubedl-material-docker-rpi:3.6rev1
