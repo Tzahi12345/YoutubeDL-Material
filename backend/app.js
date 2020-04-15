@@ -742,10 +742,10 @@ function getJSONMp4(name, customPath = null, openReadPerms = false)
     if (fs.existsSync(jsonPath))
     {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        if (openReadPerms) fs.chmodSync(jsonPath, 0o755);
+        if (openReadPerms) fs.chmodSync(jsonPath, 0o644);
     } else if (fs.existsSync(alternateJsonPath)) {
         obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
-        if (openReadPerms) fs.chmodSync(alternateJsonPath, 0o755);
+        if (openReadPerms) fs.chmodSync(alternateJsonPath, 0o644);
     }
     else obj = 0;
     return obj;
