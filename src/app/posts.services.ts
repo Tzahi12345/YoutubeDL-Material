@@ -1,5 +1,5 @@
 import {Injectable, isDevMode, Inject} from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -36,8 +36,8 @@ export class PostsService {
         }
 
         this.httpOptions = {
-            headers: new HttpHeaders({
-              'Authorization': '4241b401-7236-493e-92b5-b72696b9d853'
+            params: new HttpParams({
+              fromString: `apiKey=${this.auth_token}`
             }),
         };
     }

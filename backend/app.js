@@ -1246,9 +1246,9 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {  
     if (!req.path.includes('/api/')) {
         next();
-    } else if (req.headers.authorization === admin_token) {
+    } else if (req.query.apiKey === admin_token) {
         next();
-    } else if (req.headers.authorization && config_api.getConfigItem('ytdl_use_api_key') && req.headers.authorization === config_api.getConfigItem('ytdl_api_key')) {
+    } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
         next();
     } else if (req.path.includes('/api/video/') || req.path.includes('/api/audio/')) {
         next();
