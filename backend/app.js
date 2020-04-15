@@ -709,22 +709,26 @@ function getFileSizeMp4(name)
     return filesize;
 }
 
-function getJSONMp3(name)
+function getJSONMp3(name, openReadPerms = false)
 {
     var jsonPath = audioFolderPath+name+".info.json";
     var alternateJsonPath = audioFolderPath+name+".mp3.info.json";
     var obj = null;
-    if (fs.existsSync(jsonPath))
+    if (fs.existsSync(jsonPath)) {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    else if (fs.existsSync(alternateJsonPath))
+        if (openReadPerms) fs.chmodSync(jsonPath, 0o755);
+    }
+    else if (fs.existsSync(alternateJsonPath)) {
         obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
+        if (openReadPerms) fs.chmodSync(alternateJsonPath, 0o755);
+    }
     else
         obj = 0;
     
     return obj;
 }
 
-function getJSONMp4(name, customPath = null)
+function getJSONMp4(name, customPath = null, openReadPerms = false)
 {
     var obj = null; // output
     let jsonPath = null;
@@ -738,9 +742,10 @@ function getJSONMp4(name, customPath = null)
     if (fs.existsSync(jsonPath))
     {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        return obj;
+        if (openReadPerms) fs.chmodSync(jsonPath, 0o755);
     } else if (fs.existsSync(alternateJsonPath)) {
         obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
+        if (openReadPerms) fs.chmodSync(alternateJsonPath, 0o755);
     }
     else obj = 0;
     return obj;
@@ -1000,7 +1005,7 @@ function registerFileDB(full_file_path, type) {
 }
 
 function generateFileObject(id, type) {
-    var jsonobj = (type === 'audio') ? getJSONMp3(id) : getJSONMp4(id);
+    var jsonobj = (type === 'audio') ? getJSONMp3(id, true) : getJSONMp4(id, null, true);
     if (!jsonobj) {
         return null;
     }
