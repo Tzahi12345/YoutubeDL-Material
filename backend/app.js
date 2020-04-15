@@ -25,6 +25,8 @@ var subscriptions_api = require('./subscriptions')
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 
+const is_windows = process.platform === 'win32';
+
 var app = express();
 
 // database setup
@@ -716,11 +718,11 @@ function getJSONMp3(name, openReadPerms = false)
     var obj = null;
     if (fs.existsSync(jsonPath)) {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        if (openReadPerms) fs.chmodSync(jsonPath, 0o755);
+        if (!is_windows && openReadPerms) fs.chmodSync(jsonPath, 0o755);
     }
     else if (fs.existsSync(alternateJsonPath)) {
         obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
-        if (openReadPerms) fs.chmodSync(alternateJsonPath, 0o755);
+        if (!is_windows && openReadPerms) fs.chmodSync(alternateJsonPath, 0o755);
     }
     else
         obj = 0;
@@ -1136,7 +1138,7 @@ async function autoUpdateYoutubeDL() {
         if (!stored_binary_path || typeof stored_binary_path !== 'string') {
             // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${current_app_details_path}, attempting to guess actual path...`);
             const guessed_base_path = 'node_modules/youtube-dl/bin/';
-            const guessed_file_path = guessed_base_path + 'youtube-dl' + (process.platform === 'win32' ? '.exe' : '');
+            const guessed_file_path = guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
             if (fs.existsSync(guessed_file_path)) {
                 stored_binary_path = guessed_file_path;
                 // logger.info('INFO: Guess successful! Update process continuing...')
