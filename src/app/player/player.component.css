@@ -14,7 +14,7 @@
 }
 
 .video-styles {
-    width: 80%;
+    width: 100%;
 }
 
 ::ng-deep .mat-button-toggle-label-content {
@@ -64,6 +64,7 @@
 .video-col {
     padding-right: 0px;
     padding-left: 0.01px;
+    height: 100%;
 }
 
 .save-icon {

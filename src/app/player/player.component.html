@@ -1,6 +1,6 @@
 <div *ngIf="playlist.length > 0 && show_player">
     <div [ngClass]="(type === 'audio') ? null : 'container-video'" class="container">
-        <div style="max-width: 100%; margin-left: 0px;" class="row">
+        <div style="max-width: 100%; margin-left: 0px; height: 70vh" class="row">
             <div [ngClass]="(type === 'audio') ? 'my-2 px-1' : 'video-col'" class="col">
                 <vg-player (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
                     <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
