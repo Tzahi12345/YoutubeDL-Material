@@ -1,6 +1,7 @@
 var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
+var auth = require('./authentication/auth');
 var winston = require('winston');
 var path = require('path');
 var youtubedl = require('youtube-dl');
@@ -145,6 +146,9 @@ var descriptors = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// use passport
+app.use(auth.passport.initialize());
 
 // objects
 
@@ -1253,6 +1257,7 @@ app.use(function(req, res, next) {
     } else if (req.path.includes('/api/video/') || req.path.includes('/api/audio/')) {
         next();
     } else {
+        logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
         req.socket.end();
     }
 });
@@ -2302,6 +2307,17 @@ app.get('/api/audio/:id', function(req , res){
         success: !!result
     })
 });
+
+// user authentication
+
+app.post('/api/auth/register'
+        , auth.registerUser);
+app.post('/api/auth/login'
+//        , auth.passport.authenticate('basic',{session:false}) // causes challenge pop-up on 401
+        , auth.authenticateViaPassport
+        , auth.generateJWT
+        , auth.returnAuthResponse
+);
 
 app.use(function(req, res, next) {
     //if the request is not html then move along
