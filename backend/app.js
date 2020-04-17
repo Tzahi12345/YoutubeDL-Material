@@ -1629,8 +1629,13 @@ app.post('/api/fileStatusMp4', function(req, res) {
 
 // gets all download mp3s
 app.get('/api/getMp3s', function(req, res) {
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
+
+    if (req.query.jwt && multiUserMode) {
+        // mp3s = db.get
+    }
 
     res.send({
         mp3s: mp3s,
@@ -2313,8 +2318,7 @@ app.get('/api/audio/:id', function(req , res){
 app.post('/api/auth/register'
         , auth.registerUser);
 app.post('/api/auth/login'
-//        , auth.passport.authenticate('basic',{session:false}) // causes challenge pop-up on 401
-        , auth.authenticateViaPassport
+        , auth.passport.authenticate('local', {})
         , auth.generateJWT
         , auth.returnAuthResponse
 );

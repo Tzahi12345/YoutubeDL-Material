@@ -4,11 +4,15 @@ import { MainComponent } from './main/main.component';
 import { PlayerComponent } from './player/player.component';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscriptionComponent } from './subscription/subscription/subscription.component';
+import { PostsService } from './posts.services';
+import { LoginComponent } from './components/login/login.component';
+
 const routes: Routes = [
-  { path: 'home', component: MainComponent },
-  { path: 'player', component: PlayerComponent},
-  { path: 'subscriptions', component: SubscriptionsComponent },
-  { path: 'subscription', component: SubscriptionComponent },
+  { path: 'home', component: MainComponent, canActivate: [PostsService] },
+  { path: 'player', component: PlayerComponent, canActivate: [PostsService]},
+  { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [PostsService] },
+  { path: 'subscription', component: SubscriptionComponent, canActivate: [PostsService] },
+  { path: 'login', component: LoginComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];
 

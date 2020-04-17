@@ -8,6 +8,15 @@ db.defaults(
     }
 ).write();
 
+var LocalStrategy = require('passport-local').Strategy;
+var JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
+opts.secretOrKey = 'secret';
+opts.issuer = 'example.com';
+opts.audience = 'example.com';
+
 /*************************
  * Authentication module
  ************************/
@@ -23,11 +32,18 @@ const SERVER_SECRET = uuid();
 exports.passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
 
+exports.passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+  
+exports.passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
 /***************************************
  * Register user with hashed password
  **************************************/
 exports.registerUser = function(req, res) {
-    console.log('got here');
   var userid = req.body.userid;
   var username = req.body.username;
   var plaintextPassword = req.body.password;
@@ -76,10 +92,31 @@ exports.registerUser = function(req, res) {
  * This checks that the credentials are valid.
  * If so, passes the user info to the next middleware.
  ************************************************/
-exports.passport.use(new BasicStrategy(
+exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    const user = db.get('users').find({uid: jwt_payload.sub}).value();
+    if (user) {
+        return done(null, user);
+    } else {
+        return done(null, false);
+        // or you could create a new account
+    }
+}));
+
+exports.passport.use(new LocalStrategy({
+    usernameField: 'userid',
+    passwordField: 'password'},
+    function(username, password, done) {
+        const user = db.get('users').find({name: username}).value();
+        if (!user) { return done(null, false); }
+        if (user) {
+            return done(null, bcrypt.compareSync(password, user.passhash) ? user : false);
+        }
+    }
+));
+
+/*passport.use(new BasicStrategy(
   function(userid, plainTextPassword, done) {
-//    console.log('BasicStrategy: verifying credentials');
-    const user = db.get('users').find({uid: userid}).value();
+    const user = db.get('users').find({name: userid}).value();
     if (user) {
           var hashedPwd = user.passhash;
           return bcrypt.compare(plainTextPassword, hashedPwd);
@@ -88,6 +125,7 @@ exports.passport.use(new BasicStrategy(
     }
   }
 ));
+*/
 
 /*************************************************************
  * This is a wrapper for auth.passport.authenticate().
@@ -96,6 +134,7 @@ exports.passport.use(new BasicStrategy(
  * Browser's will pop-up up dialog when status is 401 and 
  * "WWW-Authenticate:Basic..."
  *************************************************************/
+/*
 exports.authenticateViaPassport = function(req, res, next) {
   exports.passport.authenticate('basic',{session:false}, 
     function(err, user, info) {
@@ -109,6 +148,7 @@ exports.authenticateViaPassport = function(req, res, next) {
     }
   )(req, res, next);
 };
+*/
 
 /**********************************
  * Generating/Signing a JWT token
@@ -156,6 +196,12 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
   } else {
     res.status(401).send('Missing Authorization header');
   }
+}
+
+// video stuff
+
+exports.getUserVideos(type) {
+    
 }
 
 function getToken(queryParams) {

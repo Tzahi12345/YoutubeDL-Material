@@ -5,12 +5,12 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
-import { Router } from '@angular/router';
+import { Router, CanActivate } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
-export class PostsService {
+export class PostsService implements CanActivate {
     path = '';
     audioFolder = '';
     videoFolder = '';
@@ -24,6 +24,10 @@ export class PostsService {
     httpOptions = null;
 
     debugMode = false;
+
+    isLoggedIn = false;
+    token = null;
+    user = null;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document) {
         console.log('PostsService Initialized...');
         // this.startPath = window.location.href + '/api/';
@@ -40,6 +44,11 @@ export class PostsService {
               fromString: `apiKey=${this.auth_token}`
             }),
         };
+    }
+    canActivate(route, state): boolean {
+        console.log(route);
+        return true;
+        throw new Error('Method not implemented.');
     }
 
     setTheme(theme) {
@@ -231,6 +240,29 @@ export class PostsService {
 
     getAvailableRelease() {
         return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases');
+    }
+
+    afterLogin(user, token) {
+        this.isLoggedIn = true;
+        this.user = user;
+        this.token = token;
+
+        this.httpOptions = {
+            params: new HttpParams({
+              fromString: `apiKey=${this.auth_token}&jwt=${this.token}`
+            }),
+        };
+    }
+
+    // user methods
+    login(username, password) {
+        const call = this.http.post(this.path + 'auth/login', {userid: username, password: password}, this.httpOptions);
+        call.subscribe(res => {
+            if (res['token']) {
+                this.afterLogin(res['user'], res['token']);
+            }
+        });
+        return call;
     }
 
 }

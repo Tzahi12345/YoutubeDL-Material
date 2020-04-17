@@ -1,0 +1,22 @@
+<mat-card class="login-card">
+    <mat-tab-group>
+        <mat-tab label="Login">
+            <div style="margin-top: 10px;">
+                <mat-form-field>
+                    <input [(ngModel)]="usernameInput" matInput placeholder="User name">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input [(ngModel)]="passwordInput" type="password" matInput placeholder="Password">
+                </mat-form-field>
+            </div>
+            <div style="margin-bottom: 10px; margin-top: 10px;">
+                <button [disabled]="loggingIn" color="primary" (click)="login()" mat-raised-button>Login</button>
+            </div>
+        </mat-tab>
+        <mat-tab *ngIf="registrationEnabled" label="Register">
+
+        </mat-tab>
+    </mat-tab-group>
+</mat-card>
