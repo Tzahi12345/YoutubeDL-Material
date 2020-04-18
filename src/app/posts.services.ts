@@ -215,6 +215,11 @@ export class PostsService {
         return this.http.post(this.path + 'getAllSubscriptions', {}, this.httpOptions);
     }
 
+    // current downloads
+    getCurrentDownloads() {
+        return this.http.get(this.path + 'downloads', this.httpOptions);
+    }
+
     // updates the server to the latest version
     updateServer(tag) {
         return this.http.post(this.path + 'updateServer', {tag: tag}, this.httpOptions);

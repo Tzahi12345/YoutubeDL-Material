@@ -141,6 +141,7 @@ if (writeConfigMode) {
     loadConfig();
 }
 
+var downloads = {};
 var descriptors = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -1363,7 +1364,18 @@ app.post('/api/tomp3', async function(req, res) {
         }
     }
 
+    // adds download to download helper
+    const download_uid = uuid();
+    downloads[download_uid] = {
+        uid: download_uid,
+        downloading: true,
+        complete: false,
+        url: url,
+        type: 'audio'
+    };
+
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        downloads[download_uid]['downloading'] = false;
         var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
@@ -1422,6 +1434,8 @@ app.post('/api/tomp3', async function(req, res) {
                 fs.appendFileSync(archive_path, diff);
                 fs.unlinkSync(merged_path)
             }
+
+            downloads[download_uid]['complete'] = true;
 
             var audiopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
@@ -1510,7 +1524,20 @@ app.post('/api/tomp4', async function(req, res) {
 
     }
 
+    // adds download to download helper
+    const download_uid = uuid();
+    downloads[download_uid] = {
+        uid: download_uid,
+        downloading: true,
+        complete: false,
+        url: url,
+        type: 'video',
+        percent_complete: 0,
+        is_playlist: url.includes('playlist')
+    };
+
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        downloads[download_uid]['downloading'] = false;
         var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
@@ -1568,6 +1595,8 @@ app.post('/api/tomp4', async function(req, res) {
                 const archive_path = path.join(archivePath, 'archive_video.txt');
                 fs.appendFileSync(archive_path, diff);
             }
+
+            downloads[download_uid]['complete'] = true;
             
             var videopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
@@ -2280,6 +2309,12 @@ app.get('/api/audio/:id', function(req , res){
     res.writeHead(200, head)
     fs.createReadStream(path).pipe(res)
   }
+  });
+
+  // Downloads management
+
+  app.get('/api/downloads', async (req, res) => {
+    res.send({downloads: downloads});
   });
 
 
