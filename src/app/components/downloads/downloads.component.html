@@ -1,0 +1,24 @@
+<div style="padding: 20px;">
+    <div *ngFor="let session_downloads of downloads | keyvalue">
+        <ng-container *ngIf="keys(session_downloads.value).length > 0">
+            <mat-card style="padding-bottom: 30px; margin-bottom: 15px;">
+                <h4 style="text-align: center;"><ng-container i18n="Session ID">Session ID:</ng-container>&nbsp;{{session_downloads.key}}
+                    <span *ngIf="session_downloads.key === postsService.session_id">&nbsp;<ng-container i18n="Current session">(current)</ng-container></span>
+                </h4>
+                <div class="container">
+                    <div class="row">
+                        <div *ngFor="let download of session_downloads.value | keyvalue; let i = index;" class="col-12 my-1">
+                            <mat-card *ngIf="download.value" class="mat-elevation-z3">
+                                <app-download-item [download]="download.value" [queueNumber]="i+1" (cancelDownload)="clearDownload(session_downloads.key, download.value.uid)"></app-download-item>
+                            </mat-card>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </ng-container>
+    </div>
+
+    <div *ngIf="downloads && !downloadsValid()">
+        <h4 style="text-align: center;" i18n="No downloads label">No downloads available!</h4>
+    </div>
+</div>

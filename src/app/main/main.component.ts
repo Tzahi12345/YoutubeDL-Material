@@ -34,7 +34,9 @@ export interface Download {
   percent_complete: number;
   downloading: boolean;
   is_playlist: boolean;
+  error: boolean | string;
   fileNames?: string[];
+  complete?: boolean;
 }
 
 @Component({
@@ -207,7 +209,8 @@ export class MainComponent implements OnInit {
     percent_complete: 0,
     url: 'http://youtube.com/watch?v=17848rufj',
     downloading: true,
-    is_playlist: false
+    is_playlist: false,
+    error: false
   };
 
   simulatedOutput = '';
@@ -571,7 +574,8 @@ export class MainComponent implements OnInit {
           percent_complete: 0,
           url: this.url,
           downloading: true,
-          is_playlist: this.url.includes('playlist')
+          is_playlist: this.url.includes('playlist'),
+          error: false
         };
         this.downloads.push(new_download);
         if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
@@ -613,7 +617,8 @@ export class MainComponent implements OnInit {
           percent_complete: 0,
           url: this.url,
           downloading: true,
-          is_playlist: this.url.includes('playlist')
+          is_playlist: this.url.includes('playlist'),
+          error: false
         };
         this.downloads.push(new_download);
         if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };

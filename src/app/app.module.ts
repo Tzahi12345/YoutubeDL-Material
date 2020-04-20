@@ -57,6 +57,7 @@ import { ArgModifierDialogComponent, HighlightPipe } from './dialogs/arg-modifie
 import { UpdaterComponent } from './updater/updater.component';
 import { UpdateProgressDialogComponent } from './dialogs/update-progress-dialog/update-progress-dialog.component';
 import { ShareMediaDialogComponent } from './dialogs/share-media-dialog/share-media-dialog.component';
+import { DownloadsComponent } from './components/downloads/downloads.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -85,7 +86,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     HighlightPipe,
     UpdaterComponent,
     UpdateProgressDialogComponent,
-    ShareMediaDialogComponent
+    ShareMediaDialogComponent,
+    DownloadsComponent
   ],
   imports: [
     CommonModule,

@@ -77,6 +77,7 @@ db.defaults(
             video: []
         },
         configWriteFlag: false,
+        downloads: {},
         subscriptions: [],
         pin_md5: '',
         files_to_db_migration_complete: false
@@ -101,6 +102,10 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 var options = null; // encryption options
 var url_domain = null;
 var updaterStatus = null;
+var last_downloads_check = null;
+var downloads_check_interval = 1000;
+
+var timestamp_server_start = Date.now();
 
 if (debugMode) logger.info('YTDL-Material in debug mode!');
 
@@ -234,7 +239,6 @@ async function startServer() {
             logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
         });
     }
-
 }
 
 async function restartServer() {
@@ -546,6 +550,9 @@ async function loadConfig() {
 
         // check migrations
         await checkMigrations();
+
+        // load in previous downloads
+        downloads = db.get('downloads').value();
 
         // start the server here
         startServer();
@@ -999,6 +1006,7 @@ function registerFileDB(full_file_path, type) {
     }
 
     file_object['uid'] = uuid();
+    file_object['registered'] = Date.now();
     path_object = path.parse(file_object['path']);
     file_object['path'] = path.format(path_object);
     db.get(`files.${type}`)
@@ -1081,6 +1089,304 @@ function getVideoInfos(fileNames) {
     return result;
 }
 
+// downloads
+
+async function downloadFileByURL_exec(url, type, options, sessionID = null) {
+    return new Promise(async resolve => {
+        var date = Date.now();
+        
+        const downloadConfig = await generateArgs(url, type, options);
+
+        // adds download to download helper
+        const download_uid = uuid();
+        const session = sessionID ? sessionID : 'undeclared';
+        if (!downloads[session]) downloads[session] = {};
+        downloads[session][download_uid] = {
+            uid: download_uid,
+            downloading: true,
+            complete: false,
+            url: url,
+            type: type,
+            percent_complete: 0,
+            is_playlist: url.includes('playlist'),
+            timestamp_start: Date.now()
+        };
+        const download = downloads[session][download_uid];
+        updateDownloads();        
+
+        await new Promise(resolve => {
+            youtubedl.exec(url, [...downloadConfig, '--dump-json'], {}, function(err, output) {
+                if (output) {
+                    let json = JSON.parse(output[0]);
+                    const output_no_ext = removeFileExtension(json['_filename']);
+                    download['expected_path'] = output_no_ext + '.mp4';
+                    download['expected_json_path'] = output_no_ext + '.info.json';
+                    resolve(true);
+                } else if (err) {
+                    logger.error(err.stderr);
+                } else {
+                    logger.error(`Video info retrieval failed. Download progress will be unavailable for URL ${url}`);
+                }
+                
+            });
+        });
+        youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+            download['downloading'] = false;
+            download['timestamp_end'] = Date.now();
+            var file_uid = null;
+            let new_date = Date.now();
+            let difference = (new_date - date)/1000;
+            logger.debug(`Video download delay: ${difference} seconds.`);
+            if (err) {
+                logger.error(err.stderr);
+
+                download['error'] = err.stderr;
+                updateDownloads();
+                resolve(false);
+                throw err;
+            } else if (output) {
+                if (output.length === 0 || output[0].length === 0) {
+                    download['error'] = 'No output. Check if video already exists in your archive.';
+                    updateDownloads();
+
+                    resolve(false);
+                    return;
+                }
+                var file_names = [];
+                for (let i = 0; i < output.length; i++) {
+                    let output_json = null;
+                    try {
+                        output_json = JSON.parse(output[i]);
+                    } catch(e) {
+                        output_json = null;
+                    }
+                    var modified_file_name = output_json ? output_json['title'] : null;
+                    if (!output_json) {
+                        continue;
+                    } 
+
+                    // get filepath with no extension
+                    const filepath_no_extension = removeFileExtension(output_json['_filename']);
+                    
+                    var full_file_path = filepath_no_extension + '.mp4';
+                    var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
+
+                    // renames file if necessary due to bug
+                    if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
+                        try {
+                            fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
+                            logger.info('Renamed ' + file_name + '.webm to ' + file_name);
+                        } catch(e) {
+                        }
+                    }
+
+                    // registers file in DB
+                    file_uid = registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
+
+                    if (file_name) file_names.push(file_name);
+                }
+
+                let is_playlist = file_names.length > 1;
+
+                if (options.merged_string !== null) {
+                    let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
+                    let diff = current_merged_archive.replace(options.merged_string, '');
+                    const archive_path = path.join(archivePath, 'archive_video.txt');
+                    fs.appendFileSync(archive_path, diff);
+                }
+
+                download['complete'] = true;
+                updateDownloads();
+                
+                var videopathEncoded = encodeURIComponent(file_names[0]);
+
+                resolve({
+                    videopathEncoded: videopathEncoded,
+                    file_names: is_playlist ? file_names : null,
+                    uid: file_uid
+                });
+            }
+        });
+    });
+}
+
+async function downloadFileByURL_normal(url, type, options, sessionID = null) {
+    return new Promise(async resolve => {
+        var date = Date.now();
+        var file_uid = null;
+
+        const downloadConfig = await generateArgs(url, type, options);
+
+        // adds download to download helper
+        const download_uid = uuid();
+        const session = sessionID ? sessionID : 'undeclared';
+        if (!downloads[session]) downloads[session] = {};
+        downloads[session][download_uid] = {
+            uid: download_uid,
+            downloading: true,
+            complete: false,
+            url: url,
+            type: type,
+            percent_complete: 0,
+            is_playlist: url.includes('playlist'),
+            timestamp_start: Date.now()
+        };
+        const download = downloads[session][download_uid];
+        updateDownloads();
+
+        const video = youtubedl(url,
+            // Optional arguments passed to youtube-dl.
+            downloadConfig,
+            // Additional options can be given for calling `child_process.execFile()`.
+            { cwd: __dirname });
+
+        let video_info = null;
+        let file_size = 0;
+
+        // Will be called when the download starts.
+        video.on('info', function(info) {
+            video_info = info;
+            file_size = video_info.size;
+            console.log('Download started')
+            fs.writeJSONSync(removeFileExtension(video_info._filename) + '.info.json', video_info);
+            video.pipe(fs.createWriteStream(video_info._filename, { flags: 'w' }))
+        });
+        // Will be called if download was already completed and there is nothing more to download.
+        video.on('complete', function complete(info) {
+            'use strict'
+            console.log('filename: ' + info._filename + ' already downloaded.')
+        })
+        
+        let download_pos = 0;
+        video.on('data', function data(chunk) {
+            download_pos += chunk.length
+            // `size` should not be 0 here.
+            if (file_size) {
+              let percent = (download_pos / file_size * 100).toFixed(2)
+              download['percent_complete'] = percent;
+            }
+        });
+
+        video.on('end', function() {
+            console.log('finished downloading!')
+
+            let new_date = Date.now();
+            let difference = (new_date - date)/1000;
+            logger.debug(`Video download delay: ${difference} seconds.`);
+
+            download['complete'] = true;
+            updateDownloads();
+
+            // registers file in DB
+            const base_file_name = video_info._filename.substring(videoFolderPath.length, video_info._filename.length);
+            file_uid = registerFileDB(base_file_name, type);
+
+            if (options.merged_string) {
+                let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
+                let diff = current_merged_archive.replace(options.merged_string, '');
+                const archive_path = path.join(archivePath, 'archive_video.txt');
+                fs.appendFileSync(archive_path, diff);
+            }
+
+            videopathEncoded = encodeURIComponent(removeFileExtension(base_file_name));
+
+            resolve({
+                videopathEncoded: videopathEncoded,
+                file_names: /*is_playlist ? file_names :*/ null, // playlist support is not ready
+                uid: file_uid
+            });
+        });
+
+        video.on('error', function error(err) {
+            logger.error(err);
+
+            download[error] = err;
+            updateDownloads();
+
+            resolve(false);
+        });
+    });
+    
+}
+
+async function generateArgs(url, type, options) {
+    return new Promise(async resolve => {
+        var videopath = '%(title)s';
+        var globalArgs = config_api.getConfigItem('ytdl_custom_args');
+
+        var customArgs = options.customArgs;
+        var customOutput = options.customOutput;
+
+        var selectedHeight = options.selectedHeight;
+        var customQualityConfiguration = options.customQualityConfiguration;
+        var youtubeUsername = options.youtubeUsername;
+        var youtubePassword = options.youtubePassword;
+
+        let downloadConfig = null;
+        let qualityPath = 'best[ext=mp4]';
+
+        if (url.includes('tiktok') || url.includes('pscp.tv')) {
+            // tiktok videos fail when using the default format
+            qualityPath = 'best';
+        }
+
+        if (customArgs) {
+            downloadConfig = customArgs.split(' ');
+        } else {
+            if (customQualityConfiguration) {
+                qualityPath = customQualityConfiguration;
+            } else if (selectedHeight && selectedHeight !== '') {
+                qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+            }
+
+            if (customOutput) {
+                downloadConfig = ['-o', videoFolderPath + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+            } else {
+                downloadConfig = ['-o', videoFolderPath + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+            }
+
+            if (youtubeUsername && youtubePassword) {
+                downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
+            }
+        
+            if (!useDefaultDownloadingAgent && customDownloadingAgent) {
+                downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
+            }
+
+            let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+            if (useYoutubeDLArchive) {
+                const archive_path = path.join(archivePath, 'archive_video.txt');
+                // create archive file if it doesn't exist
+                if (!fs.existsSync(archive_path)) {
+                    fs.closeSync(fs.openSync(archive_path, 'w'));
+                }
+
+                let blacklist_path = path.join(archivePath, 'blacklist_video.txt');
+                // create blacklist file if it doesn't exist
+                if (!fs.existsSync(blacklist_path)) {
+                    fs.closeSync(fs.openSync(blacklist_path, 'w'));
+                }
+
+                let merged_path = videoFolderPath + 'merged.txt';
+                // merges blacklist and regular archive
+                let inputPathList = [archive_path, blacklist_path];
+                let status = await mergeFiles(inputPathList, merged_path);
+
+                options.merged_string = fs.readFileSync(merged_path, "utf8");
+
+                downloadConfig.push('--download-archive', merged_path);
+            }
+
+            if (globalArgs && globalArgs !== '') {
+                // adds global args
+                downloadConfig = downloadConfig.concat(globalArgs.split(' '));
+            }
+
+        }
+        resolve(downloadConfig);
+    });
+}
+
 // currently only works for single urls
 async function getUrlInfos(urls) {
     let startDate = Date.now();
@@ -1116,6 +1422,57 @@ function writeToBlacklist(type, line) {
     line = '\n' + line;
     fs.appendFileSync(blacklistPath, line);
 }
+
+// download management functions
+
+function updateDownloads() {
+    db.assign({downloads: downloads}).write();
+}
+
+/*
+function checkDownloads() {
+    for (let [session_id, session_downloads] of Object.entries(downloads)) {
+        for (let [download_uid, download_obj] of Object.entries(session_downloads)) {
+            if (download_obj && !download_obj['complete'] && !download_obj['error']
+                             && download_obj.timestamp_start > timestamp_server_start) {
+                // download is still running (presumably)
+                download_obj.percent_complete = getDownloadPercent(download_obj);
+            }
+        }
+    }
+}
+*/
+
+function getDownloadPercent(download_obj) {
+    if (!download_obj.final_size) {
+        if (fs.existsSync(download_obj.expected_json_path)) {
+            const file_json = JSON.parse(fs.readFileSync(download_obj.expected_json_path, 'utf8'));
+            let calculated_filesize = null;
+            if (file_json['format_id']) {
+                calculated_filesize = 0;
+                const formats_used = file_json['format_id'].split('+');
+                for (let i = 0; i < file_json['formats'].length; i++) {
+                    if (formats_used.includes(file_json['formats'][i]['format_id'])) {
+                        calculated_filesize += file_json['formats'][i]['filesize'];
+                    }
+                }
+            }
+            download_obj.final_size = calculated_filesize;
+        } else {
+            console.log('could not find json file');
+        }
+    }
+    if (fs.existsSync(download_obj.expected_path)) {
+        const stats = fs.statSync(download_obj.expected_path);
+        const size = stats.size;
+        return (size / download_obj.final_size)*100;
+    } else {
+        console.log('could not find file');
+        return 0;
+    }
+}
+
+// youtube-dl functions
 
 async function startYoutubeDL() {
     // auto update youtube-dl
@@ -1366,28 +1723,39 @@ app.post('/api/tomp3', async function(req, res) {
 
     // adds download to download helper
     const download_uid = uuid();
-    downloads[download_uid] = {
+    const session = req.query.sessionID ? req.query.sessionID : 'undeclared';
+    if (!downloads[session]) downloads[session] = {};
+    downloads[session][download_uid] = {
         uid: download_uid,
         downloading: true,
         complete: false,
         url: url,
-        type: 'audio'
+        type: 'audio',
+        percent_complete: 0,
+        is_playlist: url.includes('playlist'),
+        timestamp_start: Date.now()
     };
-
+    updateDownloads();
     youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        downloads[download_uid]['downloading'] = false;
+        downloads[session][download_uid]['downloading'] = false;
         var uid = null;
         let new_date = Date.now();
         let difference = (new_date - date)/1000;
         logger.debug(`Audio download delay: ${difference} seconds.`);
         if (err) {
-            audiopath = "-1";
             logger.error(err.stderr);
+
+            downloads[session][download_uid]['error'] = err.stderr;
+            updateDownloads();
+
             res.sendStatus(500);
             throw err;
         } else if (output) {  
             var file_names = [];
             if (output.length === 0 || output[0].length === 0) {
+                downloads[session][download_uid]['error'] = 'No output. Check if video already exists in your archive.';
+                updateDownloads();
+
                 res.sendStatus(500);
                 return;
             }
@@ -1435,7 +1803,8 @@ app.post('/api/tomp3', async function(req, res) {
                 fs.unlinkSync(merged_path)
             }
 
-            downloads[download_uid]['complete'] = true;
+            downloads[session][download_uid]['complete'] = true;
+            updateDownloads();
 
             var audiopathEncoded = encodeURIComponent(file_names[0]);
             res.send({
@@ -1449,164 +1818,23 @@ app.post('/api/tomp3', async function(req, res) {
 
 app.post('/api/tomp4', async function(req, res) {
     var url = req.body.url;
-    var date = Date.now();
-    var videopath = '%(title)s';
-    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
-    var customArgs = req.body.customArgs;
-    var customOutput = req.body.customOutput;
-
-    var selectedHeight = req.body.selectedHeight;
-    var customQualityConfiguration = req.body.customQualityConfiguration;
-    var youtubeUsername = req.body.youtubeUsername;
-    var youtubePassword = req.body.youtubePassword;
-
-    let merged_string = null;
-
-    let downloadConfig = null;
-    let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
-
-    if (url.includes('tiktok') || url.includes('pscp.tv')) {
-        // tiktok videos fail when using the default format
-        qualityPath = 'best';
+    var options = {
+        customArgs: req.body.customArgs,
+        customOutput: req.body.customOutput,
+        selectedHeight: req.body.selectedHeight,
+        customQualityConfiguration: req.body.customQualityConfiguration,
+        youtubeUsername: req.body.youtubeUsername,
+        youtubePassword: req.body.youtubePassword
     }
 
-    if (customArgs) {
-        downloadConfig = customArgs.split(' ');
+    const result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID)
+    if (result_obj) {
+        res.send(result_obj);
     } else {
-        if (customQualityConfiguration) {
-            qualityPath = customQualityConfiguration;
-        } else if (selectedHeight && selectedHeight !== '') {
-            qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
-        }
-
-        if (customOutput) {
-            downloadConfig = ['-o', videoFolderPath + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
-        } else {
-            downloadConfig = ['-o', videoFolderPath + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
-        }
-
-        if (youtubeUsername && youtubePassword) {
-            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
-        }
-    
-        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
-            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
-        }
-
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_path = path.join(archivePath, 'archive_video.txt');
-            // create archive file if it doesn't exist
-            if (!fs.existsSync(archive_path)) {
-                fs.closeSync(fs.openSync(archive_path, 'w'));
-            }
-
-            let blacklist_path = path.join(archivePath, 'blacklist_video.txt');
-            // create blacklist file if it doesn't exist
-            if (!fs.existsSync(blacklist_path)) {
-                fs.closeSync(fs.openSync(blacklist_path, 'w'));
-            }
-
-            let merged_path = videoFolderPath + 'merged.txt';
-            // merges blacklist and regular archive
-            let inputPathList = [archive_path, blacklist_path];
-            let status = await mergeFiles(inputPathList, merged_path);
-
-            merged_string = fs.readFileSync(merged_path, "utf8");
-
-            downloadConfig.push('--download-archive', merged_path);
-        }
-
-        if (globalArgs && globalArgs !== '') {
-            // adds global args
-            downloadConfig = downloadConfig.concat(globalArgs.split(' '));
-        }
-
+        res.sendStatus(500);
     }
-
-    // adds download to download helper
-    const download_uid = uuid();
-    downloads[download_uid] = {
-        uid: download_uid,
-        downloading: true,
-        complete: false,
-        url: url,
-        type: 'video',
-        percent_complete: 0,
-        is_playlist: url.includes('playlist')
-    };
-
-    youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        downloads[download_uid]['downloading'] = false;
-        var uid = null;
-        let new_date = Date.now();
-        let difference = (new_date - date)/1000;
-        logger.debug(`Video download delay: ${difference} seconds.`);
-        if (err) {
-            videopath = "-1";
-            logger.error(err.stderr);
-            res.sendStatus(500);
-            throw err;
-        } else if (output) {
-            if (output.length === 0 || output[0].length === 0) {
-                res.sendStatus(500);
-                return;
-            }
-             var file_names = [];
-            for (let i = 0; i < output.length; i++) {
-                let output_json = null;
-                try {
-                    output_json = JSON.parse(output[i]);
-                } catch(e) {
-                    output_json = null;
-                }
-                var modified_file_name = output_json ? output_json['title'] : null;
-                if (!output_json) {
-                    continue;
-                } 
-
-                // get filepath with no extension
-                const filepath_no_extension = removeFileExtension(output_json['_filename']);
-                
-                var full_file_path = filepath_no_extension + '.mp4';
-                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
-
-                // renames file if necessary due to bug
-                if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
-                    try {
-                        fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
-                        logger.info('Renamed ' + file_name + '.webm to ' + file_name);
-                    } catch(e) {
-                    }
-                }
-
-                // registers file in DB
-                uid = registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
-
-                if (file_name) file_names.push(file_name);
-            }
-
-            let is_playlist = file_names.length > 1;
-            if (!is_playlist) audiopath = file_names[0];
-
-            if (merged_string !== null) {
-                let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
-                let diff = current_merged_archive.replace(merged_string, '');
-                const archive_path = path.join(archivePath, 'archive_video.txt');
-                fs.appendFileSync(archive_path, diff);
-            }
-
-            downloads[download_uid]['complete'] = true;
-            
-            var videopathEncoded = encodeURIComponent(file_names[0]);
-            res.send({
-                videopathEncoded: videopathEncoded,
-                file_names: is_playlist ? file_names : null,
-                uid: uid
-            });
-            res.end("yes");
-        }
-    });
+    
+    res.end("yes");
 });
 
 // gets the status of the mp3 file that's being downloaded
@@ -2314,9 +2542,47 @@ app.get('/api/audio/:id', function(req , res){
   // Downloads management
 
   app.get('/api/downloads', async (req, res) => {
+    /*
+    if (!last_downloads_check || Date.now() - last_downloads_check > downloads_check_interval) {
+        last_downloads_check = Date.now();
+        updateDownloads();
+    }
+    */
     res.send({downloads: downloads});
   });
 
+  app.post('/api/clearDownloads', async (req, res) => {
+    let success = false;
+    var delete_all = req.body.delete_all;
+    if (!req.body.session_id) req.body.session_id = 'undeclared';
+    var session_id = req.body.session_id;
+    var download_id = req.body.download_id;
+    if (delete_all) {
+        // delete all downloads
+        downloads = {};
+        success = true;
+    } else if (download_id) {
+        // delete just 1 download
+        if (downloads[session_id][download_id]) {
+            delete downloads[session_id][download_id];
+            success = true;
+        } else if (!downloads[session_id]) {
+            logger.error(`Session ${session_id} has no downloads.`)
+        } else if (!downloads[session_id][download_id]) {
+            logger.error(`Download '${download_id}' for session '${session_id}' could not be found`);
+        }
+    } else if (session_id) {
+        // delete a session's downloads
+        if (downloads[session_id]) {
+            delete downloads[session_id];
+            success = true;
+        } else {
+            logger.error(`Session ${session_id} has no downloads.`)
+        }
+    }
+    updateDownloads();
+    res.send({success: success, downloads: downloads});
+  });
 
   app.post('/api/getVideoInfos', async (req, res) => {
     let fileNames = req.body.fileNames;
