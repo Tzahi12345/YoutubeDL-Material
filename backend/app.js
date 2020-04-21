@@ -1094,6 +1094,11 @@ function getVideoInfos(fileNames) {
 async function downloadFileByURL_exec(url, type, options, sessionID = null) {
     return new Promise(async resolve => {
         var date = Date.now();
+
+        // audio / video specific vars
+        var is_audio = type === 'audio';
+        var ext = is_audio ? '.mp3' : '.mp4';
+        var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
         
         const downloadConfig = await generateArgs(url, type, options);
 
@@ -1119,7 +1124,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                 if (output) {
                     let json = JSON.parse(output[0]);
                     const output_no_ext = removeFileExtension(json['_filename']);
-                    download['expected_path'] = output_no_ext + '.mp4';
+                    download['expected_path'] = output_no_ext + ext;
                     download['expected_json_path'] = output_no_ext + '.info.json';
                     resolve(true);
                 } else if (err) {
@@ -1168,8 +1173,8 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     // get filepath with no extension
                     const filepath_no_extension = removeFileExtension(output_json['_filename']);
                     
-                    var full_file_path = filepath_no_extension + '.mp4';
-                    var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
+                    var full_file_path = filepath_no_extension + ext;
+                    var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
 
                     // renames file if necessary due to bug
                     if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
@@ -1180,18 +1185,27 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                         }
                     }
 
+                    if (type === 'audio') {
+                        let tags = {
+                            title: output_json['title'],
+                            artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
+                        }
+                        let success = NodeID3.write(tags, output_json['_filename']);
+                        if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
+                    }
+
                     // registers file in DB
-                    file_uid = registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
+                    file_uid = registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), 'video');
 
                     if (file_name) file_names.push(file_name);
                 }
 
                 let is_playlist = file_names.length > 1;
 
-                if (options.merged_string !== null) {
-                    let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
+                if (options.merged_string) {
+                    let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
                     let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = path.join(archivePath, 'archive_video.txt');
+                    const archive_path = path.join(archivePath, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -1201,7 +1215,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                 var videopathEncoded = encodeURIComponent(file_names[0]);
 
                 resolve({
-                    videopathEncoded: videopathEncoded,
+                    [(type === 'audio') ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
                     file_names: is_playlist ? file_names : null,
                     uid: file_uid
                 });
@@ -1214,6 +1228,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
     return new Promise(async resolve => {
         var date = Date.now();
         var file_uid = null;
+        var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
 
         const downloadConfig = await generateArgs(url, type, options);
 
@@ -1277,12 +1292,22 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             download['complete'] = true;
             updateDownloads();
 
+            // Does ID3 tagging if audio
+            if (type === 'audio') {
+                let tags = {
+                    title: video_info['title'],
+                    artist: video_info['artist'] ? video_info['artist'] : video_info['uploader']
+                }
+                let success = NodeID3.write(tags, video_info._filename);
+                if (!success) logger.error('Failed to apply ID3 tag to audio file ' + video_info._filename);
+            }
+
             // registers file in DB
-            const base_file_name = video_info._filename.substring(videoFolderPath.length, video_info._filename.length);
+            const base_file_name = video_info._filename.substring(fileFolderPath.length, video_info._filename.length);
             file_uid = registerFileDB(base_file_name, type);
 
             if (options.merged_string) {
-                let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
+                let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
                 let diff = current_merged_archive.replace(options.merged_string, '');
                 const archive_path = path.join(archivePath, 'archive_video.txt');
                 fs.appendFileSync(archive_path, diff);
@@ -1291,7 +1316,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             videopathEncoded = encodeURIComponent(removeFileExtension(base_file_name));
 
             resolve({
-                videopathEncoded: videopathEncoded,
+                [(type === 'audio') ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
                 file_names: /*is_playlist ? file_names :*/ null, // playlist support is not ready
                 uid: file_uid
             });
@@ -1313,21 +1338,29 @@ async function generateArgs(url, type, options) {
     return new Promise(async resolve => {
         var videopath = '%(title)s';
         var globalArgs = config_api.getConfigItem('ytdl_custom_args');
+        var is_audio = type === 'audio';
+
+        var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
 
         var customArgs = options.customArgs;
         var customOutput = options.customOutput;
-
-        var selectedHeight = options.selectedHeight;
         var customQualityConfiguration = options.customQualityConfiguration;
+
+        // video-specific args
+        var selectedHeight = options.selectedHeight;
+
+        // audio-specific args
+        var maxBitrate = options.maxBitrate;
+
         var youtubeUsername = options.youtubeUsername;
         var youtubePassword = options.youtubePassword;
 
         let downloadConfig = null;
-        let qualityPath = 'best[ext=mp4]';
+        let qualityPath = is_audio ? '-f bestaudio' :'-f best[ext=mp4]';
 
-        if (url.includes('tiktok') || url.includes('pscp.tv')) {
+        if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
             // tiktok videos fail when using the default format
-            qualityPath = 'best';
+            qualityPath = '-f best';
         }
 
         if (customArgs) {
@@ -1335,14 +1368,20 @@ async function generateArgs(url, type, options) {
         } else {
             if (customQualityConfiguration) {
                 qualityPath = customQualityConfiguration;
-            } else if (selectedHeight && selectedHeight !== '') {
-                qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+            } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
+                qualityPath = `-f bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+            } else if (maxBitrate && is_audio) {
+                qualityPath = `--audio-quality ${maxBitrate}`
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', videoFolderPath + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', fileFolderPath + customOutput + "", qualityPath, '--write-info-json', '--print-json'];
             } else {
-                downloadConfig = ['-o', videoFolderPath + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', fileFolderPath + videopath + (is_audio ? '.mp3' : '.mp4'), qualityPath, '--write-info-json', '--print-json'];
+            }
+
+            if (is_audio) {
+                downloadConfig.push('--audio-format', 'mp3');
             }
 
             if (youtubeUsername && youtubePassword) {
@@ -1355,19 +1394,20 @@ async function generateArgs(url, type, options) {
 
             let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
             if (useYoutubeDLArchive) {
-                const archive_path = path.join(archivePath, 'archive_video.txt');
+                const archive_path = path.join(archivePath, `archive_${type}.txt`);
                 // create archive file if it doesn't exist
                 if (!fs.existsSync(archive_path)) {
                     fs.closeSync(fs.openSync(archive_path, 'w'));
                 }
 
-                let blacklist_path = path.join(archivePath, 'blacklist_video.txt');
+                let blacklist_path = path.join(archivePath, `blacklist_${type}.txt`);
                 // create blacklist file if it doesn't exist
                 if (!fs.existsSync(blacklist_path)) {
                     fs.closeSync(fs.openSync(blacklist_path, 'w'));
                 }
 
-                let merged_path = videoFolderPath + 'merged.txt';
+                let merged_path = fileFolderPath + 'merged.txt';
+                fs.ensureFileSync(merged_path);
                 // merges blacklist and regular archive
                 let inputPathList = [archive_path, blacklist_path];
                 let status = await mergeFiles(inputPathList, merged_path);
@@ -1645,175 +1685,23 @@ app.get('/api/using-encryption', function(req, res) {
 
 app.post('/api/tomp3', async function(req, res) {
     var url = req.body.url;
-    var date = Date.now();
-    var audiopath = '%(title)s';
-
-    var customQualityConfiguration = req.body.customQualityConfiguration;
-    var maxBitrate = req.body.maxBitrate;
-    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
-    var customArgs = req.body.customArgs;
-    var customOutput = req.body.customOutput;
-    var youtubeUsername = req.body.youtubeUsername;
-    var youtubePassword = req.body.youtubePassword;
-
-    let downloadConfig = null;
-    let qualityPath = '-f bestaudio';
-
-    let merged_path = null;
-    let merged_string = null;
-
-    if (customArgs) {
-        downloadConfig = customArgs.split(' ');
-    } else {
-        if (customQualityConfiguration) {
-            qualityPath = `-f ${customQualityConfiguration}`;
-        } else if (maxBitrate) {
-            if (!maxBitrate || maxBitrate === '') maxBitrate = '0'; 
-            qualityPath = `--audio-quality ${maxBitrate}`
-        }
-
-        if (customOutput) {
-            downloadConfig = ['-x', '--audio-format', 'mp3', '-o', audioFolderPath + customOutput + '.%(ext)s', '--write-info-json', '--print-json'];
-        } else {
-            downloadConfig = ['-x', '--audio-format', 'mp3', '-o', audioFolderPath + audiopath + ".%(ext)s", '--write-info-json', '--print-json'];
-        }
-
-        if (youtubeUsername && youtubePassword) {
-            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
-        }
-    
-        if (qualityPath !== '') {
-            downloadConfig.splice(3, 0, qualityPath);
-        }
-    
-        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
-            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
-        }
-
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_path = path.join(archivePath, 'archive_audio.txt');
-            // create archive file if it doesn't exist
-            if (!fs.existsSync(archive_path)) {
-                fs.closeSync(fs.openSync(archive_path, 'w'));
-            }
-
-            let blacklist_path = path.join(archivePath, 'blacklist_audio.txt');
-            // create blacklist file if it doesn't exist
-            if (!fs.existsSync(blacklist_path)) {
-                fs.closeSync(fs.openSync(blacklist_path, 'w'));
-            }
-
-            // creates merged folder
-            merged_path = audioFolderPath + `merged_${uuid()}.txt`;
-            // merges blacklist and regular archive
-            let inputPathList = [archive_path, blacklist_path];
-            let status = await mergeFiles(inputPathList, merged_path);
-
-            merged_string = fs.readFileSync(merged_path, "utf8");
-
-            downloadConfig.push('--download-archive', merged_path);
-        }
-
-        if (globalArgs && globalArgs !== '') {
-            // adds global args
-            downloadConfig = downloadConfig.concat(globalArgs.split(' '));
-        }
+    var options = {
+        customArgs: req.body.customArgs,
+        customOutput: req.body.customOutput,
+        maxBitrate: req.body.maxBitrate,
+        customQualityConfiguration: req.body.customQualityConfiguration,
+        youtubeUsername: req.body.youtubeUsername,
+        youtubePassword: req.body.youtubePassword
     }
 
-    // adds download to download helper
-    const download_uid = uuid();
-    const session = req.query.sessionID ? req.query.sessionID : 'undeclared';
-    if (!downloads[session]) downloads[session] = {};
-    downloads[session][download_uid] = {
-        uid: download_uid,
-        downloading: true,
-        complete: false,
-        url: url,
-        type: 'audio',
-        percent_complete: 0,
-        is_playlist: url.includes('playlist'),
-        timestamp_start: Date.now()
-    };
-    updateDownloads();
-    youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        downloads[session][download_uid]['downloading'] = false;
-        var uid = null;
-        let new_date = Date.now();
-        let difference = (new_date - date)/1000;
-        logger.debug(`Audio download delay: ${difference} seconds.`);
-        if (err) {
-            logger.error(err.stderr);
-
-            downloads[session][download_uid]['error'] = err.stderr;
-            updateDownloads();
-
-            res.sendStatus(500);
-            throw err;
-        } else if (output) {  
-            var file_names = [];
-            if (output.length === 0 || output[0].length === 0) {
-                downloads[session][download_uid]['error'] = 'No output. Check if video already exists in your archive.';
-                updateDownloads();
-
-                res.sendStatus(500);
-                return;
-            }
-            for (let i = 0; i < output.length; i++) {
-                let output_json = null;
-                try {
-                    output_json = JSON.parse(output[i]);
-                } catch(e) {
-                    output_json = null;
-                }
-                if (!output_json) {
-                    // if invalid, continue onto the next
-                    continue;
-                }
-
-                const filepath_no_extension = removeFileExtension(output_json['_filename']);
-                
-                var full_file_path = filepath_no_extension + '.mp3';
-                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
-                if (fs.existsSync(full_file_path)) {
-                    let tags = {
-                        title: output_json['title'],
-                        artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
-                    }
-                    // NodeID3.create(tags, function(frame) {  })
-                    let success = NodeID3.write(tags, full_file_path);
-                    if (!success) logger.error('Failed to apply ID3 tag to audio file ' + full_file_path);
-
-                    // registers file in DB
-                    uid = registerFileDB(full_file_path.substring(audioFolderPath.length, full_file_path.length), 'audio');
-                } else {
-                    logger.error('Download failed: Output mp3 does not exist');
-                }
-
-                if (file_name) file_names.push(file_name);
-            }
-
-            let is_playlist = file_names.length > 1;
-
-            if (merged_string !== null) {
-                let current_merged_archive = fs.readFileSync(merged_path, 'utf8');
-                let diff = current_merged_archive.replace(merged_string, '');
-                const archive_path = path.join(archivePath, 'archive_audio.txt');
-                fs.appendFileSync(archive_path, diff);
-                fs.unlinkSync(merged_path)
-            }
-
-            downloads[session][download_uid]['complete'] = true;
-            updateDownloads();
-
-            var audiopathEncoded = encodeURIComponent(file_names[0]);
-            res.send({
-                audiopathEncoded: audiopathEncoded,
-                file_names: is_playlist ? file_names : null,
-                uid: uid
-            });
-        }
-    });
+    const result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID)
+    if (result_obj) {
+        res.send(result_obj);
+    } else {
+        res.sendStatus(500);
+    }
+    
+    res.end("yes");
 });
 
 app.post('/api/tomp4', async function(req, res) {
