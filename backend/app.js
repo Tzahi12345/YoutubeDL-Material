@@ -1694,7 +1694,11 @@ app.post('/api/tomp3', async function(req, res) {
         youtubePassword: req.body.youtubePassword
     }
 
-    const result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID)
+    const is_playlist = url.includes('playlist');
+    if (is_playlist)
+        result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
+    else
+        result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
     if (result_obj) {
         res.send(result_obj);
     } else {
@@ -1714,8 +1718,13 @@ app.post('/api/tomp4', async function(req, res) {
         youtubeUsername: req.body.youtubeUsername,
         youtubePassword: req.body.youtubePassword
     }
-
-    const result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID)
+    
+    const is_playlist = url.includes('playlist');
+    let result_obj = null;
+    if (is_playlist)
+        result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
+    else
+        result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
     if (result_obj) {
         res.send(result_obj);
     } else {
