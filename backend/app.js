@@ -1005,10 +1005,18 @@ function registerFileDB(full_file_path, type) {
         return false;
     }
 
+    // add additional info
     file_object['uid'] = uuid();
     file_object['registered'] = Date.now();
     path_object = path.parse(file_object['path']);
     file_object['path'] = path.format(path_object);
+
+    // remove existing video if overwriting
+    db.get(`files.${type}`)
+        .remove({
+            path: file_object['path']
+        }).write();
+
     db.get(`files.${type}`)
       .push(file_object)
       .write();
@@ -1022,6 +1030,7 @@ function generateFileObject(id, type) {
     }
     const ext = (type === 'audio') ? '.mp3' : '.mp4'
     const file_path = getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
+    // console.
     var stats = fs.statSync(path.join(__dirname, file_path));
 
     var title = jsonobj.title;
@@ -1117,31 +1126,15 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             timestamp_start: Date.now()
         };
         const download = downloads[session][download_uid];
-        updateDownloads();        
+        updateDownloads();
 
-        await new Promise(resolve => {
-            youtubedl.exec(url, [...downloadConfig, '--dump-json'], {}, function(err, output) {
-                if (output) {
-                    let json = JSON.parse(output[0]);
-                    const output_no_ext = removeFileExtension(json['_filename']);
-                    download['expected_path'] = output_no_ext + ext;
-                    download['expected_json_path'] = output_no_ext + '.info.json';
-                    resolve(true);
-                } else if (err) {
-                    logger.error(err.stderr);
-                } else {
-                    logger.error(`Video info retrieval failed. Download progress will be unavailable for URL ${url}`);
-                }
-                
-            });
-        });
         youtubedl.exec(url, downloadConfig, {}, function(err, output) {
             download['downloading'] = false;
             download['timestamp_end'] = Date.now();
             var file_uid = null;
             let new_date = Date.now();
             let difference = (new_date - date)/1000;
-            logger.debug(`Video download delay: ${difference} seconds.`);
+            logger.debug(`${is_audio ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
             if (err) {
                 logger.error(err.stderr);
 
@@ -1195,7 +1188,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     }
 
                     // registers file in DB
-                    file_uid = registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), 'video');
+                    file_uid = registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), type);
 
                     if (file_name) file_names.push(file_name);
                 }
@@ -1262,14 +1255,13 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         video.on('info', function(info) {
             video_info = info;
             file_size = video_info.size;
-            console.log('Download started')
             fs.writeJSONSync(removeFileExtension(video_info._filename) + '.info.json', video_info);
             video.pipe(fs.createWriteStream(video_info._filename, { flags: 'w' }))
         });
         // Will be called if download was already completed and there is nothing more to download.
         video.on('complete', function complete(info) {
             'use strict'
-            console.log('filename: ' + info._filename + ' already downloaded.')
+            logger.info('file ' + info._filename + ' already downloaded.')
         })
         
         let download_pos = 0;
@@ -1283,8 +1275,6 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         });
 
         video.on('end', function() {
-            console.log('finished downloading!')
-
             let new_date = Date.now();
             let difference = (new_date - date)/1000;
             logger.debug(`Video download delay: ${difference} seconds.`);
@@ -1292,8 +1282,12 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             download['complete'] = true;
             updateDownloads();
 
-            // Does ID3 tagging if audio
+            // audio-only cleanup
             if (type === 'audio') {
+                // filename fix
+                video_info['_filename'] = removeFileExtension(video_info['_filename']) + '.mp3';
+
+                // ID3 tagging 
                 let tags = {
                     title: video_info['title'],
                     artist: video_info['artist'] ? video_info['artist'] : video_info['uploader']
@@ -1377,10 +1371,11 @@ async function generateArgs(url, type, options) {
             if (customOutput) {
                 downloadConfig = ['-o', fileFolderPath + customOutput + "", qualityPath, '--write-info-json', '--print-json'];
             } else {
-                downloadConfig = ['-o', fileFolderPath + videopath + (is_audio ? '.mp3' : '.mp4'), qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', fileFolderPath + videopath + (is_audio ? '.%(ext)s' : '.mp4'), qualityPath, '--write-info-json', '--print-json'];
             }
 
             if (is_audio) {
+                downloadConfig.push('-x');
                 downloadConfig.push('--audio-format', 'mp3');
             }
 
@@ -1695,7 +1690,7 @@ app.post('/api/tomp3', async function(req, res) {
     }
 
     const is_playlist = url.includes('playlist');
-    if (is_playlist)
+    if (true || is_playlist)
         result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
