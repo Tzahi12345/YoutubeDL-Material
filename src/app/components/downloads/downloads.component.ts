@@ -34,7 +34,7 @@ import { trigger, transition, animateChild, stagger, query, style, animate } fro
 export class DownloadsComponent implements OnInit {
 
   downloads_check_interval = 500;
-  downloads = null;
+  downloads = {};
 
   keys = Object.keys;
 
@@ -52,10 +52,7 @@ export class DownloadsComponent implements OnInit {
   getCurrentDownloads() {
     this.postsService.getCurrentDownloads().subscribe(res => {
       if (res['downloads']) {
-        if (JSON.stringify(this.downloads) !== JSON.stringify(res['downloads'])) {
-          // if they're not the same, then replace
-          this.downloads = res['downloads'];
-        }
+        this.assignNewValues(res['downloads']);
       } else {
         // failed to get downloads
       }
@@ -87,6 +84,34 @@ export class DownloadsComponent implements OnInit {
       } else {
       }
     });
+  }
+
+  assignNewValues(new_downloads_by_session) {
+    const session_keys = Object.keys(new_downloads_by_session);
+    for (let i = 0; i < session_keys.length; i++) {
+      const session_id = session_keys[i];
+      const session_downloads_by_id = new_downloads_by_session[session_id];
+      const session_download_ids = Object.keys(session_downloads_by_id);
+
+      if (!this.downloads[session_id]) {
+        this.downloads[session_id] = session_downloads_by_id;
+      } else {
+        for (let j = 0; j < session_download_ids.length; j++) {
+          const download_id = session_download_ids[j];
+          const download = new_downloads_by_session[session_id][download_id]
+          if (!this.downloads[session_id][download_id]) {
+            this.downloads[session_id][download_id] = download;
+          } else {
+            const download_to_update = this.downloads[session_id][download_id];
+            download_to_update['percent_complete'] = download['percent_complete'];
+            download_to_update['complete'] = download['complete'];
+            download_to_update['timestamp_end'] = download['timestamp_end'];
+            download_to_update['downloading'] = download['downloading'];
+            download_to_update['error'] = download['error'];
+          }
+        }
+      }
+    }
   }
 
   downloadsValid() {
