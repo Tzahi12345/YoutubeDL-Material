@@ -68,25 +68,27 @@ export class PostsService {
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null) {
+    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
         return this.http.post(this.path + 'tomp3', {url: url,
                                                     maxBitrate: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword}, this.httpOptions);
+                                                    youtubePassword: youtubePassword,
+                                                    ui_uid: ui_uid}, this.httpOptions);
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null) {
+    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
         return this.http.post(this.path + 'tomp4', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword}, this.httpOptions);
+                                                    youtubePassword: youtubePassword,
+                                                    ui_uid: ui_uid}, this.httpOptions);
     }
 
     getFileStatusMp3(name: string) {
@@ -223,6 +225,11 @@ export class PostsService {
     // current downloads
     getCurrentDownloads() {
         return this.http.get(this.path + 'downloads', this.httpOptions);
+    }
+
+    // current download
+    getCurrentDownload(session_id, download_id) {
+        return this.http.post(this.path + 'download', {download_id: download_id, session_id: session_id}, this.httpOptions);
     }
 
     // clear downloads. download_id is optional, if it exists only 1 download will be cleared

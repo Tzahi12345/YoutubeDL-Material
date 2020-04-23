@@ -1117,6 +1117,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         if (!downloads[session]) downloads[session] = {};
         downloads[session][download_uid] = {
             uid: download_uid,
+            ui_uid: options.ui_uid,
             downloading: true,
             complete: false,
             url: url,
@@ -1231,6 +1232,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         if (!downloads[session]) downloads[session] = {};
         downloads[session][download_uid] = {
             uid: download_uid,
+            ui_uid: options.ui_uid,
             downloading: true,
             complete: false,
             url: url,
@@ -1686,7 +1688,8 @@ app.post('/api/tomp3', async function(req, res) {
         maxBitrate: req.body.maxBitrate,
         customQualityConfiguration: req.body.customQualityConfiguration,
         youtubeUsername: req.body.youtubeUsername,
-        youtubePassword: req.body.youtubePassword
+        youtubePassword: req.body.youtubePassword,
+        ui_uid: req.body.ui_uid
     }
 
     const is_playlist = url.includes('playlist');
@@ -1711,7 +1714,8 @@ app.post('/api/tomp4', async function(req, res) {
         selectedHeight: req.body.selectedHeight,
         customQualityConfiguration: req.body.customQualityConfiguration,
         youtubeUsername: req.body.youtubeUsername,
-        youtubePassword: req.body.youtubePassword
+        youtubePassword: req.body.youtubePassword,
+        ui_uid: req.body.ui_uid
     }
     
     const is_playlist = url.includes('playlist');
@@ -2441,6 +2445,30 @@ app.get('/api/audio/:id', function(req , res){
     }
     */
     res.send({downloads: downloads});
+  });
+
+  app.post('/api/download', async (req, res) => {
+    var session_id = req.body.session_id;
+    var download_id = req.body.download_id;
+    let found_download = null;
+
+    // find download
+    if (downloads[session_id] && Object.keys(downloads[session_id])) {
+        let session_downloads = Object.values(downloads[session_id]);
+        for (let i = 0; i < session_downloads.length; i++) {
+            let session_download = session_downloads[i];
+            if (session_download && session_download['ui_uid'] === download_id) {
+                found_download = session_download;
+                break;
+            }
+        }
+    }
+
+    if (found_download) {
+        res.send({download: found_download});
+    } else {
+        res.send({download: null});
+    }
   });
 
   app.post('/api/clearDownloads', async (req, res) => {
