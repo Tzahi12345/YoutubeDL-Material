@@ -125,6 +125,10 @@ export class PlayerComponent implements OnInit {
     const already_has_filenames = !!this.fileNames;
     this.postsService.getFile(this.uid, null).subscribe(res => {
       this.db_file = res['file'];
+      if (!this.db_file) {
+        this.openSnackBar('Failed to get file information from the server.', 'Dismiss');
+        return;
+      }
       if (!this.fileNames) {
         // means it's a shared video
         if (!this.id) {

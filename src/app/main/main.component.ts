@@ -34,7 +34,9 @@ export interface Download {
   percent_complete: number;
   downloading: boolean;
   is_playlist: boolean;
+  error: boolean | string;
   fileNames?: string[];
+  complete?: boolean;
 }
 
 @Component({
@@ -207,7 +209,8 @@ export class MainComponent implements OnInit {
     percent_complete: 0,
     url: 'http://youtube.com/watch?v=17848rufj',
     downloading: true,
-    is_playlist: false
+    is_playlist: false,
+    error: false
   };
 
   simulatedOutput = '';
@@ -280,6 +283,13 @@ export class MainComponent implements OnInit {
         if (customOutput && customOutput !== 'null') { this.customOutput = customOutput };
         if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername };
       }
+
+      // get downloads routine
+      setInterval(() => {
+        if (this.current_download) {
+          this.getCurrentDownload();
+        }
+      }, 500);
 
       return true;
 
@@ -571,7 +581,8 @@ export class MainComponent implements OnInit {
           percent_complete: 0,
           url: this.url,
           downloading: true,
-          is_playlist: this.url.includes('playlist')
+          is_playlist: this.url.includes('playlist'),
+          error: false
         };
         this.downloads.push(new_download);
         if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
@@ -583,13 +594,15 @@ export class MainComponent implements OnInit {
         }
 
         this.postsService.makeMP3(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
 
           const is_playlist = !!(posts['file_names']);
           this.path = is_playlist ? posts['file_names'] : posts['audiopathEncoded'];
+
+          this.current_download = null;
 
           if (this.path !== '-1') {
             this.downloadHelperMp3(this.path, posts['uid'], is_playlist, false, new_download);
@@ -613,7 +626,8 @@ export class MainComponent implements OnInit {
           percent_complete: 0,
           url: this.url,
           downloading: true,
-          is_playlist: this.url.includes('playlist')
+          is_playlist: this.url.includes('playlist'),
+          error: false
         };
         this.downloads.push(new_download);
         if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
@@ -622,13 +636,15 @@ export class MainComponent implements OnInit {
         const customQualityConfiguration = this.getSelectedVideoFormat();
 
         this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
 
           const is_playlist = !!(posts['file_names']);
           this.path = is_playlist ? posts['file_names'] : posts['videopathEncoded'];
+
+          this.current_download = null;
 
           if (this.path !== '-1') {
             this.downloadHelperMp4(this.path, posts['uid'], is_playlist, false, new_download);
@@ -1116,6 +1132,23 @@ export class MainComponent implements OnInit {
     dialogRef.afterClosed().subscribe(new_args => {
       if (new_args) {
        this.customArgs = new_args;
+      }
+    });
+  }
+
+  getCurrentDownload() {
+    this.postsService.getCurrentDownload(this.postsService.session_id,
+      this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid']).subscribe(res => {
+      const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
+      if (res['download']) {
+        console.log('got new download');
+        if (ui_uid === res['download']['ui_uid']) {
+          this.current_download = res['download'];
+          this.percentDownloaded = this.current_download.percent_complete;
+          console.log(this.percentDownloaded);
+        }
+      } else {
+        console.log('failed to get new download');
       }
     });
   }

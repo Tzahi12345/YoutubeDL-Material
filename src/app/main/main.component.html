@@ -170,11 +170,11 @@
 <br/>
 <div class="centered big" id="bar_div" *ngIf="current_download && current_download.downloading; else nofile">
     <div class="margined">
-        <div [ngClass]="(determinateProgress && percentDownloaded === 100)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="determinateProgress;else indeterminateprogress">
-            <mat-progress-bar mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
+        <div [ngClass]="(percentDownloaded > 15 && percentDownloaded === 100)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="current_download.percent_complete && current_download.percent_complete > 15;else indeterminateprogress">
+            <mat-progress-bar style="border-radius: 5px;" mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
             <br/>
         </div>
-        <div *ngIf="determinateProgress && percentDownloaded === 100" class="spinner">
+        <div *ngIf="percentDownloaded === 100" class="spinner">
             <mat-spinner [diameter]="25"></mat-spinner>
         </div>
         <ng-template #indeterminateprogress>

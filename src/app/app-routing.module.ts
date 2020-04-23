@@ -6,6 +6,7 @@ import { SubscriptionsComponent } from './subscriptions/subscriptions.component'
 import { SubscriptionComponent } from './subscription/subscription/subscription.component';
 import { PostsService } from './posts.services';
 import { LoginComponent } from './components/login/login.component';
+import { DownloadsComponent } from './components/downloads/downloads.component';
 
 const routes: Routes = [
   { path: 'home', component: MainComponent, canActivate: [PostsService] },
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [PostsService] },
   { path: 'subscription', component: SubscriptionComponent, canActivate: [PostsService] },
   { path: 'login', component: LoginComponent },
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'downloads', component: DownloadsComponent },
+  { path: '', redirectTo: '/home', pathMatch: 'full' }
 ];
 
 @NgModule({
