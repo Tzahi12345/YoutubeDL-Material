@@ -13,9 +13,11 @@ export class DownloadItemComponent implements OnInit {
     uid: null,
     type: 'audio',
     percent_complete: 0,
+    complete: false,
     url: 'http://youtube.com/watch?v=17848rufj',
     downloading: true,
-    is_playlist: false
+    is_playlist: false,
+    error: false
   };
   @Output() cancelDownload = new EventEmitter<Download>();
 

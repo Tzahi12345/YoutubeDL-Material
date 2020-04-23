@@ -8,6 +8,7 @@ import { THEMES_CONFIG } from '../themes';
 import { Router } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class PostsService {
@@ -21,7 +22,9 @@ export class PostsService {
     theme;
     settings_changed = new BehaviorSubject<boolean>(false);
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
+    session_id = null;
     httpOptions = null;
+    http_params: string = null;
 
     debugMode = false;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document) {
@@ -29,15 +32,17 @@ export class PostsService {
         // this.startPath = window.location.href + '/api/';
         // this.startPathSSL = window.location.href + '/api/';
         this.path = this.document.location.origin + '/api/';
-
+        this.session_id = uuid();
         if (isDevMode()) {
             this.debugMode = true;
             this.path = 'http://localhost:17442/api/';
         }
 
+        this.http_params = `apiKey=${this.auth_token}&sessionID=${this.session_id}`
+
         this.httpOptions = {
             params: new HttpParams({
-              fromString: `apiKey=${this.auth_token}`
+              fromString: this.http_params
             }),
         };
     }
@@ -63,25 +68,27 @@ export class PostsService {
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null) {
+    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
         return this.http.post(this.path + 'tomp3', {url: url,
                                                     maxBitrate: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword}, this.httpOptions);
+                                                    youtubePassword: youtubePassword,
+                                                    ui_uid: ui_uid}, this.httpOptions);
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null) {
+    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
         return this.http.post(this.path + 'tomp4', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword}, this.httpOptions);
+                                                    youtubePassword: youtubePassword,
+                                                    ui_uid: ui_uid}, this.httpOptions);
     }
 
     getFileStatusMp3(name: string) {
@@ -213,6 +220,23 @@ export class PostsService {
 
     getAllSubscriptions() {
         return this.http.post(this.path + 'getAllSubscriptions', {}, this.httpOptions);
+    }
+
+    // current downloads
+    getCurrentDownloads() {
+        return this.http.get(this.path + 'downloads', this.httpOptions);
+    }
+
+    // current download
+    getCurrentDownload(session_id, download_id) {
+        return this.http.post(this.path + 'download', {download_id: download_id, session_id: session_id}, this.httpOptions);
+    }
+
+    // clear downloads. download_id is optional, if it exists only 1 download will be cleared
+    clearDownloads(delete_all = false, session_id = null, download_id = null) {
+        return this.http.post(this.path + 'clearDownloads', {delete_all: delete_all,
+                                                            download_id: download_id,
+                                                            session_id: session_id ? session_id : this.session_id}, this.httpOptions);
     }
 
     // updates the server to the latest version

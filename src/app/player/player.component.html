@@ -30,6 +30,6 @@
     </div>
     <div *ngIf="playlist.length === 1">
         <button class="save-button" color="primary" (click)="downloadFile()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
-        <button *ngIf="!is_shared && type !== 'subscription'" class="share-button" color="primary" (click)="openShareDialog()" mat-fab><mat-icon class="save-icon">share</mat-icon></button>
+        <button *ngIf="!is_shared && uid && uid !== 'false' && type !== 'subscription'" class="share-button" color="primary" (click)="openShareDialog()" mat-fab><mat-icon class="save-icon">share</mat-icon></button>
     </div>
 </div>
