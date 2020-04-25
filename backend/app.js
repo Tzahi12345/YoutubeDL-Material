@@ -1,7 +1,7 @@
 var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
-var auth = require('./authentication/auth');
+var auth_api = require('./authentication/auth');
 var winston = require('winston');
 var path = require('path');
 var youtubedl = require('youtube-dl');
@@ -63,6 +63,7 @@ const logger = winston.createLogger({
 
 config_api.setLogger(logger);
 subscriptions_api.setLogger(logger);
+auth_api.setLogger(logger);
 
 // var GithubContent = require('github-content');
 
@@ -154,7 +155,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // use passport
-app.use(auth.passport.initialize());
+app.use(auth_api.passport.initialize());
 
 // objects
 
@@ -218,6 +219,7 @@ async function runFilesToDBMigration() {
             db.set('files_to_db_migration_complete', true).write();
             resolve(true);
         } catch(err) {
+            logger.error(err);
             resolve(false);
         }
     });
@@ -635,7 +637,7 @@ function getMp3s() {
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;
         var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
 
         var size = stats.size;
 
@@ -664,7 +666,7 @@ function getMp4s(relative_path = true) {
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;
         var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
 
@@ -1659,6 +1661,14 @@ app.use(function(req, res, next) {
 
 app.use(compression());
 
+const optionalJwt = function (req, res, next) {
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+    if (multiUserMode && req.query.jwt) {
+      return auth_api.passport.authenticate('jwt', { session: false })(req, res, next);
+    }
+    return next();
+};
+
 app.get('/api/config', function(req, res) {
     let config_file = config_api.getConfigFile();
     res.send({
@@ -1781,19 +1791,21 @@ app.post('/api/fileStatusMp4', function(req, res) {
 });
 
 // gets all download mp3s
-app.get('/api/getMp3s', function(req, res) {
-    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+app.get('/api/getMp3s', optionalJwt, function(req, res) {
     var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
-
-    if (req.query.jwt && multiUserMode) {
+    const is_authenticated = req.isAuthenticated();
+    if (is_authenticated) {
         // mp3s = db.get
+        auth_api.passport.authenticate('jwt')
+        mp3s = auth_api.getUserVideos()
+    } else {
+        res.send({
+            mp3s: mp3s,
+            playlists: playlists
+        });
     }
-
-    res.send({
-        mp3s: mp3s,
-        playlists: playlists
-    });
+    
     res.end("yes");
 });
 
@@ -2537,11 +2549,18 @@ app.get('/api/audio/:id', function(req , res){
 // user authentication
 
 app.post('/api/auth/register'
-        , auth.registerUser);
+        , auth_api.registerUser);
 app.post('/api/auth/login'
-        , auth.passport.authenticate('local', {})
-        , auth.generateJWT
-        , auth.returnAuthResponse
+        , auth_api.passport.authenticate('local', {})
+        , auth_api.passport.authorize('local')
+        , auth_api.generateJWT
+        , auth_api.returnAuthResponse
+);
+app.post('/api/auth/jwtAuth'
+        , auth_api.passport.authenticate('jwt', { session: false })
+        , auth_api.passport.authorize('jwt')
+        , auth_api.generateJWT
+        , auth_api.returnAuthResponse
 );
 
 app.use(function(req, res, next) {

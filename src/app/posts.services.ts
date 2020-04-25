@@ -9,6 +9,7 @@ import { Router, CanActivate } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { v4 as uuid } from 'uuid';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -25,13 +26,15 @@ export class PostsService implements CanActivate {
     session_id = null;
     httpOptions = null;
     http_params: string = null;
+    unauthorized = false;
 
     debugMode = false;
 
     isLoggedIn = false;
     token = null;
     user = null;
-    constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document) {
+    constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
+                public snackBar: MatSnackBar) {
         console.log('PostsService Initialized...');
         // this.startPath = window.location.href + '/api/';
         // this.startPathSSL = window.location.href + '/api/';
@@ -49,10 +52,24 @@ export class PostsService implements CanActivate {
               fromString: this.http_params
             }),
         };
+
+        // login stuff
+
+        if (localStorage.getItem('jwt_token')) {
+            this.token = localStorage.getItem('jwt_token');
+            this.httpOptions = {
+                params: new HttpParams({
+                  fromString: `apiKey=${this.auth_token}&jwt=${this.token}`
+                }),
+            };
+            this.jwtAuth();
+        }
     }
-    canActivate(route, state): boolean {
+    canActivate(route, state): Promise<boolean> {
+        return new Promise(resolve => {
+            resolve(true);
+        })
         console.log(route);
-        return true;
         throw new Error('Method not implemented.');
     }
 
@@ -271,11 +288,17 @@ export class PostsService implements CanActivate {
         this.user = user;
         this.token = token;
 
+        localStorage.setItem('jwt_token', this.token);
+
         this.httpOptions = {
             params: new HttpParams({
               fromString: `apiKey=${this.auth_token}&jwt=${this.token}`
             }),
         };
+
+        if (this.router.url === '/login') {
+            this.router.navigate(['/home']);
+        }
     }
 
     // user methods
@@ -287,6 +310,58 @@ export class PostsService implements CanActivate {
             }
         });
         return call;
+    }
+
+    // user methods
+    jwtAuth() {
+        const call = this.http.post(this.path + 'auth/jwtAuth', {}, this.httpOptions);
+        call.subscribe(res => {
+            if (res['token']) {
+                this.afterLogin(res['user'], res['token']);
+            }
+        }, err => {
+            if (err.status === 401) {
+                this.sendToLogin();
+            }
+        });
+        return call;
+    }
+
+    logout() {
+        this.user = null;
+        this.isLoggedIn = false;
+        localStorage.setItem('jwt_token', null);
+    }
+
+    // user methods
+    register(username, password) {
+        const call = this.http.post(this.path + 'auth/register', {userid: username,
+                                                                username: username,
+                                                                password: password}, this.httpOptions);
+        /*call.subscribe(res => {
+            console.log(res['user']);
+            if (res['user']) {
+                // this.afterRegistration(res['user']);
+            }
+        });*/
+        return call;
+    }
+
+    sendToLogin() {
+        if (this.router.url === '/login') {
+            return;
+        }
+
+        this.router.navigate(['/login']);
+
+        // send login notification
+        this.openSnackBar('You must log in to access this page!');
+    }
+
+    public openSnackBar(message: string, action: string = '') {
+        this.snackBar.open(message, action, {
+          duration: 2000,
+        });
     }
 
 }

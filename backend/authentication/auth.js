@@ -11,11 +11,13 @@ db.defaults(
 var LocalStrategy = require('passport-local').Strategy;
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
-var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
-opts.secretOrKey = 'secret';
-opts.issuer = 'example.com';
-opts.audience = 'example.com';
+
+// other required vars
+let logger = null;
+
+exports.setLogger = function(input_logger) {
+  logger = input_logger;
+}
 
 /*************************
  * Authentication module
@@ -27,7 +29,19 @@ var jwt = require('jsonwebtoken');
 const JWT_EXPIRATION = (60 * 60); // one hour
 
 const { uuid } = require('uuidv4');
-const SERVER_SECRET = uuid();
+let SERVER_SECRET = null;
+if (db.get('jwt_secret').value()) {
+  SERVER_SECRET = db.get('jwt_secret').value();
+} else {
+  SERVER_SECRET = uuid();
+  db.set('jwt_secret', SERVER_SECRET).write();
+}
+
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
+opts.secretOrKey = SERVER_SECRET;
+/*opts.issuer = 'example.com';
+opts.audience = 'example.com';*/
 
 exports.passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
@@ -50,33 +64,42 @@ exports.registerUser = function(req, res) {
   
   bcrypt.hash(plaintextPassword, saltRounds)
     .then(function(hash) {
+      let new_user = {
+        name: username,
+        uid: userid,
+        passhash: hash,
+        files: {
+          audio: [],
+          video: []
+        }
+      };
       // check if user exists
       if (db.get('users').find({uid: userid}).value()) {
         // user id is taken!
+        logger.error('Registration failed: UID is already taken!');
         res.status(409).send('UID is already taken!');
       } else if (db.get('users').find({name: username}).value()) {
           // user name is taken!
+          logger.error('Registration failed: User name is already taken!');
           res.status(409).send('User name is already taken!');
       } else {
         // add to db
-        db.get('users').push({
-            name: username,
-            uid: userid,
-            passhash: hash
-        }).write();
+        db.get('users').push(new_user).write();
+        logger.verbose(`New user created: ${new_user.name}`);
+        res.send({
+          user: new_user
+        });
       }
     })
     .then(function(result) {
-      res.send('registered');
+      
     })
     .catch(function(err) {
+      logger.error(err);
       if( err.code == 'ER_DUP_ENTRY' ) {
         res.status(409).send('UserId already taken');
       } else {
-        console.log('failed TO register User');
-
-        // res.writeHead(500, {'Content-Type':'text/plain'});
-        res.end(err);
+        res.sendStatus(409);
       }
     });
 }
@@ -93,7 +116,7 @@ exports.registerUser = function(req, res) {
  * If so, passes the user info to the next middleware.
  ************************************************/
 exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    const user = db.get('users').find({uid: jwt_payload.sub}).value();
+    const user = db.get('users').find({uid: jwt_payload.user.uid}).value();
     if (user) {
         return done(null, user);
     } else {
@@ -107,7 +130,7 @@ exports.passport.use(new LocalStrategy({
     passwordField: 'password'},
     function(username, password, done) {
         const user = db.get('users').find({name: username}).value();
-        if (!user) { return done(null, false); }
+        if (!user) { console.log('user not found'); return done(null, false); }
         if (user) {
             return done(null, bcrypt.compareSync(password, user.passhash) ? user : false);
         }
@@ -200,8 +223,9 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
 
 // video stuff
 
-exports.getUserVideos(type) {
-    
+exports.getUserVideos = function(uid, type) {
+    const user = db.get('users').find({uid: uid}).value();
+    return user['files'][type];
 }
 
 function getToken(queryParams) {
