@@ -1137,18 +1137,15 @@ export class MainComponent implements OnInit {
   }
 
   getCurrentDownload() {
-    this.postsService.getCurrentDownload(this.postsService.session_id,
-      this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid']).subscribe(res => {
-      const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
+    const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
+    this.postsService.getCurrentDownload(this.postsService.session_id, ui_uid).subscribe(res => {
       if (res['download']) {
-        console.log('got new download');
         if (ui_uid === res['download']['ui_uid']) {
           this.current_download = res['download'];
           this.percentDownloaded = this.current_download.percent_complete;
-          console.log(this.percentDownloaded);
         }
       } else {
-        console.log('failed to get new download');
+        // console.log('failed to get new download');
       }
     });
   }

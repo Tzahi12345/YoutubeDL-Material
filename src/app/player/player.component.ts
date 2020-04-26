@@ -183,6 +183,11 @@ export class PlayerComponent implements OnInit {
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
                         '&subPlaylist=' + this.subPlaylist;
       }
+
+      // adds user token if in multi-user-mode
+      if (this.postsService.isLoggedIn) {
+        fullLocation += '?jwt=' + this.postsService.token;
+      }
       // if it has a slash (meaning it's in a directory), only get the file name for the label
       let label = null;
       const decodedName = decodeURIComponent(fileName);
