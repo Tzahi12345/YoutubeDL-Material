@@ -23,6 +23,7 @@ import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
 import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
+import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -193,6 +194,12 @@ onSetTheme(theme, old_theme) {
   openAboutDialog() {
     const dialogRef = this.dialog.open(AboutDialogComponent, {
       width: '80vw'
+    });
+  }
+
+  openProfileDialog() {
+    const dialogRef = this.dialog.open(UserProfileDialogComponent, {
+      width: '60vw'
     });
   }
 

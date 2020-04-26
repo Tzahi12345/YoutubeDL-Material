@@ -14,6 +14,10 @@
                 <div class="flex-column" style="text-align: right; align-items: flex-end;">
                     <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                     <mat-menu #menuSettings="matMenu">
+                        <button (click)="openProfileDialog()" *ngIf="postsService.isLoggedIn" mat-menu-item>
+                            <mat-icon>person</mat-icon>
+                            <span i18n="Profile menu label">Profile</span>
+                        </button>
                         <button (click)="themeMenuItemClicked($event)" *ngIf="allowThemeChange" mat-menu-item>
                           <mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon>
                           <span i18n="Dark mode toggle label">Dark</span>

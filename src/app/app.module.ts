@@ -59,6 +59,7 @@ import { UpdateProgressDialogComponent } from './dialogs/update-progress-dialog/
 import { ShareMediaDialogComponent } from './dialogs/share-media-dialog/share-media-dialog.component';
 import { LoginComponent } from './components/login/login.component';
 import { DownloadsComponent } from './components/downloads/downloads.component';
+import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -89,7 +90,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     UpdateProgressDialogComponent,
     ShareMediaDialogComponent,
     LoginComponent,
-    DownloadsComponent
+    DownloadsComponent,
+    UserProfileDialogComponent
   ],
   imports: [
     CommonModule,
