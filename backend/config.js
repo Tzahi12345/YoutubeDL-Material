@@ -134,7 +134,8 @@ module.exports = {
     setConfigFile: setConfigFile,
     configExistsCheck: configExistsCheck,
     CONFIG_ITEMS: CONFIG_ITEMS,
-    setLogger: setLogger
+    setLogger: setLogger,
+    descriptors: {}
 }
 
 DEFAULT_CONFIG = {

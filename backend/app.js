@@ -149,7 +149,6 @@ if (writeConfigMode) {
 }
 
 var downloads = {};
-var descriptors = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -882,10 +881,10 @@ async function deleteAudioFile(name, blacklistMode = false) {
 
         let audioFileExists = fs.existsSync(audioFilePath);
 
-        if (descriptors[name]) {
+        if (config_api.descriptors[name]) {
             try {
-                for (let i = 0; i < descriptors[name].length; i++) {
-                    descriptors[name][i].destroy();
+                for (let i = 0; i < config_api.descriptors[name].length; i++) {
+                    config_api.descriptors[name][i].destroy();
                 }
             } catch(e) {
 
@@ -940,10 +939,10 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
         jsonExists = fs.existsSync(jsonPath);
         videoFileExists = fs.existsSync(videoFilePath);
 
-        if (descriptors[name]) {
+        if (config_api.descriptors[name]) {
             try {
-                for (let i = 0; i < descriptors[name].length; i++) {
-                    descriptors[name][i].destroy();
+                for (let i = 0; i < config_api.descriptors[name].length; i++) {
+                    config_api.descriptors[name][i].destroy();
                 }
             } catch(e) {
 
@@ -1352,7 +1351,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             if (options.merged_string) {
                 let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
                 let diff = current_merged_archive.replace(options.merged_string, '');
-                const archive_path = path.join(archivePath, 'archive_video.txt');
+                const archive_path = req.isAuthenticated() ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 fs.appendFileSync(archive_path, diff);
             }
 
@@ -1440,13 +1439,13 @@ async function generateArgs(url, type, options) {
 
             let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
             if (useYoutubeDLArchive) {
-                const archive_path = path.join(archivePath, `archive_${type}.txt`);
+                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 // create archive file if it doesn't exist
                 if (!fs.existsSync(archive_path)) {
                     fs.closeSync(fs.openSync(archive_path, 'w'));
                 }
 
-                let blacklist_path = path.join(archivePath, `blacklist_${type}.txt`);
+                let blacklist_path = options.user ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
                 // create blacklist file if it doesn't exist
                 if (!fs.existsSync(blacklist_path)) {
                     fs.closeSync(fs.openSync(blacklist_path, 'w'));
@@ -2244,12 +2243,19 @@ app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
 });
 
 // deletes mp3 file
-app.post('/api/deleteMp3', async (req, res) => {
+app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
     // var name = req.body.name;
     var uid = req.body.uid;
+    var blacklistMode = req.body.blacklistMode;
+
+    if (req.isAuthenticated()) {
+        let success = auth_api.deleteUserFile(req.user.uid, uid, 'audio', blacklistMode);
+        res.send(success);
+        return;
+    }
+
     var audio_obj = db.get('files.audio').find({uid: uid}).value();
     var name = audio_obj.id;
-    var blacklistMode = req.body.blacklistMode;
     var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
@@ -2270,11 +2276,18 @@ app.post('/api/deleteMp3', async (req, res) => {
 });
 
 // deletes mp4 file
-app.post('/api/deleteMp4', async (req, res) => {
+app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
     var uid = req.body.uid;
+    var blacklistMode = req.body.blacklistMode;
+
+    if (req.isAuthenticated()) {
+        let success = auth_api.deleteUserFile(req.user.uid, uid, 'video', blacklistMode);
+        res.send(success);
+        return;
+    }
+
     var video_obj = db.get('files.video').find({uid: uid}).value();
     var name = video_obj.id;
-    var blacklistMode = req.body.blacklistMode;
     var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
@@ -2472,11 +2485,11 @@ app.get('/api/video/:id', optionalJwt, function(req , res){
         : fileSize-1
         const chunksize = (end-start)+1
         const file = fs.createReadStream(file_path, {start, end})
-        if (descriptors[id]) descriptors[id].push(file);
-        else                            descriptors[id] = [file];
+        if (config_api.descriptors[id]) config_api.descriptors[id].push(file);
+        else                            config_api.descriptors[id] = [file];
         file.on('close', function() {
-            let index = descriptors[id].indexOf(file);
-            descriptors[id].splice(index, 1);
+            let index = config_api.descriptors[id].indexOf(file);
+            config_api.descriptors[id].splice(index, 1);
             logger.debug('Successfully closed stream and removed file reference.');
         });
         head = {
@@ -2517,11 +2530,11 @@ app.get('/api/audio/:id', optionalJwt, function(req , res){
       : fileSize-1
     const chunksize = (end-start)+1
     const file = fs.createReadStream(file_path, {start, end});
-    if (descriptors[id]) descriptors[id].push(file);
-    else                            descriptors[id] = [file];
+    if (config_api.descriptors[id]) config_api.descriptors[id].push(file);
+    else                            config_api.descriptors[id] = [file];
     file.on('close', function() {
-        let index = descriptors[id].indexOf(file);
-        descriptors[id].splice(index, 1);
+        let index = config_api.descriptors[id].indexOf(file);
+        config_api.descriptors[id].splice(index, 1);
         logger.debug('Successfully closed stream and removed file reference.');
     });
     head = {

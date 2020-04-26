@@ -2,6 +2,10 @@ const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('./appdata/users.json');
 const db = low(adapter);
+const path = require('path');
+const config_api = require('../config');
+var subscriptions_api = require('../subscriptions')
+const fs = require('fs-extra');
 db.defaults(
     { 
         users: []
@@ -292,6 +296,74 @@ exports.registerUserFile = function(user_uid, file_object, type) {
   db.get('users').find({uid: user_uid}).get(`files.${type}`)
       .push(file_object)
       .write();
+}
+
+exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = false) {
+  let success = false;
+  const file_obj = db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+  if (file_obj) {
+    const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+
+    // close descriptors
+    if (config_api.descriptors[file_obj.id]) {
+      try {
+          for (let i = 0; i < config_api.descriptors[file_obj.id].length; i++) {
+            config_api.descriptors[file_obj.id][i].destroy();
+          }
+      } catch(e) {
+
+      }
+    } 
+
+    const full_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext);
+    db.get('users').find({uid: user_uid}).get(`files.${type}`)
+      .remove({
+          uid: file_uid
+      }).write();
+    if (fs.existsSync(full_path)) {
+      // remove json and file
+      const json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + '.info.json');
+      const alternate_json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext + '.info.json');
+      let youtube_id = null;
+      if (fs.existsSync(json_path)) {
+        youtube_id = fs.readJSONSync(json_path).id;
+        fs.unlinkSync(json_path);
+      } else if (fs.existsSync(alternate_json_path)) {
+        youtube_id = fs.readJSONSync(alternate_json_path).id;
+        fs.unlinkSync(alternate_json_path);
+      }
+
+      fs.unlinkSync(full_path);
+
+      // do archive stuff
+
+      let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+      if (useYoutubeDLArchive) {
+          const archive_path = path.join(usersFileFolder, user_uid, 'archives', `archive_${type}.txt`);
+
+          // use subscriptions API to remove video from the archive file, and write it to the blacklist
+          if (fs.existsSync(archive_path)) {
+              const line = youtube_id ? subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
+              if (blacklistMode && line) {
+                let blacklistPath = path.join(usersFileFolder, user_uid, 'archives', `blacklist_${type}.txt`);
+                // adds newline to the beginning of the line
+                line = '\n' + line;
+                fs.appendFileSync(blacklistPath, line);
+              }
+          } else {
+              logger.info('Could not find archive file for audio files. Creating...');
+              fs.closeSync(fs.openSync(archive_path, 'w'));
+          }
+      }
+    }
+    success = true;
+  } else {
+    success = false;
+    console.log('file does not exist!');
+  }
+
+  return success;
 }
 
 function getToken(queryParams) {
