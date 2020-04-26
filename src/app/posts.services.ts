@@ -59,7 +59,7 @@ export class PostsService implements CanActivate {
             this.token = localStorage.getItem('jwt_token');
             this.httpOptions = {
                 params: new HttpParams({
-                  fromString: `apiKey=${this.auth_token}&jwt=${this.token}`
+                  fromString: `apiKey=${this.auth_token}&sessionID=${this.session_id}&jwt=${this.token}`
                 }),
             };
             this.jwtAuth();
@@ -170,11 +170,11 @@ export class PostsService implements CanActivate {
                                                             subscriptionName: subscriptionName,
                                                             subPlaylist: subPlaylist
                                                             },
-                                                          {responseType: 'blob', headers: this.httpOptions.headers});
+                                                          {responseType: 'blob', params: this.httpOptions.params});
     }
 
     downloadArchive(sub) {
-        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', headers: this.httpOptions.headers});
+        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFileInfo(fileNames, type, urlMode) {
@@ -292,7 +292,7 @@ export class PostsService implements CanActivate {
 
         this.httpOptions = {
             params: new HttpParams({
-              fromString: `apiKey=${this.auth_token}&jwt=${this.token}`
+              fromString: `apiKey=${this.auth_token}&sessionID=${this.session_id}&jwt=${this.token}`
             }),
         };
 
@@ -331,6 +331,18 @@ export class PostsService implements CanActivate {
         this.user = null;
         this.isLoggedIn = false;
         localStorage.setItem('jwt_token', null);
+        if (this.router.url !== '/login') {
+            this.router.navigate(['/login']);
+        }
+
+        // resets http params
+        this.http_params = `apiKey=${this.auth_token}&sessionID=${this.session_id}`
+
+        this.httpOptions = {
+            params: new HttpParams({
+              fromString: this.http_params
+            }),
+        };
     }
 
     // user methods
