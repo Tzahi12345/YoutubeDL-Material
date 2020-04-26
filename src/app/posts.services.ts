@@ -144,11 +144,11 @@ export class PostsService {
                                                             subscriptionName: subscriptionName,
                                                             subPlaylist: subPlaylist
                                                             },
-                                                          {responseType: 'blob', headers: this.httpOptions.headers});
+                                                          {responseType: 'blob', params: this.httpOptions.params});
     }
 
     downloadArchive(sub) {
-        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', headers: this.httpOptions.headers});
+        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFileInfo(fileNames, type, urlMode) {
