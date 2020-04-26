@@ -9,7 +9,9 @@ var youtubedl = require('youtube-dl');
 const config_api = require('./config');
 
 const adapter = new FileSync('./appdata/db.json');
+const users_adapter = new FileSync('./appdata/users.json');
 const db = low(adapter)
+const db_users = low(users_adapter);
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 

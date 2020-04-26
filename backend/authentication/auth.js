@@ -71,7 +71,12 @@ exports.registerUser = function(req, res) {
         files: {
           audio: [],
           video: []
-        }
+        },
+        playlists: {
+          audio: [],
+          video: []
+        },
+        created: Date.now()
       };
       // check if user exists
       if (db.get('users').find({uid: userid}).value()) {
@@ -223,9 +228,70 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
 
 // video stuff
 
-exports.getUserVideos = function(uid, type) {
-    const user = db.get('users').find({uid: uid}).value();
+exports.getUserVideos = function(user_uid, type) {
+    const user = db.get('users').find({uid: user_uid}).value();
     return user['files'][type];
+}
+
+exports.getUserVideo = function(user_uid, file_uid, type) {
+  if (!type) {
+    file = db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
+    if (!file) {
+        file = db.get('users').find({uid: user_uid}).get(`files.video`).find({uid: file_uid}).value();
+        if (file) type = 'video';
+    } else {
+        type = 'audio';
+    }
+  }
+
+  if (!file && type) file = db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+  return file;
+}
+
+exports.addPlaylist = function(user_uid, new_playlist, type) {
+  db.get('users').find({uid: user_uid}).get(`playlists.${type}`).push(new_playlist).write();
+  return true;
+}
+
+exports.updatePlaylist = function(user_uid, playlistID, new_filenames, type) {
+  db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).assign({fileNames: new_filenames});
+  return true;
+}
+
+exports.removePlaylist = function(user_uid, playlistID, type) {
+  db.get('users').find({uid: user_uid}).get(`playlists.${type}`).remove({id: playlistID}).write();
+  return true;
+}
+
+exports.getUserPlaylists = function(user_uid, type) {
+  const user = db.get('users').find({uid: user_uid}).value();
+  return user['playlists'][type];
+}
+
+exports.getUserPlaylist = function(user_uid, playlistID, type) {
+  let playlist = null;
+  if (!type) {
+    playlist = db.get('users').find({uid: user_uid}).get(`playlists.audio`).find({id: playlistID}).value();
+    if (!playlist) {
+      playlist = db.get('users').find({uid: user_uid}).get(`playlists.video`).find({id: playlistID}).value();
+      if (playlist) type = 'video';
+    } else {
+        type = 'audio';
+    }
+  }
+  if (!playlist) playlist = db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).value();
+  return playlist;
+}
+
+exports.registerUserFile = function(user_uid, file_object, type) {
+  db.get('users').find({uid: user_uid}).get(`files.${type}`)
+    .remove({
+        path: file_object['path']
+    }).write();
+
+  db.get('users').find({uid: user_uid}).get(`files.${type}`)
+      .push(file_object)
+      .write();
 }
 
 function getToken(queryParams) {
