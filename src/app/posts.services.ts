@@ -33,6 +33,11 @@ export class PostsService implements CanActivate {
     isLoggedIn = false;
     token = null;
     user = null;
+
+    reload_config = new BehaviorSubject<boolean>(false);
+    config_reloaded = new BehaviorSubject<boolean>(false);
+
+    config = null;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar) {
         console.log('PostsService Initialized...');
@@ -53,17 +58,25 @@ export class PostsService implements CanActivate {
             }),
         };
 
-        // login stuff
-
-        if (localStorage.getItem('jwt_token')) {
-            this.token = localStorage.getItem('jwt_token');
-            this.httpOptions = {
-                params: new HttpParams({
-                  fromString: `apiKey=${this.auth_token}&sessionID=${this.session_id}&jwt=${this.token}`
-                }),
-            };
-            this.jwtAuth();
-        }
+        // get config
+        this.loadNavItems().subscribe(res => {
+            const result = !this.debugMode ? res['config_file'] : res;
+            if (result) {
+                this.config = result['YoutubeDLMaterial'];
+                if (this.config['Advanced']['multi_user_mode']) {
+                    // login stuff
+                    if (localStorage.getItem('jwt_token')) {
+                        this.token = localStorage.getItem('jwt_token');
+                        this.httpOptions = {
+                            params: new HttpParams({
+                            fromString: `apiKey=${this.auth_token}&sessionID=${this.session_id}&jwt=${this.token}`
+                            }),
+                        };
+                        this.jwtAuth();
+                    }
+                }
+            }
+        });
     }
     canActivate(route, state): Promise<boolean> {
         return new Promise(resolve => {
@@ -83,6 +96,15 @@ export class PostsService implements CanActivate {
 
     startHandshakeSSL(url: string) {
         return this.http.get(url + 'geturl');
+    }
+
+    reloadConfig() {
+        this.loadNavItems().subscribe(res => {
+            const result = !this.debugMode ? res['config_file'] : res;
+            if (result) {
+                this.config = result['YoutubeDLMaterial'];
+            }
+        });
     }
 
     getVideoFolder() {

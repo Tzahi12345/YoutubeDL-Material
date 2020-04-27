@@ -11,8 +11,7 @@
         <div>
             <strong><ng-container i18n="Created">Created:</ng-container></strong>&nbsp;{{postsService.user.created ? postsService.user.created : 'N/A'}}
         </div>
-        <div style="margin-top: 10px;">
-            <button (click)="logoutClicked()" mat-flat-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
+        <div style="margin-top: 20px;">
         </div>
     </div>
 
@@ -21,3 +20,12 @@
         <button (click)="loginClicked()" mat-raised-button color="primary"><ng-container i18n="Login">Login</ng-container></button>
     </div>
 </mat-dialog-content>
+
+<mat-dialog-actions>
+    <div style="width: 100%">
+        <div style="position: relative">
+            <button mat-stroked-button mat-dialog-close color="primary"><ng-container i18n="Close">Close</ng-container></button>
+            <button style="position: absolute; right: 0px;" (click)="logoutClicked()" mat-stroked-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
+        </div>
+    </div>
+</mat-dialog-actions>

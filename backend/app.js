@@ -1411,9 +1411,9 @@ async function generateArgs(url, type, options) {
             downloadConfig = customArgs.split(' ');
         } else {
             if (customQualityConfiguration) {
-                qualityPath = customQualityConfiguration;
+                qualityPath = `-f ${customQualityConfiguration}`;
             } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-                qualityPath = `-f bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+                qualityPath = `-f '(mp4)[height=${selectedHeight}]'`;
             } else if (maxBitrate && is_audio) {
                 qualityPath = `--audio-quality ${maxBitrate}`
             }
@@ -1783,7 +1783,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     
     const is_playlist = url.includes('playlist');
     let result_obj = null;
-    if (is_playlist)
+    if (is_playlist || options.customQualityConfiguration)
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
