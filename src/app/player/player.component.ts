@@ -39,6 +39,7 @@ export class PlayerComponent implements OnInit {
   uid = null; // used for non-subscription files (audio, video, playlist)
   subscriptionName = null;
   subPlaylist = null;
+  uuid = null; // used for sharing in multi-user mode, uuid is the user that downloaded the video
 
   is_shared = false;
 
@@ -49,6 +50,8 @@ export class PlayerComponent implements OnInit {
   audioFolderPath = null;
   videoFolderPath = null;
   subscriptionFolderPath = null;
+
+  sharingEnabled = null;
 
   // url-mode params
   url = null;
@@ -73,6 +76,7 @@ export class PlayerComponent implements OnInit {
     this.subPlaylist = this.route.snapshot.paramMap.get('subPlaylist');
     this.url = this.route.snapshot.paramMap.get('url');
     this.name = this.route.snapshot.paramMap.get('name');
+    this.uuid = this.route.snapshot.paramMap.get('uuid');
 
     // loading config
     this.postsService.loadNavItems().subscribe(res => { // loads settings
@@ -123,12 +127,13 @@ export class PlayerComponent implements OnInit {
 
   getFile() {
     const already_has_filenames = !!this.fileNames;
-    this.postsService.getFile(this.uid, null).subscribe(res => {
+    this.postsService.getFile(this.uid, null, this.uuid).subscribe(res => {
       this.db_file = res['file'];
       if (!this.db_file) {
         this.openSnackBar('Failed to get file information from the server.', 'Dismiss');
         return;
       }
+      this.sharingEnabled = this.db_file.sharingEnabled;
       if (!this.fileNames) {
         // means it's a shared video
         if (!this.id) {
@@ -186,7 +191,10 @@ export class PlayerComponent implements OnInit {
 
       // adds user token if in multi-user-mode
       if (this.postsService.isLoggedIn) {
-        fullLocation += '?jwt=' + this.postsService.token;
+        fullLocation += `?jwt=${this.postsService.token}`;
+        if (this.is_shared) { fullLocation += `&uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`; }
+      } else if (this.is_shared) {
+        fullLocation += `?uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`;
       }
       // if it has a slash (meaning it's in a directory), only get the file name for the label
       let label = null;
@@ -278,7 +286,8 @@ export class PlayerComponent implements OnInit {
     const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
     const filename = this.playlist[0].title;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist).subscribe(res => {
+    this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist,
+                                            this.is_shared ? this.db_file['uid'] : null, this.uuid).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);
@@ -365,7 +374,8 @@ export class PlayerComponent implements OnInit {
         uid: this.id ? this.id : this.uid,
         type: this.type,
         sharing_enabled: this.id ? this.db_playlist.sharingEnabled : this.db_file.sharingEnabled,
-        is_playlist: !!this.id
+        is_playlist: !!this.id,
+        uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : null
       },
       width: '60vw'
     });

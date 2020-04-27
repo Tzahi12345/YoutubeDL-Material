@@ -179,18 +179,21 @@ export class PostsService implements CanActivate {
         return this.http.get(this.path + 'getMp4s', this.httpOptions);
     }
 
-    getFile(uid, type) {
-        return this.http.post(this.path + 'getFile', {uid: uid, type: type}, this.httpOptions);
+    getFile(uid, type, uuid = null) {
+        return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
     }
 
-    downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null) {
+    downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
+                            uid = null, uuid = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
                                                             type: type,
                                                             zip_mode: Array.isArray(fileName),
                                                             outputName: outputName,
                                                             fullPathProvided: fullPathProvided,
                                                             subscriptionName: subscriptionName,
-                                                            subPlaylist: subPlaylist
+                                                            subPlaylist: subPlaylist,
+                                                            uuid: uuid,
+                                                            uid: uid
                                                             },
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }

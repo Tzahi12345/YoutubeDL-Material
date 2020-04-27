@@ -237,7 +237,7 @@ exports.getUserVideos = function(user_uid, type) {
     return user['files'][type];
 }
 
-exports.getUserVideo = function(user_uid, file_uid, type) {
+exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false) {
   if (!type) {
     file = db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
     if (!file) {
@@ -249,6 +249,10 @@ exports.getUserVideo = function(user_uid, file_uid, type) {
   }
 
   if (!file && type) file = db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+
+  // prevent unauthorized users from accessing the file info
+  if (requireSharing && !file['sharingEnabled']) file = null;
+
   return file;
 }
 
@@ -363,6 +367,20 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
     console.log('file does not exist!');
   }
 
+  return success;
+}
+
+exports.changeSharingMode = function(user_uid, file_uid, type, is_playlist, enabled) {
+  let success = false;
+  const user_db_obj = db.get('users').find({uid: user_uid});
+  if (user_db_obj.value()) {
+    const file_db_obj = is_playlist ? user_db_obj.get(`playlists.${type}`).find({uid: file_uid}) : user_db_obj.get(`files.${type}`).find({uid: file_uid});
+    if (file_db_obj.value()) {
+      success = true;
+      file_db_obj.assign({sharingEnabled: enabled}).write();
+    }
+  }
+  
   return success;
 }
 

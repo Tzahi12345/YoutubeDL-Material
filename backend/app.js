@@ -1705,7 +1705,18 @@ app.use(compression());
 
 const optionalJwt = function (req, res, next) {
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-    if (multiUserMode) {
+    if (multiUserMode && ((req.body && req.body.uuid) || (req.query && req.query.uuid)) && (req.path.includes('/api/getFile') || 
+                                                                                            req.path.includes('/api/audio') || 
+                                                                                            req.path.includes('/api/video') ||
+                                                                                            req.path.includes('/api/downloadFile'))) {
+        // check if shared video
+        const using_body = req.body && req.body.uuid;
+        const uuid = using_body ? req.body.uuid : req.query.uuid;
+        const uid = using_body ? req.body.uid : req.query.uid;
+        const type = using_body ? req.body.type : req.query.type;
+        const is_shared = auth_api.getUserVideo(uuid, uid, type, true);
+        if (is_shared) return next();
+    } else if (multiUserMode) {
         if (!req.query.jwt) {
             res.sendStatus(401);
             return;
@@ -1878,11 +1889,14 @@ app.get('/api/getMp4s', optionalJwt, function(req, res) {
 app.post('/api/getFile', optionalJwt, function (req, res) {
     var uid = req.body.uid;
     var type = req.body.type;
+    var uuid = req.body.uuid;
 
     var file = null;
 
     if (req.isAuthenticated()) {
         file = auth_api.getUserVideo(req.user.uid, uid, type);
+    } else if (uuid) {
+        file = auth_api.getUserVideo(uuid, uid, type, true);
     } else {
         if (!type) {
             file = db.get('files.audio').find({uid: uid}).value();
@@ -1911,10 +1925,21 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
 });
 
 // video sharing
-app.post('/api/enableSharing', function(req, res) {
+app.post('/api/enableSharing', optionalJwt, function(req, res) {
     var type = req.body.type;
     var uid = req.body.uid;
     var is_playlist = req.body.is_playlist;
+    let success = false;
+    // multi-user mode
+    if (req.isAuthenticated()) {
+        // if multi user mode, use this method instead
+        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, true);
+        console.log(success);
+        res.send({success: success});
+        return;
+    }
+
+    // single-user mode
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
@@ -1944,10 +1969,20 @@ app.post('/api/enableSharing', function(req, res) {
     });
 });
 
-app.post('/api/disableSharing', function(req, res) {
+app.post('/api/disableSharing', optionalJwt, function(req, res) {
     var type = req.body.type;
     var uid = req.body.uid;
     var is_playlist = req.body.is_playlist;
+
+    // multi-user mode
+    if (req.isAuthenticated()) {
+        // if multi user mode, use this method instead
+        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, false);
+        res.send({success: success});
+        return;
+    }
+
+    // single-user mode
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
