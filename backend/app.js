@@ -77,6 +77,7 @@ db.defaults(
             video: []
         },
         configWriteFlag: false,
+        downloads: {},
         subscriptions: [],
         pin_md5: '',
         files_to_db_migration_complete: false
@@ -101,6 +102,10 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 var options = null; // encryption options
 var url_domain = null;
 var updaterStatus = null;
+var last_downloads_check = null;
+var downloads_check_interval = 1000;
+
+var timestamp_server_start = Date.now();
 
 if (debugMode) logger.info('YTDL-Material in debug mode!');
 
@@ -141,6 +146,7 @@ if (writeConfigMode) {
     loadConfig();
 }
 
+var downloads = {};
 var descriptors = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -233,7 +239,6 @@ async function startServer() {
             logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
         });
     }
-
 }
 
 async function restartServer() {
@@ -545,6 +550,9 @@ async function loadConfig() {
 
         // check migrations
         await checkMigrations();
+
+        // load in previous downloads
+        downloads = db.get('downloads').value();
 
         // start the server here
         startServer();
@@ -997,9 +1005,18 @@ function registerFileDB(full_file_path, type) {
         return false;
     }
 
+    // add additional info
     file_object['uid'] = uuid();
+    file_object['registered'] = Date.now();
     path_object = path.parse(file_object['path']);
     file_object['path'] = path.format(path_object);
+
+    // remove existing video if overwriting
+    db.get(`files.${type}`)
+        .remove({
+            path: file_object['path']
+        }).write();
+
     db.get(`files.${type}`)
       .push(file_object)
       .write();
@@ -1013,6 +1030,7 @@ function generateFileObject(id, type) {
     }
     const ext = (type === 'audio') ? '.mp3' : '.mp4'
     const file_path = getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
+    // console.
     var stats = fs.statSync(path.join(__dirname, file_path));
 
     var title = jsonobj.title;
@@ -1080,6 +1098,332 @@ function getVideoInfos(fileNames) {
     return result;
 }
 
+// downloads
+
+async function downloadFileByURL_exec(url, type, options, sessionID = null) {
+    return new Promise(async resolve => {
+        var date = Date.now();
+
+        // audio / video specific vars
+        var is_audio = type === 'audio';
+        var ext = is_audio ? '.mp3' : '.mp4';
+        var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+        
+        const downloadConfig = await generateArgs(url, type, options);
+
+        // adds download to download helper
+        const download_uid = uuid();
+        const session = sessionID ? sessionID : 'undeclared';
+        if (!downloads[session]) downloads[session] = {};
+        downloads[session][download_uid] = {
+            uid: download_uid,
+            ui_uid: options.ui_uid,
+            downloading: true,
+            complete: false,
+            url: url,
+            type: type,
+            percent_complete: 0,
+            is_playlist: url.includes('playlist'),
+            timestamp_start: Date.now()
+        };
+        const download = downloads[session][download_uid];
+        updateDownloads();
+
+        youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+            download['downloading'] = false;
+            download['timestamp_end'] = Date.now();
+            var file_uid = null;
+            let new_date = Date.now();
+            let difference = (new_date - date)/1000;
+            logger.debug(`${is_audio ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
+            if (err) {
+                logger.error(err.stderr);
+
+                download['error'] = err.stderr;
+                updateDownloads();
+                resolve(false);
+                throw err;
+            } else if (output) {
+                if (output.length === 0 || output[0].length === 0) {
+                    download['error'] = 'No output. Check if video already exists in your archive.';
+                    updateDownloads();
+
+                    resolve(false);
+                    return;
+                }
+                var file_names = [];
+                for (let i = 0; i < output.length; i++) {
+                    let output_json = null;
+                    try {
+                        output_json = JSON.parse(output[i]);
+                    } catch(e) {
+                        output_json = null;
+                    }
+                    var modified_file_name = output_json ? output_json['title'] : null;
+                    if (!output_json) {
+                        continue;
+                    } 
+
+                    // get filepath with no extension
+                    const filepath_no_extension = removeFileExtension(output_json['_filename']);
+                    
+                    var full_file_path = filepath_no_extension + ext;
+                    var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
+
+                    // renames file if necessary due to bug
+                    if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
+                        try {
+                            fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
+                            logger.info('Renamed ' + file_name + '.webm to ' + file_name);
+                        } catch(e) {
+                        }
+                    }
+
+                    if (type === 'audio') {
+                        let tags = {
+                            title: output_json['title'],
+                            artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
+                        }
+                        let success = NodeID3.write(tags, output_json['_filename']);
+                        if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
+                    }
+
+                    // registers file in DB
+                    file_uid = registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), type);
+
+                    if (file_name) file_names.push(file_name);
+                }
+
+                let is_playlist = file_names.length > 1;
+
+                if (options.merged_string) {
+                    let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
+                    let diff = current_merged_archive.replace(options.merged_string, '');
+                    const archive_path = path.join(archivePath, `archive_${type}.txt`);
+                    fs.appendFileSync(archive_path, diff);
+                }
+
+                download['complete'] = true;
+                updateDownloads();
+                
+                var videopathEncoded = encodeURIComponent(file_names[0]);
+
+                resolve({
+                    [(type === 'audio') ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
+                    file_names: is_playlist ? file_names : null,
+                    uid: file_uid
+                });
+            }
+        });
+    });
+}
+
+async function downloadFileByURL_normal(url, type, options, sessionID = null) {
+    return new Promise(async resolve => {
+        var date = Date.now();
+        var file_uid = null;
+        var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+
+        const downloadConfig = await generateArgs(url, type, options);
+
+        // adds download to download helper
+        const download_uid = uuid();
+        const session = sessionID ? sessionID : 'undeclared';
+        if (!downloads[session]) downloads[session] = {};
+        downloads[session][download_uid] = {
+            uid: download_uid,
+            ui_uid: options.ui_uid,
+            downloading: true,
+            complete: false,
+            url: url,
+            type: type,
+            percent_complete: 0,
+            is_playlist: url.includes('playlist'),
+            timestamp_start: Date.now()
+        };
+        const download = downloads[session][download_uid];
+        updateDownloads();
+
+        const video = youtubedl(url,
+            // Optional arguments passed to youtube-dl.
+            downloadConfig,
+            // Additional options can be given for calling `child_process.execFile()`.
+            { cwd: __dirname });
+
+        let video_info = null;
+        let file_size = 0;
+
+        // Will be called when the download starts.
+        video.on('info', function(info) {
+            video_info = info;
+            file_size = video_info.size;
+            fs.writeJSONSync(removeFileExtension(video_info._filename) + '.info.json', video_info);
+            video.pipe(fs.createWriteStream(video_info._filename, { flags: 'w' }))
+        });
+        // Will be called if download was already completed and there is nothing more to download.
+        video.on('complete', function complete(info) {
+            'use strict'
+            logger.info('file ' + info._filename + ' already downloaded.')
+        })
+        
+        let download_pos = 0;
+        video.on('data', function data(chunk) {
+            download_pos += chunk.length
+            // `size` should not be 0 here.
+            if (file_size) {
+              let percent = (download_pos / file_size * 100).toFixed(2)
+              download['percent_complete'] = percent;
+            }
+        });
+
+        video.on('end', function() {
+            let new_date = Date.now();
+            let difference = (new_date - date)/1000;
+            logger.debug(`Video download delay: ${difference} seconds.`);
+
+            download['complete'] = true;
+            updateDownloads();
+
+            // audio-only cleanup
+            if (type === 'audio') {
+                // filename fix
+                video_info['_filename'] = removeFileExtension(video_info['_filename']) + '.mp3';
+
+                // ID3 tagging 
+                let tags = {
+                    title: video_info['title'],
+                    artist: video_info['artist'] ? video_info['artist'] : video_info['uploader']
+                }
+                let success = NodeID3.write(tags, video_info._filename);
+                if (!success) logger.error('Failed to apply ID3 tag to audio file ' + video_info._filename);
+            }
+
+            // registers file in DB
+            const base_file_name = video_info._filename.substring(fileFolderPath.length, video_info._filename.length);
+            file_uid = registerFileDB(base_file_name, type);
+
+            if (options.merged_string) {
+                let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
+                let diff = current_merged_archive.replace(options.merged_string, '');
+                const archive_path = path.join(archivePath, 'archive_video.txt');
+                fs.appendFileSync(archive_path, diff);
+            }
+
+            videopathEncoded = encodeURIComponent(removeFileExtension(base_file_name));
+
+            resolve({
+                [(type === 'audio') ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
+                file_names: /*is_playlist ? file_names :*/ null, // playlist support is not ready
+                uid: file_uid
+            });
+        });
+
+        video.on('error', function error(err) {
+            logger.error(err);
+
+            download[error] = err;
+            updateDownloads();
+
+            resolve(false);
+        });
+    });
+    
+}
+
+async function generateArgs(url, type, options) {
+    return new Promise(async resolve => {
+        var videopath = '%(title)s';
+        var globalArgs = config_api.getConfigItem('ytdl_custom_args');
+        var is_audio = type === 'audio';
+
+        var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+
+        var customArgs = options.customArgs;
+        var customOutput = options.customOutput;
+        var customQualityConfiguration = options.customQualityConfiguration;
+
+        // video-specific args
+        var selectedHeight = options.selectedHeight;
+
+        // audio-specific args
+        var maxBitrate = options.maxBitrate;
+
+        var youtubeUsername = options.youtubeUsername;
+        var youtubePassword = options.youtubePassword;
+
+        let downloadConfig = null;
+        let qualityPath = is_audio ? '-f bestaudio' :'-f best[ext=mp4]';
+
+        if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
+            // tiktok videos fail when using the default format
+            qualityPath = '-f best';
+        }
+
+        if (customArgs) {
+            downloadConfig = customArgs.split(' ');
+        } else {
+            if (customQualityConfiguration) {
+                qualityPath = customQualityConfiguration;
+            } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
+                qualityPath = `-f bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+            } else if (maxBitrate && is_audio) {
+                qualityPath = `--audio-quality ${maxBitrate}`
+            }
+
+            if (customOutput) {
+                downloadConfig = ['-o', fileFolderPath + customOutput + "", qualityPath, '--write-info-json', '--print-json'];
+            } else {
+                downloadConfig = ['-o', fileFolderPath + videopath + (is_audio ? '.%(ext)s' : '.mp4'), qualityPath, '--write-info-json', '--print-json'];
+            }
+
+            if (is_audio) {
+                downloadConfig.push('-x');
+                downloadConfig.push('--audio-format', 'mp3');
+            }
+
+            if (youtubeUsername && youtubePassword) {
+                downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
+            }
+        
+            if (!useDefaultDownloadingAgent && customDownloadingAgent) {
+                downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
+            }
+
+            let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+            if (useYoutubeDLArchive) {
+                const archive_path = path.join(archivePath, `archive_${type}.txt`);
+                // create archive file if it doesn't exist
+                if (!fs.existsSync(archive_path)) {
+                    fs.closeSync(fs.openSync(archive_path, 'w'));
+                }
+
+                let blacklist_path = path.join(archivePath, `blacklist_${type}.txt`);
+                // create blacklist file if it doesn't exist
+                if (!fs.existsSync(blacklist_path)) {
+                    fs.closeSync(fs.openSync(blacklist_path, 'w'));
+                }
+
+                let merged_path = fileFolderPath + 'merged.txt';
+                fs.ensureFileSync(merged_path);
+                // merges blacklist and regular archive
+                let inputPathList = [archive_path, blacklist_path];
+                let status = await mergeFiles(inputPathList, merged_path);
+
+                options.merged_string = fs.readFileSync(merged_path, "utf8");
+
+                downloadConfig.push('--download-archive', merged_path);
+            }
+
+            if (globalArgs && globalArgs !== '') {
+                // adds global args
+                downloadConfig = downloadConfig.concat(globalArgs.split(' '));
+            }
+
+        }
+        resolve(downloadConfig);
+    });
+}
+
 // currently only works for single urls
 async function getUrlInfos(urls) {
     let startDate = Date.now();
@@ -1115,6 +1459,57 @@ function writeToBlacklist(type, line) {
     line = '\n' + line;
     fs.appendFileSync(blacklistPath, line);
 }
+
+// download management functions
+
+function updateDownloads() {
+    db.assign({downloads: downloads}).write();
+}
+
+/*
+function checkDownloads() {
+    for (let [session_id, session_downloads] of Object.entries(downloads)) {
+        for (let [download_uid, download_obj] of Object.entries(session_downloads)) {
+            if (download_obj && !download_obj['complete'] && !download_obj['error']
+                             && download_obj.timestamp_start > timestamp_server_start) {
+                // download is still running (presumably)
+                download_obj.percent_complete = getDownloadPercent(download_obj);
+            }
+        }
+    }
+}
+*/
+
+function getDownloadPercent(download_obj) {
+    if (!download_obj.final_size) {
+        if (fs.existsSync(download_obj.expected_json_path)) {
+            const file_json = JSON.parse(fs.readFileSync(download_obj.expected_json_path, 'utf8'));
+            let calculated_filesize = null;
+            if (file_json['format_id']) {
+                calculated_filesize = 0;
+                const formats_used = file_json['format_id'].split('+');
+                for (let i = 0; i < file_json['formats'].length; i++) {
+                    if (formats_used.includes(file_json['formats'][i]['format_id'])) {
+                        calculated_filesize += file_json['formats'][i]['filesize'];
+                    }
+                }
+            }
+            download_obj.final_size = calculated_filesize;
+        } else {
+            console.log('could not find json file');
+        }
+    }
+    if (fs.existsSync(download_obj.expected_path)) {
+        const stats = fs.statSync(download_obj.expected_path);
+        const size = stats.size;
+        return (size / download_obj.final_size)*100;
+    } else {
+        console.log('could not find file');
+        return 0;
+    }
+}
+
+// youtube-dl functions
 
 async function startYoutubeDL() {
     // auto update youtube-dl
@@ -1246,9 +1641,9 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {  
     if (!req.path.includes('/api/')) {
         next();
-    } else if (req.headers.authorization === admin_token) {
+    } else if (req.query.apiKey === admin_token) {
         next();
-    } else if (req.headers.authorization && config_api.getConfigItem('ytdl_use_api_key') && req.headers.authorization === config_api.getConfigItem('ytdl_api_key')) {
+    } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
         next();
     } else if (req.path.includes('/api/video/') || req.path.includes('/api/audio/')) {
         next();
@@ -1287,297 +1682,55 @@ app.get('/api/using-encryption', function(req, res) {
 
 app.post('/api/tomp3', async function(req, res) {
     var url = req.body.url;
-    var date = Date.now();
-    var audiopath = '%(title)s';
-
-    var customQualityConfiguration = req.body.customQualityConfiguration;
-    var maxBitrate = req.body.maxBitrate;
-    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
-    var customArgs = req.body.customArgs;
-    var customOutput = req.body.customOutput;
-    var youtubeUsername = req.body.youtubeUsername;
-    var youtubePassword = req.body.youtubePassword;
-
-    let downloadConfig = null;
-    let qualityPath = '-f bestaudio';
-
-    let merged_path = null;
-    let merged_string = null;
-
-    if (customArgs) {
-        downloadConfig = customArgs.split(' ');
-    } else {
-        if (customQualityConfiguration) {
-            qualityPath = `-f ${customQualityConfiguration}`;
-        } else if (maxBitrate) {
-            if (!maxBitrate || maxBitrate === '') maxBitrate = '0'; 
-            qualityPath = `--audio-quality ${maxBitrate}`
-        }
-
-        if (customOutput) {
-            downloadConfig = ['-x', '--audio-format', 'mp3', '-o', audioFolderPath + customOutput + '.%(ext)s', '--write-info-json', '--print-json'];
-        } else {
-            downloadConfig = ['-x', '--audio-format', 'mp3', '-o', audioFolderPath + audiopath + ".%(ext)s", '--write-info-json', '--print-json'];
-        }
-
-        if (youtubeUsername && youtubePassword) {
-            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
-        }
-    
-        if (qualityPath !== '') {
-            downloadConfig.splice(3, 0, qualityPath);
-        }
-    
-        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
-            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
-        }
-
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_path = path.join(archivePath, 'archive_audio.txt');
-            // create archive file if it doesn't exist
-            if (!fs.existsSync(archive_path)) {
-                fs.closeSync(fs.openSync(archive_path, 'w'));
-            }
-
-            let blacklist_path = path.join(archivePath, 'blacklist_audio.txt');
-            // create blacklist file if it doesn't exist
-            if (!fs.existsSync(blacklist_path)) {
-                fs.closeSync(fs.openSync(blacklist_path, 'w'));
-            }
-
-            // creates merged folder
-            merged_path = audioFolderPath + `merged_${uuid()}.txt`;
-            // merges blacklist and regular archive
-            let inputPathList = [archive_path, blacklist_path];
-            let status = await mergeFiles(inputPathList, merged_path);
-
-            merged_string = fs.readFileSync(merged_path, "utf8");
-
-            downloadConfig.push('--download-archive', merged_path);
-        }
-
-        if (globalArgs && globalArgs !== '') {
-            // adds global args
-            downloadConfig = downloadConfig.concat(globalArgs.split(' '));
-        }
+    var options = {
+        customArgs: req.body.customArgs,
+        customOutput: req.body.customOutput,
+        maxBitrate: req.body.maxBitrate,
+        customQualityConfiguration: req.body.customQualityConfiguration,
+        youtubeUsername: req.body.youtubeUsername,
+        youtubePassword: req.body.youtubePassword,
+        ui_uid: req.body.ui_uid
     }
 
-    youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        var uid = null;
-        let new_date = Date.now();
-        let difference = (new_date - date)/1000;
-        logger.debug(`Audio download delay: ${difference} seconds.`);
-        if (err) {
-            audiopath = "-1";
-            logger.error(err.stderr);
-            res.sendStatus(500);
-            throw err;
-        } else if (output) {  
-            var file_names = [];
-            if (output.length === 0 || output[0].length === 0) {
-                res.sendStatus(500);
-                return;
-            }
-            for (let i = 0; i < output.length; i++) {
-                let output_json = null;
-                try {
-                    output_json = JSON.parse(output[i]);
-                } catch(e) {
-                    output_json = null;
-                }
-                if (!output_json) {
-                    // if invalid, continue onto the next
-                    continue;
-                }
-
-                const filepath_no_extension = removeFileExtension(output_json['_filename']);
-                
-                var full_file_path = filepath_no_extension + '.mp3';
-                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
-                if (fs.existsSync(full_file_path)) {
-                    let tags = {
-                        title: output_json['title'],
-                        artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
-                    }
-                    // NodeID3.create(tags, function(frame) {  })
-                    let success = NodeID3.write(tags, full_file_path);
-                    if (!success) logger.error('Failed to apply ID3 tag to audio file ' + full_file_path);
-
-                    // registers file in DB
-                    uid = registerFileDB(full_file_path.substring(audioFolderPath.length, full_file_path.length), 'audio');
-                } else {
-                    logger.error('Download failed: Output mp3 does not exist');
-                }
-
-                if (file_name) file_names.push(file_name);
-            }
-
-            let is_playlist = file_names.length > 1;
-
-            if (merged_string !== null) {
-                let current_merged_archive = fs.readFileSync(merged_path, 'utf8');
-                let diff = current_merged_archive.replace(merged_string, '');
-                const archive_path = path.join(archivePath, 'archive_audio.txt');
-                fs.appendFileSync(archive_path, diff);
-                fs.unlinkSync(merged_path)
-            }
-
-            var audiopathEncoded = encodeURIComponent(file_names[0]);
-            res.send({
-                audiopathEncoded: audiopathEncoded,
-                file_names: is_playlist ? file_names : null,
-                uid: uid
-            });
-        }
-    });
+    const is_playlist = url.includes('playlist');
+    if (true || is_playlist)
+        result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
+    else
+        result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
+    if (result_obj) {
+        res.send(result_obj);
+    } else {
+        res.sendStatus(500);
+    }
+    
+    res.end("yes");
 });
 
 app.post('/api/tomp4', async function(req, res) {
     var url = req.body.url;
-    var date = Date.now();
-    var videopath = '%(title)s';
-    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
-    var customArgs = req.body.customArgs;
-    var customOutput = req.body.customOutput;
-
-    var selectedHeight = req.body.selectedHeight;
-    var customQualityConfiguration = req.body.customQualityConfiguration;
-    var youtubeUsername = req.body.youtubeUsername;
-    var youtubePassword = req.body.youtubePassword;
-
-    let merged_string = null;
-
-    let downloadConfig = null;
-    let qualityPath = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4';
-
-    if (url.includes('tiktok') || url.includes('pscp.tv')) {
-        // tiktok videos fail when using the default format
-        qualityPath = 'best';
+    var options = {
+        customArgs: req.body.customArgs,
+        customOutput: req.body.customOutput,
+        selectedHeight: req.body.selectedHeight,
+        customQualityConfiguration: req.body.customQualityConfiguration,
+        youtubeUsername: req.body.youtubeUsername,
+        youtubePassword: req.body.youtubePassword,
+        ui_uid: req.body.ui_uid
     }
-
-    if (customArgs) {
-        downloadConfig = customArgs.split(' ');
-    } else {
-        if (customQualityConfiguration) {
-            qualityPath = customQualityConfiguration;
-        } else if (selectedHeight && selectedHeight !== '') {
-            qualityPath = `bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
-        }
-
-        if (customOutput) {
-            downloadConfig = ['-o', videoFolderPath + customOutput + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
-        } else {
-            downloadConfig = ['-o', videoFolderPath + videopath + ".mp4", '-f', qualityPath, '--write-info-json', '--print-json'];
-        }
-
-        if (youtubeUsername && youtubePassword) {
-            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
-        }
     
-        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
-            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
-        }
-
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_path = path.join(archivePath, 'archive_video.txt');
-            // create archive file if it doesn't exist
-            if (!fs.existsSync(archive_path)) {
-                fs.closeSync(fs.openSync(archive_path, 'w'));
-            }
-
-            let blacklist_path = path.join(archivePath, 'blacklist_video.txt');
-            // create blacklist file if it doesn't exist
-            if (!fs.existsSync(blacklist_path)) {
-                fs.closeSync(fs.openSync(blacklist_path, 'w'));
-            }
-
-            let merged_path = videoFolderPath + 'merged.txt';
-            // merges blacklist and regular archive
-            let inputPathList = [archive_path, blacklist_path];
-            let status = await mergeFiles(inputPathList, merged_path);
-
-            merged_string = fs.readFileSync(merged_path, "utf8");
-
-            downloadConfig.push('--download-archive', merged_path);
-        }
-
-        if (globalArgs && globalArgs !== '') {
-            // adds global args
-            downloadConfig = downloadConfig.concat(globalArgs.split(' '));
-        }
-
+    const is_playlist = url.includes('playlist');
+    let result_obj = null;
+    if (is_playlist)
+        result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
+    else
+        result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
+    if (result_obj) {
+        res.send(result_obj);
+    } else {
+        res.sendStatus(500);
     }
-
-    youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-        var uid = null;
-        let new_date = Date.now();
-        let difference = (new_date - date)/1000;
-        logger.debug(`Video download delay: ${difference} seconds.`);
-        if (err) {
-            videopath = "-1";
-            logger.error(err.stderr);
-            res.sendStatus(500);
-            throw err;
-        } else if (output) {
-            if (output.length === 0 || output[0].length === 0) {
-                res.sendStatus(500);
-                return;
-            }
-             var file_names = [];
-            for (let i = 0; i < output.length; i++) {
-                let output_json = null;
-                try {
-                    output_json = JSON.parse(output[i]);
-                } catch(e) {
-                    output_json = null;
-                }
-                var modified_file_name = output_json ? output_json['title'] : null;
-                if (!output_json) {
-                    continue;
-                } 
-
-                // get filepath with no extension
-                const filepath_no_extension = removeFileExtension(output_json['_filename']);
-                
-                var full_file_path = filepath_no_extension + '.mp4';
-                var file_name = filepath_no_extension.substring(audioFolderPath.length, filepath_no_extension.length);
-
-                // renames file if necessary due to bug
-                if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
-                    try {
-                        fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
-                        logger.info('Renamed ' + file_name + '.webm to ' + file_name);
-                    } catch(e) {
-                    }
-                }
-
-                // registers file in DB
-                uid = registerFileDB(full_file_path.substring(videoFolderPath.length, full_file_path.length), 'video');
-
-                if (file_name) file_names.push(file_name);
-            }
-
-            let is_playlist = file_names.length > 1;
-            if (!is_playlist) audiopath = file_names[0];
-
-            if (merged_string !== null) {
-                let current_merged_archive = fs.readFileSync(videoFolderPath + 'merged.txt', 'utf8');
-                let diff = current_merged_archive.replace(merged_string, '');
-                const archive_path = path.join(archivePath, 'archive_video.txt');
-                fs.appendFileSync(archive_path, diff);
-            }
-            
-            var videopathEncoded = encodeURIComponent(file_names[0]);
-            res.send({
-                videopathEncoded: videopathEncoded,
-                file_names: is_playlist ? file_names : null,
-                uid: uid
-            });
-            res.end("yes");
-        }
-    });
+    
+    res.end("yes");
 });
 
 // gets the status of the mp3 file that's being downloaded
@@ -2282,6 +2435,74 @@ app.get('/api/audio/:id', function(req , res){
   }
   });
 
+  // Downloads management
+
+  app.get('/api/downloads', async (req, res) => {
+    /*
+    if (!last_downloads_check || Date.now() - last_downloads_check > downloads_check_interval) {
+        last_downloads_check = Date.now();
+        updateDownloads();
+    }
+    */
+    res.send({downloads: downloads});
+  });
+
+  app.post('/api/download', async (req, res) => {
+    var session_id = req.body.session_id;
+    var download_id = req.body.download_id;
+    let found_download = null;
+
+    // find download
+    if (downloads[session_id] && Object.keys(downloads[session_id])) {
+        let session_downloads = Object.values(downloads[session_id]);
+        for (let i = 0; i < session_downloads.length; i++) {
+            let session_download = session_downloads[i];
+            if (session_download && session_download['ui_uid'] === download_id) {
+                found_download = session_download;
+                break;
+            }
+        }
+    }
+
+    if (found_download) {
+        res.send({download: found_download});
+    } else {
+        res.send({download: null});
+    }
+  });
+
+  app.post('/api/clearDownloads', async (req, res) => {
+    let success = false;
+    var delete_all = req.body.delete_all;
+    if (!req.body.session_id) req.body.session_id = 'undeclared';
+    var session_id = req.body.session_id;
+    var download_id = req.body.download_id;
+    if (delete_all) {
+        // delete all downloads
+        downloads = {};
+        success = true;
+    } else if (download_id) {
+        // delete just 1 download
+        if (downloads[session_id][download_id]) {
+            delete downloads[session_id][download_id];
+            success = true;
+        } else if (!downloads[session_id]) {
+            logger.error(`Session ${session_id} has no downloads.`)
+        } else if (!downloads[session_id][download_id]) {
+            logger.error(`Download '${download_id}' for session '${session_id}' could not be found`);
+        }
+    } else if (session_id) {
+        // delete a session's downloads
+        if (downloads[session_id]) {
+            delete downloads[session_id];
+            success = true;
+        } else {
+            logger.error(`Session ${session_id} has no downloads.`)
+        }
+    }
+    updateDownloads();
+    res.send({success: success, downloads: downloads});
+  });
 
   app.post('/api/getVideoInfos', async (req, res) => {
     let fileNames = req.body.fileNames;

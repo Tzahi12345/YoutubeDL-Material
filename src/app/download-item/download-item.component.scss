@@ -1,0 +1,16 @@
+.shorten {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
+
+.mat-expansion-panel:not([class*='mat-elevation-z']) {
+    box-shadow: none;
+}
+
+.ignore-margin {
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: -15px;
+}
