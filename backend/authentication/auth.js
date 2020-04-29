@@ -48,7 +48,6 @@ opts.secretOrKey = SERVER_SECRET;
 opts.audience = 'example.com';*/
 
 exports.passport = require('passport');
-var BasicStrategy = require('passport-http').BasicStrategy;
 
 exports.passport.serializeUser(function(user, done) {
     done(null, user);
