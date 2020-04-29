@@ -1,6 +1,6 @@
 FROM alpine:3.11
 
-RUN apk add --update npm python ffmpeg
+RUN apk add --update npm python ffmpeg atomicparsley
 
 # Change directory so that our commands run inside this new directory
 WORKDIR /app

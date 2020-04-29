@@ -36,6 +36,9 @@ Make sure you have these dependencies installed on your system: nodejs and youtu
 sudo apt-get install nodejs youtube-dl
 ```
 
+Optional dependencies:
+* AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
+
 ### Installing
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
