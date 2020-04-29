@@ -1,4 +1,3 @@
-const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 
 var fs = require('fs-extra');
@@ -8,13 +7,17 @@ var path = require('path');
 var youtubedl = require('youtube-dl');
 const config_api = require('./config');
 
-const adapter = new FileSync('./appdata/db.json');
-const db = low(adapter)
-
 const debugMode = process.env.YTDL_MODE === 'debug';
 
 var logger = null;
+var db = null;
+function setDB(input_db) { db = input_db; } 
 function setLogger(input_logger) { logger = input_logger; }
+
+function initialize(input_db, input_logger) {
+    setDB(input_db);
+    setLogger(input_logger);
+}
 
 async function subscribe(sub) {
     const result_obj = {
@@ -328,5 +331,6 @@ module.exports = {
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
     removeIDFromArchive    : removeIDFromArchive,
-    setLogger              : setLogger
+    setLogger              : setLogger,
+    initialize             : initialize
 }

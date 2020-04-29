@@ -61,7 +61,7 @@ const logger = winston.createLogger({
 });
 
 config_api.setLogger(logger);
-subscriptions_api.setLogger(logger);
+subscriptions_api.initialize(db, logger);
 
 // var GithubContent = require('github-content');
 
