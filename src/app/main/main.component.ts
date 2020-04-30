@@ -402,9 +402,9 @@ export class MainComponent implements OnInit {
 
   public goToFile(name, isAudio, uid) {
     if (isAudio) {
-      this.downloadHelperMp3(name, uid, false, false);
+      this.downloadHelperMp3(name, uid, false, false, null, true);
     } else {
-      this.downloadHelperMp4(name, uid, false, false);
+      this.downloadHelperMp4(name, uid, false, false, null, true);
     }
   }
 
@@ -473,10 +473,9 @@ export class MainComponent implements OnInit {
 
   // download helpers
 
-  downloadHelperMp3(name, uid, is_playlist = false, forceView = false, new_download = null) {
+  downloadHelperMp3(name, uid, is_playlist = false, forceView = false, new_download = null, navigate_mode = false) {
     this.downloadingfile = false;
-
-    if (this.multiDownloadMode && !this.downloadOnlyMode) {
+    if (this.multiDownloadMode && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
     } else {
       // if download only mode, just download the file. no redirect
@@ -511,9 +510,9 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadHelperMp4(name, uid, is_playlist = false, forceView = false, new_download = null) {
+  downloadHelperMp4(name, uid, is_playlist = false, forceView = false, new_download = null, navigate_mode = false) {
     this.downloadingfile = false;
-    if (this.multiDownloadMode && !this.downloadOnlyMode) {
+    if (this.multiDownloadMode && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
     } else {
       // if download only mode, just download the file. no redirect
