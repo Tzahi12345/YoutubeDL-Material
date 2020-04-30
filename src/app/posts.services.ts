@@ -77,6 +77,10 @@ export class PostsService implements CanActivate {
                 }
             }
         });
+
+        this.reload_config.subscribe(yes_reload => {
+            if (yes_reload) { this.reloadConfig(); }
+        });
     }
     canActivate(route, state): Promise<boolean> {
         return new Promise(resolve => {
@@ -103,6 +107,7 @@ export class PostsService implements CanActivate {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
+                this.config_reloaded = true;
             }
         });
     }

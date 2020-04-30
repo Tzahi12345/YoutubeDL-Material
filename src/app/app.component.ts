@@ -62,8 +62,7 @@ export class AppComponent implements OnInit {
     }
     });
 
-    this.loadConfig();
-    this.postsService.settings_changed.subscribe(changed => {
+    this.postsService.config_reloaded.subscribe(changed => {
       if (changed) {
         this.loadConfig();
       }
@@ -77,22 +76,17 @@ export class AppComponent implements OnInit {
 
   loadConfig() {
     // loading config
-    this.postsService.loadNavItems().subscribe(res => { // loads settings
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.topBarTitle = result['YoutubeDLMaterial']['Extra']['title_top'];
-      this.settingsPinRequired = result['YoutubeDLMaterial']['Extra']['settings_pin_required'];
-      const themingExists = result['YoutubeDLMaterial']['Themes'];
-      this.defaultTheme = themingExists ? result['YoutubeDLMaterial']['Themes']['default_theme'] : 'default';
-      this.allowThemeChange = themingExists ? result['YoutubeDLMaterial']['Themes']['allow_theme_change'] : true;
-      this.allowSubscriptions = result['YoutubeDLMaterial']['Subscriptions']['allow_subscriptions'];
+    this.topBarTitle = this.postsService.config['Extra']['title_top'];
+    this.settingsPinRequired = this.postsService.config['Extra']['settings_pin_required'];
+    const themingExists = this.postsService.config['Themes'];
+    this.defaultTheme = themingExists ? this.postsService.config['Themes']['default_theme'] : 'default';
+    this.allowThemeChange = themingExists ? this.postsService.config['Themes']['allow_theme_change'] : true;
+    this.allowSubscriptions = this.postsService.config['Subscriptions']['allow_subscriptions'];
 
-      // sets theme to config default if it doesn't exist
-      if (!localStorage.getItem('theme')) {
-        this.setTheme(themingExists ? this.defaultTheme : 'default');
-      }
-    }, error => {
-      console.log(error);
-    });
+    // sets theme to config default if it doesn't exist
+    if (!localStorage.getItem('theme')) {
+      this.setTheme(themingExists ? this.defaultTheme : 'default');
+    }
   }
 
   // theme stuff

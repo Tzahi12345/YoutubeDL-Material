@@ -51,14 +51,8 @@ export class SettingsComponent implements OnInit {
   }
 
   getConfig() {
-    this.loading_config = true;
-    this.postsService.loadNavItems().subscribe(res => {
-      this.loading_config = false;
-      // successfully loaded config
-
-      this.initial_config = !this.postsService.debugMode ? res['config_file']['YoutubeDLMaterial'] : res['YoutubeDLMaterial'];
-      this.new_config = JSON.parse(JSON.stringify(this.initial_config));
-    });
+    this.initial_config = this.postsService.config;
+    this.new_config = JSON.parse(JSON.stringify(this.initial_config));
   }
 
   settingsSame() {
@@ -70,8 +64,8 @@ export class SettingsComponent implements OnInit {
     this.postsService.setConfig(settingsToSave).subscribe(res => {
       if (res['success']) {
         // sets new config as old config
-        this.postsService.settings_changed.next(true);
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
+        this.postsService.reload_config.next(true);
       }
     }, err => {
       console.error('Failed to save config!');

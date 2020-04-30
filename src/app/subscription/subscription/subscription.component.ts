@@ -50,7 +50,11 @@ export class SubscriptionComponent implements OnInit {
       this.id = this.route.snapshot.paramMap.get('id');
 
       this.getSubscription();
-      this.getConfig();
+      this.postsService.config_reloaded.subscribe(changed => {
+        if (changed) {
+          this.getConfig();
+        }
+      });
     }
 
     // set filter property to cached
@@ -78,10 +82,7 @@ export class SubscriptionComponent implements OnInit {
   }
 
   getConfig() {
-    this.postsService.loadNavItems().subscribe(res => {
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.use_youtubedl_archive = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_use_youtubedl_archive'];
-    });
+    this.use_youtubedl_archive = this.postsService.config['Subscriptions']['subscriptions_use_youtubedl_archive'];
   }
 
   goToFile(emit_obj) {
