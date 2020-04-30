@@ -2407,7 +2407,7 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
                 basePath = path.join(usersFileFolder, req.user.uid, 'subscriptions');
             else
                 basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-            file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
+            file = path.join(__dirname, basePath, (subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
