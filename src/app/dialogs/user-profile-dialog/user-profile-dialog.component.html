@@ -9,7 +9,7 @@
             <strong><ng-container i18n="UID">UID:</ng-container></strong>&nbsp;{{postsService.user.uid}}
         </div>
         <div>
-            <strong><ng-container i18n="Created">Created:</ng-container></strong>&nbsp;{{postsService.user.created ? postsService.user.created : 'N/A'}}
+            <strong><ng-container i18n="Created">Created:</ng-container></strong>&nbsp;{{postsService.user.created ? (postsService.user.created | date) : 'N/A'}}
         </div>
         <div style="margin-top: 20px;">
         </div>

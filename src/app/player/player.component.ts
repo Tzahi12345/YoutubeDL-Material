@@ -79,11 +79,11 @@ export class PlayerComponent implements OnInit {
     this.uuid = this.route.snapshot.paramMap.get('uuid');
 
     // loading config
-    if (this.postsService.config) {
+    if (this.postsService.initialized) {
       this.processConfig();
     } else {
-      this.postsService.config_reloaded.subscribe(changed => { // loads settings
-        if (changed) {
+      this.postsService.service_initialized.subscribe(init => { // loads settings
+        if (init) {
           this.processConfig();
         }
       });

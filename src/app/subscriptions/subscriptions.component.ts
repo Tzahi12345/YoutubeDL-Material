@@ -22,11 +22,11 @@ export class SubscriptionsComponent implements OnInit {
   constructor(private dialog: MatDialog, public postsService: PostsService, private router: Router, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    if (this.postsService.config) {
+    if (this.postsService.initialized) {
       this.getSubscriptions();
     }
-    this.postsService.config_reloaded.subscribe(changed => {
-      if (changed) {
+    this.postsService.service_initialized.subscribe(init => {
+      if (init) {
         this.getSubscriptions();
       }
     });

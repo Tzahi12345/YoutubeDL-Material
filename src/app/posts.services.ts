@@ -36,6 +36,8 @@ export class PostsService implements CanActivate {
 
     reload_config = new BehaviorSubject<boolean>(false);
     config_reloaded = new BehaviorSubject<boolean>(false);
+    service_initialized = new BehaviorSubject<boolean>(false);
+    initialized = false;
 
     config = null;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
@@ -75,7 +77,7 @@ export class PostsService implements CanActivate {
                         this.jwtAuth();
                     }
                 } else {
-                    this.config_reloaded.next(true);
+                    this.setInitialized();
                 }
             }
         });
@@ -328,6 +330,9 @@ export class PostsService implements CanActivate {
             }),
         };
 
+        // needed to re-initialize parts of app after login
+        this.config_reloaded.next(true);
+
         if (this.router.url === '/login') {
             this.router.navigate(['/home']);
         }
@@ -350,7 +355,7 @@ export class PostsService implements CanActivate {
         call.subscribe(res => {
             if (res['token']) {
                 this.afterLogin(res['user'], res['token']);
-                this.config_reloaded.next(true);
+                this.setInitialized();
             }
         }, err => {
             if (err.status === 401) {
@@ -401,6 +406,12 @@ export class PostsService implements CanActivate {
 
         // send login notification
         this.openSnackBar('You must log in to access this page!');
+    }
+
+    setInitialized() {
+        this.service_initialized.next(true);
+        this.initialized = true;
+        this.config_reloaded.next(true);
     }
 
     public openSnackBar(message: string, action: string = '') {

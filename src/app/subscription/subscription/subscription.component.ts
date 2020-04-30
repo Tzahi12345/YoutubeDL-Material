@@ -49,8 +49,8 @@ export class SubscriptionComponent implements OnInit {
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
-      this.postsService.config_reloaded.subscribe(changed => {
-        if (changed) {
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
           this.getConfig();
           this.getSubscription();
         }
