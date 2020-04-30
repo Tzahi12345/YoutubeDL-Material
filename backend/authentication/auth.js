@@ -95,6 +95,7 @@ exports.registerUser = function(req, res) {
           audio: [],
           video: []
         },
+        subscriptions: [],
         created: Date.now()
       };
       // check if user exists

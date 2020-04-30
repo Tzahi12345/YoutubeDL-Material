@@ -588,7 +588,18 @@ function calculateSubcriptionRetrievalDelay(amount) {
 }
 
 function watchSubscriptions() { 
-    let subscriptions = subscriptions_api.getAllSubscriptions();
+    let subscriptions = null;
+    
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+    if (multiUserMode) {
+        subscriptions = [];
+        let users = users_db.get('users').value();
+        for (let i = 0; i < users.length; i++) {
+            if (users[i]['subscriptions']) subscriptions = subscriptions.concat(users[i]['subscriptions']);
+        }
+    } else {
+        subscriptions = subscriptions_api.getAllSubscriptions();
+    }
 
     if (!subscriptions) return;
 
@@ -600,7 +611,7 @@ function watchSubscriptions() {
         let sub = subscriptions[i];
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(() => {
-            subscriptions_api.getVideosForSub(sub);
+            subscriptions_api.getVideosForSub(sub, sub.user_uid);
         }, current_delay);
         current_delay += delay_interval;
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
@@ -2022,17 +2033,19 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     });
 });
 
-app.post('/api/subscribe', async (req, res) => {
+app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let name = req.body.name;
     let url = req.body.url;
     let timerange = req.body.timerange;
     let streamingOnly = req.body.streamingOnly;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     const new_sub = {
                         name: name,
                         url: url,
                         id: uuid(),
-                        streamingOnly: streamingOnly
+                        streamingOnly: streamingOnly,
+                        user_uid: user_uid
                     };
 
     // adds timerange if it exists, otherwise all videos will be downloaded
@@ -2040,7 +2053,7 @@ app.post('/api/subscribe', async (req, res) => {
         new_sub.timerange = timerange;
     }
 
-    const result_obj = await subscriptions_api.subscribe(new_sub);
+    const result_obj = await subscriptions_api.subscribe(new_sub, user_uid);
 
     if (result_obj.success) {
         res.send({
@@ -2054,11 +2067,12 @@ app.post('/api/subscribe', async (req, res) => {
     }
 });
 
-app.post('/api/unsubscribe', async (req, res) => {
+app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
     let deleteMode = req.body.deleteMode
     let sub = req.body.sub;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode);
+    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode, user_uid);
     if (result_obj.success) {
         res.send({
             success: result_obj.success
@@ -2071,12 +2085,13 @@ app.post('/api/unsubscribe', async (req, res) => {
     }
 });
 
-app.post('/api/deleteSubscriptionFile', async (req, res) => {
+app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
     let deleteForever = req.body.deleteForever;
     let file = req.body.file;
     let sub = req.body.sub;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever);
+    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever, user_uid);
 
     if (success) {
         res.send({
@@ -2088,11 +2103,12 @@ app.post('/api/deleteSubscriptionFile', async (req, res) => {
 
 });
 
-app.post('/api/getSubscription', async (req, res) => {
+app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     // get sub from db
-    let subscription = subscriptions_api.getSubscription(subID);
+    let subscription = subscriptions_api.getSubscription(subID, user_uid);
 
     if (!subscription) {
         // failed to get subscription from db, send 400 error
@@ -2102,7 +2118,12 @@ app.post('/api/getSubscription', async (req, res) => {
 
     // get sub videos
     if (subscription.name && !subscription.streamingOnly) {
-        let base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        let base_path = null;
+        if (user_uid)
+            base_path = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
+        else
+            base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        
         let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
         let files;
         try {
@@ -2159,18 +2180,22 @@ app.post('/api/getSubscription', async (req, res) => {
     }
 });
 
-app.post('/api/downloadVideosForSubscription', async (req, res) => {
+app.post('/api/downloadVideosForSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.subID;
-    let sub = subscriptions_api.getSubscription(subID);
-    subscriptions_api.getVideosForSub(sub);
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    let sub = subscriptions_api.getSubscription(subID, user_uid);
+    subscriptions_api.getVideosForSub(sub, user_uid);
     res.send({
         success: true
     });
 });
 
-app.post('/api/getAllSubscriptions', async (req, res) => {
+app.post('/api/getAllSubscriptions', optionalJwt, async (req, res) => {
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
     // get subs from api
-    let subscriptions = subscriptions_api.getAllSubscriptions();
+    let subscriptions = subscriptions_api.getAllSubscriptions(user_uid);
 
     res.send({
         subscriptions: subscriptions
@@ -2360,7 +2385,7 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
     let outputName = req.body.outputName;
     let fullPathProvided = req.body.fullPathProvided;
     let subscriptionName = req.body.subscriptionName;
-    let subscriptionPlaylist = req.body.subscriptionPlaylist;
+    let subscriptionPlaylist = req.body.subPlaylist;
     let file = null;
     if (!zip_mode) {
         fileNames = decodeURIComponent(fileNames);
@@ -2369,14 +2394,19 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
         const ext = is_audio ? '.mp3' : '.mp4';
 
         let base_path = fileFolderPath;
+        let usersFileFolder = null;
         if (req.isAuthenticated()) {
-            const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+            usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
             base_path = path.join(usersFileFolder, req.user.uid, type);
         }
         if (!subscriptionName) {
             file = path.join(__dirname, base_path, fileNames + ext);
         } else {
-            let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+            let basePath = null;
+            if (usersFileFolder)
+                basePath = path.join(usersFileFolder, req.user.uid, 'subscriptions');
+            else
+                basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
             file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
         }
     } else {
@@ -2509,7 +2539,7 @@ app.get('/api/video/:id', optionalJwt, function(req , res){
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         if (optionalParams['subName']) {
             const isPlaylist = optionalParams['subPlaylist'];
-            file_path = path.join(usersFileFolder, req.user.uid, (isPlaylist === 'true' ? 'playlists/' : 'channels/'), id + '.mp4')
+            file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + '.mp4')
         } else {
             file_path = path.join(usersFileFolder, req.user.uid, 'video', id + '.mp4');
         }

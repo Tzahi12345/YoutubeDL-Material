@@ -79,50 +79,56 @@ export class PlayerComponent implements OnInit {
     this.uuid = this.route.snapshot.paramMap.get('uuid');
 
     // loading config
-    this.postsService.loadNavItems().subscribe(res => { // loads settings
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.baseStreamPath = this.postsService.path;
-      this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
-      this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
-      this.subscriptionFolderPath = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_base_path'];
-      this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
-
-      if (!this.fileNames) {
-        this.is_shared = true;
-      }
-
-      if (this.uid && !this.id) {
-        this.getFile();
-      } else if (this.id) {
-        this.getPlaylistFiles();
-      }
-
-      if (this.url) {
-        // if a url is given, just stream the URL
-        this.playlist = [];
-        const imedia: IMedia = {
-          title: this.name,
-          label: this.name,
-          src: this.url,
-          type: 'video/mp4'
+    if (this.postsService.config) {
+      this.processConfig();
+    } else {
+      this.postsService.config_reloaded.subscribe(changed => { // loads settings
+        if (changed) {
+          this.processConfig();
         }
-        this.playlist.push(imedia);
-        this.currentItem = this.playlist[0];
-        this.currentIndex = 0;
-        this.show_player = true;
-      } else if (this.type === 'subscription' || this.fileNames) {
-        this.show_player = true;
-        this.parseFileNames();
-      }
-    });
-
-    // this.getFileInfos();
-
+      });
+    }
   }
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
               public snackBar: MatSnackBar) {
 
+  }
+
+  processConfig() {
+    this.baseStreamPath = this.postsService.path;
+    this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
+    this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
+    this.subscriptionFolderPath = this.postsService.config['Subscriptions']['subscriptions_base_path'];
+    this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
+
+    if (!this.fileNames) {
+      this.is_shared = true;
+    }
+
+    if (this.uid && !this.id) {
+      this.getFile();
+    } else if (this.id) {
+      this.getPlaylistFiles();
+    }
+
+    if (this.url) {
+      // if a url is given, just stream the URL
+      this.playlist = [];
+      const imedia: IMedia = {
+        title: this.name,
+        label: this.name,
+        src: this.url,
+        type: 'video/mp4'
+      }
+      this.playlist.push(imedia);
+      this.currentItem = this.playlist[0];
+      this.currentIndex = 0;
+      this.show_player = true;
+    } else if (this.type === 'subscription' || this.fileNames) {
+      this.show_player = true;
+      this.parseFileNames();
+    }
   }
 
   getFile() {
@@ -191,10 +197,10 @@ export class PlayerComponent implements OnInit {
 
       // adds user token if in multi-user-mode
       if (this.postsService.isLoggedIn) {
-        fullLocation += `?jwt=${this.postsService.token}`;
+        fullLocation += (this.subscriptionName ? '&' : '?') + `jwt=${this.postsService.token}`;
         if (this.is_shared) { fullLocation += `&uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`; }
       } else if (this.is_shared) {
-        fullLocation += `?uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`;
+        fullLocation += (this.subscriptionName ? '&' : '?') + `uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`;
       }
       // if it has a slash (meaning it's in a directory), only get the file name for the label
       let label = null;

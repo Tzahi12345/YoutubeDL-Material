@@ -196,6 +196,7 @@ export class MainComponent implements OnInit {
 
   selectedQuality = '';
   formats_loading = false;
+  config_loaded = false;
 
   @ViewChild('urlinput', { read: ElementRef }) urlInput: ElementRef;
   @ViewChildren('audiofilecard') audioFileCards: QueryList<FileCardComponent>;
@@ -294,7 +295,16 @@ export class MainComponent implements OnInit {
 
   // app initialization.
   ngOnInit() {
-    this.configLoad();
+    if (this.postsService.config) {
+      this.configLoad();
+    } else {
+      this.postsService.config_reloaded.subscribe(changed => {
+        if (changed && !this.config_loaded) {
+          this.config_loaded = true;
+          this.configLoad();
+        }
+      });
+    }
 
     this.postsService.config_reloaded.subscribe(changed => {
       if (changed) {

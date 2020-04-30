@@ -22,16 +22,23 @@ export class SubscriptionsComponent implements OnInit {
   constructor(private dialog: MatDialog, public postsService: PostsService, private router: Router, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.getSubscriptions();
+    if (this.postsService.config) {
+      this.getSubscriptions();
+    }
+    this.postsService.config_reloaded.subscribe(changed => {
+      if (changed) {
+        this.getSubscriptions();
+      }
+    });
   }
 
   getSubscriptions() {
     this.subscriptions_loading = true;
     this.subscriptions = null;
-    this.channel_subscriptions = [];
-    this.playlist_subscriptions = [];
     this.postsService.getAllSubscriptions().subscribe(res => {
-    this.subscriptions_loading = false;
+      this.channel_subscriptions = [];
+      this.playlist_subscriptions = [];
+      this.subscriptions_loading = false;
       this.subscriptions = res['subscriptions'];
       if (!this.subscriptions) {
         // set it to an empty array so it can notify the user there are no subscriptions

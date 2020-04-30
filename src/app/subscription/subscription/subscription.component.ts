@@ -49,10 +49,10 @@ export class SubscriptionComponent implements OnInit {
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
-      this.getSubscription();
       this.postsService.config_reloaded.subscribe(changed => {
         if (changed) {
           this.getConfig();
+          this.getSubscription();
         }
       });
     }
@@ -93,7 +93,7 @@ export class SubscriptionComponent implements OnInit {
       this.router.navigate(['/player', {name: name, url: url}]);
     } else {
       this.router.navigate(['/player', {fileNames: name, type: 'subscription', subscriptionName: this.subscription.name,
-                                        subPlaylist: this.subscription.isPlaylist}]);
+                                        subPlaylist: this.subscription.isPlaylist, uuid: this.postsService.user ? this.postsService.user.uid : null}]);
     }
   }
 

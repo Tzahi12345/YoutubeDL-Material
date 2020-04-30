@@ -74,6 +74,8 @@ export class PostsService implements CanActivate {
                         };
                         this.jwtAuth();
                     }
+                } else {
+                    this.config_reloaded.next(true);
                 }
             }
         });
@@ -107,7 +109,7 @@ export class PostsService implements CanActivate {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
-                this.config_reloaded = true;
+                this.config_reloaded.next(true);
             }
         });
     }
@@ -348,6 +350,7 @@ export class PostsService implements CanActivate {
         call.subscribe(res => {
             if (res['token']) {
                 this.afterLogin(res['user'], res['token']);
+                this.config_reloaded.next(true);
             }
         }, err => {
             if (err.status === 401) {
