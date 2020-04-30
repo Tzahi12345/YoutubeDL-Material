@@ -1,6 +1,9 @@
 FROM alpine:3.11
 
-RUN apk add --update npm python ffmpeg
+RUN \ 
+apk add --update npm python ffmpeg && \
+apk add --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ \
+    atomicparsley
 
 # Change directory so that our commands run inside this new directory
 WORKDIR /app

@@ -36,6 +36,9 @@ Make sure you have these dependencies installed on your system: nodejs and youtu
 sudo apt-get install nodejs youtube-dl
 ```
 
+Optional dependencies:
+* AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
+
 ### Installing
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
@@ -109,7 +112,7 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 
 To get started, go to the settings menu and enable the public API from the *Extra* tab. You can generate an API key if one is missing.
 
-Once you have enabled the API and have the key, you can start sending requests with the key as the Authorization header. That's it! Nearly all of the backend should be at your disposal. View available endpoints in the link above.
+Once you have enabled the API and have the key, you can start sending requests by adding the query param `apiKey=API_KEY`. Replace `API_KEY` with your actual API key, and you should be good to go! Nearly all of the backend should be at your disposal. View available endpoints in the link above.
 
 ## Contributing
 
