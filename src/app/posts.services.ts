@@ -39,6 +39,8 @@ export class PostsService implements CanActivate {
     service_initialized = new BehaviorSubject<boolean>(false);
     initialized = false;
 
+    open_create_default_admin_dialog = new BehaviorSubject<boolean>(false);
+
     config = null;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar) {
@@ -75,6 +77,8 @@ export class PostsService implements CanActivate {
                             }),
                         };
                         this.jwtAuth();
+                    } else {
+                        this.sendToLogin();
                     }
                 } else {
                     this.setInitialized();
@@ -398,6 +402,7 @@ export class PostsService implements CanActivate {
     }
 
     sendToLogin() {
+        this.checkAdminCreationStatus();
         if (this.router.url === '/login') {
             return;
         }
@@ -412,6 +417,26 @@ export class PostsService implements CanActivate {
         this.service_initialized.next(true);
         this.initialized = true;
         this.config_reloaded.next(true);
+    }
+
+    adminExists() {
+        return this.http.post(this.path + 'auth/adminExists', {}, this.httpOptions);
+    }
+
+    createAdminAccount(password) {
+        return this.http.post(this.path + 'auth/register', {userid: 'admin',
+            username: 'admin',
+            password: password}, this.httpOptions);
+    }
+
+    checkAdminCreationStatus() {
+        console.log('checking c stat');
+        this.adminExists().subscribe(res => {
+            if (!res['exists']) {
+                // must create admin account
+                this.open_create_default_admin_dialog.next(true);
+            }
+        });
     }
 
     public openSnackBar(message: string, action: string = '') {

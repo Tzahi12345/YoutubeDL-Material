@@ -63,6 +63,10 @@ export class SettingsComponent implements OnInit {
     const settingsToSave = {'YoutubeDLMaterial': this.new_config};
     this.postsService.setConfig(settingsToSave).subscribe(res => {
       if (res['success']) {
+        if (!this.initial_config['Advanced']['multi_user_mode'] && this.new_config['Advanced']['multi_user_mode']) {
+          // multi user mode was enabled, let's check if default admin account exists
+          this.postsService.checkAdminCreationStatus();
+        }
         // sets new config as old config
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
         this.postsService.reload_config.next(true);

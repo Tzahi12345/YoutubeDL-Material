@@ -60,6 +60,7 @@ import { ShareMediaDialogComponent } from './dialogs/share-media-dialog/share-me
 import { LoginComponent } from './components/login/login.component';
 import { DownloadsComponent } from './components/downloads/downloads.component';
 import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
+import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -91,7 +92,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     ShareMediaDialogComponent,
     LoginComponent,
     DownloadsComponent,
-    UserProfileDialogComponent
+    UserProfileDialogComponent,
+    SetDefaultAdminDialogComponent
   ],
   imports: [
     CommonModule,

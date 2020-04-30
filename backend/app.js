@@ -2735,6 +2735,16 @@ app.post('/api/auth/jwtAuth'
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
 );
+app.post('/api/auth/changePassword', optionalJwt, async (req, res) => {
+    let user_uid = req.user.uid;
+    let password = req.body.password;
+    let success = await auth_api.changeUserPassword(user_uid, password);
+    res.send({success: success});
+});
+app.post('/api/auth/adminExists', async (req, res) => {
+    let exists = auth_api.adminExists();
+    res.send({exists: exists});
+});
 
 app.use(function(req, res, next) {
     //if the request is not html then move along

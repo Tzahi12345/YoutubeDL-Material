@@ -24,6 +24,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
+import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -148,6 +149,18 @@ onSetTheme(theme, old_theme) {
     } else {
     //
     }
+    this.postsService.open_create_default_admin_dialog.subscribe(open => {
+      if (open) {
+        const dialogRef = this.dialog.open(SetDefaultAdminDialogComponent);
+        dialogRef.afterClosed().subscribe(success => {
+          if (success) {
+            if (this.router.url !== '/login') { this.router.navigate(['/login']); }
+          } else {
+            console.error('Failed to create default admin account. See logs for details.');
+          }
+        });
+      }
+    });
   }
 
 

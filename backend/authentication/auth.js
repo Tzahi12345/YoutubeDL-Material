@@ -96,7 +96,8 @@ exports.registerUser = function(req, res) {
           video: []
         },
         subscriptions: [],
-        created: Date.now()
+        created: Date.now(),
+        role: userid === 'admin' ? 'admin' : 'user'
       };
       // check if user exists
       if (users_db.get('users').find({uid: userid}).value()) {
@@ -236,6 +237,23 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
   } else {
     res.status(401).send('Missing Authorization header');
   }
+}
+
+// change password
+exports.changeUserPassword = async function(user_uid, new_pass) {
+  return new Promise(resolve => {
+    bcrypt.hash(new_pass, saltRounds)
+    .then(function(hash) {
+      users_db.get('users').find({uid: user_uid}).assign({passhash: hash}).write();
+      resolve(true);
+    }).catch(err => {
+      resolve(false);
+    });
+  });
+}
+
+exports.adminExists = function() {
+  return !!users_db.get('users').find({uid: 'admin'}).value();
 }
 
 // video stuff

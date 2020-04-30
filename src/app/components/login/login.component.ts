@@ -30,6 +30,13 @@ export class LoginComponent implements OnInit {
     if (this.postsService.isLoggedIn) {
       this.router.navigate(['/home']);
     }
+    this.postsService.service_initialized.subscribe(init => {
+      if (init) {
+        if (!this.postsService.config['Advanced']['multi_user_mode']) {
+          this.router.navigate(['/home']);
+        }
+      }
+    });
   }
 
   login() {
