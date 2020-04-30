@@ -32,8 +32,12 @@ var app = express();
 
 // database setup
 const FileSync = require('lowdb/adapters/FileSync')
+
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
+
+const users_adapter = new FileSync('./appdata/users.json');
+const users_db = low(users_adapter);
 
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
@@ -62,7 +66,8 @@ const logger = winston.createLogger({
 });
 
 config_api.setLogger(logger);
-subscriptions_api.initialize(db, logger);
+subscriptions_api.initialize(db, users_db, logger);
+auth_api.initialize(users_db, logger);
 
 // var GithubContent = require('github-content');
 
@@ -83,6 +88,12 @@ db.defaults(
         pin_md5: '',
         files_to_db_migration_complete: false
 }).write();
+
+users_db.defaults(
+    { 
+        users: []
+    }
+).write();
 
 // config values
 var frontendUrl = null;

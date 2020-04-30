@@ -1129,6 +1129,9 @@ export class MainComponent implements OnInit {
   }
 
   getCurrentDownload() {
+    if (!this.current_download) {
+      return;
+    }
     const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
     this.postsService.getCurrentDownload(this.postsService.session_id, ui_uid).subscribe(res => {
       if (res['download']) {

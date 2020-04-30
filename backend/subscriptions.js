@@ -11,11 +11,12 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 
 var logger = null;
 var db = null;
-function setDB(input_db) { db = input_db; } 
+var users_db = null;
+function setDB(input_db, input_users_db) { db = input_db; users_db = input_users_db } 
 function setLogger(input_logger) { logger = input_logger; }
 
-function initialize(input_db, input_logger) {
-    setDB(input_db);
+function initialize(input_db, input_users_db, input_logger) {
+    setDB(input_db, input_users_db);
     setLogger(input_logger);
 }
 

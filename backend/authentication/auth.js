@@ -1,16 +1,11 @@
-const low = require('lowdb')
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('./appdata/users.json');
-const db = low(adapter);
 const path = require('path');
 const config_api = require('../config');
 var subscriptions_api = require('../subscriptions')
 const fs = require('fs-extra');
-db.defaults(
-    { 
-        users: []
-    }
-).write();
+var jwt = require('jsonwebtoken');
+const { uuid } = require('uuidv4');
+var bcrypt = require('bcrypt');
+
 
 var LocalStrategy = require('passport-local').Strategy;
 var JwtStrategy = require('passport-jwt').Strategy,
@@ -18,34 +13,55 @@ var JwtStrategy = require('passport-jwt').Strategy,
 
 // other required vars
 let logger = null;
+var users_db = null;
+let SERVER_SECRET = null;
+let JWT_EXPIRATION = null;
+let opts = null;
+let saltRounds = null;
 
-exports.setLogger = function(input_logger) {
+exports.initialize = function(input_users_db, input_logger) {
+  setLogger(input_logger)
+  setDB(input_users_db);
+
+  /*************************
+   * Authentication module
+   ************************/
+  saltRounds = 10;
+
+  JWT_EXPIRATION = (60 * 60); // one hour
+
+  SERVER_SECRET = null;
+  if (users_db.get('jwt_secret').value()) {
+    SERVER_SECRET = users_db.get('jwt_secret').value();
+  } else {
+    SERVER_SECRET = uuid();
+    users_db.set('jwt_secret', SERVER_SECRET).write();
+  }
+
+  opts = {}
+  opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
+  opts.secretOrKey = SERVER_SECRET;
+  /*opts.issuer = 'example.com';
+  opts.audience = 'example.com';*/
+
+  exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    const user = users_db.get('users').find({uid: jwt_payload.user.uid}).value();
+    if (user) {
+        return done(null, user);
+    } else {
+        return done(null, false);
+        // or you could create a new account
+    }
+  }));
+}
+
+function setLogger(input_logger) {
   logger = input_logger;
 }
 
-/*************************
- * Authentication module
- ************************/
-var bcrypt = require('bcrypt');
-const saltRounds = 10;
-
-var jwt = require('jsonwebtoken');
-const JWT_EXPIRATION = (60 * 60); // one hour
-
-const { uuid } = require('uuidv4');
-let SERVER_SECRET = null;
-if (db.get('jwt_secret').value()) {
-  SERVER_SECRET = db.get('jwt_secret').value();
-} else {
-  SERVER_SECRET = uuid();
-  db.set('jwt_secret', SERVER_SECRET).write();
+function setDB(input_users_db) {
+  users_db = input_users_db;
 }
-
-var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
-opts.secretOrKey = SERVER_SECRET;
-/*opts.issuer = 'example.com';
-opts.audience = 'example.com';*/
 
 exports.passport = require('passport');
 
@@ -82,17 +98,17 @@ exports.registerUser = function(req, res) {
         created: Date.now()
       };
       // check if user exists
-      if (db.get('users').find({uid: userid}).value()) {
+      if (users_db.get('users').find({uid: userid}).value()) {
         // user id is taken!
         logger.error('Registration failed: UID is already taken!');
         res.status(409).send('UID is already taken!');
-      } else if (db.get('users').find({name: username}).value()) {
+      } else if (users_db.get('users').find({name: username}).value()) {
           // user name is taken!
           logger.error('Registration failed: User name is already taken!');
           res.status(409).send('User name is already taken!');
       } else {
         // add to db
-        db.get('users').push(new_user).write();
+        users_db.get('users').push(new_user).write();
         logger.verbose(`New user created: ${new_user.name}`);
         res.send({
           user: new_user
@@ -123,21 +139,13 @@ exports.registerUser = function(req, res) {
  * This checks that the credentials are valid.
  * If so, passes the user info to the next middleware.
  ************************************************/
-exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    const user = db.get('users').find({uid: jwt_payload.user.uid}).value();
-    if (user) {
-        return done(null, user);
-    } else {
-        return done(null, false);
-        // or you could create a new account
-    }
-}));
+
 
 exports.passport.use(new LocalStrategy({
     usernameField: 'userid',
     passwordField: 'password'},
     function(username, password, done) {
-        const user = db.get('users').find({name: username}).value();
+        const user = users_db.get('users').find({name: username}).value();
         if (!user) { console.log('user not found'); return done(null, false); }
         if (user) {
             return done(null, bcrypt.compareSync(password, user.passhash) ? user : false);
@@ -147,7 +155,7 @@ exports.passport.use(new LocalStrategy({
 
 /*passport.use(new BasicStrategy(
   function(userid, plainTextPassword, done) {
-    const user = db.get('users').find({name: userid}).value();
+    const user = users_db.get('users').find({name: userid}).value();
     if (user) {
           var hashedPwd = user.passhash;
           return bcrypt.compare(plainTextPassword, hashedPwd);
@@ -232,22 +240,22 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
 // video stuff
 
 exports.getUserVideos = function(user_uid, type) {
-    const user = db.get('users').find({uid: user_uid}).value();
+    const user = users_db.get('users').find({uid: user_uid}).value();
     return user['files'][type];
 }
 
 exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false) {
   if (!type) {
-    file = db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
+    file = users_db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
     if (!file) {
-        file = db.get('users').find({uid: user_uid}).get(`files.video`).find({uid: file_uid}).value();
+        file = users_db.get('users').find({uid: user_uid}).get(`files.video`).find({uid: file_uid}).value();
         if (file) type = 'video';
     } else {
         type = 'audio';
     }
   }
 
-  if (!file && type) file = db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+  if (!file && type) file = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
 
   // prevent unauthorized users from accessing the file info
   if (requireSharing && !file['sharingEnabled']) file = null;
@@ -256,54 +264,54 @@ exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false
 }
 
 exports.addPlaylist = function(user_uid, new_playlist, type) {
-  db.get('users').find({uid: user_uid}).get(`playlists.${type}`).push(new_playlist).write();
+  users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).push(new_playlist).write();
   return true;
 }
 
 exports.updatePlaylist = function(user_uid, playlistID, new_filenames, type) {
-  db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).assign({fileNames: new_filenames});
+  users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).assign({fileNames: new_filenames});
   return true;
 }
 
 exports.removePlaylist = function(user_uid, playlistID, type) {
-  db.get('users').find({uid: user_uid}).get(`playlists.${type}`).remove({id: playlistID}).write();
+  users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).remove({id: playlistID}).write();
   return true;
 }
 
 exports.getUserPlaylists = function(user_uid, type) {
-  const user = db.get('users').find({uid: user_uid}).value();
+  const user = users_db.get('users').find({uid: user_uid}).value();
   return user['playlists'][type];
 }
 
 exports.getUserPlaylist = function(user_uid, playlistID, type) {
   let playlist = null;
   if (!type) {
-    playlist = db.get('users').find({uid: user_uid}).get(`playlists.audio`).find({id: playlistID}).value();
+    playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.audio`).find({id: playlistID}).value();
     if (!playlist) {
-      playlist = db.get('users').find({uid: user_uid}).get(`playlists.video`).find({id: playlistID}).value();
+      playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.video`).find({id: playlistID}).value();
       if (playlist) type = 'video';
     } else {
         type = 'audio';
     }
   }
-  if (!playlist) playlist = db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).value();
+  if (!playlist) playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).value();
   return playlist;
 }
 
 exports.registerUserFile = function(user_uid, file_object, type) {
-  db.get('users').find({uid: user_uid}).get(`files.${type}`)
+  users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
     .remove({
         path: file_object['path']
     }).write();
 
-  db.get('users').find({uid: user_uid}).get(`files.${type}`)
+  users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
       .push(file_object)
       .write();
 }
 
 exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = false) {
   let success = false;
-  const file_obj = db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+  const file_obj = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
   if (file_obj) {
     const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
     const ext = type === 'audio' ? '.mp3' : '.mp4';
@@ -320,7 +328,7 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
     } 
 
     const full_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext);
-    db.get('users').find({uid: user_uid}).get(`files.${type}`)
+    users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
       .remove({
           uid: file_uid
       }).write();
@@ -371,7 +379,7 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
 
 exports.changeSharingMode = function(user_uid, file_uid, type, is_playlist, enabled) {
   let success = false;
-  const user_db_obj = db.get('users').find({uid: user_uid});
+  const user_db_obj = users_db.get('users').find({uid: user_uid});
   if (user_db_obj.value()) {
     const file_db_obj = is_playlist ? user_db_obj.get(`playlists.${type}`).find({uid: file_uid}) : user_db_obj.get(`files.${type}`).find({uid: file_uid});
     if (file_db_obj.value()) {
