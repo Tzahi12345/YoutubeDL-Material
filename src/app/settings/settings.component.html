@@ -266,6 +266,9 @@
             </div>
         </ng-template>
     </mat-tab>
+    <mat-tab *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode" label="Users" i18n-label="Users settings label">
+        <app-modify-users></app-modify-users>
+    </mat-tab>
 </mat-tab-group>    
 </mat-dialog-content>
 

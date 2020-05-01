@@ -91,7 +91,25 @@ db.defaults(
 
 users_db.defaults(
     { 
-        users: []
+        users: [],
+        roles: {
+            "admin": {
+                "permissions": [
+                    'filemanager',
+                    'settings',
+                    'subscriptions',
+                    'sharing',
+                    'advanced_download',
+                    'downloads_manager'
+                ]
+            }, "user": {
+                "permissions": [
+                    'filemanager',
+                    'subscriptions',
+                    'sharing'
+                ]
+            }
+        }
     }
 ).write();
 
@@ -2737,13 +2755,88 @@ app.post('/api/auth/jwtAuth'
 );
 app.post('/api/auth/changePassword', optionalJwt, async (req, res) => {
     let user_uid = req.user.uid;
-    let password = req.body.password;
+    let password = req.body.new_password;
     let success = await auth_api.changeUserPassword(user_uid, password);
     res.send({success: success});
 });
 app.post('/api/auth/adminExists', async (req, res) => {
     let exists = auth_api.adminExists();
     res.send({exists: exists});
+});
+
+// user management
+app.post('/api/getUsers', optionalJwt, async (req, res) => {
+    let users = users_db.get('users').value();
+    res.send({users: users});
+});
+app.post('/api/getRoles', optionalJwt, async (req, res) => {
+    let roles = users_db.get('roles').value();
+    res.send({roles: roles});
+});
+
+app.post('/api/changeUser', optionalJwt, async (req, res) => {
+    let change_obj = req.body.change_object;
+    try {
+        const user_db_obj = users_db.get('users').find({uid: change_obj.uid});
+        if (change_obj.name) {
+            user_db_obj.assign({name: change_obj.name}).write();
+        }
+        if (change_obj.role) {
+            user_db_obj.assign({role: change_obj.role}).write();
+        }
+        res.send({success: true});
+    } catch (err) {
+        logger.error(err);
+        res.send({success: false});
+    }
+});
+
+app.post('/api/deleteUser', optionalJwt, async (req, res) => {
+    let uid = req.body.uid;
+    try {
+        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+        const user_folder = path.join(__dirname, usersFileFolder, uid);
+        const user_db_obj = users_db.get('users').find({uid: uid});
+        if (user_db_obj.value()) {
+            // user exists, let's delete
+            deleteFolderRecursive(user_folder);
+            users_db.get('users').remove({uid: uid}).write();
+        }
+        res.send({success: true});
+    } catch (err) {
+        logger.error(err);
+        res.send({success: false});
+    }
+});
+
+app.post('/api/changeUserPermissions', optionalJwt, async (req, res) => {
+    const user_uid = req.body.user_uid;
+    const permission = req.body.permission;
+    const new_value = req.body.new_value;
+
+    if (!permission || !new_value) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const success = auth_api.changeUserPermissions(user_uid, permission, new_value);
+
+    res.send({success: success});
+});
+
+app.post('/api/changeRolePermissions', optionalJwt, async (req, res) => {
+    const role = req.body.role;
+    const permission = req.body.permission;
+    const new_value = req.body.new_value;
+
+    if (!permission || !new_value) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const success = auth_api.changeRolePermissions(role, permission, new_value);
+
+    res.send({success: success});
 });
 
 app.use(function(req, res, next) {

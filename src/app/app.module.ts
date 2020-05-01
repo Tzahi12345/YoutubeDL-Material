@@ -25,6 +25,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatSortModule} from '@angular/material/sort';
+import {MatTableModule} from '@angular/material/table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -61,6 +64,10 @@ import { LoginComponent } from './components/login/login.component';
 import { DownloadsComponent } from './components/downloads/downloads.component';
 import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
 import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
+import { ModifyUsersComponent } from './components/modify-users/modify-users.component';
+import { AddUserDialogComponent } from './dialogs/add-user-dialog/add-user-dialog.component';
+import { ManageUserComponent } from './components/manage-user/manage-user.component';
+import { ManageRoleComponent } from './components/manage-role/manage-role.component';
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -93,7 +100,11 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     LoginComponent,
     DownloadsComponent,
     UserProfileDialogComponent,
-    SetDefaultAdminDialogComponent
+    SetDefaultAdminDialogComponent,
+    ModifyUsersComponent,
+    AddUserDialogComponent,
+    ManageUserComponent,
+    ManageRoleComponent
   ],
   imports: [
     CommonModule,
@@ -127,6 +138,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatAutocompleteModule,
     MatTabsModule,
     MatTooltipModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatTableModule,
     DragDropModule,
     ClipboardModule,
     VgCoreModule,

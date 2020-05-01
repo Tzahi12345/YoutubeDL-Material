@@ -40,6 +40,9 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    if (this.loginPasswordInput === '') {
+      return;
+    }
     this.loggingIn = true;
     this.postsService.login(this.loginUsernameInput, this.loginPasswordInput).subscribe(res => {
       this.loggingIn = false;

@@ -1,5 +1,6 @@
 const path = require('path');
 const config_api = require('../config');
+const consts = require('../consts');
 var subscriptions_api = require('../subscriptions')
 const fs = require('fs-extra');
 var jwt = require('jsonwebtoken');
@@ -97,7 +98,9 @@ exports.registerUser = function(req, res) {
         },
         subscriptions: [],
         created: Date.now(),
-        role: userid === 'admin' ? 'admin' : 'user'
+        role: userid === 'admin' ? 'admin' : 'user',
+        permissions: [],
+        permission_overrides: []
       };
       // check if user exists
       if (users_db.get('users').find({uid: userid}).value()) {
@@ -200,8 +203,7 @@ exports.authenticateViaPassport = function(req, res, next) {
 exports.generateJWT = function(req, res, next) {
   var payload = {
       exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
-    , user: req.user,
-//    , role: role
+    , user: req.user
   };
   req.token = jwt.sign(payload, SERVER_SECRET);
   next();  
@@ -210,7 +212,9 @@ exports.generateJWT = function(req, res, next) {
 exports.returnAuthResponse = function(req, res) {
   res.status(200).json({
     user: req.user,
-    token: req.token
+    token: req.token,
+    permissions: exports.userPermissions(req.user.uid),
+    available_permissions: consts['AVAILABLE_PERMISSIONS']
   });  
 }
 
@@ -250,6 +254,40 @@ exports.changeUserPassword = async function(user_uid, new_pass) {
       resolve(false);
     });
   });
+}
+
+// change user permissions
+exports.changeUserPermissions = function(user_uid, permission, new_value) {
+  try {
+    const user_db_obj = users_db.get('users').find({uid: user_uid});
+    user_db_obj.get('permissions').pull(permission).write();
+    user_db_obj.get('permission_overrides').pull(permission).write();
+    if (new_value === 'yes') {
+      user_db_obj.get('permissions').push(permission).write();
+      user_db_obj.get('permission_overrides').push(permission).write();
+    } else if (new_value === 'no') {
+      user_db_obj.get('permission_overrides').push(permission).write();
+    }
+    return true;
+  } catch (err) {
+    logger.error(err);
+    return false;
+  }
+}
+
+// change role permissions
+exports.changeRolePermissions = function(role, permission, new_value) {
+  try {
+    const role_db_obj = users_db.get('roles').get(role);
+    role_db_obj.get('permissions').pull(permission).write();
+    if (new_value === 'yes') {
+      role_db_obj.get('permissions').push(permission).write();
+    }
+    return true;
+  } catch (err) {
+    logger.error(err);
+    return false;
+  }
 }
 
 exports.adminExists = function() {
@@ -408,6 +446,74 @@ exports.changeSharingMode = function(user_uid, file_uid, type, is_playlist, enab
   }
   
   return success;
+}
+
+exports.userHasPermission = function(user_uid, permission) {
+  const user_obj = users_db.get('users').find({uid: user_uid}).value();
+  const role = user_obj['role'];
+  if (!role) {
+    // role doesn't exist
+    logger.error('Invalid role ' + role);
+    return false;
+  }
+  const role_permissions = (users_db.get('roles').value())['permissions'];
+
+  const user_has_explicit_permission = user_obj['permissions'].includes(permission);
+  const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
+  
+  // check if user has a negative/positive override
+  if (user_has_explicit_permission && permission_in_overrides) {
+    // positive override
+    return true;
+  } else if (!user_has_explicit_permission && permission_in_overrides) {
+    // negative override
+    return false;
+  }
+
+  // no overrides, let's check if the role has the permission
+  if (role_permissions.includes(permission)) {
+    return true;
+  } else {
+    logger.verbose(`User ${user_uid} failed to get permission ${permission}`);
+    return false;
+  }
+}
+
+exports.userPermissions = function(user_uid) {
+  let user_permissions = [];
+  const user_obj = users_db.get('users').find({uid: user_uid}).value();
+  const role = user_obj['role'];
+  if (!role) {
+    // role doesn't exist
+    logger.error('Invalid role ' + role);
+    return null;
+  }
+  const role_permissions = users_db.get('roles').get(role).get('permissions').value()
+
+  for (let i = 0; i < consts['AVAILABLE_PERMISSIONS'].length; i++) {
+    let permission = consts['AVAILABLE_PERMISSIONS'][i];
+
+    const user_has_explicit_permission = user_obj['permissions'].includes(permission);
+    const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
+    
+    // check if user has a negative/positive override
+    if (user_has_explicit_permission && permission_in_overrides) {
+      // positive override
+      user_permissions.push(permission);
+    } else if (!user_has_explicit_permission && permission_in_overrides) {
+      // negative override
+      continue;
+    }
+
+    // no overrides, let's check if the role has the permission
+    if (role_permissions.includes(permission)) {
+      user_permissions.push(permission);
+    } else {
+      continue;
+    }
+  }
+
+  return user_permissions;
 }
 
 function getToken(queryParams) {

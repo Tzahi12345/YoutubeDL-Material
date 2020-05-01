@@ -90,7 +90,7 @@ export class PlayerComponent implements OnInit {
     }
   }
 
-  constructor(private postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
+  constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
               public snackBar: MatSnackBar) {
 
   }

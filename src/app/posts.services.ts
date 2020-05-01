@@ -10,6 +10,7 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as Fingerprint2 from 'fingerprintjs2';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -30,9 +31,13 @@ export class PostsService implements CanActivate {
 
     debugMode = false;
 
+    // must be reset after logout
     isLoggedIn = false;
     token = null;
     user = null;
+    permissions = null;
+
+    available_permissions = null;
 
     reload_config = new BehaviorSubject<boolean>(false);
     config_reloaded = new BehaviorSubject<boolean>(false);
@@ -48,19 +53,25 @@ export class PostsService implements CanActivate {
         // this.startPath = window.location.href + '/api/';
         // this.startPathSSL = window.location.href + '/api/';
         this.path = this.document.location.origin + '/api/';
-        this.session_id = uuid();
+
         if (isDevMode()) {
             this.debugMode = true;
             this.path = 'http://localhost:17442/api/';
         }
 
-        this.http_params = `apiKey=${this.auth_token}&sessionID=${this.session_id}`
+        this.http_params = `apiKey=${this.auth_token}`
 
         this.httpOptions = {
             params: new HttpParams({
               fromString: this.http_params
             }),
         };
+
+        Fingerprint2.get(components => {
+            // set identity as user id doesn't necessarily exist
+            this.session_id = Fingerprint2.x64hash128(components.map(function (pair) { return pair.value; }).join(), 31);
+            this.httpOptions.params = this.httpOptions.params.set('sessionID', this.session_id);
+        });
 
         // get config
         this.loadNavItems().subscribe(res => {
@@ -71,11 +82,8 @@ export class PostsService implements CanActivate {
                     // login stuff
                     if (localStorage.getItem('jwt_token')) {
                         this.token = localStorage.getItem('jwt_token');
-                        this.httpOptions = {
-                            params: new HttpParams({
-                            fromString: `apiKey=${this.auth_token}&sessionID=${this.session_id}&jwt=${this.token}`
-                            }),
-                        };
+                        this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
+
                         this.jwtAuth();
                     } else {
                         this.sendToLogin();
@@ -321,18 +329,16 @@ export class PostsService implements CanActivate {
         return this.http.get('https://api.github.com/repos/tzahi12345/youtubedl-material/releases');
     }
 
-    afterLogin(user, token) {
+    afterLogin(user, token, permissions, available_permissions) {
         this.isLoggedIn = true;
         this.user = user;
+        this.permissions = permissions;
+        this.available_permissions = available_permissions;
         this.token = token;
 
         localStorage.setItem('jwt_token', this.token);
 
-        this.httpOptions = {
-            params: new HttpParams({
-              fromString: `apiKey=${this.auth_token}&sessionID=${this.session_id}&jwt=${this.token}`
-            }),
-        };
+        this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
 
         // needed to re-initialize parts of app after login
         this.config_reloaded.next(true);
@@ -347,7 +353,7 @@ export class PostsService implements CanActivate {
         const call = this.http.post(this.path + 'auth/login', {userid: username, password: password}, this.httpOptions);
         call.subscribe(res => {
             if (res['token']) {
-                this.afterLogin(res['user'], res['token']);
+                this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
             }
         });
         return call;
@@ -358,7 +364,7 @@ export class PostsService implements CanActivate {
         const call = this.http.post(this.path + 'auth/jwtAuth', {}, this.httpOptions);
         call.subscribe(res => {
             if (res['token']) {
-                this.afterLogin(res['user'], res['token']);
+                this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
                 this.setInitialized();
             }
         }, err => {
@@ -371,6 +377,7 @@ export class PostsService implements CanActivate {
 
     logout() {
         this.user = null;
+        this.permissions = null;
         this.isLoggedIn = false;
         localStorage.setItem('jwt_token', null);
         if (this.router.url !== '/login') {
@@ -430,13 +437,45 @@ export class PostsService implements CanActivate {
     }
 
     checkAdminCreationStatus() {
-        console.log('checking c stat');
+        if (!this.config['Advanced']['multi_user_mode']) {
+            return;
+        }
         this.adminExists().subscribe(res => {
             if (!res['exists']) {
                 // must create admin account
                 this.open_create_default_admin_dialog.next(true);
             }
         });
+    }
+
+    changeUser(change_obj) {
+        return this.http.post(this.path + 'changeUser', {change_object: change_obj}, this.httpOptions);
+    }
+
+    deleteUser(uid) {
+        return this.http.post(this.path + 'deleteUser', {uid: uid}, this.httpOptions);
+    }
+
+    changeUserPassword(user_uid, new_password) {
+        return this.http.post(this.path + 'auth/changePassword', {user_uid: user_uid, new_password: new_password}, this.httpOptions);
+    }
+
+    getUsers() {
+        return this.http.post(this.path + 'getUsers', {}, this.httpOptions);
+    }
+
+    getRoles() {
+        return this.http.post(this.path + 'getRoles', {}, this.httpOptions);
+    }
+
+    setUserPermission(user_uid, permission, new_value) {
+        return this.http.post(this.path + 'changeUserPermissions', {user_uid: user_uid, permission: permission, new_value: new_value},
+                                                                    this.httpOptions);
+    }
+
+    setRolePermission(role_name, permission, new_value) {
+        return this.http.post(this.path + 'changeRolePermissions', {role: role_name, permission: permission, new_value: new_value},
+                                                                    this.httpOptions);
     }
 
     public openSnackBar(message: string, action: string = '') {

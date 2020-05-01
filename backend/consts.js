@@ -142,7 +142,17 @@ let CONFIG_ITEMS = {
     },
 };
 
+AVAILABLE_PERMISSIONS = [
+    'filemanager',
+    'settings',
+    'subscriptions',
+    'sharing',
+    'advanced_download',
+    'downloads_manager'
+];
+
 module.exports = {
     CONFIG_ITEMS: CONFIG_ITEMS,
+    AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
     CURRENT_VERSION: 'v3.6'
 }

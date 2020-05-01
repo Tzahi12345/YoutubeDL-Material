@@ -39,7 +39,7 @@ export class SettingsComponent implements OnInit {
     this._settingsSame = val;
   }
 
-  constructor(private postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
+  constructor(public postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
     private dialog: MatDialog) { }
 
   ngOnInit() {

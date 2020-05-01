@@ -3,7 +3,6 @@ import {PostsService} from '../posts.services';
 import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
@@ -215,7 +214,7 @@ export class MainComponent implements OnInit {
 
   simulatedOutput = '';
 
-  constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
+  constructor(public postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
   }
@@ -242,7 +241,8 @@ export class MainComponent implements OnInit {
         this.postsService.config['API']['youtube_API_key'];
     this.youtubeAPIKey = this.youtubeSearchEnabled ? this.postsService.config['API']['youtube_API_key'] : null;
     this.allowQualitySelect = this.postsService.config['Extra']['allow_quality_select'];
-    this.allowAdvancedDownload = this.postsService.config['Advanced']['allow_advanced_download'];
+    this.allowAdvancedDownload = this.postsService.config['Advanced']['allow_advanced_download']
+                                  && (!this.postsService.isLoggedIn || this.postsService.permissions.includes('advanced_download'));
     this.useDefaultDownloadingAgent = this.postsService.config['Advanced']['use_default_downloading_agent'];
     this.customDownloadingAgent = this.postsService.config['Advanced']['custom_downloading_agent'];
 
