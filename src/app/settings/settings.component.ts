@@ -65,7 +65,7 @@ export class SettingsComponent implements OnInit {
       if (res['success']) {
         if (!this.initial_config['Advanced']['multi_user_mode'] && this.new_config['Advanced']['multi_user_mode']) {
           // multi user mode was enabled, let's check if default admin account exists
-          this.postsService.checkAdminCreationStatus();
+          this.postsService.checkAdminCreationStatus(true);
         }
         // sets new config as old config
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
