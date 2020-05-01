@@ -7,11 +7,11 @@ apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testin
 
 WORKDIR /app
 
-COPY ./ /app/
-
-WORKDIR /app
+COPY package.json /app/
 
 RUN npm install
+
+COPY ./ /app/
 
 EXPOSE 17442
 
