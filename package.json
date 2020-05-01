@@ -35,6 +35,7 @@
     "filesize": "^6.1.0",
     "ng-lazyload-image": "^7.0.1",
     "ngx-videogular": "^9.0.1",
+    "fingerprintjs2": "^2.1.0",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.0.0-rc.0",
     "tslib": "^1.10.0",
