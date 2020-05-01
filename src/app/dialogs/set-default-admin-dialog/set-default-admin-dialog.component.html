@@ -1,0 +1,19 @@
+<h4 mat-dialog-title><ng-container i18n="Create admin account dialog title">Create admin account</ng-container></h4>
+
+<mat-dialog-content>
+    <div>
+        <p i18n="No default admin detected explanation">No default admin account detected. This will create and set the password for an admin account with the user name as 'admin'.</p>
+    </div>
+    <div style="position: relative">
+        <div>
+            <mat-form-field color="accent">
+                <input type="password" (keyup.enter)="create()" matInput [(ngModel)]="input" placeholder="Password" i18n-placeholder="Password">
+            </mat-form-field>
+        </div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button [disabled]="input.length === 0" color="accent" style="margin-bottom: 12px;" (click)="create()" mat-raised-button><ng-container i18n="Create">Create</ng-container></button>
+    <div class="spinner-div"><mat-spinner [diameter]="25" *ngIf="creating"></mat-spinner></div>
+</mat-dialog-actions>

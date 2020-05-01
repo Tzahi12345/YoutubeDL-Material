@@ -134,7 +134,8 @@ module.exports = {
     setConfigFile: setConfigFile,
     configExistsCheck: configExistsCheck,
     CONFIG_ITEMS: CONFIG_ITEMS,
-    setLogger: setLogger
+    setLogger: setLogger,
+    descriptors: {}
 }
 
 DEFAULT_CONFIG = {
@@ -178,9 +179,13 @@ DEFAULT_CONFIG = {
         "subscriptions_check_interval": "300",
         "subscriptions_use_youtubedl_archive": true
       },
+      "Users": {
+          "base_path": "users/"
+      },
       "Advanced": {
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",
+        "multi_user_mode": false,
         "allow_advanced_download": false
       }
     }

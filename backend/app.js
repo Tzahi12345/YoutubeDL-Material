@@ -1,6 +1,7 @@
 var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
+var auth_api = require('./authentication/auth');
 var winston = require('winston');
 var path = require('path');
 var youtubedl = require('youtube-dl');
@@ -31,8 +32,12 @@ var app = express();
 
 // database setup
 const FileSync = require('lowdb/adapters/FileSync')
+
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
+
+const users_adapter = new FileSync('./appdata/users.json');
+const users_db = low(users_adapter);
 
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
@@ -61,7 +66,8 @@ const logger = winston.createLogger({
 });
 
 config_api.setLogger(logger);
-subscriptions_api.initialize(db, logger);
+subscriptions_api.initialize(db, users_db, logger);
+auth_api.initialize(users_db, logger);
 
 // var GithubContent = require('github-content');
 
@@ -82,6 +88,30 @@ db.defaults(
         pin_md5: '',
         files_to_db_migration_complete: false
 }).write();
+
+users_db.defaults(
+    { 
+        users: [],
+        roles: {
+            "admin": {
+                "permissions": [
+                    'filemanager',
+                    'settings',
+                    'subscriptions',
+                    'sharing',
+                    'advanced_download',
+                    'downloads_manager'
+                ]
+            }, "user": {
+                "permissions": [
+                    'filemanager',
+                    'subscriptions',
+                    'sharing'
+                ]
+            }
+        }
+    }
+).write();
 
 // config values
 var frontendUrl = null;
@@ -147,10 +177,12 @@ if (writeConfigMode) {
 }
 
 var downloads = {};
-var descriptors = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// use passport
+app.use(auth_api.passport.initialize());
 
 // objects
 
@@ -214,6 +246,7 @@ async function runFilesToDBMigration() {
             db.set('files_to_db_migration_complete', true).write();
             resolve(true);
         } catch(err) {
+            logger.error(err);
             resolve(false);
         }
     });
@@ -318,7 +351,9 @@ async function downloadReleaseFiles(tag) {
         fs.mkdirSync(path.join(__dirname, 'public'));
 
         let replace_ignore_list = ['youtubedl-material/appdata/default.json',
-                                    'youtubedl-material/appdata/db.json']
+                                    'youtubedl-material/appdata/db.json',
+                                    'youtubedl-material/appdata/users.json',
+                                    'youtubedl-material/appdata/*']
         logger.info(`Installing update ${tag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
@@ -571,7 +606,18 @@ function calculateSubcriptionRetrievalDelay(amount) {
 }
 
 function watchSubscriptions() { 
-    let subscriptions = subscriptions_api.getAllSubscriptions();
+    let subscriptions = null;
+    
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+    if (multiUserMode) {
+        subscriptions = [];
+        let users = users_db.get('users').value();
+        for (let i = 0; i < users.length; i++) {
+            if (users[i]['subscriptions']) subscriptions = subscriptions.concat(users[i]['subscriptions']);
+        }
+    } else {
+        subscriptions = subscriptions_api.getAllSubscriptions();
+    }
 
     if (!subscriptions) return;
 
@@ -583,7 +629,7 @@ function watchSubscriptions() {
         let sub = subscriptions[i];
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(() => {
-            subscriptions_api.getVideosForSub(sub);
+            subscriptions_api.getVideosForSub(sub, sub.user_uid);
         }, current_delay);
         current_delay += delay_interval;
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
@@ -631,7 +677,7 @@ function getMp3s() {
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;
         var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
 
         var size = stats.size;
 
@@ -660,7 +706,7 @@ function getMp4s(relative_path = true) {
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;
         var upload_date = jsonobj.upload_date;
-        upload_date = `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}`;
+        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
         var thumbnail = jsonobj.thumbnail;
         var duration = jsonobj.duration;
 
@@ -719,10 +765,16 @@ function getFileSizeMp4(name)
     return filesize;
 }
 
-function getJSONMp3(name, openReadPerms = false)
+function getJSONMp3(name, customPath = null, openReadPerms = false)
 {
     var jsonPath = audioFolderPath+name+".info.json";
     var alternateJsonPath = audioFolderPath+name+".mp3.info.json";
+    if (!customPath) {
+        jsonPath = audioFolderPath + name + ".info.json";
+    } else {
+        jsonPath = customPath + name + ".info.json";
+        alternateJsonPath = customPath + name + ".mp3.info.json";
+    }
     var obj = null;
     if (fs.existsSync(jsonPath)) {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -868,10 +920,10 @@ async function deleteAudioFile(name, blacklistMode = false) {
 
         let audioFileExists = fs.existsSync(audioFilePath);
 
-        if (descriptors[name]) {
+        if (config_api.descriptors[name]) {
             try {
-                for (let i = 0; i < descriptors[name].length; i++) {
-                    descriptors[name][i].destroy();
+                for (let i = 0; i < config_api.descriptors[name].length; i++) {
+                    config_api.descriptors[name][i].destroy();
                 }
             } catch(e) {
 
@@ -926,10 +978,10 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
         jsonExists = fs.existsSync(jsonPath);
         videoFileExists = fs.existsSync(videoFilePath);
 
-        if (descriptors[name]) {
+        if (config_api.descriptors[name]) {
             try {
-                for (let i = 0; i < descriptors[name].length; i++) {
-                    descriptors[name][i].destroy();
+                for (let i = 0; i < config_api.descriptors[name].length; i++) {
+                    config_api.descriptors[name][i].destroy();
                 }
             } catch(e) {
 
@@ -997,9 +1049,9 @@ function recFindByExt(base,ext,files,result)
     return result
 }
 
-function registerFileDB(full_file_path, type) {
-    const file_id = full_file_path.substring(0, full_file_path.length-4);
-    const file_object = generateFileObject(file_id, type);
+function registerFileDB(file_path, type, multiUserMode = null) {
+    const file_id = file_path.substring(0, file_path.length-4);
+    const file_object = generateFileObject(file_id, type, multiUserMode && multiUserMode.file_path);
     if (!file_object) {
         logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
         return false;
@@ -1011,20 +1063,25 @@ function registerFileDB(full_file_path, type) {
     path_object = path.parse(file_object['path']);
     file_object['path'] = path.format(path_object);
 
-    // remove existing video if overwriting
-    db.get(`files.${type}`)
+    if (multiUserMode) {
+        auth_api.registerUserFile(multiUserMode.user, file_object, type);
+    } else {
+        // remove existing video if overwriting
+        db.get(`files.${type}`)
         .remove({
             path: file_object['path']
         }).write();
 
-    db.get(`files.${type}`)
-      .push(file_object)
-      .write();
+        db.get(`files.${type}`)
+            .push(file_object)
+            .write();
+    }
+
     return file_object['uid'];
 }
 
-function generateFileObject(id, type) {
-    var jsonobj = (type === 'audio') ? getJSONMp3(id, true) : getJSONMp4(id, null, true);
+function generateFileObject(id, type, customPath = null) {
+    var jsonobj = (type === 'audio') ? getJSONMp3(id, customPath, true) : getJSONMp4(id, customPath, true);
     if (!jsonobj) {
         return null;
     }
@@ -1108,6 +1165,20 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         var is_audio = type === 'audio';
         var ext = is_audio ? '.mp3' : '.mp4';
         var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+
+        // prepend with user if needed
+        let multiUserMode = null;
+        if (options.user) {
+            let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+            const user_path = path.join(usersFileFolder, options.user, type);
+            fs.ensureDirSync(user_path);
+            fileFolderPath = user_path + path.sep;
+            multiUserMode = {
+                user: options.user,
+                file_path: fileFolderPath
+            }
+            options.customFileFolderPath = fileFolderPath;
+        }
         
         const downloadConfig = await generateArgs(url, type, options);
 
@@ -1189,7 +1260,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     }
 
                     // registers file in DB
-                    file_uid = registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), type);
+                    file_uid = registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), type, multiUserMode);
 
                     if (file_name) file_names.push(file_name);
                 }
@@ -1223,6 +1294,20 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         var date = Date.now();
         var file_uid = null;
         var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+
+        // prepend with user if needed
+        let multiUserMode = null;
+        if (options.user) {
+            let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+            const user_path = path.join(usersFileFolder, options.user, type);
+            fs.ensureDirSync(user_path);
+            fileFolderPath = user_path + path.sep;
+            multiUserMode = {
+                user: options.user,
+                file_path: fileFolderPath
+            }
+            options.customFileFolderPath = fileFolderPath;
+        }
 
         const downloadConfig = await generateArgs(url, type, options);
 
@@ -1300,12 +1385,12 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
 
             // registers file in DB
             const base_file_name = video_info._filename.substring(fileFolderPath.length, video_info._filename.length);
-            file_uid = registerFileDB(base_file_name, type);
+            file_uid = registerFileDB(base_file_name, type, multiUserMode);
 
             if (options.merged_string) {
                 let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
                 let diff = current_merged_archive.replace(options.merged_string, '');
-                const archive_path = path.join(archivePath, 'archive_video.txt');
+                const archive_path = req.isAuthenticated() ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 fs.appendFileSync(archive_path, diff);
             }
 
@@ -1338,6 +1423,8 @@ async function generateArgs(url, type, options) {
 
         var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
 
+        if (options.customFileFolderPath) fileFolderPath = options.customFileFolderPath;
+
         var customArgs = options.customArgs;
         var customOutput = options.customOutput;
         var customQualityConfiguration = options.customQualityConfiguration;
@@ -1363,17 +1450,17 @@ async function generateArgs(url, type, options) {
             downloadConfig = customArgs.split(' ');
         } else {
             if (customQualityConfiguration) {
-                qualityPath = customQualityConfiguration;
+                qualityPath = `-f ${customQualityConfiguration}`;
             } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-                qualityPath = `-f bestvideo[height=${selectedHeight}]+bestaudio/best[height=${selectedHeight}]`;
+                qualityPath = `-f '(mp4)[height=${selectedHeight}]'`;
             } else if (maxBitrate && is_audio) {
                 qualityPath = `--audio-quality ${maxBitrate}`
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', fileFolderPath + customOutput + "", qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, customOutput), qualityPath, '--write-info-json', '--print-json'];
             } else {
-                downloadConfig = ['-o', fileFolderPath + videopath + (is_audio ? '.%(ext)s' : '.mp4'), qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), qualityPath, '--write-info-json', '--print-json'];
             }
 
             if (is_audio) {
@@ -1391,13 +1478,13 @@ async function generateArgs(url, type, options) {
 
             let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
             if (useYoutubeDLArchive) {
-                const archive_path = path.join(archivePath, `archive_${type}.txt`);
+                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 // create archive file if it doesn't exist
                 if (!fs.existsSync(archive_path)) {
                     fs.closeSync(fs.openSync(archive_path, 'w'));
                 }
 
-                let blacklist_path = path.join(archivePath, `blacklist_${type}.txt`);
+                let blacklist_path = options.user ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
                 // create blacklist file if it doesn't exist
                 if (!fs.existsSync(blacklist_path)) {
                     fs.closeSync(fs.openSync(blacklist_path, 'w'));
@@ -1648,11 +1735,35 @@ app.use(function(req, res, next) {
     } else if (req.path.includes('/api/video/') || req.path.includes('/api/audio/')) {
         next();
     } else {
+        logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
         req.socket.end();
     }
 });
 
 app.use(compression());
+
+const optionalJwt = function (req, res, next) {
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+    if (multiUserMode && ((req.body && req.body.uuid) || (req.query && req.query.uuid)) && (req.path.includes('/api/getFile') || 
+                                                                                            req.path.includes('/api/audio') || 
+                                                                                            req.path.includes('/api/video') ||
+                                                                                            req.path.includes('/api/downloadFile'))) {
+        // check if shared video
+        const using_body = req.body && req.body.uuid;
+        const uuid = using_body ? req.body.uuid : req.query.uuid;
+        const uid = using_body ? req.body.uid : req.query.uid;
+        const type = using_body ? req.body.type : req.query.type;
+        const is_shared = auth_api.getUserVideo(uuid, uid, type, true);
+        if (is_shared) return next();
+    } else if (multiUserMode) {
+        if (!req.query.jwt) {
+            res.sendStatus(401);
+            return;
+        }
+        return auth_api.passport.authenticate('jwt', { session: false })(req, res, next);
+    }
+    return next();
+};
 
 app.get('/api/config', function(req, res) {
     let config_file = config_api.getConfigFile();
@@ -1680,7 +1791,7 @@ app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
 });
 
-app.post('/api/tomp3', async function(req, res) {
+app.post('/api/tomp3', optionalJwt, async function(req, res) {
     var url = req.body.url;
     var options = {
         customArgs: req.body.customArgs,
@@ -1689,7 +1800,8 @@ app.post('/api/tomp3', async function(req, res) {
         customQualityConfiguration: req.body.customQualityConfiguration,
         youtubeUsername: req.body.youtubeUsername,
         youtubePassword: req.body.youtubePassword,
-        ui_uid: req.body.ui_uid
+        ui_uid: req.body.ui_uid,
+        user: req.isAuthenticated() ? req.user.uid : null
     }
 
     const is_playlist = url.includes('playlist');
@@ -1706,7 +1818,7 @@ app.post('/api/tomp3', async function(req, res) {
     res.end("yes");
 });
 
-app.post('/api/tomp4', async function(req, res) {
+app.post('/api/tomp4', optionalJwt, async function(req, res) {
     var url = req.body.url;
     var options = {
         customArgs: req.body.customArgs,
@@ -1715,12 +1827,13 @@ app.post('/api/tomp4', async function(req, res) {
         customQualityConfiguration: req.body.customQualityConfiguration,
         youtubeUsername: req.body.youtubeUsername,
         youtubePassword: req.body.youtubePassword,
-        ui_uid: req.body.ui_uid
+        ui_uid: req.body.ui_uid,
+        user: req.isAuthenticated() ? req.user.uid : null
     }
     
     const is_playlist = url.includes('playlist');
     let result_obj = null;
-    if (is_playlist)
+    if (is_playlist || options.customQualityConfiguration)
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
@@ -1776,46 +1889,67 @@ app.post('/api/fileStatusMp4', function(req, res) {
 });
 
 // gets all download mp3s
-app.get('/api/getMp3s', function(req, res) {
+app.get('/api/getMp3s', optionalJwt, function(req, res) {
     var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
+    const is_authenticated = req.isAuthenticated();
+    if (is_authenticated) {
+        // get user audio files/playlists
+        auth_api.passport.authenticate('jwt')
+        mp3s = auth_api.getUserVideos(req.user.uid, 'audio');
+        playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
+    }
 
     res.send({
         mp3s: mp3s,
         playlists: playlists
     });
-    res.end("yes");
 });
 
 // gets all download mp4s
-app.get('/api/getMp4s', function(req, res) {
+app.get('/api/getMp4s', optionalJwt, function(req, res) {
     var mp4s = db.get('files.video').value(); // getMp4s();
     var playlists = db.get('playlists.video').value();
+
+    const is_authenticated = req.isAuthenticated();
+    if (is_authenticated) {
+        // get user videos/playlists
+        auth_api.passport.authenticate('jwt')
+        mp4s = auth_api.getUserVideos(req.user.uid, 'video');
+        playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
+    }
 
     res.send({
         mp4s: mp4s,
         playlists: playlists
     });
-    res.end("yes");
 });
 
-app.post('/api/getFile', function (req, res) {
+app.post('/api/getFile', optionalJwt, function (req, res) {
     var uid = req.body.uid;
     var type = req.body.type;
+    var uuid = req.body.uuid;
 
     var file = null;
 
-    if (!type) {
-        file = db.get('files.audio').find({uid: uid}).value();
-        if (!file) {
-            file = db.get('files.video').find({uid: uid}).value();
-            if (file) type = 'video';
-        } else {
-            type = 'audio';
+    if (req.isAuthenticated()) {
+        file = auth_api.getUserVideo(req.user.uid, uid, type);
+    } else if (uuid) {
+        file = auth_api.getUserVideo(uuid, uid, type, true);
+    } else {
+        if (!type) {
+            file = db.get('files.audio').find({uid: uid}).value();
+            if (!file) {
+                file = db.get('files.video').find({uid: uid}).value();
+                if (file) type = 'video';
+            } else {
+                type = 'audio';
+            }
         }
+    
+        if (!file && type) file = db.get(`files.${type}`).find({uid: uid}).value();
     }
-
-    if (!file && type) db.get(`files.${type}`).find({uid: uid}).value();
+    
 
     if (file) {
         res.send({
@@ -1830,10 +1964,21 @@ app.post('/api/getFile', function (req, res) {
 });
 
 // video sharing
-app.post('/api/enableSharing', function(req, res) {
+app.post('/api/enableSharing', optionalJwt, function(req, res) {
     var type = req.body.type;
     var uid = req.body.uid;
     var is_playlist = req.body.is_playlist;
+    let success = false;
+    // multi-user mode
+    if (req.isAuthenticated()) {
+        // if multi user mode, use this method instead
+        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, true);
+        console.log(success);
+        res.send({success: success});
+        return;
+    }
+
+    // single-user mode
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
@@ -1863,10 +2008,20 @@ app.post('/api/enableSharing', function(req, res) {
     });
 });
 
-app.post('/api/disableSharing', function(req, res) {
+app.post('/api/disableSharing', optionalJwt, function(req, res) {
     var type = req.body.type;
     var uid = req.body.uid;
     var is_playlist = req.body.is_playlist;
+
+    // multi-user mode
+    if (req.isAuthenticated()) {
+        // if multi user mode, use this method instead
+        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, false);
+        res.send({success: success});
+        return;
+    }
+
+    // single-user mode
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
@@ -1896,17 +2051,19 @@ app.post('/api/disableSharing', function(req, res) {
     });
 });
 
-app.post('/api/subscribe', async (req, res) => {
+app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let name = req.body.name;
     let url = req.body.url;
     let timerange = req.body.timerange;
     let streamingOnly = req.body.streamingOnly;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     const new_sub = {
                         name: name,
                         url: url,
                         id: uuid(),
-                        streamingOnly: streamingOnly
+                        streamingOnly: streamingOnly,
+                        user_uid: user_uid
                     };
 
     // adds timerange if it exists, otherwise all videos will be downloaded
@@ -1914,7 +2071,7 @@ app.post('/api/subscribe', async (req, res) => {
         new_sub.timerange = timerange;
     }
 
-    const result_obj = await subscriptions_api.subscribe(new_sub);
+    const result_obj = await subscriptions_api.subscribe(new_sub, user_uid);
 
     if (result_obj.success) {
         res.send({
@@ -1928,11 +2085,12 @@ app.post('/api/subscribe', async (req, res) => {
     }
 });
 
-app.post('/api/unsubscribe', async (req, res) => {
+app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
     let deleteMode = req.body.deleteMode
     let sub = req.body.sub;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode);
+    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode, user_uid);
     if (result_obj.success) {
         res.send({
             success: result_obj.success
@@ -1945,12 +2103,13 @@ app.post('/api/unsubscribe', async (req, res) => {
     }
 });
 
-app.post('/api/deleteSubscriptionFile', async (req, res) => {
+app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
     let deleteForever = req.body.deleteForever;
     let file = req.body.file;
     let sub = req.body.sub;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever);
+    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever, user_uid);
 
     if (success) {
         res.send({
@@ -1962,11 +2121,12 @@ app.post('/api/deleteSubscriptionFile', async (req, res) => {
 
 });
 
-app.post('/api/getSubscription', async (req, res) => {
+app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     // get sub from db
-    let subscription = subscriptions_api.getSubscription(subID);
+    let subscription = subscriptions_api.getSubscription(subID, user_uid);
 
     if (!subscription) {
         // failed to get subscription from db, send 400 error
@@ -1976,7 +2136,12 @@ app.post('/api/getSubscription', async (req, res) => {
 
     // get sub videos
     if (subscription.name && !subscription.streamingOnly) {
-        let base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        let base_path = null;
+        if (user_uid)
+            base_path = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
+        else
+            base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        
         let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
         let files;
         try {
@@ -2033,25 +2198,29 @@ app.post('/api/getSubscription', async (req, res) => {
     }
 });
 
-app.post('/api/downloadVideosForSubscription', async (req, res) => {
+app.post('/api/downloadVideosForSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.subID;
-    let sub = subscriptions_api.getSubscription(subID);
-    subscriptions_api.getVideosForSub(sub);
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    let sub = subscriptions_api.getSubscription(subID, user_uid);
+    subscriptions_api.getVideosForSub(sub, user_uid);
     res.send({
         success: true
     });
 });
 
-app.post('/api/getAllSubscriptions', async (req, res) => {
+app.post('/api/getAllSubscriptions', optionalJwt, async (req, res) => {
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
     // get subs from api
-    let subscriptions = subscriptions_api.getAllSubscriptions();
+    let subscriptions = subscriptions_api.getAllSubscriptions(user_uid);
 
     res.send({
         subscriptions: subscriptions
     });
 });
 
-app.post('/api/createPlaylist', async (req, res) => {
+app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let playlistName = req.body.playlistName;
     let fileNames = req.body.fileNames;
     let type = req.body.type;
@@ -2065,9 +2234,14 @@ app.post('/api/createPlaylist', async (req, res) => {
         type: type
     };
 
-    db.get(`playlists.${type}`)
-      .push(new_playlist)
-      .write();
+    if (req.isAuthenticated()) {
+        auth_api.addPlaylist(req.user.uid, new_playlist, type);
+    } else {
+        db.get(`playlists.${type}`)
+            .push(new_playlist)
+            .write();
+    }
+    
     
     res.send({
         new_playlist: new_playlist,
@@ -2075,24 +2249,29 @@ app.post('/api/createPlaylist', async (req, res) => {
     })
 });
 
-app.post('/api/getPlaylist', async (req, res) => {
+app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let type = req.body.type;
 
     let playlist = null;
 
-    if (!type) {
-        playlist = db.get('playlists.audio').find({id: playlistID}).value();
-        if (!playlist) {
-            playlist = db.get('playlists.video').find({id: playlistID}).value();
-            if (playlist) type = 'video';
-        } else {
-            type = 'audio';
+    if (req.isAuthenticated()) {
+        playlist = auth_api.getUserPlaylist(req.user.uid, playlistID, type);
+        type = playlist.type;
+    } else {
+        if (!type) {
+            playlist = db.get('playlists.audio').find({id: playlistID}).value();
+            if (!playlist) {
+                playlist = db.get('playlists.video').find({id: playlistID}).value();
+                if (playlist) type = 'video';
+            } else {
+                type = 'audio';
+            }
         }
+    
+        if (!playlist) playlist = db.get(`playlists.${type}`).find({id: playlistID}).value();
     }
 
-    if (!playlist) playlist = db.get(`playlists.${type}`).find({id: playlistID}).value();
-    
     res.send({
         playlist: playlist,
         type: type,
@@ -2100,22 +2279,22 @@ app.post('/api/getPlaylist', async (req, res) => {
     });
 });
 
-app.post('/api/updatePlaylist', async (req, res) => {
+app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let fileNames = req.body.fileNames;
     let type = req.body.type;
 
     let success = false;
     try {
-        db.get(`playlists.${type}`)
-            .find({id: playlistID})
-            .assign({fileNames: fileNames})
-            .write();
-        /*logger.info('success!');
-        let new_val = db.get(`playlists.${type}`)
-            .find({id: playlistID})
-            .value();
-        logger.info(new_val);*/
+        if (req.isAuthenticated()) {
+            auth_api.updatePlaylist(req.user.uid, playlistID, fileNames, type);
+        } else {
+            db.get(`playlists.${type}`)
+                .find({id: playlistID})
+                .assign({fileNames: fileNames})
+                .write();
+        }
+
         success = true;
     } catch(e) {
         logger.error(`Failed to find playlist with ID ${playlistID}`);
@@ -2126,16 +2305,20 @@ app.post('/api/updatePlaylist', async (req, res) => {
     })
 });
 
-app.post('/api/deletePlaylist', async (req, res) => {
+app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let type = req.body.type;
 
     let success = null;
     try {
-        // removes playlist from playlists
-        db.get(`playlists.${type}`)
-            .remove({id: playlistID})
-            .write();
+        if (req.isAuthenticated()) {
+            auth_api.removePlaylist(req.user.uid, playlistID, type);
+        } else {
+            // removes playlist from playlists
+            db.get(`playlists.${type}`)
+                .remove({id: playlistID})
+                .write();
+        }
 
         success = true;
     } catch(e) {
@@ -2148,12 +2331,19 @@ app.post('/api/deletePlaylist', async (req, res) => {
 });
 
 // deletes mp3 file
-app.post('/api/deleteMp3', async (req, res) => {
+app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
     // var name = req.body.name;
     var uid = req.body.uid;
+    var blacklistMode = req.body.blacklistMode;
+
+    if (req.isAuthenticated()) {
+        let success = auth_api.deleteUserFile(req.user.uid, uid, 'audio', blacklistMode);
+        res.send(success);
+        return;
+    }
+
     var audio_obj = db.get('files.audio').find({uid: uid}).value();
     var name = audio_obj.id;
-    var blacklistMode = req.body.blacklistMode;
     var fullpath = audioFolderPath + name + ".mp3";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
@@ -2174,11 +2364,18 @@ app.post('/api/deleteMp3', async (req, res) => {
 });
 
 // deletes mp4 file
-app.post('/api/deleteMp4', async (req, res) => {
+app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
     var uid = req.body.uid;
+    var blacklistMode = req.body.blacklistMode;
+
+    if (req.isAuthenticated()) {
+        let success = auth_api.deleteUserFile(req.user.uid, uid, 'video', blacklistMode);
+        res.send(success);
+        return;
+    }
+
     var video_obj = db.get('files.video').find({uid: uid}).value();
     var name = video_obj.id;
-    var blacklistMode = req.body.blacklistMode;
     var fullpath = videoFolderPath + name + ".mp4";
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
@@ -2199,32 +2396,36 @@ app.post('/api/deleteMp4', async (req, res) => {
     }
 });
 
-app.post('/api/downloadFile', async (req, res) => {
+app.post('/api/downloadFile', optionalJwt, async (req, res) => {
     let fileNames = req.body.fileNames;
     let zip_mode = req.body.zip_mode;
     let type = req.body.type;
     let outputName = req.body.outputName;
     let fullPathProvided = req.body.fullPathProvided;
     let subscriptionName = req.body.subscriptionName;
-    let subscriptionPlaylist = req.body.subscriptionPlaylist;
+    let subscriptionPlaylist = req.body.subPlaylist;
     let file = null;
     if (!zip_mode) {
         fileNames = decodeURIComponent(fileNames);
-        if (type === 'audio') {
-            if (!subscriptionName) {
-                file = path.join(__dirname, audioFolderPath, fileNames + '.mp3');
-            } else {
-                let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-                file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp3')
-            } 
+        const is_audio = type === 'audio';
+        const fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+        const ext = is_audio ? '.mp3' : '.mp4';
+
+        let base_path = fileFolderPath;
+        let usersFileFolder = null;
+        if (req.isAuthenticated()) {
+            usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+            base_path = path.join(usersFileFolder, req.user.uid, type);
+        }
+        if (!subscriptionName) {
+            file = path.join(__dirname, base_path, fileNames + ext);
         } else {
-            // if type is 'subscription' or 'video', it's a video
-            if (!subscriptionName) {
-                file = path.join(__dirname, videoFolderPath, fileNames + '.mp4');
-            } else {
-                let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-                file = path.join(__dirname, basePath, (subscriptionPlaylist ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
-            }
+            let basePath = null;
+            if (usersFileFolder)
+                basePath = path.join(usersFileFolder, req.user.uid, 'subscriptions');
+            else
+                basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+            file = path.join(__dirname, basePath, (subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
@@ -2347,18 +2548,26 @@ app.post('/api/generateNewAPIKey', function (req, res) {
 
 // Streaming API calls
 
-app.get('/api/video/:id', function(req , res){
+app.get('/api/video/:id', optionalJwt, function(req , res){
     var head;
     let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
-    let path = videoFolderPath + id + '.mp4';
-    if (optionalParams['subName']) {
+    let file_path = videoFolderPath + id + '.mp4';
+    if (req.isAuthenticated()) {
+        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+        if (optionalParams['subName']) {
+            const isPlaylist = optionalParams['subPlaylist'];
+            file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + '.mp4')
+        } else {
+            file_path = path.join(usersFileFolder, req.user.uid, 'video', id + '.mp4');
+        }
+    } else if (optionalParams['subName']) {
         let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         const isPlaylist = optionalParams['subPlaylist'];
         basePath += (isPlaylist === 'true' ? 'playlists/' : 'channels/');
-        path = basePath + optionalParams['subName'] + '/' + id + '.mp4'; 
+        file_path = basePath + optionalParams['subName'] + '/' + id + '.mp4'; 
     }
-    const stat = fs.statSync(path)
+    const stat = fs.statSync(file_path)
     const fileSize = stat.size
     const range = req.headers.range
     if (range) {
@@ -2368,12 +2577,12 @@ app.get('/api/video/:id', function(req , res){
         ? parseInt(parts[1], 10)
         : fileSize-1
         const chunksize = (end-start)+1
-        const file = fs.createReadStream(path, {start, end})
-        if (descriptors[id]) descriptors[id].push(file);
-        else                            descriptors[id] = [file];
+        const file = fs.createReadStream(file_path, {start, end})
+        if (config_api.descriptors[id]) config_api.descriptors[id].push(file);
+        else                            config_api.descriptors[id] = [file];
         file.on('close', function() {
-            let index = descriptors[id].indexOf(file);
-            descriptors[id].splice(index, 1);
+            let index = config_api.descriptors[id].indexOf(file);
+            config_api.descriptors[id].splice(index, 1);
             logger.debug('Successfully closed stream and removed file reference.');
         });
         head = {
@@ -2390,16 +2599,20 @@ app.get('/api/video/:id', function(req , res){
         'Content-Type': 'video/mp4',
         }
         res.writeHead(200, head)
-        fs.createReadStream(path).pipe(res)
+        fs.createReadStream(file_path).pipe(res)
     }
 });
 
-app.get('/api/audio/:id', function(req , res){
+app.get('/api/audio/:id', optionalJwt, function(req , res){
     var head;
     let id = decodeURIComponent(req.params.id);
-    let path = "audio/" + id + '.mp3';
-    path = path.replace(/\"/g, '\'');
-  const stat = fs.statSync(path)
+    let file_path = "audio/" + id + '.mp3';
+    if (req.isAuthenticated()) {
+        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+        file_path = path.join(usersFileFolder, req.user.name, 'audio', id + '.mp3');
+    }
+    file_path = file_path.replace(/\"/g, '\'');
+  const stat = fs.statSync(file_path)
   const fileSize = stat.size
   const range = req.headers.range
   if (range) {
@@ -2409,12 +2622,12 @@ app.get('/api/audio/:id', function(req , res){
       ? parseInt(parts[1], 10)
       : fileSize-1
     const chunksize = (end-start)+1
-    const file = fs.createReadStream(path, {start, end});
-    if (descriptors[id]) descriptors[id].push(file);
-    else                            descriptors[id] = [file];
+    const file = fs.createReadStream(file_path, {start, end});
+    if (config_api.descriptors[id]) config_api.descriptors[id].push(file);
+    else                            config_api.descriptors[id] = [file];
     file.on('close', function() {
-        let index = descriptors[id].indexOf(file);
-        descriptors[id].splice(index, 1);
+        let index = config_api.descriptors[id].indexOf(file);
+        config_api.descriptors[id].splice(index, 1);
         logger.debug('Successfully closed stream and removed file reference.');
     });
     head = {
@@ -2431,7 +2644,7 @@ app.get('/api/audio/:id', function(req , res){
       'Content-Type': 'audio/mp3',
     }
     res.writeHead(200, head)
-    fs.createReadStream(path).pipe(res)
+    fs.createReadStream(file_path).pipe(res)
   }
   });
 
@@ -2522,6 +2735,108 @@ app.get('/api/audio/:id', function(req , res){
         result: result,
         success: !!result
     })
+});
+
+// user authentication
+
+app.post('/api/auth/register'
+        , auth_api.registerUser);
+app.post('/api/auth/login'
+        , auth_api.passport.authenticate('local', {})
+        , auth_api.passport.authorize('local')
+        , auth_api.generateJWT
+        , auth_api.returnAuthResponse
+);
+app.post('/api/auth/jwtAuth'
+        , auth_api.passport.authenticate('jwt', { session: false })
+        , auth_api.passport.authorize('jwt')
+        , auth_api.generateJWT
+        , auth_api.returnAuthResponse
+);
+app.post('/api/auth/changePassword', optionalJwt, async (req, res) => {
+    let user_uid = req.user.uid;
+    let password = req.body.new_password;
+    let success = await auth_api.changeUserPassword(user_uid, password);
+    res.send({success: success});
+});
+app.post('/api/auth/adminExists', async (req, res) => {
+    let exists = auth_api.adminExists();
+    res.send({exists: exists});
+});
+
+// user management
+app.post('/api/getUsers', optionalJwt, async (req, res) => {
+    let users = users_db.get('users').value();
+    res.send({users: users});
+});
+app.post('/api/getRoles', optionalJwt, async (req, res) => {
+    let roles = users_db.get('roles').value();
+    res.send({roles: roles});
+});
+
+app.post('/api/changeUser', optionalJwt, async (req, res) => {
+    let change_obj = req.body.change_object;
+    try {
+        const user_db_obj = users_db.get('users').find({uid: change_obj.uid});
+        if (change_obj.name) {
+            user_db_obj.assign({name: change_obj.name}).write();
+        }
+        if (change_obj.role) {
+            user_db_obj.assign({role: change_obj.role}).write();
+        }
+        res.send({success: true});
+    } catch (err) {
+        logger.error(err);
+        res.send({success: false});
+    }
+});
+
+app.post('/api/deleteUser', optionalJwt, async (req, res) => {
+    let uid = req.body.uid;
+    try {
+        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+        const user_folder = path.join(__dirname, usersFileFolder, uid);
+        const user_db_obj = users_db.get('users').find({uid: uid});
+        if (user_db_obj.value()) {
+            // user exists, let's delete
+            deleteFolderRecursive(user_folder);
+            users_db.get('users').remove({uid: uid}).write();
+        }
+        res.send({success: true});
+    } catch (err) {
+        logger.error(err);
+        res.send({success: false});
+    }
+});
+
+app.post('/api/changeUserPermissions', optionalJwt, async (req, res) => {
+    const user_uid = req.body.user_uid;
+    const permission = req.body.permission;
+    const new_value = req.body.new_value;
+
+    if (!permission || !new_value) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const success = auth_api.changeUserPermissions(user_uid, permission, new_value);
+
+    res.send({success: success});
+});
+
+app.post('/api/changeRolePermissions', optionalJwt, async (req, res) => {
+    const role = req.body.role;
+    const permission = req.body.permission;
+    const new_value = req.body.new_value;
+
+    if (!permission || !new_value) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const success = auth_api.changeRolePermissions(role, permission, new_value);
+
+    res.send({success: success});
 });
 
 app.use(function(req, res, next) {

@@ -1,0 +1,31 @@
+<h4 mat-dialog-title i18n="User profile dialog title">Your Profile</h4>
+
+<mat-dialog-content>
+    <div *ngIf="postsService.isLoggedIn && postsService.user">
+        <div>
+            <strong><ng-container i18n="Name">Name:</ng-container></strong>&nbsp;{{postsService.user.name}}
+        </div>
+        <div>
+            <strong><ng-container i18n="UID">UID:</ng-container></strong>&nbsp;{{postsService.user.uid}}
+        </div>
+        <div>
+            <strong><ng-container i18n="Created">Created:</ng-container></strong>&nbsp;{{postsService.user.created ? (postsService.user.created | date) : 'N/A'}}
+        </div>
+        <div style="margin-top: 20px;">
+        </div>
+    </div>
+
+    <div *ngIf="!postsService.isLoggedIn || !postsService.user">
+        <h5><mat-icon>warn</mat-icon><ng-container i18n="Not logged in notification">You are not logged in.</ng-container></h5>
+        <button (click)="loginClicked()" mat-raised-button color="primary"><ng-container i18n="Login">Login</ng-container></button>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <div style="width: 100%">
+        <div style="position: relative">
+            <button mat-stroked-button mat-dialog-close color="primary"><ng-container i18n="Close">Close</ng-container></button>
+            <button style="position: absolute; right: 0px;" (click)="logoutClicked()" mat-stroked-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
+        </div>
+    </div>
+</mat-dialog-actions>

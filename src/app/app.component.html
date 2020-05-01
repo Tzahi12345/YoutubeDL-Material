@@ -14,12 +14,16 @@
                 <div class="flex-column" style="text-align: right; align-items: flex-end;">
                     <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                     <mat-menu #menuSettings="matMenu">
+                        <button (click)="openProfileDialog()" *ngIf="postsService.isLoggedIn" mat-menu-item>
+                            <mat-icon>person</mat-icon>
+                            <span i18n="Profile menu label">Profile</span>
+                        </button>
                         <button (click)="themeMenuItemClicked($event)" *ngIf="allowThemeChange" mat-menu-item>
                           <mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon>
                           <span i18n="Dark mode toggle label">Dark</span>
                           <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
                         </button>
-                        <button (click)="openSettingsDialog()" mat-menu-item>
+                        <button *ngIf="!postsService.isLoggedIn || postsService.permissions.includes('settings')" (click)="openSettingsDialog()" mat-menu-item>
                           <mat-icon>settings</mat-icon>
                           <span i18n="Settings menu label">Settings</span>
                         </button>
@@ -37,8 +41,8 @@
             <mat-sidenav #sidenav>
                 <mat-nav-list>
                     <a mat-list-item (click)="sidenav.close()" routerLink='/home'><ng-container i18n="Navigation menu Home Page title">Home</ng-container></a>
-                    <a *ngIf="allowSubscriptions" mat-list-item (click)="sidenav.close()" routerLink='/subscriptions'><ng-container i18n="Navigation menu Subscriptions Page title">Subscriptions</ng-container></a>
-                    <a mat-list-item (click)="sidenav.close()" routerLink='/downloads'><ng-container i18n="Navigation menu Downloads Page title">Downloads</ng-container></a>
+                    <a *ngIf="allowSubscriptions && (!postsService.isLoggedIn || postsService.permissions.includes('subscriptions'))" mat-list-item (click)="sidenav.close()" routerLink='/subscriptions'><ng-container i18n="Navigation menu Subscriptions Page title">Subscriptions</ng-container></a>
+                    <a *ngIf="!postsService.isLoggedIn || postsService.permissions.includes('downloads_manager')" mat-list-item (click)="sidenav.close()" routerLink='/downloads'><ng-container i18n="Navigation menu Downloads Page title">Downloads</ng-container></a>
                 </mat-nav-list>
             </mat-sidenav>
             <mat-sidenav-content [style.background]="postsService.theme ? postsService.theme.background_color : null">

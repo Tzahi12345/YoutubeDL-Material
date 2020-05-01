@@ -3,7 +3,6 @@ import {PostsService} from '../posts.services';
 import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
 import {FormControl, Validators} from '@angular/forms';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
@@ -215,7 +214,7 @@ export class MainComponent implements OnInit {
 
   simulatedOutput = '';
 
-  constructor(private postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
+  constructor(public postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
   }
@@ -231,80 +230,81 @@ export class MainComponent implements OnInit {
 
   async loadConfig() {
     // loading config
-    this.postsService.loadNavItems().subscribe(res => { // loads settings
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.fileManagerEnabled = result['YoutubeDLMaterial']['Extra']['file_manager_enabled'];
-      this.downloadOnlyMode = result['YoutubeDLMaterial']['Extra']['download_only_mode'];
-      this.allowMultiDownloadMode = result['YoutubeDLMaterial']['Extra']['allow_multi_download_mode'];
-      this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
-      this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
-      this.use_youtubedl_archive = result['YoutubeDLMaterial']['Downloader']['use_youtubedl_archive'];
-      this.globalCustomArgs = result['YoutubeDLMaterial']['Downloader']['custom_args'];
-      this.youtubeSearchEnabled = result['YoutubeDLMaterial']['API'] && result['YoutubeDLMaterial']['API']['use_youtube_API'] &&
-          result['YoutubeDLMaterial']['API']['youtube_API_key'];
-      this.youtubeAPIKey = this.youtubeSearchEnabled ? result['YoutubeDLMaterial']['API']['youtube_API_key'] : null;
-      this.allowQualitySelect = result['YoutubeDLMaterial']['Extra']['allow_quality_select'];
-      this.allowAdvancedDownload = result['YoutubeDLMaterial']['Advanced']['allow_advanced_download'];
-      this.useDefaultDownloadingAgent = result['YoutubeDLMaterial']['Advanced']['use_default_downloading_agent'];
-      this.customDownloadingAgent = result['YoutubeDLMaterial']['Advanced']['custom_downloading_agent'];
+    this.fileManagerEnabled = this.postsService.config['Extra']['file_manager_enabled'];
+    this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
+    this.allowMultiDownloadMode = this.postsService.config['Extra']['allow_multi_download_mode'];
+    this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
+    this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
+    this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
+    this.globalCustomArgs = this.postsService.config['Downloader']['custom_args'];
+    this.youtubeSearchEnabled = this.postsService.config['API'] && this.postsService.config['API']['use_youtube_API'] &&
+        this.postsService.config['API']['youtube_API_key'];
+    this.youtubeAPIKey = this.youtubeSearchEnabled ? this.postsService.config['API']['youtube_API_key'] : null;
+    this.allowQualitySelect = this.postsService.config['Extra']['allow_quality_select'];
+    this.allowAdvancedDownload = this.postsService.config['Advanced']['allow_advanced_download']
+                                  && (!this.postsService.isLoggedIn || this.postsService.permissions.includes('advanced_download'));
+    this.useDefaultDownloadingAgent = this.postsService.config['Advanced']['use_default_downloading_agent'];
+    this.customDownloadingAgent = this.postsService.config['Advanced']['custom_downloading_agent'];
 
 
 
-      if (this.fileManagerEnabled) {
-        this.getMp3s();
-        this.getMp4s();
+    if (this.fileManagerEnabled) {
+      this.getMp3s();
+      this.getMp4s();
+    }
+
+    if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
+      this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
+      this.attachToInput();
+    }
+
+    // set final cache items
+    if (this.allowAdvancedDownload) {
+      if (localStorage.getItem('customArgsEnabled') !== null) {
+        this.customArgsEnabled = localStorage.getItem('customArgsEnabled') === 'true';
       }
 
-      if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
-        this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
-        this.attachToInput();
+      if (localStorage.getItem('customOutputEnabled') !== null) {
+        this.customOutputEnabled = localStorage.getItem('customOutputEnabled') === 'true';
       }
 
-      // set final cache items
-      if (this.allowAdvancedDownload) {
-        if (localStorage.getItem('customArgsEnabled') !== null) {
-          this.customArgsEnabled = localStorage.getItem('customArgsEnabled') === 'true';
-        }
-
-        if (localStorage.getItem('customOutputEnabled') !== null) {
-          this.customOutputEnabled = localStorage.getItem('customOutputEnabled') === 'true';
-        }
-
-        if (localStorage.getItem('youtubeAuthEnabled') !== null) {
-          this.youtubeAuthEnabled = localStorage.getItem('youtubeAuthEnabled') === 'true';
-        }
-
-        // set advanced inputs
-        const customArgs = localStorage.getItem('customArgs');
-        const customOutput = localStorage.getItem('customOutput');
-        const youtubeUsername = localStorage.getItem('youtubeUsername');
-
-        if (customArgs && customArgs !== 'null') { this.customArgs = customArgs };
-        if (customOutput && customOutput !== 'null') { this.customOutput = customOutput };
-        if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername };
+      if (localStorage.getItem('youtubeAuthEnabled') !== null) {
+        this.youtubeAuthEnabled = localStorage.getItem('youtubeAuthEnabled') === 'true';
       }
 
-      // get downloads routine
-      setInterval(() => {
-        if (this.current_download) {
-          this.getCurrentDownload();
-        }
-      }, 500);
+      // set advanced inputs
+      const customArgs = localStorage.getItem('customArgs');
+      const customOutput = localStorage.getItem('customOutput');
+      const youtubeUsername = localStorage.getItem('youtubeUsername');
 
-      return true;
+      if (customArgs && customArgs !== 'null') { this.customArgs = customArgs };
+      if (customOutput && customOutput !== 'null') { this.customOutput = customOutput };
+      if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername };
+    }
 
-    }, error => {
-      console.log(error);
+    // get downloads routine
+    setInterval(() => {
+      if (this.current_download) {
+        this.getCurrentDownload();
+      }
+    }, 500);
 
-      return false;
-    });
+    return true;
   }
 
   // app initialization.
   ngOnInit() {
-    this.configLoad();
+    if (this.postsService.initialized) {
+      this.configLoad();
+    } else {
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.configLoad();
+        }
+      });
+    }
 
-    this.postsService.settings_changed.subscribe(changed => {
+    this.postsService.config_reloaded.subscribe(changed => {
       if (changed) {
         this.loadConfig();
       }
@@ -1136,18 +1136,18 @@ export class MainComponent implements OnInit {
   }
 
   getCurrentDownload() {
-    this.postsService.getCurrentDownload(this.postsService.session_id,
-      this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid']).subscribe(res => {
-      const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
+    if (!this.current_download) {
+      return;
+    }
+    const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
+    this.postsService.getCurrentDownload(this.postsService.session_id, ui_uid).subscribe(res => {
       if (res['download']) {
-        console.log('got new download');
         if (ui_uid === res['download']['ui_uid']) {
           this.current_download = res['download'];
           this.percentDownloaded = this.current_download.percent_complete;
-          console.log(this.percentDownloaded);
         }
       } else {
-        console.log('failed to get new download');
+        // console.log('failed to get new download');
       }
     });
   }

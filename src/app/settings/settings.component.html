@@ -166,7 +166,7 @@
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_multi_download_mode']"><ng-container i18n="Allow multi-downloade mode setting">Allow multi-download mode</ng-container></mat-checkbox>
                     </div>
                     <div class="col-12">
-                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']"><ng-container i18n="Require pin for settings setting">Require pin for settings</ng-container></mat-checkbox>
+                        <mat-checkbox [disabled]="new_config['Advanced']['multi_user_mode']" color="accent" [(ngModel)]="new_config['Extra']['settings_pin_required']"><ng-container i18n="Require pin for settings setting">Require pin for settings</ng-container></mat-checkbox>
                         <button style="margin-left: 15px; margin-bottom: 10px;" mat-stroked-button (click)="setNewPin()" [disabled]="!new_config['Extra']['settings_pin_required']"><ng-container i18n="Set new pin button">Set New Pin</ng-container></button>
                     </div>
                 </div>
@@ -252,8 +252,11 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mb-3">
+                    <div class="col-12">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['allow_advanced_download']"><ng-container i18n="Allow advanced downloading setting">Allow advanced download</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-3 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['multi_user_mode']"><ng-container i18n="Multi user mode setting">Multi-user mode</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>
@@ -262,6 +265,9 @@
                 <app-updater></app-updater>
             </div>
         </ng-template>
+    </mat-tab>
+    <mat-tab *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode" label="Users" i18n-label="Users settings label">
+        <app-modify-users></app-modify-users>
     </mat-tab>
 </mat-tab-group>    
 </mat-dialog-content>

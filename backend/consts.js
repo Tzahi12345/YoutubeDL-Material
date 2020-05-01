@@ -117,6 +117,12 @@ let CONFIG_ITEMS = {
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_use_youtubedl_archive'
     },
 
+    // Users
+    'ytdl_users_base_path': {
+        'key': 'ytdl_users_base_path',
+        'path': 'YoutubeDLMaterial.Users.base_path'
+    },
+
     // Advanced
     'ytdl_use_default_downloading_agent': {
         'key': 'ytdl_use_default_downloading_agent',
@@ -126,13 +132,27 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_custom_downloading_agent',
         'path': 'YoutubeDLMaterial.Advanced.custom_downloading_agent'
     },
+    'ytdl_multi_user_mode': {
+        'key': 'ytdl_multi_user_mode',
+        'path': 'YoutubeDLMaterial.Advanced.multi_user_mode'
+    },
     'ytdl_allow_advanced_download': {
         'key': 'ytdl_allow_advanced_download',
         'path': 'YoutubeDLMaterial.Advanced.allow_advanced_download'
     },
 };
 
+AVAILABLE_PERMISSIONS = [
+    'filemanager',
+    'settings',
+    'subscriptions',
+    'sharing',
+    'advanced_download',
+    'downloads_manager'
+];
+
 module.exports = {
     CONFIG_ITEMS: CONFIG_ITEMS,
+    AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
     CURRENT_VERSION: 'v3.6'
 }

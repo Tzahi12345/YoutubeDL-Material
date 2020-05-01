@@ -13,6 +13,7 @@ export class ShareMediaDialogComponent implements OnInit {
 
   type = null;
   uid = null;
+  uuid = null;
   share_url = null;
   sharing_enabled = null;
   is_playlist = null;
@@ -24,11 +25,15 @@ export class ShareMediaDialogComponent implements OnInit {
     if (this.data) {
       this.type = this.data.type;
       this.uid = this.data.uid;
+      this.uuid = this.data.uuid;
       this.sharing_enabled = this.data.sharing_enabled;
       this.is_playlist = this.data.is_playlist;
 
       const arg = (this.is_playlist ? ';id=' : ';uid=');
       this.share_url = window.location.href.split(';')[0] + arg + this.uid;
+      if (this.uuid) {
+        this.share_url += ';uuid=' + this.uuid;
+      }
     }
   }
 
