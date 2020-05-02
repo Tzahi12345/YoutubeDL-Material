@@ -1764,7 +1764,7 @@ const optionalJwt = function (req, res, next) {
         const type = using_body ? req.body.type : req.query.type;
         const is_shared = auth_api.getUserVideo(uuid, uid, type, true);
         if (is_shared) return next();
-    } else if (multiUserMode) {
+    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !req.query.jwt)) { // registration should get passed through
         if (!req.query.jwt) {
             res.sendStatus(401);
             return;
@@ -2744,6 +2744,7 @@ app.get('/api/audio/:id', optionalJwt, function(req , res){
 // user authentication
 
 app.post('/api/auth/register'
+        , optionalJwt
         , auth_api.registerUser);
 app.post('/api/auth/login'
         , auth_api.passport.authenticate('local', {})

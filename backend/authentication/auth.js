@@ -82,7 +82,7 @@ exports.registerUser = function(req, res) {
   var username = req.body.username;
   var plaintextPassword = req.body.password;
 
-  if (userid !== 'admin' && !config_api.getConfigItem('ytdl_allow_registration')) {
+  if (userid !== 'admin' && !config_api.getConfigItem('ytdl_allow_registration') && !req.isAuthenticated() && (!req.user || !exports.userHasPermission(req.user.uid, 'settings'))) {
     res.sendStatus(409);
     logger.error(`Registration failed for user ${userid}. Registration is disabled.`);
     return;
