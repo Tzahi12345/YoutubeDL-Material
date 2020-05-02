@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-downloads',
@@ -40,13 +41,21 @@ export class DownloadsComponent implements OnInit {
 
   valid_sessions_length = 0;
 
-  constructor(public postsService: PostsService) { }
+  constructor(public postsService: PostsService, private router: Router) { }
 
   ngOnInit(): void {
     this.getCurrentDownloads();
     setInterval(() => {
       this.getCurrentDownloads();
     }, this.downloads_check_interval);
+
+    this.postsService.service_initialized.subscribe(init => {
+      if (init) {
+        if (!this.postsService.config['Extra']['enable_downloads_manager']) {
+          this.router.navigate(['/home']);
+        }
+      }
+    });
   }
 
   getCurrentDownloads() {

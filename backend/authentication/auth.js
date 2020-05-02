@@ -81,6 +81,12 @@ exports.registerUser = function(req, res) {
   var userid = req.body.userid;
   var username = req.body.username;
   var plaintextPassword = req.body.password;
+
+  if (userid !== 'admin' && !config_api.getConfigItem('ytdl_allow_registration')) {
+    res.sendStatus(409);
+    logger.error(`Registration failed for user ${userid}. Registration is disabled.`);
+    return;
+  }
   
   bcrypt.hash(plaintextPassword, saltRounds)
     .then(function(hash) {

@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
   defaultTheme = null;
   allowThemeChange = null;
   allowSubscriptions = false;
+  enableDownloadsManager = false;
   // defaults to true to prevent attack
   settingsPinRequired = true;
 
@@ -83,6 +84,7 @@ export class AppComponent implements OnInit {
     this.defaultTheme = themingExists ? this.postsService.config['Themes']['default_theme'] : 'default';
     this.allowThemeChange = themingExists ? this.postsService.config['Themes']['allow_theme_change'] : true;
     this.allowSubscriptions = this.postsService.config['Subscriptions']['allow_subscriptions'];
+    this.enableDownloadsManager = this.postsService.config['Extra']['enable_downloads_manager'];
 
     // sets theme to config default if it doesn't exist
     if (!localStorage.getItem('theme')) {

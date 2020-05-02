@@ -61,7 +61,7 @@ const logger = winston.createLogger({
       //
       new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
       new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
-      new winston.transports.Console({level: !debugMode ? 'info' : 'debug'})
+      new winston.transports.Console({level: !debugMode ? 'info' : 'debug', name: 'console'})
     ]
 });
 
@@ -132,8 +132,6 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 var options = null; // encryption options
 var url_domain = null;
 var updaterStatus = null;
-var last_downloads_check = null;
-var downloads_check_interval = 1000;
 
 var timestamp_server_start = Date.now();
 
@@ -536,38 +534,7 @@ async function setConfigFromEnv() {
 
 async function loadConfig() {
     return new Promise(async resolve => {
-        url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
-        backendPort = config_api.getConfigItem('ytdl_port');
-        usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
-        audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
-        videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
-        downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
-        useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
-        customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
-        allowSubscriptions = config_api.getConfigItem('ytdl_allow_subscriptions');
-        subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
-
-        if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
-            logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
-        } else {
-            customDownloadingAgent = null;
-        }
-
-        if (usingEncryption)
-        {
-            var certFilePath = path.resolve(config_api.getConfigItem('ytdl_cert_file_path'));
-            var keyFilePath = path.resolve(config_api.getConfigItem('ytdl_key_file_path'));
-
-            var certKeyFile = fs.readFileSync(keyFilePath);
-            var certFile = fs.readFileSync(certFilePath);
-
-            options = {
-                key: certKeyFile,
-                cert: certFile
-            };
-        }
-
-        url_domain = new URL(url);
+        loadConfigValues();
 
         // creates archive path if missing
         if (!fs.existsSync(archivePath)){
@@ -595,6 +562,51 @@ async function loadConfig() {
         resolve(true);
     });
     
+}
+
+function loadConfigValues() {
+    url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
+    backendPort = config_api.getConfigItem('ytdl_port');
+    usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
+    audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
+    videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+    downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
+    useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
+    customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
+    allowSubscriptions = config_api.getConfigItem('ytdl_allow_subscriptions');
+    subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
+
+    if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
+        logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
+    } else {
+        customDownloadingAgent = null;
+    }
+
+    if (usingEncryption)
+    {
+        var certFilePath = path.resolve(config_api.getConfigItem('ytdl_cert_file_path'));
+        var keyFilePath = path.resolve(config_api.getConfigItem('ytdl_key_file_path'));
+
+        var certKeyFile = fs.readFileSync(keyFilePath);
+        var certFile = fs.readFileSync(certFilePath);
+
+        options = {
+            key: certKeyFile,
+            cert: certFile
+        };
+    }
+
+    url_domain = new URL(url);
+
+    let logger_level = config_api.getConfigItem('ytdl_logger_level');
+    const possible_levels = ['error', 'warn', 'info', 'verbose', 'debug'];
+    if (!possible_levels.includes(logger_level)) {
+        logger.error(`${logger_level} is not a valid logger level! Choose one of the following: ${possible_levels.join(', ')}.`)
+        logger_level = 'info';
+    }
+    logger.level = logger_level;
+    winston.loggers.get('console').level = logger_level;
+    logger.transports[2].level = logger_level;
 }
 
 function calculateSubcriptionRetrievalDelay(amount) {
@@ -1517,11 +1529,9 @@ async function getUrlInfos(urls) {
     let result = [];
     return new Promise(resolve => {
         youtubedl.exec(urls.join(' '), ['--dump-json'], {}, (err, output) => {
-            if (debugMode) {
-                let new_date = Date.now();
-                let difference = (new_date - startDate)/1000;
-                logger.info(`URL info retrieval delay: ${difference} seconds.`);
-            }
+            let new_date = Date.now();
+            let difference = (new_date - startDate)/1000;
+            logger.debug(`URL info retrieval delay: ${difference} seconds.`);
             if (err) {
                 logger.error('Error during parsing:' + err);
                 resolve(null);
@@ -1600,7 +1610,7 @@ function getDownloadPercent(download_obj) {
 
 async function startYoutubeDL() {
     // auto update youtube-dl
-    await autoUpdateYoutubeDL();
+    if (!debugMode) await autoUpdateYoutubeDL();
 }
 
 // auto updates the underlying youtube-dl binary, not YoutubeDL-Material
@@ -1652,10 +1662,9 @@ async function autoUpdateYoutubeDL() {
                     logger.error(`Failed to update youtube-dl - ${e}`);
                 }
                 downloader(binary_path, function error(err, done) {
-                    'use strict'
                     if (err) {
+                        logger.error(err);
                         resolve(false);
-                        throw err;
                     }
                     logger.info(`Binary successfully updated: ${current_version} -> ${latest_update_version}`);
                     resolve(true);
@@ -1777,6 +1786,7 @@ app.post('/api/setConfig', function(req, res) {
     let new_config_file = req.body.new_config_file;
     if (new_config_file && new_config_file['YoutubeDLMaterial']) {
         let success = config_api.setConfigFile(new_config_file);
+        loadConfigValues(); // reloads config values that exist as variables
         res.send({
             success: success
         });
@@ -2651,12 +2661,6 @@ app.get('/api/audio/:id', optionalJwt, function(req , res){
   // Downloads management
 
   app.get('/api/downloads', async (req, res) => {
-    /*
-    if (!last_downloads_check || Date.now() - last_downloads_check > downloads_check_interval) {
-        last_downloads_check = Date.now();
-        updateDownloads();
-    }
-    */
     res.send({downloads: downloads});
   });
 

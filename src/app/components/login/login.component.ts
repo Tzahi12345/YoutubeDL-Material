@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   loggingIn = false;
 
   // registration
-  registrationEnabled = true;
+  registrationEnabled = false;
   registrationUsernameInput = '';
   registrationPasswordInput = '';
   registrationPasswordConfirmationInput = '';
@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit {
         if (!this.postsService.config['Advanced']['multi_user_mode']) {
           this.router.navigate(['/home']);
         }
+        this.registrationEnabled = this.postsService.config['Users'] && this.postsService.config['Users']['allow_registration'];
       }
     });
   }

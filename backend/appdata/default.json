@@ -21,7 +21,8 @@
       "allow_quality_select": true,
       "download_only_mode": false,
       "allow_multi_download_mode": true,
-      "settings_pin_required": false
+      "settings_pin_required": false,
+      "enable_downloads_manager": true
     },
     "API": {
       "use_API_key": false,
@@ -40,13 +41,15 @@
       "subscriptions_use_youtubedl_archive": true
     },
     "Users": {
-      "base_path": "users/"
+      "base_path": "users/",
+      "allow_registration": true
     },
     "Advanced": {
       "use_default_downloading_agent": true,
       "custom_downloading_agent": "",
       "multi_user_mode": false,
-      "allow_advanced_download": false
+      "allow_advanced_download": false,
+      "logger_level": "info"
     }
   }
 }

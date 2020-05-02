@@ -140,10 +140,10 @@ module.exports = {
 
 DEFAULT_CONFIG = {
     "YoutubeDLMaterial": {
-        "Host": {
-            "url": "http://example.com",
-            "port": "17442"
-        },
+      "Host": {
+        "url": "http://example.com",
+        "port": "17442"
+      },
       "Encryption": {
         "use-encryption": false,
         "cert-file-path": "/etc/letsencrypt/live/example.com/fullchain.pem",
@@ -156,12 +156,13 @@ DEFAULT_CONFIG = {
         "custom_args": ""
       },
       "Extra": {
-        "title_top": "Youtube Downloader",
+        "title_top": "YoutubeDL-Material",
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
         "allow_multi_download_mode": true,
-        "settings_pin_required": false
+        "settings_pin_required": false,
+        "enable_downloads_manager": true
       },
       "API": {
         "use_API_key": false,
@@ -180,13 +181,15 @@ DEFAULT_CONFIG = {
         "subscriptions_use_youtubedl_archive": true
       },
       "Users": {
-          "base_path": "users/"
+        "base_path": "users/",
+        "allow_registration": true
       },
       "Advanced": {
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",
         "multi_user_mode": false,
-        "allow_advanced_download": false
+        "allow_advanced_download": false,
+        "logger_level": "info"
       }
     }
   }

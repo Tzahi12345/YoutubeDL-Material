@@ -66,6 +66,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_settings_pin_required',
         'path': 'YoutubeDLMaterial.Extra.settings_pin_required'
     },
+    'ytdl_enable_downloads_manager': {
+        'key': 'ytdl_enable_downloads_manager',
+        'path': 'YoutubeDLMaterial.Extra.enable_downloads_manager'
+    },
 
     // API
     'ytdl_use_api_key': {
@@ -122,6 +126,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_users_base_path',
         'path': 'YoutubeDLMaterial.Users.base_path'
     },
+    'ytdl_allow_registration': {
+        'key': 'ytdl_allow_registration',
+        'path': 'YoutubeDLMaterial.Users.allow_registration'
+    },
 
     // Advanced
     'ytdl_use_default_downloading_agent': {
@@ -140,6 +148,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_allow_advanced_download',
         'path': 'YoutubeDLMaterial.Advanced.allow_advanced_download'
     },
+    'ytdl_logger_level': {
+        'key': 'ytdl_logger_level',
+        'path': 'YoutubeDLMaterial.Advanced.logger_level'
+    }
 };
 
 AVAILABLE_PERMISSIONS = [
