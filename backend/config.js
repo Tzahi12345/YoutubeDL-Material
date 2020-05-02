@@ -77,7 +77,7 @@ function getConfigItem(key) {
     let path = CONFIG_ITEMS[key]['path'];
     const val = Object.byString(config_json, path);
     if (val === undefined && Object.byString(DEFAULT_CONFIG, path)) {
-        logger.warning(`Cannot find config with key '${key}'. Creating one with the default value...`);
+        logger.warn(`Cannot find config with key '${key}'. Creating one with the default value...`);
         setConfigItem(key, Object.byString(DEFAULT_CONFIG, path));
         return Object.byString(DEFAULT_CONFIG, path);
     }
