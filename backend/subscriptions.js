@@ -49,7 +49,7 @@ async function subscribe(sub, user_uid = null) {
         else
             db.get('subscriptions').push(sub).write();
 
-        let success = await getSubscriptionInfo(sub);
+        let success = await getSubscriptionInfo(sub, user_uid);
         result_obj.success = success;
         result_obj.sub = sub;
         getVideosForSub(sub, user_uid);

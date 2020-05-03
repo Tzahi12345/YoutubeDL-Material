@@ -258,9 +258,9 @@ export class PostsService implements CanActivate {
                                                             thumbnailURL: thumbnailURL}, this.httpOptions);
     }
 
-    getPlaylist(playlistID, type) {
+    getPlaylist(playlistID, type, uuid = null) {
         return this.http.post(this.path + 'getPlaylist', {playlistID: playlistID,
-                                                            type: type}, this.httpOptions);
+                                                            type: type, uuid: uuid}, this.httpOptions);
     }
 
     updatePlaylist(playlistID, fileNames, type) {
@@ -335,6 +335,7 @@ export class PostsService implements CanActivate {
         this.permissions = permissions;
         this.available_permissions = available_permissions;
         this.token = token;
+        this.setInitialized();
 
         localStorage.setItem('jwt_token', this.token);
 
@@ -365,7 +366,6 @@ export class PostsService implements CanActivate {
         call.subscribe(res => {
             if (res['token']) {
                 this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
-                this.setInitialized();
             }
         }, err => {
             if (err.status === 401) {

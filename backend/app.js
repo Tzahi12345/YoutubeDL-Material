@@ -1762,8 +1762,14 @@ const optionalJwt = function (req, res, next) {
         const uuid = using_body ? req.body.uuid : req.query.uuid;
         const uid = using_body ? req.body.uid : req.query.uid;
         const type = using_body ? req.body.type : req.query.type;
-        const is_shared = auth_api.getUserVideo(uuid, uid, type, true);
-        if (is_shared) return next();
+        const is_shared = !req.query.id ? auth_api.getUserVideo(uuid, uid, type, true) : auth_api.getUserPlaylist(uuid, req.query.id, null, true);
+        if (is_shared) {
+            req.can_watch = true;
+            return next();
+        } else {
+            res.sendStatus(401);
+            return;
+        }
     } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !req.query.jwt)) { // registration should get passed through
         if (!req.query.jwt) {
             res.sendStatus(401);
@@ -1983,7 +1989,6 @@ app.post('/api/enableSharing', optionalJwt, function(req, res) {
     if (req.isAuthenticated()) {
         // if multi user mode, use this method instead
         success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, true);
-        console.log(success);
         res.send({success: success});
         return;
     }
@@ -2262,11 +2267,12 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
 app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let type = req.body.type;
+    let uuid = req.body.uuid;
 
     let playlist = null;
 
     if (req.isAuthenticated()) {
-        playlist = auth_api.getUserPlaylist(req.user.uid, playlistID, type);
+        playlist = auth_api.getUserPlaylist(uuid ? uuid : req.user.uid, playlistID, type);
         type = playlist.type;
     } else {
         if (!type) {
@@ -2563,13 +2569,13 @@ app.get('/api/video/:id', optionalJwt, function(req , res){
     let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
     let file_path = videoFolderPath + id + '.mp4';
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() || req.can_watch) {
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         if (optionalParams['subName']) {
             const isPlaylist = optionalParams['subPlaylist'];
             file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + '.mp4')
         } else {
-            file_path = path.join(usersFileFolder, req.user.uid, 'video', id + '.mp4');
+            file_path = path.join(usersFileFolder, req.query.uuid ? req.query.uuid : req.user.uid, 'video', id + '.mp4');
         }
     } else if (optionalParams['subName']) {
         let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');

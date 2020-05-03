@@ -491,7 +491,7 @@ export class MainComponent implements OnInit {
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
         } else {
-          this.router.navigate(['/player', {fileNames: name, type: 'audio', uid: uid}]);
+          this.router.navigate(['/player', {type: 'audio', uid: uid}]);
         }
       }
     }
@@ -528,7 +528,7 @@ export class MainComponent implements OnInit {
         if (is_playlist) {
           this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
         } else {
-          this.router.navigate(['/player', {fileNames: name, type: 'video', uid: uid}]);
+          this.router.navigate(['/player', {type: 'video', uid: uid}]);
         }
       }
     }

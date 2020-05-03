@@ -157,7 +157,7 @@ exports.passport.use(new LocalStrategy({
     passwordField: 'password'},
     function(username, password, done) {
         const user = users_db.get('users').find({name: username}).value();
-        if (!user) { console.log('user not found'); return done(null, false); }
+        if (!user) { logger.error(`User ${username} not found`); return done(null, false); }
         if (user) {
             return done(null, bcrypt.compareSync(password, user.passhash) ? user : false);
         }
@@ -346,7 +346,7 @@ exports.getUserPlaylists = function(user_uid, type) {
   return user['playlists'][type];
 }
 
-exports.getUserPlaylist = function(user_uid, playlistID, type) {
+exports.getUserPlaylist = function(user_uid, playlistID, type, requireSharing = false) {
   let playlist = null;
   if (!type) {
     playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.audio`).find({id: playlistID}).value();
@@ -358,6 +358,10 @@ exports.getUserPlaylist = function(user_uid, playlistID, type) {
     }
   }
   if (!playlist) playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).value();
+
+  // prevent unauthorized users from accessing the file info
+  if (requireSharing && !playlist['sharingEnabled']) playlist = null;
+
   return playlist;
 }
 
@@ -434,7 +438,7 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
     success = true;
   } else {
     success = false;
-    console.log('file does not exist!');
+    logger.warn(`User file ${file_uid} does not exist!`);
   }
 
   return success;
@@ -444,7 +448,7 @@ exports.changeSharingMode = function(user_uid, file_uid, type, is_playlist, enab
   let success = false;
   const user_db_obj = users_db.get('users').find({uid: user_uid});
   if (user_db_obj.value()) {
-    const file_db_obj = is_playlist ? user_db_obj.get(`playlists.${type}`).find({uid: file_uid}) : user_db_obj.get(`files.${type}`).find({uid: file_uid});
+    const file_db_obj = is_playlist ? user_db_obj.get(`playlists.${type}`).find({id: file_uid}) : user_db_obj.get(`files.${type}`).find({uid: file_uid});
     if (file_db_obj.value()) {
       success = true;
       file_db_obj.assign({sharingEnabled: enabled}).write();

@@ -40,6 +40,7 @@ export class PlayerComponent implements OnInit {
   subscriptionName = null;
   subPlaylist = null;
   uuid = null; // used for sharing in multi-user mode, uuid is the user that downloaded the video
+  timestamp = null;
 
   is_shared = false;
 
@@ -77,6 +78,7 @@ export class PlayerComponent implements OnInit {
     this.url = this.route.snapshot.paramMap.get('url');
     this.name = this.route.snapshot.paramMap.get('name');
     this.uuid = this.route.snapshot.paramMap.get('uuid');
+    this.timestamp = this.route.snapshot.paramMap.get('timestamp');
 
     // loading config
     if (this.postsService.initialized) {
@@ -102,7 +104,7 @@ export class PlayerComponent implements OnInit {
     this.subscriptionFolderPath = this.postsService.config['Subscriptions']['subscriptions_base_path'];
     this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
 
-    if (!this.fileNames) {
+    if (!this.fileNames && !this.type) {
       this.is_shared = true;
     }
 
@@ -149,7 +151,7 @@ export class PlayerComponent implements OnInit {
           if (!already_has_filenames) { this.parseFileNames(); }
         }
       }
-      if (this.db_file['sharingEnabled']) {
+      if (this.db_file['sharingEnabled'] || !this.uuid) {
         this.show_player = true;
       } else if (!already_has_filenames) {
         this.openSnackBar('Error: Sharing has been disabled for this video!', 'Dismiss');
@@ -158,12 +160,18 @@ export class PlayerComponent implements OnInit {
   }
 
   getPlaylistFiles() {
-    this.postsService.getPlaylist(this.id, null).subscribe(res => {
-      this.db_playlist = res['playlist'];
-      this.fileNames = this.db_playlist['fileNames'];
-      this.type = res['type'];
-      this.show_player = true;
-      this.parseFileNames();
+    this.postsService.getPlaylist(this.id, null, this.uuid).subscribe(res => {
+      if (res['playlist']) {
+        this.db_playlist = res['playlist'];
+        this.fileNames = this.db_playlist['fileNames'];
+        this.type = res['type'];
+        this.show_player = true;
+        this.parseFileNames();
+      } else {
+        this.openSnackBar('Failed to load playlist!', '');
+      }
+    }, err => {
+      this.openSnackBar('Failed to load playlist!', '');
     });
   }
 
@@ -196,11 +204,15 @@ export class PlayerComponent implements OnInit {
       }
 
       // adds user token if in multi-user-mode
+      const uuid_str = this.uuid ? `&uuid=${this.uuid}` : '';
+      const uid_str = (this.id || !this.db_file) ? '' : `&uid=${this.db_file.uid}`;
+      const type_str = (this.id || !this.db_file) ? '' : `&type=${this.db_file.type}`
+      const id_str = this.id ? `&id=${this.id}` : '';
       if (this.postsService.isLoggedIn) {
         fullLocation += (this.subscriptionName ? '&' : '?') + `jwt=${this.postsService.token}`;
-        if (this.is_shared) { fullLocation += `&uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`; }
+        if (this.is_shared) { fullLocation += `${uuid_str}${uid_str}${type_str}${id_str}`; }
       } else if (this.is_shared) {
-        fullLocation += (this.subscriptionName ? '&' : '?') + `uuid=${this.uuid}&uid=${this.db_file.uid}&type=${this.db_file.type}`;
+        fullLocation += (this.subscriptionName ? '&' : '?') + `test=test${uuid_str}${uid_str}${type_str}${id_str}`;
       }
       // if it has a slash (meaning it's in a directory), only get the file name for the label
       let label = null;
@@ -228,6 +240,10 @@ export class PlayerComponent implements OnInit {
 
       this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
       this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
+
+      if (this.timestamp) {
+        this.api.seekTime(+this.timestamp);
+      }
   }
 
   nextVideo() {
@@ -381,7 +397,8 @@ export class PlayerComponent implements OnInit {
         type: this.type,
         sharing_enabled: this.id ? this.db_playlist.sharingEnabled : this.db_file.sharingEnabled,
         is_playlist: !!this.id,
-        uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : null
+        uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : null,
+        current_timestamp: this.api.time.current
       },
       width: '60vw'
     });
