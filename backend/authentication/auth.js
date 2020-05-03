@@ -46,7 +46,7 @@ exports.initialize = function(input_users_db, input_logger) {
   opts.audience = 'example.com';*/
 
   exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    const user = users_db.get('users').find({uid: jwt_payload.user.uid}).value();
+    const user = users_db.get('users').find({uid: jwt_payload.user}).value();
     if (user) {
         return done(null, user);
     } else {
@@ -209,7 +209,7 @@ exports.authenticateViaPassport = function(req, res, next) {
 exports.generateJWT = function(req, res, next) {
   var payload = {
       exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
-    , user: req.user
+    , user: req.user.uid
   };
   req.token = jwt.sign(payload, SERVER_SECRET);
   next();  

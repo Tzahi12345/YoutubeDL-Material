@@ -1,5 +1,5 @@
 import {Injectable, isDevMode, Inject} from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -64,7 +64,7 @@ export class PostsService implements CanActivate {
         this.httpOptions = {
             params: new HttpParams({
               fromString: this.http_params
-            }),
+            })
         };
 
         Fingerprint2.get(components => {
@@ -83,7 +83,6 @@ export class PostsService implements CanActivate {
                     if (localStorage.getItem('jwt_token')) {
                         this.token = localStorage.getItem('jwt_token');
                         this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
-
                         this.jwtAuth();
                     } else {
                         this.sendToLogin();
@@ -335,12 +334,13 @@ export class PostsService implements CanActivate {
         this.permissions = permissions;
         this.available_permissions = available_permissions;
         this.token = token;
-        this.setInitialized();
 
         localStorage.setItem('jwt_token', this.token);
 
         this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
+        console.log(this.httpOptions);
 
+        this.setInitialized();
         // needed to re-initialize parts of app after login
         this.config_reloaded.next(true);
 
@@ -352,25 +352,23 @@ export class PostsService implements CanActivate {
     // user methods
     login(username, password) {
         const call = this.http.post(this.path + 'auth/login', {userid: username, password: password}, this.httpOptions);
-        call.subscribe(res => {
-            if (res['token']) {
-                this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
-            }
-        });
         return call;
     }
 
     // user methods
     jwtAuth() {
+        console.log('doing jwt call');
         const call = this.http.post(this.path + 'auth/jwtAuth', {}, this.httpOptions);
         call.subscribe(res => {
             if (res['token']) {
                 this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
             }
         }, err => {
+            console.log('jwt errored')
             if (err.status === 401) {
                 this.sendToLogin();
             }
+            console.log(err)
         });
         return call;
     }

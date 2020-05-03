@@ -41,12 +41,15 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    if (this.loginPasswordInput === '') {
+    if (this.loginPasswordInput === '' || this.loggingIn) {
       return;
     }
     this.loggingIn = true;
     this.postsService.login(this.loginUsernameInput, this.loginPasswordInput).subscribe(res => {
       this.loggingIn = false;
+      if (res['token']) {
+        this.postsService.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
+      }
     }, err => {
       this.loggingIn = false;
     });

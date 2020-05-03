@@ -1365,7 +1365,9 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         video.on('info', function(info) {
             video_info = info;
             file_size = video_info.size;
-            fs.writeJSONSync(removeFileExtension(video_info._filename) + '.info.json', video_info);
+            const json_path = removeFileExtension(video_info._filename) + '.info.json';
+            fs.ensureFileSync(json_path);
+            fs.writeJSONSync(json_path, video_info);
             video.pipe(fs.createWriteStream(video_info._filename, { flags: 'w' }))
         });
         // Will be called if download was already completed and there is nothing more to download.
