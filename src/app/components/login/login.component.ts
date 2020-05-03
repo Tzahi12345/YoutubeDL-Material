@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    if (this.loginPasswordInput === '' || this.loggingIn) {
+    if (this.loginPasswordInput === '') {
       return;
     }
     this.loggingIn = true;

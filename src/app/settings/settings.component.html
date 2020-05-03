@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-12 mt-3 mb-4">
                         <mat-form-field class="text-field">
-                            <input [(ngModel)]="new_config['Users']['base_path']" matInput placeholder="Users base path" i18n-placeholder="Users base path placeholder" required>
+                            <input [disabled]="!new_config['Advanced']['multi_user_mode']" [(ngModel)]="new_config['Users']['base_path']" matInput placeholder="Users base path" i18n-placeholder="Users base path placeholder" required>
                             <mat-hint><ng-container i18n="Users base path hint">Base path for users and their downloaded videos.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>

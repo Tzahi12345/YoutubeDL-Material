@@ -12,7 +12,7 @@
                 </mat-form-field>
             </div>
             <div style="margin-bottom: 10px; margin-top: 10px;">
-                <button [disabled]="loggingIn" color="primary" (click)="login()" mat-raised-button>Login</button>
+                <button [disabled]="loggingIn" color="primary" (click)="login()" mat-raised-button><ng-container i18n="Login">Login</ng-container></button>
             </div>
         </mat-tab>
         <mat-tab *ngIf="registrationEnabled" label="Register">
@@ -32,7 +32,7 @@
                 </mat-form-field>
             </div>
             <div style="margin-bottom: 10px; margin-top: 10px;">
-                <button [disabled]="registering" color="primary" (click)="register()" mat-raised-button>Register</button>
+                <button [disabled]="registering" color="primary" (click)="register()" mat-raised-button><ng-container i18n="Register">Register</ng-container></button>
             </div>
         </mat-tab>
     </mat-tab-group>

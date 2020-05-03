@@ -24,18 +24,18 @@
             </div>
         </mat-expansion-panel-header>
         <div *ngIf="download.error">
-            <strong>An error has occured:</strong>
+            <strong><ng-container i18n="Error label">An error has occured:</ng-container></strong>
             <br/>
             {{download.error}}
         </div>
         <div *ngIf="download.timestamp_start">
-            <strong>Download start: </strong>{{download.timestamp_start | date:'medium'}}
+            <strong><ng-container i18n="Download start label">Download start:</ng-container></strong>&nbsp;{{download.timestamp_start | date:'medium'}}
         </div>
         <div *ngIf="download.timestamp_end">
-            <strong>Download end: </strong> {{download.timestamp_end | date:'medium'}}
+            <strong><ng-container i18n="Download end label">Download end:</ng-container></strong>&nbsp;{{download.timestamp_end | date:'medium'}}
         </div>
         <div *ngIf="download.fileNames">
-            <strong>File path(s): </strong> {{download.fileNames.join(', ')}}
+            <strong><ng-container i18n="File path(s) label">File path(s):</ng-container></strong>&nbsp;{{download.fileNames.join(', ')}}
         </div>
     </mat-expansion-panel>
 </div>

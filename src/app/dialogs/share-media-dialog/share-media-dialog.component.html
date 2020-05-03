@@ -10,7 +10,7 @@
             <mat-checkbox [checked]="sharing_enabled" (change)="sharingChanged($event)"><ng-container i18n="Enable sharing checkbox">Enable sharing</ng-container></mat-checkbox>
         </div>
         <div>
-            <mat-checkbox style="margin-right: 15px;" (change)="useTimestampChanged()" [(ngModel)]="timestamp_enabled">Use timestamp</mat-checkbox>
+            <mat-checkbox style="margin-right: 15px;" (change)="useTimestampChanged()" [(ngModel)]="timestamp_enabled"><ng-container i18n="Use timestamp">Use timestamp</ng-container></mat-checkbox>
             <mat-form-field>
                 <input matInput type="number" [(ngModel)]="current_timestamp" [disabled]="!timestamp_enabled" (change)="timestampInputChanged($event)" placeholder="Seconds" i18n-placeholder="Seconds">
             </mat-form-field>

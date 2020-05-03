@@ -64,3 +64,4 @@ backend/appdata/archives/blacklist_video.txt
 backend/appdata/logs/combined.log
 backend/appdata/logs/error.log
 backend/appdata/users.json
+backend/users/*

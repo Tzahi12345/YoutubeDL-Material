@@ -1,5 +1,5 @@
 import {Injectable, isDevMode, Inject} from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -336,9 +336,7 @@ export class PostsService implements CanActivate {
         this.token = token;
 
         localStorage.setItem('jwt_token', this.token);
-
         this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
-        console.log(this.httpOptions);
 
         this.setInitialized();
         // needed to re-initialize parts of app after login
@@ -357,18 +355,16 @@ export class PostsService implements CanActivate {
 
     // user methods
     jwtAuth() {
-        console.log('doing jwt call');
         const call = this.http.post(this.path + 'auth/jwtAuth', {}, this.httpOptions);
         call.subscribe(res => {
             if (res['token']) {
                 this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
             }
         }, err => {
-            console.log('jwt errored')
             if (err.status === 401) {
                 this.sendToLogin();
             }
-            console.log(err)
+            console.log(err);
         });
         return call;
     }
