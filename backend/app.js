@@ -40,6 +40,11 @@ const db = low(adapter)
 const users_adapter = new FileSync('./appdata/users.json');
 const users_db = low(users_adapter);
 
+// env var setup
+
+const umask = process.env.YTDL_UMASK;
+if (umask) process.umask(parseInt(umask));
+
 // check if debug mode
 let debugMode = process.env.YTDL_MODE === 'debug';
 
