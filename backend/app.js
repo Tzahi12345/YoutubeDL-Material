@@ -1540,7 +1540,6 @@ async function generateArgs(url, type, options) {
 
         }
         // downloadConfig.map((arg) => `"${arg}"`);
-        console.log(downloadConfig.toString())
         resolve(downloadConfig);
     });
 }
@@ -1860,7 +1859,7 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
     }
 
     const is_playlist = url.includes('playlist');
-    if (is_playlist || options.customQualityConfiguration )
+    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
         result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
@@ -1888,7 +1887,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     
     const is_playlist = url.includes('playlist');
     let result_obj = null;
-    if (is_playlist || options.customQualityConfiguration)
+    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight)
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
@@ -2664,7 +2663,7 @@ app.get('/api/audio/:id', optionalJwt, function(req , res){
     let file_path = "audio/" + id + '.mp3';
     if (req.isAuthenticated()) {
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-        file_path = path.join(usersFileFolder, req.user.name, 'audio', id + '.mp3');
+        file_path = path.join(usersFileFolder, req.user.uid, 'audio', id + '.mp3');
     }
     file_path = file_path.replace(/\"/g, '\'');
   const stat = fs.statSync(file_path)
