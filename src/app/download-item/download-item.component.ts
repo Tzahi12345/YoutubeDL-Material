@@ -16,6 +16,8 @@ export class DownloadItemComponent implements OnInit {
     complete: false,
     url: 'http://youtube.com/watch?v=17848rufj',
     downloading: true,
+    timestamp_start: null,
+    timestamp_end: null,
     is_playlist: false,
     error: false
   };

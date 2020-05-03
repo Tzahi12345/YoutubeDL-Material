@@ -5,6 +5,7 @@ var auth_api = require('./authentication/auth');
 var winston = require('winston');
 var path = require('path');
 var youtubedl = require('youtube-dl');
+var ffmpeg = require('fluent-ffmpeg');
 var compression = require('compression');
 var https = require('https');
 var express = require("express");
@@ -1287,6 +1288,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                 }
 
                 download['complete'] = true;
+                download['fileNames'] = is_playlist ? file_names : [full_file_path]
                 updateDownloads();
                 
                 var videopathEncoded = encodeURIComponent(file_names[0]);
@@ -1305,7 +1307,11 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
     return new Promise(async resolve => {
         var date = Date.now();
         var file_uid = null;
-        var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+        const is_audio = type === 'audio';
+        const ext = is_audio ? '.mp3' : '.mp4';
+        var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+
+        if (is_audio) options.skip_audio_args = true;
 
         // prepend with user if needed
         let multiUserMode = null;
@@ -1373,16 +1379,17 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             }
         });
 
-        video.on('end', function() {
+        video.on('end', async function() {
             let new_date = Date.now();
             let difference = (new_date - date)/1000;
             logger.debug(`Video download delay: ${difference} seconds.`);
-
+            download['timestamp_end'] = Date.now();
+            download['fileNames'] = [removeFileExtension(video_info._filename) + ext];
             download['complete'] = true;
             updateDownloads();
 
             // audio-only cleanup
-            if (type === 'audio') {
+            if (is_audio) {
                 // filename fix
                 video_info['_filename'] = removeFileExtension(video_info['_filename']) + '.mp3';
 
@@ -1393,6 +1400,12 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
                 }
                 let success = NodeID3.write(tags, video_info._filename);
                 if (!success) logger.error('Failed to apply ID3 tag to audio file ' + video_info._filename);
+
+                const possible_webm_path = removeFileExtension(video_info['_filename']) + '.webm';
+                const possible_mp4_path = removeFileExtension(video_info['_filename']) + '.mp4';
+                // check if audio file is webm
+                if (fs.existsSync(possible_webm_path)) await convertFileToMp3(possible_webm_path, video_info['_filename']);
+                else if (fs.existsSync(possible_mp4_path)) await convertFileToMp3(possible_mp4_path, video_info['_filename']);
             }
 
             // registers file in DB
@@ -1409,7 +1422,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             videopathEncoded = encodeURIComponent(removeFileExtension(base_file_name));
 
             resolve({
-                [(type === 'audio') ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
+                [is_audio ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
                 file_names: /*is_playlist ? file_names :*/ null, // playlist support is not ready
                 uid: file_uid
             });
@@ -1451,7 +1464,7 @@ async function generateArgs(url, type, options) {
         var youtubePassword = options.youtubePassword;
 
         let downloadConfig = null;
-        let qualityPath = is_audio ? '-f bestaudio' :'-f best[ext=mp4]';
+        let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
 
         if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
             // tiktok videos fail when using the default format
@@ -1470,12 +1483,12 @@ async function generateArgs(url, type, options) {
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', path.join(fileFolderPath, customOutput), qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", qualityPath, '--write-info-json', '--print-json'];
             } else {
                 downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), qualityPath, '--write-info-json', '--print-json'];
             }
 
-            if (is_audio) {
+            if (is_audio && !options.skip_audio_args) {
                 downloadConfig.push('-x');
                 downloadConfig.push('--audio-format', 'mp3');
             }
@@ -1519,6 +1532,8 @@ async function generateArgs(url, type, options) {
             }
 
         }
+        // downloadConfig.map((arg) => `"${arg}"`);
+        console.log(downloadConfig.toString())
         resolve(downloadConfig);
     });
 }
@@ -1547,6 +1562,23 @@ async function getUrlInfos(urls) {
             }
             resolve(result);
         });
+    });
+}
+
+async function convertFileToMp3(input_file, output_file) {
+    logger.verbose(`Converting ${input_file} to ${output_file}...`);
+    return new Promise(resolve => {
+        ffmpeg(input_file).noVideo().toFormat('mp3')
+        .on('end', () => {
+            logger.verbose(`Conversion for '${output_file}' complete.`);
+            fs.unlinkSync(input_file)
+            resolve(true);
+        })
+        .on('error', (err) => {
+            logger.error('Failed to convert audio file to the correct format.');
+            logger.error(err);
+            resolve(false);
+        }).save(output_file);
     });
 }
 
@@ -1821,7 +1853,7 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
     }
 
     const is_playlist = url.includes('playlist');
-    if (true || is_playlist)
+    if (is_playlist || options.customQualityConfiguration )
         result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);

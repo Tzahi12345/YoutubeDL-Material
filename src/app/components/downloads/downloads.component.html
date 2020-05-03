@@ -7,7 +7,7 @@
                 </h4>
                 <div class="container">
                     <div class="row">
-                        <div *ngFor="let download of session_downloads.value | keyvalue; let i = index;" class="col-12 my-1">
+                        <div *ngFor="let download of session_downloads.value | keyvalue: sort_downloads; let i = index;" class="col-12 my-1">
                             <mat-card *ngIf="download.value" class="mat-elevation-z3">
                                 <app-download-item [download]="download.value" [queueNumber]="i+1" (cancelDownload)="clearDownload(session_downloads.key, download.value.uid)"></app-download-item>
                             </mat-card>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -32,20 +32,26 @@ import { Router } from '@angular/router';
     ])
   ],
 })
-export class DownloadsComponent implements OnInit {
+export class DownloadsComponent implements OnInit, OnDestroy {
 
-  downloads_check_interval = 500;
+  downloads_check_interval = 1000;
   downloads = {};
+  interval_id = null;
 
   keys = Object.keys;
 
   valid_sessions_length = 0;
 
+  sort_downloads = (a, b) => {
+    const result = a.value.timestamp_start < b.value.timestamp_start;
+    return result;
+  }
+
   constructor(public postsService: PostsService, private router: Router) { }
 
   ngOnInit(): void {
     this.getCurrentDownloads();
-    setInterval(() => {
+    this.interval_id = setInterval(() => {
       this.getCurrentDownloads();
     }, this.downloads_check_interval);
 
@@ -56,6 +62,10 @@ export class DownloadsComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.interval_id) { clearInterval(this.interval_id) }
   }
 
   getCurrentDownloads() {

@@ -36,6 +36,8 @@ export interface Download {
   error: boolean | string;
   fileNames?: string[];
   complete?: boolean;
+  timestamp_start?: number;
+  timestamp_end?: number;
 }
 
 @Component({

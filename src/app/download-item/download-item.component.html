@@ -12,10 +12,30 @@
             <button style="margin-bottom: 2px;" (click)="cancelTheDownload()" mat-icon-button color="warn"><mat-icon fontSet="material-icons-outlined">cancel</mat-icon></button>
         </mat-grid-tile>
     </mat-grid-list>
-    <mat-expansion-panel class="ignore-margin" *ngIf="download.error">
+    <mat-expansion-panel *ngIf="download.timestamp_start" class="ignore-margin">
         <mat-expansion-panel-header>
-            Error
+            <div>
+                <ng-container i18n="Details">Details</ng-container>
+            </div>
+            <div style="width: 100%">
+                <div style="float: right">
+                    <mat-panel-description>{{download.timestamp_start | date:'medium'}}</mat-panel-description>
+                </div>
+            </div>
         </mat-expansion-panel-header>
-        {{download.error}}
+        <div *ngIf="download.error">
+            <strong>An error has occured:</strong>
+            <br/>
+            {{download.error}}
+        </div>
+        <div *ngIf="download.timestamp_start">
+            <strong>Download start: </strong>{{download.timestamp_start | date:'medium'}}
+        </div>
+        <div *ngIf="download.timestamp_end">
+            <strong>Download end: </strong> {{download.timestamp_end | date:'medium'}}
+        </div>
+        <div *ngIf="download.fileNames">
+            <strong>File path(s): </strong> {{download.fileNames.join(', ')}}
+        </div>
     </mat-expansion-panel>
 </div>
