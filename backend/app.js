@@ -1535,6 +1535,11 @@ async function generateArgs(url, type, options) {
 
             if (globalArgs && globalArgs !== '') {
                 // adds global args
+                if (downloadConfig.indexOf('-o') !== -1 && globalArgs.split(',,').indexOf('-o') !== -1) {
+                    // if global args has an output, replce the original output with that of global args
+                    const original_output_index = downloadConfig.indexOf('-o');
+                    downloadConfig.splice(original_output_index, 2);
+                }
                 downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
             }
 
