@@ -7,7 +7,18 @@
                 <mat-card class="mat-elevation-z6">
                     <h6 i18n="Simulated args title">Simulated new args</h6>
                     <mat-form-field style="width: 100%" color="accent">
-                        <textarea [disabled]="true" matInput>{{modified_args}}</textarea>
+                        <mat-chip-list class="example-chip" #chipList aria-label="Args array" cdkDropList cdkDropListDisabled
+                            cdkDropListOrientation="horizontal"
+                            (cdkDropListDropped)="drop($event)">
+                            <mat-chip *ngFor="let arg of args_array; let i = index;" [selectable]="selectable" [removable]="removable" (removed)="remove(i)" cdkDrag>
+                                {{arg}}
+                                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                            </mat-chip>
+                        </mat-chip-list>
+                        <input style="width: 100%;" matInput [matChipInputFor]="chipList"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="addOnBlur"
+                            (matChipInputTokenEnd)="add($event)">
                     </mat-form-field>
                 </mat-card>
             </div>
@@ -63,6 +74,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close><ng-container i18n="Arg modifier cancel button">Cancel</ng-container></button>
+    <button mat-button [mat-dialog-close]="null"><ng-container i18n="Arg modifier cancel button">Cancel</ng-container></button>
     <button mat-button color="accent" [mat-dialog-close]="modified_args"><ng-container i18n="Arg modifier modify button">Modify</ng-container></button>
 </mat-dialog-actions>

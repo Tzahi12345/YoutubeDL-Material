@@ -1,5 +1,7 @@
-import { Component, OnInit, Inject, Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Component, OnInit, Inject, Pipe, PipeTransform } from '@angular/core';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormControl } from '@angular/forms';
 import { args, args_info } from './youtubedl_args';
 import { Observable } from 'rxjs';
@@ -38,6 +40,14 @@ export class ArgModifierDialogComponent implements OnInit {
   argsInfo = null;
   filteredOptions: Observable<any>;
 
+  // chip list
+  visible = true;
+  selectable = true;
+  removable = true;
+  addOnBlur = false;
+  args_array = null;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+
   static forRoot() {
     return {
         ngModule: ArgModifierDialogComponent,
@@ -51,6 +61,7 @@ export class ArgModifierDialogComponent implements OnInit {
   ngOnInit(): void {
     if (this.data) {
       this.modified_args = this.data.initial_args;
+      this.generateArgsArray();
     }
 
     this.getAllPossibleArgs();
@@ -115,6 +126,37 @@ export class ArgModifierDialogComponent implements OnInit {
 
   setFirstArg(arg_key) {
     this.stateCtrl.setValue(arg_key);
+  }
+
+  // chip list functions
+
+  add(event) {
+    const input = event.input;
+    const arg = event.value;
+    this.args_array.push(arg);
+    if (this.modified_args.length > 0) {
+      this.modified_args += ',,'
+    }
+    this.modified_args += arg;
+    if (input) { input.value = ''; }
+  }
+
+  remove(arg_index) {
+    this.args_array.splice(arg_index, 1);
+    this.modified_args = this.args_array.join(',,');
+  }
+
+  generateArgsArray() {
+    if (this.modified_args.trim().length === 0) {
+      this.args_array = [];
+      return;
+    }
+    this.args_array = this.modified_args.split(',,');
+  }
+
+  drop(event: CdkDragDrop<any>) {
+    moveItemInArray(this.args_array, event.previousIndex, event.currentIndex);
+    this.modified_args = this.args_array.join(',,');
   }
 
 }

@@ -52,6 +52,7 @@ import { SubscriptionFileCardComponent } from './subscription/subscription-file-
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
+import {MatChipsModule} from '@angular/material/chips';
 
 import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
@@ -141,6 +142,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
+    MatChipsModule,
     DragDropModule,
     ClipboardModule,
     VgCoreModule,

@@ -144,9 +144,9 @@ export class SettingsComponent implements OnInit {
      }
    });
    dialogRef.afterClosed().subscribe(new_args => {
-     if (new_args) {
+    if (new_args !== null) {
       this.new_config['Downloader']['custom_args'] = new_args;
-     }
+    }
    });
  }
 

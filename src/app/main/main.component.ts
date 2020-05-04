@@ -1131,8 +1131,8 @@ export class MainComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(new_args => {
-      if (new_args) {
-       this.customArgs = new_args;
+      if (new_args !== null) {
+        this.customArgs = new_args;
       }
     });
   }
