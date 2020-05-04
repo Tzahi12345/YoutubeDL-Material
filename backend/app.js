@@ -1479,7 +1479,7 @@ async function generateArgs(url, type, options) {
         }
 
         if (customArgs) {
-            downloadConfig = customArgs.split(' ');
+            downloadConfig = customArgs.split(',,');
         } else {
             if (customQualityConfiguration) {
                 qualityPath = `-f ${customQualityConfiguration}`;
@@ -1535,7 +1535,7 @@ async function generateArgs(url, type, options) {
 
             if (globalArgs && globalArgs !== '') {
                 // adds global args
-                downloadConfig = downloadConfig.concat(globalArgs.split(' '));
+                downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
             }
 
         }

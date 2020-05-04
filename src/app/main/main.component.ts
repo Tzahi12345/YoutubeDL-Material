@@ -864,7 +864,7 @@ export class MainComponent implements OnInit {
     const base_string_array = ['youtube-dl', this.url];
 
     if (customArgsExists) {
-      this.simulatedOutput = base_string_array.join(' ') + ' ' + this.customArgs;
+      this.simulatedOutput = base_string_array.join(' ') + ' ' + this.customArgs.split(',,').join(' ');
       return this.simulatedOutput;
     }
 
@@ -924,7 +924,7 @@ export class MainComponent implements OnInit {
     }
 
     if (globalArgsExists) {
-      full_string_array = full_string_array.concat(this.globalCustomArgs.split(' '));
+      full_string_array = full_string_array.concat(this.globalCustomArgs.split(',,'));
     }
 
     this.simulatedOutput = full_string_array.join(' ');

@@ -72,12 +72,15 @@ export class ArgModifierDialogComponent implements OnInit {
   }
 
   addArg() {
+    if (!this.modified_args) {
+      this.modified_args = '';
+    }
     // adds space
     if (this.modified_args !== '') {
-      this.modified_args += ' ';
+      this.modified_args += ',,';
     }
 
-    this.modified_args += this.stateCtrl.value + ' ' + (this.secondArgEnabled ? this.secondArg : '');
+    this.modified_args += this.stateCtrl.value + (this.secondArgEnabled ? ',,' + this.secondArg : '');
   }
 
   canAddArg() {
