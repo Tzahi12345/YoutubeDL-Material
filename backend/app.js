@@ -71,7 +71,7 @@ const logger = winston.createLogger({
     ]
 });
 
-config_api.setLogger(logger);
+config_api.initialize(logger);
 subscriptions_api.initialize(db, users_db, logger);
 auth_api.initialize(users_db, logger);
 

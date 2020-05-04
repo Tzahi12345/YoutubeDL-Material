@@ -8,6 +8,19 @@ let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.jso
 var logger = null;
 function setLogger(input_logger) { logger = input_logger; }
 
+function initialize(input_logger) {
+    setLogger(input_logger);
+    ensureConfigItemsExist();
+}
+
+function ensureConfigItemsExist() {
+    const config_keys = Object.keys(CONFIG_ITEMS);
+    for (let i = 0; i < config_keys.length; i++) {
+        const config_key = config_keys[i];
+        getConfigItem(config_key);
+    }
+}
+
 // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
 Object.byString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
@@ -88,10 +101,18 @@ function setConfigItem(key, value) {
     let success = false;
     let config_json = getConfigFile();
     let path = CONFIG_ITEMS[key]['path'];
-    let parent_path = getParentPath(path);
     let element_name = getElementNameInConfig(path);
-    
+    let parent_path = getParentPath(path);
     let parent_object = Object.byString(config_json, parent_path);
+    if (!parent_object) {
+        let parent_parent_path = getParentPath(parent_path);
+        let parent_parent_object = Object.byString(config_json, parent_parent_path);
+        let parent_path_arr = parent_path.split('.');
+        let parent_parent_single_key = parent_path_arr[parent_path_arr.length-1];
+        parent_parent_object[parent_parent_single_key] = {};
+        parent_object = Object.byString(config_json, parent_path);
+    }    
+    
     if (value === 'false' || value === 'true') {
         parent_object[element_name] = (value === 'true');
     } else {
@@ -134,7 +155,7 @@ module.exports = {
     setConfigFile: setConfigFile,
     configExistsCheck: configExistsCheck,
     CONFIG_ITEMS: CONFIG_ITEMS,
-    setLogger: setLogger,
+    initialize: initialize,
     descriptors: {}
 }
 
