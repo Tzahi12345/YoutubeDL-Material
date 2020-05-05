@@ -2,18 +2,26 @@ openapi: 3.0.0
 info:
   title: YoutubeDL-Material API Docs - Official
   version: '1.0'
-  description: |-
+  description: >-
     Welcome to the official docs for YoutubeDL-Material.
 
-    You can check out all the available endpoints. Remember to authenticate with your API key using the "Authorization" header with your requests.
 
-    To do so, simply add this header to your API calls:
 
-    `Authorization: API_KEY`
+    You can check out all the available endpoints. Remember to authenticate with
+    your API key using the "apiKey" query parameter with your requests.
 
-    Note the space between 'Authorization:' and the API_KEY. This is required.
 
-    Replce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.
+
+    To do so, simply add this to the end of your API call:
+
+
+
+    `?apiKey=API_KEY`
+
+
+
+    Replce API_KEY with the API key in the settings menu. If one doesn't exist,
+    click generate to create one.
 servers:
   - url: 'http://localhost:17442'
 paths:
@@ -22,10 +30,15 @@ paths:
       tags:
         - downloader
       summary: Download audio file
-      description: |-
-        Downloads an audio file with the given URL. Will include global args if they exist.
+      description: >-
+        Downloads an audio file with the given URL. Will include global args if
+        they exist.
 
-        HTTP requests will return once the audio file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
+
+
+        HTTP requests will return once the audio file download completes. In the
+        future, it will (by default) return once the download starts, and
+        a separate API call will be used for checking the download status.
       operationId: post-tomp3
       requestBody:
         content:
@@ -40,16 +53,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/tomp4:
     post:
       tags:
         - downloader
       summary: Download video file
-      description: |-
-        Downloads a video file with the given URL. Will include global args if they exist.
+      description: >-
+        Downloads a video file with the given URL. Will include global args if
+        they exist.
 
-        HTTP requests will return once the video file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
+
+
+        HTTP requests will return once the video file download completes. In the
+        future, it will (by default) return once the download starts, and
+        a separate API call will be used for checking the download status.
       operationId: post-tomp4
       requestBody:
         content:
@@ -64,7 +82,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getMp3s:
     get:
       tags:
@@ -81,7 +99,7 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_2'
       requestBody: {}
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getMp4s:
     get:
       tags:
@@ -97,7 +115,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_3'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getFile:
     post:
       tags:
@@ -118,7 +136,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_4'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/enableSharing:
     post:
       tags:
@@ -140,7 +158,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/disableSharing:
     post:
       tags:
@@ -162,7 +180,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/subscribe:
     post:
       tags:
@@ -183,7 +201,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_6'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/unsubscribe:
     post:
       tags:
@@ -204,7 +222,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_7'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteSubscriptionFile:
     post:
       tags:
@@ -227,7 +245,7 @@ paths:
         '500':
           description: Internal Server Error
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getSubscription:
     post:
       tags:
@@ -248,7 +266,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_9'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/downloadVideosForSubscription:
     post:
       tags:
@@ -269,7 +287,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_10'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getAllSubscriptions:
     post:
       tags:
@@ -289,7 +307,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_11'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/createPlaylist:
     post:
       tags:
@@ -310,7 +328,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_12'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getPlaylist:
     post:
       tags:
@@ -331,7 +349,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_13'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/updatePlaylist:
     post:
       tags:
@@ -352,7 +370,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deletePlaylist:
     post:
       tags:
@@ -373,7 +391,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteMp4:
     post:
       tags:
@@ -395,7 +413,7 @@ paths:
                 type: boolean
                 description: Whether the operation succeeded
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/downloadFile:
     post:
       tags:
@@ -415,7 +433,7 @@ paths:
         '200':
           description: 'The file itself is in the response, as well as an options object.'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteFile:
     post:
       tags:
@@ -431,7 +449,7 @@ paths:
         '200':
           description: OK
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/downloadArchive:
     post:
       tags:
@@ -448,7 +466,7 @@ paths:
         '200':
           description: The archive text file is sent as a response
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/updaterStatus:
     get:
       tags:
@@ -464,7 +482,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_14'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/updateServer:
     post:
       tags:
@@ -485,7 +503,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/isPinSet:
     post:
       tags:
@@ -501,7 +519,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_15'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/checkPin:
     post:
       tags:
@@ -522,7 +540,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/setPin:
     post:
       tags:
@@ -542,7 +560,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/generateNewAPIKey:
     post:
       tags:
@@ -558,7 +576,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_16'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteMp3:
     post:
       tags:
@@ -580,7 +598,7 @@ paths:
                 type: boolean
                 description: Whether the operation succeeded
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/config:
     get:
       tags: []
@@ -595,7 +613,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_17'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/setConfig:
     post:
       summary: Set config
@@ -614,7 +632,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
 components:
   schemas:
     body:
@@ -1285,8 +1303,8 @@ components:
         type:
           type: string
   securitySchemes:
-    Authenticate:
-      name: Authorization
+    Auth query parameter:
+      name: apiKey
       type: apiKey
-      in: header
+      in: query
       description: Use your public API key generated from the settings menu
