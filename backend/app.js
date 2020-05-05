@@ -2828,7 +2828,7 @@ app.post('/api/getRoles', optionalJwt, async (req, res) => {
     res.send({roles: roles});
 });
 
-app.post('/api/changeUser', optionalJwt, async (req, res) => {
+app.post('/api/updateUser', optionalJwt, async (req, res) => {
     let change_obj = req.body.change_object;
     try {
         const user_db_obj = users_db.get('users').find({uid: change_obj.uid});

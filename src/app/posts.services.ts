@@ -443,7 +443,7 @@ export class PostsService implements CanActivate {
     }
 
     changeUser(change_obj) {
-        return this.http.post(this.path + 'changeUser', {change_object: change_obj}, this.httpOptions);
+        return this.http.post(this.path + 'updateUser', {change_object: change_obj}, this.httpOptions);
     }
 
     deleteUser(uid) {
