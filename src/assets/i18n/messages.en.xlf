@@ -58,7 +58,7 @@
         <source>Add an arg</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <note priority="1" from="description">Add arg card title</note>
       </trans-unit>
@@ -66,7 +66,7 @@
         <source>Search by category</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <note priority="1" from="description">Search args by category button</note>
       </trans-unit>
@@ -74,7 +74,7 @@
         <source>Use arg value</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">57</context>
+          <context context-type="linenumber">64</context>
         </context-group>
         <note priority="1" from="description">Use arg value checkbox</note>
       </trans-unit>
@@ -82,7 +82,7 @@
         <source>Arg value</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">68</context>
         </context-group>
         <note priority="1" from="description">Arg value placeholder</note>
       </trans-unit>
@@ -90,7 +90,7 @@
         <source>Add arg</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">73</context>
         </context-group>
         <note priority="1" from="description">Search args by category button</note>
       </trans-unit>
@@ -98,7 +98,7 @@
         <source>Cancel</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
@@ -110,7 +110,7 @@
         <source>Modify</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">85</context>
         </context-group>
         <note priority="1" from="description">Arg modifier modify button</note>
       </trans-unit>
@@ -240,9 +240,9 @@
         </context-group>
         <note priority="1" from="description">Custom args placeholder</note>
       </trans-unit>
-      <trans-unit id="ccc7e92cbdd35e901acf9ad80941abee07bd8f60" datatype="html">
+      <trans-unit id="a6911c2157f1b775284bbe9654ce5eb30cf45d7f" datatype="html">
         <source>
-                                    No need to include URL, just everything after.
+                                    No need to include URL, just everything after. Args are delimited using two commas like so: ,,
                                 </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -794,8 +794,8 @@
         </context-group>
         <note priority="1" from="description">Video path setting input hint</note>
       </trans-unit>
-      <trans-unit id="f41145afc02fd47ef0576ac79acd2c47ebbf4901" datatype="html">
-        <source>Global custom args for downloads on the home page.</source>
+      <trans-unit id="6b995e7130b4d667eaab6c5f61b362ace486d26d" datatype="html">
+        <source>Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">146</context>
@@ -1338,8 +1338,8 @@
         </context-group>
         <note priority="1" from="description">Details</note>
       </trans-unit>
-      <trans-unit id="383000ab16bf415d5a1d61d7eb7b5959c72a9515" datatype="html">
-        <source>An error has occured:</source>
+      <trans-unit id="e9aff8e6df2e2bf6299ea27bb2894c70bc48bd4d" datatype="html">
+        <source>An error has occurred:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">27</context>
