@@ -6,20 +6,27 @@
             <div class="col-12">
                 <mat-card class="mat-elevation-z6">
                     <h6 i18n="Simulated args title">Simulated new args</h6>
-                    <mat-form-field style="width: 100%" color="accent">
-                        <mat-chip-list class="example-chip" #chipList aria-label="Args array" cdkDropList cdkDropListDisabled
+                    <mat-chip-list class="example-chip" #chipList aria-label="Args array" cdkDropList cdkDropListDisabled
                             cdkDropListOrientation="horizontal"
                             (cdkDropListDropped)="drop($event)">
-                            <mat-chip *ngFor="let arg of args_array; let i = index;" [selectable]="selectable" [removable]="removable" (removed)="remove(i)" cdkDrag>
+                            <mat-chip [matTooltip]="argsByKey[arg] ? argsByKey[arg]['description'] : null" *ngFor="let arg of args_array; let i = index;" [selectable]="selectable" [removable]="removable" (removed)="remove(i)" cdkDrag>
                                 {{arg}}
                                 <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                             </mat-chip>
                         </mat-chip-list>
-                        <input style="width: 100%;" matInput [matChipInputFor]="chipList"
+                    <mat-form-field style="width: 100%" color="accent">
+                        
+                        <input #chipper style="width: 100%;" [formControl]="chipCtrl" matInput [matAutocomplete]="autochip" [matChipInputFor]="chipList"
                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                             [matChipInputAddOnBlur]="addOnBlur"
                             (matChipInputTokenEnd)="add($event)">
                     </mat-form-field>
+                    <mat-autocomplete #autochip="matAutocomplete">
+                        <mat-option *ngFor="let arg of filteredChipOptions | async" [value]="arg.key">
+                            <span [innerHTML]="arg.key | highlight : chipCtrl.value"></span>
+                            <button style="float: right" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-card>
             </div>
             <div class="col-12">
