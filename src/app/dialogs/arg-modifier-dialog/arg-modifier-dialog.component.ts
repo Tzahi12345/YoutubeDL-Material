@@ -161,6 +161,11 @@ export class ArgModifierDialogComponent implements OnInit, AfterViewInit {
   add(event) {
     const input = event.input;
     const arg = event.value;
+
+    if (!arg || arg.trim().length === 0) {
+      return;
+    }
+
     this.args_array.push(arg);
     if (this.modified_args.length > 0) {
       this.modified_args += ',,'
