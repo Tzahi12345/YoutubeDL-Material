@@ -54,8 +54,6 @@ backend/subscriptions/channels/*
 backend/subscriptions/playlists/*
 backend/subscriptions/archives/*
 src/assets/default.json
-package-lock.json
-backend/package-lock.json
 backend/appdata/db.json
 backend/appdata/archives/archive_audio.txt
 backend/appdata/archives/archive_video.txt
