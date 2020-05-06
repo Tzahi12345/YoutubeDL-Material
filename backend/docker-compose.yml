@@ -9,6 +9,7 @@ services:
             - ./audio:/app/audio
             - ./video:/app/video
             - ./subscriptions:/app/subscriptions
+            - ./users:/app/users
         ports:
             - "8998:17442"
         image: tzahi12345/youtubedl-material:latest
