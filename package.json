@@ -1,6 +1,6 @@
 {
   "name": "youtube-dl-material",
-  "version": "3.6.0",
+  "version": "4.0.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
