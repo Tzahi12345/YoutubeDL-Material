@@ -10,6 +10,7 @@ function setLogger(input_logger) { logger = input_logger; }
 
 function initialize(input_logger) {
     setLogger(input_logger);
+    ensureConfigFileExists();
     ensureConfigItemsExist();
 }
 
@@ -18,6 +19,13 @@ function ensureConfigItemsExist() {
     for (let i = 0; i < config_keys.length; i++) {
         const config_key = config_keys[i];
         getConfigItem(config_key);
+    }
+}
+
+function ensureConfigFileExists() {
+    if (!fs.existsSync(configPath)) {
+        logger.info('Cannot find config file. Creating one with default values...');
+        fs.writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
     }
 }
 
@@ -62,8 +70,8 @@ function configExistsCheck() {
 * Gets config file and returns as a json
 */
 function getConfigFile() {
-    let raw_data = fs.readFileSync(configPath);
     try {
+        let raw_data = fs.readFileSync(configPath);
         let parsed_data = JSON.parse(raw_data);
         return parsed_data;
     } catch(e) {
