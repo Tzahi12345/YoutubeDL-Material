@@ -1218,7 +1218,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         const download = downloads[session][download_uid];
         updateDownloads();
 
-        youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        youtubedl.exec(url, downloadConfig, {}, async function(err, output) {
             download['downloading'] = false;
             download['timestamp_end'] = Date.now();
             var file_uid = null;
@@ -1275,6 +1275,14 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                         }
                         let success = NodeID3.write(tags, output_json['_filename']);
                         if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
+                    } else {
+                        const possible_webm_path = removeFileExtension(output_json['_filename']) + '.webm';
+                        const possible_mkv_path = removeFileExtension(output_json['_filename']) + '.mkv';
+                        const output_file_path =  removeFileExtension(output_json['_filename']) + '.mp4';
+
+                        // check if video file is not mp4
+                        if (fs.existsSync(possible_webm_path)) await convertFileToMp4(possible_webm_path, output_file_path);
+                        else if (fs.existsSync(possible_mkv_path)) await convertFileToMp4(possible_mkv_path, output_file_path);
                     }
 
                     // registers file in DB
@@ -1410,9 +1418,18 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
 
                 const possible_webm_path = removeFileExtension(video_info['_filename']) + '.webm';
                 const possible_mp4_path = removeFileExtension(video_info['_filename']) + '.mp4';
-                // check if audio file is webm
-                if (fs.existsSync(possible_webm_path)) await convertFileToMp3(possible_webm_path, video_info['_filename']);
-                else if (fs.existsSync(possible_mp4_path)) await convertFileToMp3(possible_mp4_path, video_info['_filename']);
+                const output_file_path =  removeFileExtension(video_info['_filename']) + '.mp3';
+                // check if audio file is not mp3
+                if (fs.existsSync(possible_webm_path)) await convertFileToMp3(possible_webm_path, output_file_path);
+                else if (fs.existsSync(possible_mp4_path)) await convertFileToMp3(possible_mp4_path, output_file_path);
+            } else {
+                const possible_webm_path = removeFileExtension(video_info['_filename']) + '.webm';
+                const possible_mkv_path = removeFileExtension(video_info['_filename']) + '.mkv';
+                const output_file_path =  removeFileExtension(video_info['_filename']) + '.mp4';
+
+                // check if video file is not mp4
+                if (fs.existsSync(possible_webm_path)) await convertFileToMp4(possible_webm_path, output_file_path);
+                else if (fs.existsSync(possible_mkv_path)) await convertFileToMp4(possible_mkv_path, output_file_path);
             }
 
             // registers file in DB
@@ -1471,7 +1488,7 @@ async function generateArgs(url, type, options) {
         var youtubePassword = options.youtubePassword;
 
         let downloadConfig = null;
-        let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
+        let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best';
 
         if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
             // tiktok videos fail when using the default format
@@ -1492,7 +1509,7 @@ async function generateArgs(url, type, options) {
             if (customOutput) {
                 downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", qualityPath, '--write-info-json', '--print-json'];
             } else {
-                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, videopath + '.%(ext)s'), qualityPath, '--write-info-json', '--print-json'];
             }
 
             if (is_audio && !options.skip_audio_args) {
@@ -1545,6 +1562,7 @@ async function generateArgs(url, type, options) {
 
         }
         // downloadConfig.map((arg) => `"${arg}"`);
+        logger.verbose(`Generated args: ${downloadConfig.toString()}`);
         resolve(downloadConfig);
     });
 }
@@ -1587,6 +1605,23 @@ async function convertFileToMp3(input_file, output_file) {
         })
         .on('error', (err) => {
             logger.error('Failed to convert audio file to the correct format.');
+            logger.error(err);
+            resolve(false);
+        }).save(output_file);
+    });
+}
+
+async function convertFileToMp4(input_file, output_file) {
+    logger.verbose(`Converting ${input_file} to ${output_file}...`);
+    return new Promise(resolve => {
+        ffmpeg(input_file).toFormat('mp4')
+        .on('end', () => {
+            logger.verbose(`Conversion for '${output_file}' complete.`);
+            fs.unlinkSync(input_file)
+            resolve(true);
+        })
+        .on('error', (err) => {
+            logger.error('Failed to convert video file to the correct format.');
             logger.error(err);
             resolve(false);
         }).save(output_file);

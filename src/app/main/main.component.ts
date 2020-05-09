@@ -108,47 +108,56 @@ export class MainComponent implements OnInit {
       {
         'resolution': null,
         'value': '',
-        'label': 'Max'
+        'label': 'Max',
+        'note': ''
       },
       {
         'resolution': '3840x2160',
         'value': '2160',
-        'label': '2160p (4K)'
+        'label': '2160p (4K)',
+        'note': '2160p'
       },
       {
         'resolution': '2560x1440',
         'value': '1440',
-        'label': '1440p'
+        'label': '1440p',
+        'note': '1440p'
       },
       {
         'resolution': '1920x1080',
         'value': '1080',
-        'label': '1080p'
+        'label': '1080p',
+        'note': '1080p'
       },
       {
         'resolution': '1280x720',
         'value': '720',
-        'label': '720p'
+        'label': '720p',
+        'note': '720p'
       },
       {
         'resolution': '720x480',
         'value': '480',
-        'label': '480p'
+        'label': '480p',
+        'note': '480p'
       },
       {
         'resolution': '480x360',
         'value': '360',
-        'label': '360p'
+        'label': '360p',
+        'note': '360p'
       },
       {
         'resolution': '360x240',
         'value': '240',
-        'label': '240p'
+        'label': '240p',
+        'note': '240p'
       },
       {
         'resolution': '256x144',
         'value': '144',
-        'label': '144p'
+        'label': '144p',
+        'note': '144p'
       }
     ],
     'audio': [
@@ -1032,14 +1041,16 @@ export class MainComponent implements OnInit {
       } else if (format_obj.type === 'video') {
         // check if video format is mp4
         const key = format.height.toString();
-        if (format.ext === 'mp4') {
+        if (true) {
           format_obj['height'] = format.height;
           format_obj['acodec'] = format.acodec;
           format_obj['format_id'] = format.format_id;
+          format_obj['ext'] = format.ext;
+          format_obj['note'] = format.format_note;
 
           // no acodec means no overwrite
           if (!(video_formats[key]) || format_obj['acodec'] !== 'none') {
-            video_formats[key] = format_obj;
+            video_formats[format_obj['note']] = format_obj;
           }
         }
       }

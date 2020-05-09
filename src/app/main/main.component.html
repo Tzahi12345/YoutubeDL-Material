@@ -27,7 +27,7 @@
                                     </mat-label>
                                     <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality">
                                       <ng-container *ngFor="let option of qualityOptions[(audioOnly) ? 'audio' : 'video']">
-                                        <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats'] && cachedAvailableFormats[url]['formats'][(audioOnly) ? 'audio' : 'video'][option.value]" [value]="option.value">
+                                        <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats'] && cachedAvailableFormats[url]['formats'][(audioOnly) ? 'audio' : 'video'][option.note]" [value]="option.note">
                                             {{option.label}}
                                         </mat-option>
                                       </ng-container>
