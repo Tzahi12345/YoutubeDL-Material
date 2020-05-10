@@ -1316,7 +1316,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         const ext = is_audio ? '.mp3' : '.mp4';
         var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
 
-        if (is_audio) options.skip_audio_args = true;
+        if (is_audio && url.includes('youtu')) { options.skip_audio_args = true; }
 
         // prepend with user if needed
         let multiUserMode = null;
