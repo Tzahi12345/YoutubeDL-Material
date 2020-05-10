@@ -1083,7 +1083,7 @@ function registerFileDB(file_path, type, multiUserMode = null) {
 
     if (multiUserMode) {
         auth_api.registerUserFile(multiUserMode.user, file_object, type);
-    } else {
+    } else if (type === 'audio' || type === 'video') {
         // remove existing video if overwriting
         db.get(`files.${type}`)
         .remove({
@@ -1093,6 +1093,8 @@ function registerFileDB(file_path, type, multiUserMode = null) {
         db.get(`files.${type}`)
             .push(file_object)
             .write();
+    } else if (type == 'subscription') {
+
     }
 
     return file_object['uid'];
