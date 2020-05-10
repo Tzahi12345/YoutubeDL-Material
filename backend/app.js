@@ -1892,7 +1892,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     
     const is_playlist = url.includes('playlist');
     let result_obj = null;
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight)
+    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || url.includes('twitch'))
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
