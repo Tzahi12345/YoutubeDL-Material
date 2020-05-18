@@ -1472,11 +1472,11 @@ async function generateArgs(url, type, options) {
 
         let downloadConfig = null;
         let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
-
-        if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
+        const is_youtube = !url.includes('youtu');
+        if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
             qualityPath = '-f best';
-        } else if (!is_audio && url.includes('reddit')) {
+        } else if (!is_audio && !is_youtube && url.includes('reddit')) {
             qualityPath = '-f bestvideo+bestaudio'
         }
 
@@ -1894,7 +1894,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     
     const is_playlist = url.includes('playlist');
     let result_obj = null;
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || url.includes('twitch') || url.includes('reddit'))
+    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || !url.includes('youtu'))
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
