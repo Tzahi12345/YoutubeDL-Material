@@ -1476,6 +1476,8 @@ async function generateArgs(url, type, options) {
         if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
             // tiktok videos fail when using the default format
             qualityPath = '-f best';
+        } else if (!is_audio && url.includes('reddit')) {
+            qualityPath = '-f bestvideo+bestaudio'
         }
 
         if (customArgs) {
@@ -1892,7 +1894,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     
     const is_playlist = url.includes('playlist');
     let result_obj = null;
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || url.includes('twitch'))
+    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || url.includes('twitch') || url.includes('reddit'))
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
