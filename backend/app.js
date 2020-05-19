@@ -1476,7 +1476,7 @@ async function generateArgs(url, type, options) {
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
             qualityPath = '-f best';
-        } else if (!is_audio && !is_youtube && url.includes('reddit')) {
+        } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
             qualityPath = '-f bestvideo+bestaudio'
         }
 
