@@ -1472,7 +1472,7 @@ async function generateArgs(url, type, options) {
 
         let downloadConfig = null;
         let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
-        const is_youtube = !url.includes('youtu');
+        const is_youtube = url.includes('youtu');
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
             qualityPath = '-f best';
