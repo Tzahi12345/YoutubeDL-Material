@@ -287,6 +287,15 @@
                 </div>
             </div>
             <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-4">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['use_cookies']"><ng-container i18n="Use cookies setting">Use Cookies</ng-container></mat-checkbox>
+                        <button class="checkbox-button" mat-stroked-button (click)="openCookiesUploaderDialog()"><ng-container i18n="Set cookies button">Set Cookies</ng-container></button>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
             <div *ngIf="new_config" class="container-fluid mt-1">
                 <app-updater></app-updater>
             </div>

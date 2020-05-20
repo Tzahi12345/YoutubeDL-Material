@@ -218,6 +218,10 @@ export class PostsService implements CanActivate {
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }
 
+    uploadCookiesFile(fileFormData) {
+        return this.http.post(this.path + 'uploadCookies', fileFormData, this.httpOptions);
+    }
+
     downloadArchive(sub) {
         return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
     }
