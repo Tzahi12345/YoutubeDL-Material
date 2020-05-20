@@ -8,6 +8,7 @@ var youtubedl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var compression = require('compression');
 var https = require('https');
+var multer  = require('multer');
 var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
@@ -1451,6 +1452,7 @@ async function generateArgs(url, type, options) {
     return new Promise(async resolve => {
         var videopath = '%(title)s';
         var globalArgs = config_api.getConfigItem('ytdl_custom_args');
+        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
         var is_audio = type === 'audio';
 
         var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
@@ -1504,6 +1506,14 @@ async function generateArgs(url, type, options) {
 
             if (youtubeUsername && youtubePassword) {
                 downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
+            }
+
+            if (useCookies) {
+                if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+                    downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
+                } else {
+                    logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
+                }
             }
         
             if (!useDefaultDownloadingAgent && customDownloadingAgent) {
@@ -2528,6 +2538,25 @@ app.post('/api/downloadArchive', async (req, res) => {
         res.sendFile(full_archive_path);
     } else {
         res.sendStatus(404);
+    }
+
+});
+
+var upload_multer = multer({ dest: __dirname + '/appdata/' });
+app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res) => {
+    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+
+    if (fs.existsSync(req.file.path)) {
+        fs.renameSync(req.file.path, new_path);
+    } else {
+        res.sendStatus(500);
+        return;
+    }
+
+    if (fs.existsSync(new_path)) {
+        res.send({success: true});
+    } else {
+        res.sendStatus(500);
     }
 
 });
