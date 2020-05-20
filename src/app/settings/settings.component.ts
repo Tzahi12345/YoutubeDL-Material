@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { CURRENT_VERSION } from 'app/consts';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { CookiesUploaderDialogComponent } from 'app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -153,6 +154,12 @@ export class SettingsComponent implements OnInit {
  getLatestGithubRelease() {
     this.postsService.getLatestGithubRelease().subscribe(res => {
       this.latestGithubRelease = res;
+    });
+  }
+
+  openCookiesUploaderDialog() {
+    this.dialog.open(CookiesUploaderDialogComponent, {
+      width: '65vw'
     });
   }
 

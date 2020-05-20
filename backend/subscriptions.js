@@ -265,6 +265,15 @@ async function getVideosForSub(sub, user_uid = null) {
             downloadConfig.push('--dateafter', sub.timerange);
         }
 
+        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
+        if (useCookies) {
+            if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+                downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
+            } else {
+                logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
+            }
+        }
+
         // get videos 
         logger.verbose('Subscribe: getting videos for subscription ' + sub.name);
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {

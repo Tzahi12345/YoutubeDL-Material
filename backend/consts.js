@@ -148,6 +148,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_allow_advanced_download',
         'path': 'YoutubeDLMaterial.Advanced.allow_advanced_download'
     },
+    'ytdl_use_cookies': {
+        'key': 'ytdl_use_cookies',
+        'path': 'YoutubeDLMaterial.Advanced.use_cookies'
+    },
     'ytdl_logger_level': {
         'key': 'ytdl_logger_level',
         'path': 'YoutubeDLMaterial.Advanced.logger_level'

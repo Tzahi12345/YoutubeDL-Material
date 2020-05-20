@@ -218,6 +218,7 @@ DEFAULT_CONFIG = {
         "custom_downloading_agent": "",
         "multi_user_mode": false,
         "allow_advanced_download": false,
+        "use_cookies": false,
         "logger_level": "info"
       }
     }
