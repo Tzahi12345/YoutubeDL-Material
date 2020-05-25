@@ -1835,7 +1835,7 @@ const optionalJwt = function (req, res, next) {
             res.sendStatus(401);
             return;
         }
-    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !req.query.jwt)) { // registration should get passed through
+    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !(req.path.includes('/api/config')) && !req.query.jwt)) { // registration should get passed through
         if (!req.query.jwt) {
             res.sendStatus(401);
             return;
