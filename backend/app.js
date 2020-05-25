@@ -165,7 +165,9 @@ var validDownloadingAgents = [
     'ffmpeg',
     'httpie',
     'wget'
-]
+];
+
+const subscription_timeouts = {};
 
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
@@ -616,15 +618,14 @@ function loadConfigValues() {
     logger.transports[2].level = logger_level;
 }
 
-function calculateSubcriptionRetrievalDelay(amount) {
-    // frequency is 5 mins
-    let frequency_in_ms = subscriptionsCheckInterval * 1000;
-    let minimum_frequency = 60 * 1000;
-    const first_frequency = frequency_in_ms/amount;
-    return (first_frequency < minimum_frequency) ? minimum_frequency : first_frequency;
+function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
+    // frequency is once every 5 mins by default
+    let interval_in_ms = subscriptionsCheckInterval * 1000;
+    const subinterval_in_ms = interval_in_ms/subscriptions_amount;
+    return subinterval_in_ms;
 }
 
-function watchSubscriptions() { 
+async function watchSubscriptions() { 
     let subscriptions = null;
     
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
@@ -646,10 +647,19 @@ function watchSubscriptions() {
     let current_delay = 0;
     for (let i = 0; i < subscriptions.length; i++) {
         let sub = subscriptions[i];
+
+        // don't check the sub if the last check for the same subscription has not completed
+        if (subscription_timeouts[sub.id]) {
+            logger.verbose(`Subscription: skipped checking ${sub.name} as the last check for ${sub.name} has not completed.`);
+            continue;
+        }
+
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
-        setTimeout(() => {
-            subscriptions_api.getVideosForSub(sub, sub.user_uid);
+        setTimeout(async () => {
+            await subscriptions_api.getVideosForSub(sub, sub.user_uid);
+            subscription_timeouts[sub.id] = false;
         }, current_delay);
+        subscription_timeouts[sub.id] = true;
         current_delay += delay_interval;
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
     }
@@ -2212,7 +2222,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
         else
             base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
         
-        let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
+        let appended_base_path = path.join(base_path, (subscription.isPlaylist ? 'playlists' : 'channels'), subscription.name, '/');
         let files;
         try {
             files = recFindByExt(appended_base_path, 'mp4');
