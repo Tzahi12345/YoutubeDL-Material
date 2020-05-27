@@ -1487,7 +1487,7 @@ async function generateArgs(url, type, options) {
         const is_youtube = url.includes('youtu');
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
-            qualityPath = '-f best';
+            qualityPath = null;
         } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
             qualityPath = '-f bestvideo+bestaudio'
         }
@@ -1504,10 +1504,12 @@ async function generateArgs(url, type, options) {
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
             } else {
-                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
             }
+
+            if (qualityPath) downloadConfig.push(qualityPath);
 
             if (is_audio && !options.skip_audio_args) {
                 downloadConfig.push('-x');
