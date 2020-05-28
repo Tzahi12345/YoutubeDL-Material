@@ -240,10 +240,10 @@ async function getVideosForSub(sub, user_uid = null) {
         if (sub.name) {
             appendedBasePath = getAppendedBasePath(sub, basePath);
         } else {
-            appendedBasePath = basePath + (sub.isPlaylist ? 'playlists/%(playlist_title)s' : 'channels/%(uploader)s');
+            appendedBasePath = path.join(basePath, (sub.isPlaylist ? 'playlists/%(playlist_title)s' : 'channels/%(uploader)s'));
         }
 
-        let downloadConfig = ['-o', appendedBasePath + '/%(title)s.mp4', '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '-ciw', '--write-annotations', '--write-thumbnail', '--write-info-json', '--print-json'];
+        let downloadConfig = ['-o', appendedBasePath + '/%(title)s.mp4', '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '-ciw', '--write-info-json', '--print-json'];
 
         let archive_dir = null;
         let archive_path = null;
@@ -275,10 +275,28 @@ async function getVideosForSub(sub, user_uid = null) {
         }
 
         // get videos 
-        logger.verbose('Subscribe: getting videos for subscription ' + sub.name);
+        logger.verbose('Subscription: getting videos for subscription ' + sub.name);
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
-            if (err) {
+            logger.verbose('Subscription: finished check for ' + sub.name);
+            if (err && !output) {
                 logger.error(err.stderr);
+                if (err.stderr.includes('This video is unavailable')) {
+                    logger.info('An error was encountered with at least one video, backup method will be used.')
+                    try {
+                        const outputs = err.stdout.split(/\r\n|\r|\n/);
+                        for (let i = 0; i < outputs.length; i++) {
+                            const output = JSON.parse(outputs[i]);
+                            handleOutputJSON(sub, sub_db, output, i === 0)
+                            if (err.stderr.includes(output['id']) && archive_path) {
+                                // we found a video that errored! add it to the archive to prevent future errors
+                                fs.appendFileSync(archive_path, output['id']);
+                            }
+                        }
+                    } catch(e) {
+                        logger.error('Backup method failed. See error below:');
+                        logger.error(e);
+                    }
+                }
                 resolve(false);
             } else if (output) {
                 if (output.length === 0 || (output.length === 1 && output[0] === '')) {
@@ -296,17 +314,8 @@ async function getVideosForSub(sub, user_uid = null) {
                         continue;
                     }
 
-                    if (sub.streamingOnly) {
-                        if (i === 0) {
-                            sub_db.assign({videos: []}).write();
-                        }
-
-                        // remove unnecessary info
-                        output_json.formats = null;
-
-                        // add to db
-                        sub_db.get('videos').push(output_json).write();
-                    }
+                    const reset_videos = i === 0;
+                    handleOutputJSON(sub, sub_db, output_json, reset_videos);
 
                     // TODO: Potentially store downloaded files in db?
         
@@ -315,6 +324,20 @@ async function getVideosForSub(sub, user_uid = null) {
             }
         });
     });
+}
+
+function handleOutputJSON(sub, sub_db, output_json, reset_videos = false) {
+    if (sub.streamingOnly) {
+        if (reset_videos) {
+            sub_db.assign({videos: []}).write();
+        }
+
+        // remove unnecessary info
+        output_json.formats = null;
+
+        // add to db
+        sub_db.get('videos').push(output_json).write();
+    }
 }
 
 function getAllSubscriptions(user_uid = null) {

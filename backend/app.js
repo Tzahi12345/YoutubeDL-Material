@@ -165,7 +165,9 @@ var validDownloadingAgents = [
     'ffmpeg',
     'httpie',
     'wget'
-]
+];
+
+const subscription_timeouts = {};
 
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
@@ -616,15 +618,14 @@ function loadConfigValues() {
     logger.transports[2].level = logger_level;
 }
 
-function calculateSubcriptionRetrievalDelay(amount) {
-    // frequency is 5 mins
-    let frequency_in_ms = subscriptionsCheckInterval * 1000;
-    let minimum_frequency = 60 * 1000;
-    const first_frequency = frequency_in_ms/amount;
-    return (first_frequency < minimum_frequency) ? minimum_frequency : first_frequency;
+function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
+    // frequency is once every 5 mins by default
+    let interval_in_ms = subscriptionsCheckInterval * 1000;
+    const subinterval_in_ms = interval_in_ms/subscriptions_amount;
+    return subinterval_in_ms;
 }
 
-function watchSubscriptions() { 
+async function watchSubscriptions() { 
     let subscriptions = null;
     
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
@@ -646,10 +647,19 @@ function watchSubscriptions() {
     let current_delay = 0;
     for (let i = 0; i < subscriptions.length; i++) {
         let sub = subscriptions[i];
+
+        // don't check the sub if the last check for the same subscription has not completed
+        if (subscription_timeouts[sub.id]) {
+            logger.verbose(`Subscription: skipped checking ${sub.name} as the last check for ${sub.name} has not completed.`);
+            continue;
+        }
+
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
-        setTimeout(() => {
-            subscriptions_api.getVideosForSub(sub, sub.user_uid);
+        setTimeout(async () => {
+            await subscriptions_api.getVideosForSub(sub, sub.user_uid);
+            subscription_timeouts[sub.id] = false;
         }, current_delay);
+        subscription_timeouts[sub.id] = true;
         current_delay += delay_interval;
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
     }
@@ -1496,7 +1506,7 @@ async function generateArgs(url, type, options) {
         const is_youtube = url.includes('youtu');
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
-            qualityPath = '-f best';
+            qualityPath = null;
         } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
             qualityPath = '-f bestvideo+bestaudio'
         }
@@ -1513,10 +1523,12 @@ async function generateArgs(url, type, options) {
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
             } else {
                 downloadConfig = ['-o', path.join(fileFolderPath, videopath + '.%(ext)s'), qualityPath, '--write-info-json', '--print-json'];
             }
+
+            if (qualityPath) downloadConfig.push(qualityPath);
 
             if (is_audio && !options.skip_audio_args) {
                 downloadConfig.push('-x');
@@ -1862,7 +1874,7 @@ const optionalJwt = function (req, res, next) {
             res.sendStatus(401);
             return;
         }
-    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !req.query.jwt)) { // registration should get passed through
+    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !(req.path.includes('/api/config')) && !req.query.jwt)) { // registration should get passed through
         if (!req.query.jwt) {
             res.sendStatus(401);
             return;
@@ -2249,7 +2261,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
         else
             base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
         
-        let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
+        let appended_base_path = path.join(base_path, (subscription.isPlaylist ? 'playlists' : 'channels'), subscription.name, '/');
         let files;
         try {
             files = recFindByExt(appended_base_path, 'mp4');

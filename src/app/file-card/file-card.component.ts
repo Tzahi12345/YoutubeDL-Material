@@ -44,6 +44,13 @@ export class FileCardComponent implements OnInit {
 
   ngOnInit() {
     this.type = this.isAudio ? 'audio' : 'video';
+
+    if (this.file && this.file.url && this.file.url.includes('youtu')) {
+      const string_id = (this.isPlaylist ? '?list=' : '?v=')
+      const index_offset = (this.isPlaylist ? 6 : 3);
+      const end_index = this.file.url.indexOf(string_id) + index_offset;
+      this.name = this.file.url.substring(end_index, this.file.url.length);
+    }
   }
 
   deleteFile(blacklistMode = false) {
