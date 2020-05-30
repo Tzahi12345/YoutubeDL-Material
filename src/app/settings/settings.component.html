@@ -152,6 +152,10 @@
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
                         <p>Note: This setting only applies to downloads on the Home page. If you would like to use youtube-dl archive functionality in subscriptions, head down to the Subscriptions section.</p>
                     </div>
+
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['safe_download_override']"><ng-container i18n="Safe download override setting">Safe download override</ng-container></mat-checkbox>
+                    </div>
                 </div>
             </div>
         </ng-template>

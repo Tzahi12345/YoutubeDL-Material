@@ -1893,8 +1893,11 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
 
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
     const is_playlist = url.includes('playlist');
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
+
+    let result_obj = null;
+    if (safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
         result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
@@ -1920,9 +1923,11 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
     
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
     const is_playlist = url.includes('playlist');
+
     let result_obj = null;
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || !url.includes('youtu'))
+    if (safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || !url.includes('youtu'))
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);

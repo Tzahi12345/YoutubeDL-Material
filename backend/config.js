@@ -182,7 +182,8 @@ DEFAULT_CONFIG = {
         "path-audio": "audio/",
         "path-video": "video/",
         "use_youtubedl_archive": false,
-        "custom_args": ""
+        "custom_args": "",
+        "safe_download_override": false
       },
       "Extra": {
         "title_top": "YoutubeDL-Material",
