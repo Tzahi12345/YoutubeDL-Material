@@ -40,6 +40,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_custom_args',
         'path': 'YoutubeDLMaterial.Downloader.custom_args'
     },
+    'ytdl_safe_download_override': {
+        'key': 'ytdl_safe_download_override',
+        'path': 'YoutubeDLMaterial.Downloader.safe_download_override'
+    },
 
     // Extra
     'ytdl_title_top': {
