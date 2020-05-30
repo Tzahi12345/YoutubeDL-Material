@@ -1246,6 +1246,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             } else if (output) {
                 if (output.length === 0 || output[0].length === 0) {
                     download['error'] = 'No output. Check if video already exists in your archive.';
+                    logger.warn(`No output received for video download, check if it exists in your archive.`)
                     updateDownloads();
 
                     resolve(false);
@@ -1296,10 +1297,10 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
 
                 let is_playlist = file_names.length > 1;
 
-                if (options.merged_string) {
-                    let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
+                if (options.merged_string !== null && options.merged_string !== undefined) {
+                    let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                     let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = path.join(archivePath, `archive_${type}.txt`);
+                    const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -1430,10 +1431,10 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             const base_file_name = video_info._filename.substring(fileFolderPath.length, video_info._filename.length);
             file_uid = registerFileDB(base_file_name, type, multiUserMode);
 
-            if (options.merged_string) {
-                let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
+            if (options.merged_string !== null && options.merged_string !== undefined) {
+                let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                 let diff = current_merged_archive.replace(options.merged_string, '');
-                const archive_path = req.isAuthenticated() ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 fs.appendFileSync(archive_path, diff);
             }
 
@@ -1534,7 +1535,11 @@ async function generateArgs(url, type, options) {
 
             let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
             if (useYoutubeDLArchive) {
-                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                const archive_folder = options.user ? path.join(fileFolderPath, 'archives') : archivePath;
+                const archive_path = path.join(archive_folder, `archive_${type}.txt`);
+                
+                fs.ensureDirSync(archive_folder);
+                
                 // create archive file if it doesn't exist
                 if (!fs.existsSync(archive_path)) {
                     fs.closeSync(fs.openSync(archive_path, 'w'));
@@ -1546,7 +1551,7 @@ async function generateArgs(url, type, options) {
                     fs.closeSync(fs.openSync(blacklist_path, 'w'));
                 }
 
-                let merged_path = fileFolderPath + 'merged.txt';
+                let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
                 fs.ensureFileSync(merged_path);
                 // merges blacklist and regular archive
                 let inputPathList = [archive_path, blacklist_path];
@@ -1568,6 +1573,7 @@ async function generateArgs(url, type, options) {
             }
 
         }
+        logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
         // downloadConfig.map((arg) => `"${arg}"`);
         resolve(downloadConfig);
     });
