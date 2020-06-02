@@ -1,8 +1,8 @@
-FROM alpine:3.11
+FROM alpine:3.12
 
 RUN apk add --no-cache \
     npm \
-    python \
+    python2 \
     ffmpeg \
   && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
     atomicparsley
