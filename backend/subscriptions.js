@@ -323,6 +323,8 @@ async function getVideosForSub(sub, user_uid = null) {
                 resolve(true);
             }
         });
+    }, err => {
+        logger.error(err);
     });
 }
 
@@ -337,6 +339,9 @@ function handleOutputJSON(sub, sub_db, output_json, reset_videos = false) {
 
         // add to db
         sub_db.get('videos').push(output_json).write();
+    } else {
+        // TODO: make multiUserMode obj
+        db_api.registerFileDB(output_json['_filename'], sub.type, multiUserMode, sub);
     }
 }
 
