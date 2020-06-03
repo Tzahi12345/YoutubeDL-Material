@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,21 +25,21 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatSortModule} from '@angular/material/sort';
-import {MatTableModule} from '@angular/material/table';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {ClipboardModule} from '@angular/cdk/clipboard';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { FileCardComponent } from './file-card/file-card.component';
-import {RouterModule} from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
 import { PlayerComponent } from './player/player.component';
-import {VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule} from 'ngx-videogular';
+import { VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule } from 'ngx-videogular';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
@@ -52,7 +52,8 @@ import { SubscriptionFileCardComponent } from './subscription/subscription-file-
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
-import {MatChipsModule} from '@angular/material/chips';
+import { MatChipsModule } from '@angular/material/chips';
+import { NgxFileDropModule } from 'ngx-file-drop';
 
 import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
@@ -69,6 +70,8 @@ import { ModifyUsersComponent } from './components/modify-users/modify-users.com
 import { AddUserDialogComponent } from './dialogs/add-user-dialog/add-user-dialog.component';
 import { ManageUserComponent } from './components/manage-user/manage-user.component';
 import { ManageRoleComponent } from './components/manage-role/manage-role.component';
+import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
+
 registerLocaleData(es, 'es');
 
 export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
@@ -105,7 +108,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     ModifyUsersComponent,
     AddUserDialogComponent,
     ManageUserComponent,
-    ManageRoleComponent
+    ManageRoleComponent,
+    CookiesUploaderDialogComponent
   ],
   imports: [
     CommonModule,
@@ -145,6 +149,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatChipsModule,
     DragDropModule,
     ClipboardModule,
+    NgxFileDropModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

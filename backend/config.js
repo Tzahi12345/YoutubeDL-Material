@@ -182,7 +182,8 @@ DEFAULT_CONFIG = {
         "path-audio": "audio/",
         "path-video": "video/",
         "use_youtubedl_archive": false,
-        "custom_args": ""
+        "custom_args": "",
+        "safe_download_override": false
       },
       "Extra": {
         "title_top": "YoutubeDL-Material",
@@ -218,6 +219,7 @@ DEFAULT_CONFIG = {
         "custom_downloading_agent": "",
         "multi_user_mode": false,
         "allow_advanced_download": false,
+        "use_cookies": false,
         "logger_level": "info"
       }
     }

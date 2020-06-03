@@ -30,7 +30,7 @@ export class DownloadItemComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    if (this.download && this.download.url && this.download.url.includes('youtube')) {
+    if (this.download && this.download.url && this.download.url.includes('youtu')) {
       const string_id = (this.download.is_playlist ? '?list=' : '?v=')
       const index_offset = (this.download.is_playlist ? 6 : 3);
       const end_index = this.download.url.indexOf(string_id) + index_offset;

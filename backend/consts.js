@@ -40,6 +40,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_custom_args',
         'path': 'YoutubeDLMaterial.Downloader.custom_args'
     },
+    'ytdl_safe_download_override': {
+        'key': 'ytdl_safe_download_override',
+        'path': 'YoutubeDLMaterial.Downloader.safe_download_override'
+    },
 
     // Extra
     'ytdl_title_top': {
@@ -147,6 +151,10 @@ let CONFIG_ITEMS = {
     'ytdl_allow_advanced_download': {
         'key': 'ytdl_allow_advanced_download',
         'path': 'YoutubeDLMaterial.Advanced.allow_advanced_download'
+    },
+    'ytdl_use_cookies': {
+        'key': 'ytdl_use_cookies',
+        'path': 'YoutubeDLMaterial.Advanced.use_cookies'
     },
     'ytdl_logger_level': {
         'key': 'ytdl_logger_level',

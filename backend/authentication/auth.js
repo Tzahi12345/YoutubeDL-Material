@@ -430,8 +430,8 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
                 fs.appendFileSync(blacklistPath, line);
               }
           } else {
-              logger.info('Could not find archive file for audio files. Creating...');
-              fs.closeSync(fs.openSync(archive_path, 'w'));
+              logger.info(`Could not find archive file for ${type} files. Creating...`);
+              fs.ensureFileSync(archive_path);
           }
       }
     }

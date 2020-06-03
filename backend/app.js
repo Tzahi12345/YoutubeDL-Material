@@ -8,6 +8,7 @@ var youtubedl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var compression = require('compression');
 var https = require('https');
+var multer  = require('multer');
 var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
@@ -164,7 +165,9 @@ var validDownloadingAgents = [
     'ffmpeg',
     'httpie',
     'wget'
-]
+];
+
+const subscription_timeouts = {};
 
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
@@ -615,15 +618,14 @@ function loadConfigValues() {
     logger.transports[2].level = logger_level;
 }
 
-function calculateSubcriptionRetrievalDelay(amount) {
-    // frequency is 5 mins
-    let frequency_in_ms = subscriptionsCheckInterval * 1000;
-    let minimum_frequency = 60 * 1000;
-    const first_frequency = frequency_in_ms/amount;
-    return (first_frequency < minimum_frequency) ? minimum_frequency : first_frequency;
+function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
+    // frequency is once every 5 mins by default
+    let interval_in_ms = subscriptionsCheckInterval * 1000;
+    const subinterval_in_ms = interval_in_ms/subscriptions_amount;
+    return subinterval_in_ms;
 }
 
-function watchSubscriptions() { 
+async function watchSubscriptions() { 
     let subscriptions = null;
     
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
@@ -645,10 +647,19 @@ function watchSubscriptions() {
     let current_delay = 0;
     for (let i = 0; i < subscriptions.length; i++) {
         let sub = subscriptions[i];
+
+        // don't check the sub if the last check for the same subscription has not completed
+        if (subscription_timeouts[sub.id]) {
+            logger.verbose(`Subscription: skipped checking ${sub.name} as the last check for ${sub.name} has not completed.`);
+            continue;
+        }
+
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
-        setTimeout(() => {
-            subscriptions_api.getVideosForSub(sub, sub.user_uid);
+        setTimeout(async () => {
+            await subscriptions_api.getVideosForSub(sub, sub.user_uid);
+            subscription_timeouts[sub.id] = false;
         }, current_delay);
+        subscription_timeouts[sub.id] = true;
         current_delay += delay_interval;
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
     }
@@ -1237,6 +1248,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             } else if (output) {
                 if (output.length === 0 || output[0].length === 0) {
                     download['error'] = 'No output. Check if video already exists in your archive.';
+                    logger.warn(`No output received for video download, check if it exists in your archive.`)
                     updateDownloads();
 
                     resolve(false);
@@ -1287,10 +1299,10 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
 
                 let is_playlist = file_names.length > 1;
 
-                if (options.merged_string) {
-                    let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
+                if (options.merged_string !== null && options.merged_string !== undefined) {
+                    let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                     let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = path.join(archivePath, `archive_${type}.txt`);
+                    const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -1318,7 +1330,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         const ext = is_audio ? '.mp3' : '.mp4';
         var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
 
-        if (is_audio) options.skip_audio_args = true;
+        if (is_audio && url.includes('youtu')) { options.skip_audio_args = true; }
 
         // prepend with user if needed
         let multiUserMode = null;
@@ -1421,10 +1433,10 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             const base_file_name = video_info._filename.substring(fileFolderPath.length, video_info._filename.length);
             file_uid = registerFileDB(base_file_name, type, multiUserMode);
 
-            if (options.merged_string) {
-                let current_merged_archive = fs.readFileSync(fileFolderPath + 'merged.txt', 'utf8');
+            if (options.merged_string !== null && options.merged_string !== undefined) {
+                let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                 let diff = current_merged_archive.replace(options.merged_string, '');
-                const archive_path = req.isAuthenticated() ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 fs.appendFileSync(archive_path, diff);
             }
 
@@ -1453,6 +1465,7 @@ async function generateArgs(url, type, options) {
     return new Promise(async resolve => {
         var videopath = '%(title)s';
         var globalArgs = config_api.getConfigItem('ytdl_custom_args');
+        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
         var is_audio = type === 'audio';
 
         var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
@@ -1474,10 +1487,12 @@ async function generateArgs(url, type, options) {
 
         let downloadConfig = null;
         let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
-
-        if (!is_audio && (url.includes('tiktok') || url.includes('pscp.tv'))) {
+        const is_youtube = url.includes('youtu');
+        if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
-            qualityPath = '-f best';
+            qualityPath = null;
+        } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
+            qualityPath = '-f bestvideo+bestaudio'
         }
 
         if (customArgs) {
@@ -1492,10 +1507,12 @@ async function generateArgs(url, type, options) {
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
             } else {
-                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), qualityPath, '--write-info-json', '--print-json'];
+                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
             }
+
+            if (qualityPath) downloadConfig.push(qualityPath);
 
             if (is_audio && !options.skip_audio_args) {
                 downloadConfig.push('-x');
@@ -1505,6 +1522,14 @@ async function generateArgs(url, type, options) {
             if (youtubeUsername && youtubePassword) {
                 downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
             }
+
+            if (useCookies) {
+                if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+                    downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
+                } else {
+                    logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
+                }
+            }
         
             if (!useDefaultDownloadingAgent && customDownloadingAgent) {
                 downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
@@ -1512,7 +1537,11 @@ async function generateArgs(url, type, options) {
 
             let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
             if (useYoutubeDLArchive) {
-                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                const archive_folder = options.user ? path.join(fileFolderPath, 'archives') : archivePath;
+                const archive_path = path.join(archive_folder, `archive_${type}.txt`);
+                
+                fs.ensureDirSync(archive_folder);
+                
                 // create archive file if it doesn't exist
                 if (!fs.existsSync(archive_path)) {
                     fs.closeSync(fs.openSync(archive_path, 'w'));
@@ -1524,7 +1553,7 @@ async function generateArgs(url, type, options) {
                     fs.closeSync(fs.openSync(blacklist_path, 'w'));
                 }
 
-                let merged_path = fileFolderPath + 'merged.txt';
+                let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
                 fs.ensureFileSync(merged_path);
                 // merges blacklist and regular archive
                 let inputPathList = [archive_path, blacklist_path];
@@ -1546,6 +1575,7 @@ async function generateArgs(url, type, options) {
             }
 
         }
+        logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
         // downloadConfig.map((arg) => `"${arg}"`);
         resolve(downloadConfig);
     });
@@ -1815,7 +1845,7 @@ const optionalJwt = function (req, res, next) {
             res.sendStatus(401);
             return;
         }
-    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !req.query.jwt)) { // registration should get passed through
+    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !(req.path.includes('/api/config')) && !req.query.jwt)) { // registration should get passed through
         if (!req.query.jwt) {
             res.sendStatus(401);
             return;
@@ -1865,8 +1895,11 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
 
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
     const is_playlist = url.includes('playlist');
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
+
+    let result_obj = null;
+    if (safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
         result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
@@ -1892,9 +1925,11 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
     
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
     const is_playlist = url.includes('playlist');
+
     let result_obj = null;
-    if (is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight)
+    if (safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || !url.includes('youtu'))
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
@@ -2202,7 +2237,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
         else
             base_path = config_api.getConfigItem('ytdl_subscriptions_base_path');
         
-        let appended_base_path = path.join(base_path, subscription.isPlaylist ? 'playlists' : 'channels', subscription.name, '/');
+        let appended_base_path = path.join(base_path, (subscription.isPlaylist ? 'playlists' : 'channels'), subscription.name, '/');
         let files;
         try {
             files = recFindByExt(appended_base_path, 'mp4');
@@ -2528,6 +2563,25 @@ app.post('/api/downloadArchive', async (req, res) => {
         res.sendFile(full_archive_path);
     } else {
         res.sendStatus(404);
+    }
+
+});
+
+var upload_multer = multer({ dest: __dirname + '/appdata/' });
+app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res) => {
+    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+
+    if (fs.existsSync(req.file.path)) {
+        fs.renameSync(req.file.path, new_path);
+    } else {
+        res.sendStatus(500);
+        return;
+    }
+
+    if (fs.existsSync(new_path)) {
+        res.send({success: true});
+    } else {
+        res.sendStatus(500);
     }
 
 });

@@ -73,6 +73,8 @@ export class PostsService implements CanActivate {
             this.httpOptions.params = this.httpOptions.params.set('sessionID', this.session_id);
         });
 
+        const login_not_required = this.router.url !== '/player'
+
         // get config
         this.loadNavItems().subscribe(res => {
             const result = !this.debugMode ? res['config_file'] : res;
@@ -84,6 +86,8 @@ export class PostsService implements CanActivate {
                         this.token = localStorage.getItem('jwt_token');
                         this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
                         this.jwtAuth();
+                    } else if (login_not_required) {
+                        this.setInitialized();
                     } else {
                         this.sendToLogin();
                     }
@@ -216,6 +220,10 @@ export class PostsService implements CanActivate {
                                                             uid: uid
                                                             },
                                                           {responseType: 'blob', params: this.httpOptions.params});
+    }
+
+    uploadCookiesFile(fileFormData) {
+        return this.http.post(this.path + 'uploadCookies', fileFormData, this.httpOptions);
     }
 
     downloadArchive(sub) {
