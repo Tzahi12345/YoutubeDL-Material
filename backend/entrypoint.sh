@@ -9,7 +9,7 @@ if [ "${1#-}" != "$1" ]; then
 fi
 
 # chown current working directory to current user
-if [ "$@" = "$CMD" ] && [ "$(id -u)" = "0" ]; then
+if [ "$*" = "$CMD" ] && [ "$(id -u)" = "0" ]; then
   find . \! -user "$UID" -exec chown "$UID:$GID" -R '{}' +
   exec su-exec "$UID:$GID" "$0" "$@"
 fi
