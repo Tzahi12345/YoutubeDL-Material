@@ -16,9 +16,13 @@ RUN apk add --no-cache \
 # switch to default user to not chown node_modules on startup
 USER $USER
 WORKDIR /app
-
 COPY --chown=$UID:$GID [ "package.json", "package-lock.json", "/app/" ]
+
+# run npm install as root, required for Windows hosts
+USER root
 RUN npm install
+
+RUN chown -R $UID:$GID ./
 
 COPY --chown=$UID:$GID [ "./", "/app/" ]
 
