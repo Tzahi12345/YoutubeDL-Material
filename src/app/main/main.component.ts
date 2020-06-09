@@ -439,10 +439,11 @@ export class MainComponent implements OnInit {
 
   public removeFromMp3(name: string) {
     for (let i = 0; i < this.mp3s.length; i++) {
-      if (this.mp3s[i].id === name) {
+      if (this.mp3s[i].id === name || this.mp3s[i].id + '.mp3' === name) {
         this.mp3s.splice(i, 1);
       }
     }
+    this.getMp3s();
   }
 
   public removePlaylistMp3(playlistID, index) {
@@ -457,10 +458,11 @@ export class MainComponent implements OnInit {
 
   public removeFromMp4(name: string) {
     for (let i = 0; i < this.mp4s.length; i++) {
-      if (this.mp4s[i].id === name) {
+      if (this.mp4s[i].id === name || this.mp4s[i].id + '.mp4' === name) {
         this.mp4s.splice(i, 1);
       }
     }
+    this.getMp4s();
   }
 
   public removePlaylistMp4(playlistID, index) {
