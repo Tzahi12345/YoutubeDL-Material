@@ -1,9 +1,10 @@
 FROM alpine:3.12
 
-ENV UID=1000 GID=1000
-RUN export user=youtube \
-  && addgroup -S $user -g $GID && adduser -D -S $user -G $user -u $UID
-USER $user
+ENV UID=1000 \
+  GID=1000 \
+  USER=youtube
+
+RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
 RUN apk add --no-cache \
     ffmpeg \
@@ -14,12 +15,13 @@ RUN apk add --no-cache \
     atomicparsley
 
 WORKDIR /app
-
 COPY --chown=$UID:$GID [ "package.json", "package-lock.json", "/app/" ]
-RUN npm install
+
+RUN npm install && chown -R $UID:$GID ./
 
 COPY --chown=$UID:$GID [ "./", "/app/" ]
 
 EXPOSE 17442
+
 ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "node", "app.js" ]

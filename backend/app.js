@@ -1745,7 +1745,10 @@ async function autoUpdateYoutubeDL() {
                     resolve(true);
                 });
             }
-        
+        })
+        .catch(err => {
+            logger.error('Failed to check youtube-dl version for an update.')
+            logger.error(err)
         });
     });
 }
