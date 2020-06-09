@@ -1,3 +1,8 @@
+var fs = require('fs-extra')
+var path = require('path')
+var utils = require('./utils')
+const { uuid } = require('uuidv4');
+
 var logger = null;
 var db = null;
 var users_db = null;
@@ -23,8 +28,8 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
     path_object = path.parse(file_object['path']);
     file_object['path'] = path.format(path_object);
 
-    if (multiUserMode) {
-        if (!sub) {
+    if (!sub) {
+        if (multiUserMode) {
             const user_uid = multiUserMode.user;
             users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
                 .remove({
@@ -35,36 +40,37 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
                 .push(file_object)
                 .write();
         } else {
-            
-        }
-    } else if (!sub) {
-        // remove existing video if overwriting
-        db.get(`files.${type}`)
-        .remove({
-            path: file_object['path']
-        }).write();
+            // remove existing video if overwriting
+            db.get(`files.${type}`)
+                .remove({
+                    path: file_object['path']
+                }).write();
 
-        db.get(`files.${type}`)
-            .push(file_object)
-            .write();
-    } else if (sub) {
-        if (multi)
+            db.get(`files.${type}`)
+                .push(file_object)
+                .write();
+        }
     } else {
-        // this should never be used
-        logger.error('Failed to determine file type during video DB registration.');
-        return null;
+        sub_db = null;
+        if (multiUserMode) {
+            const user_uid = multiUserMode.user;
+            sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
+        } else {
+            sub_db = db.get('subscriptions').find({id: sub.id});
+        }
+        sub_db.get('videos').push(file_object).write();
     }
 
     return file_object['uid'];
 }
 
 function generateFileObject(id, type, customPath = null) {
-    var jsonobj = (type === 'audio') ? getJSONMp3(id, customPath, true) : getJSONMp4(id, customPath, true);
+    var jsonobj = (type === 'audio') ? utils.getJSONMp3(id, customPath, true) : utils.getJSONMp4(id, customPath, true);
     if (!jsonobj) {
         return null;
     }
     const ext = (type === 'audio') ? '.mp3' : '.mp4'
-    const file_path = getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
+    const file_path = utils.getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
     // console.
     var stats = fs.statSync(path.join(__dirname, file_path));
 
@@ -79,7 +85,7 @@ function generateFileObject(id, type, customPath = null) {
     var thumbnail = jsonobj.thumbnail;
     var duration = jsonobj.duration;
     var isaudio = type === 'audio';
-    var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
+    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
     return file_obj;
 }
 
