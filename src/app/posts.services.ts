@@ -73,7 +73,7 @@ export class PostsService implements CanActivate {
             this.httpOptions.params = this.httpOptions.params.set('sessionID', this.session_id);
         });
 
-        const login_not_required = this.router.url !== '/player'
+        const login_not_required = window.location.href.includes('/player');
 
         // get config
         this.loadNavItems().subscribe(res => {
