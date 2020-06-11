@@ -2149,10 +2149,11 @@ app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
 app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
     let deleteForever = req.body.deleteForever;
     let file = req.body.file;
+    let file_uid = req.body.file_uid;
     let sub = req.body.sub;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever, user_uid);
+    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever, file_uid, user_uid);
 
     if (success) {
         res.send({
@@ -2181,6 +2182,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     if (subscription.name && !subscription.streamingOnly) {
         var parsed_files = subscription.videos;
         if (!parsed_files) {
+            parsed_files = [];
             let base_path = null;
             if (user_uid)
                 base_path = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');

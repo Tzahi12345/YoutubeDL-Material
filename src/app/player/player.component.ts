@@ -127,7 +127,7 @@ export class PlayerComponent implements OnInit {
       this.currentItem = this.playlist[0];
       this.currentIndex = 0;
       this.show_player = true;
-    } else if (this.type === 'subscription' || this.fileNames) {
+    } else if (this.subscriptionName || this.fileNames) {
       this.show_player = true;
       this.parseFileNames();
     }
@@ -180,9 +180,6 @@ export class PlayerComponent implements OnInit {
     if (this.type === 'audio') {
       fileType = 'audio/mp3';
     } else if (this.type === 'video') {
-      fileType = 'video/mp4';
-    } else if (this.type === 'subscription') {
-      // only supports mp4 for now
       fileType = 'video/mp4';
     } else {
       // error

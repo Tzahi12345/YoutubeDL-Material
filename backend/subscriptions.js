@@ -60,7 +60,7 @@ async function subscribe(sub, user_uid = null) {
         let success = await getSubscriptionInfo(sub, user_uid);
         
         if (success) {
-            sub = sub_db.get().value();
+            sub = sub_db.value();
             getVideosForSub(sub, user_uid);
         } else {
             logger.error('Subscribe: Failed to get subscription info. Subscribe failed.')
@@ -175,16 +175,21 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
 
 }
 
-async function deleteSubscriptionFile(sub, file, deleteForever, user_uid = null) {
+async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
     let basePath = null;
-    if (user_uid)
+    let sub_db = null;
+    if (user_uid) {
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
-    else
+        sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
+    } else {
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        sub_db = db.get('subscriptions').find({id: sub.id});
+    }
     const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const name = file;
     let retrievedID = null;
+    sub_db.get('videos').remove({uid: file_uid}).write();
     return new Promise(resolve => {
         let filePath = appendedBasePath;
         var jsonPath = path.join(__dirname,filePath,name+'.info.json');

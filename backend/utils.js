@@ -2,6 +2,8 @@ var fs = require('fs-extra')
 var path = require('path')
 const config_api = require('./config');
 
+const is_windows = process.platform === 'win32';
+
 function getTrueFileName(unfixed_path, type) {
     let fixed_path = unfixed_path;
 

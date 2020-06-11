@@ -289,8 +289,9 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode}, this.httpOptions)
     }
 
-    deleteSubscriptionFile(sub, file, deleteForever) {
-        return this.http.post(this.path + 'deleteSubscriptionFile', {sub: sub, file: file, deleteForever: deleteForever}, this.httpOptions)
+    deleteSubscriptionFile(sub, file, deleteForever, file_uid) {
+        return this.http.post(this.path + 'deleteSubscriptionFile', {sub: sub, file: file, deleteForever: deleteForever,
+                                                                    file_uid: file_uid}, this.httpOptions)
     }
 
     getSubscription(id) {
