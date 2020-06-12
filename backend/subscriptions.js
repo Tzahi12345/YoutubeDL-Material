@@ -31,7 +31,6 @@ async function subscribe(sub, user_uid = null) {
     return new Promise(async resolve => {
         // sub should just have url and name. here we will get isPlaylist and path
         sub.isPlaylist = sub.url.includes('playlist');
-        sub.type = 'video'; // TODO: eventually change
         sub.videos = [];
 
         let url_exists = false;

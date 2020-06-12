@@ -2099,6 +2099,9 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let url = req.body.url;
     let timerange = req.body.timerange;
     let streamingOnly = req.body.streamingOnly;
+    let audioOnly = req.body.audioOnly;
+    let customArgs = req.body.customArgs;
+    let customOutput = req.body.customOutput;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     const new_sub = {
@@ -2106,12 +2109,21 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
                         url: url,
                         id: uuid(),
                         streamingOnly: streamingOnly,
-                        user_uid: user_uid
+                        user_uid: user_uid,
+                        type: audioOnly ? 'audio' : 'video'
                     };
 
     // adds timerange if it exists, otherwise all videos will be downloaded
     if (timerange) {
         new_sub.timerange = timerange;
+    }
+
+    if (customArgs && customArgs !== '') {
+        sub.custom_args = customArgs;
+    }
+
+    if (customOutput && customOutput !== '') {
+        sub.custom_output = customOutput;
     }
 
     const result_obj = await subscriptions_api.subscribe(new_sub, user_uid);

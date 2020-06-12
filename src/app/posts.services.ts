@@ -280,9 +280,9 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type}, this.httpOptions);
     }
 
-    createSubscription(url, name, timerange = null, streamingOnly = false) {
-        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly},
-                            this.httpOptions);
+    createSubscription(url, name, timerange = null, streamingOnly = false, audioOnly = false, customArgs = null, customFileOutput = null) {
+        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly,
+                                audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput}, this.httpOptions);
     }
 
     unsubscribe(sub, deleteMode = false) {

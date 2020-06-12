@@ -2,6 +2,7 @@ var fs = require('fs-extra')
 var path = require('path')
 var utils = require('./utils')
 const { uuid } = require('uuidv4');
+const config_api = require('./config');
 
 var logger = null;
 var db = null;
@@ -16,7 +17,7 @@ function initialize(input_db, input_users_db, input_logger) {
 
 function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
     const file_id = file_path.substring(0, file_path.length-4);
-    const file_object = generateFileObject(file_id, type, multiUserMode && multiUserMode.file_path);
+    const file_object = generateFileObject(file_id, type, multiUserMode && multiUserMode.file_path, sub);
     if (!file_object) {
         logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
         return false;
@@ -64,7 +65,10 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
     return file_object['uid'];
 }
 
-function generateFileObject(id, type, customPath = null) {
+function generateFileObject(id, type, customPath = null, sub = null) {
+    if (!customPath && sub) {
+        customPath = getAppendedBasePathSub(sub, config_api.getConfigItem('ytdl_subscriptions_base_path'));
+    }
     var jsonobj = (type === 'audio') ? utils.getJSONMp3(id, customPath, true) : utils.getJSONMp4(id, customPath, true);
     if (!jsonobj) {
         return null;
@@ -87,6 +91,10 @@ function generateFileObject(id, type, customPath = null) {
     var isaudio = type === 'audio';
     var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
     return file_obj;
+}
+
+function getAppendedBasePathSub(sub, base_path) {
+    return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
 module.exports = {

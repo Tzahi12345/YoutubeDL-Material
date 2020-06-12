@@ -22,6 +22,12 @@ export class SubscribeDialogComponent implements OnInit {
   // no videos actually downloaded, just streamed
   streamingOnlyMode = false;
 
+  // audio only mode
+  audioOnlyMode = false;
+
+  customFileOutput = null;
+  customArgs = null;
+
   time_units = [
     'day',
     'week',
@@ -49,7 +55,8 @@ export class SubscribeDialogComponent implements OnInit {
       if (!this.download_all) {
         timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
       }
-      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode).subscribe(res => {
+      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode,
+                                          this.audioOnlyMode, this.customArgs, this.customFileOutput).subscribe(res => {
         this.subscribing = false;
         if (res['new_sub']) {
           this.dialogRef.close(res['new_sub']);
