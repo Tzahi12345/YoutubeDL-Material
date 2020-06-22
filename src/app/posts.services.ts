@@ -73,7 +73,7 @@ export class PostsService implements CanActivate {
             this.httpOptions.params = this.httpOptions.params.set('sessionID', this.session_id);
         });
 
-        const login_not_required = this.router.url !== '/player'
+        const redirect_not_required = window.location.href.includes('/player') || window.location.href.includes('/login');
 
         // get config
         this.loadNavItems().subscribe(res => {
@@ -82,11 +82,11 @@ export class PostsService implements CanActivate {
                 this.config = result['YoutubeDLMaterial'];
                 if (this.config['Advanced']['multi_user_mode']) {
                     // login stuff
-                    if (localStorage.getItem('jwt_token')) {
+                    if (localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== 'null') {
                         this.token = localStorage.getItem('jwt_token');
                         this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
                         this.jwtAuth();
-                    } else if (login_not_required) {
+                    } else if (redirect_not_required) {
                         this.setInitialized();
                     } else {
                         this.sendToLogin();
@@ -382,6 +382,7 @@ export class PostsService implements CanActivate {
         this.user = null;
         this.permissions = null;
         this.isLoggedIn = false;
+        this.token = null;
         localStorage.setItem('jwt_token', null);
         if (this.router.url !== '/login') {
             this.router.navigate(['/login']);
@@ -402,17 +403,14 @@ export class PostsService implements CanActivate {
         const call = this.http.post(this.path + 'auth/register', {userid: username,
                                                                 username: username,
                                                                 password: password}, this.httpOptions);
-        /*call.subscribe(res => {
-            console.log(res['user']);
-            if (res['user']) {
-                // this.afterRegistration(res['user']);
-            }
-        });*/
         return call;
     }
 
     sendToLogin() {
         this.checkAdminCreationStatus();
+        if (!this.initialized) {
+            this.setInitialized();
+        }
         if (this.router.url === '/login') {
             return;
         }
