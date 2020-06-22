@@ -34,6 +34,7 @@
     "file-saver": "^2.0.2",
     "filesize": "^6.1.0",
     "fingerprintjs2": "^2.1.0",
+    "nan": "^2.14.1",
     "ng-lazyload-image": "^7.0.1",
     "ngx-file-drop": "^9.0.1",
     "ngx-videogular": "^9.0.1",
