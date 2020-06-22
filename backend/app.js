@@ -2101,9 +2101,8 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let streamingOnly = req.body.streamingOnly;
     let audioOnly = req.body.audioOnly;
     let customArgs = req.body.customArgs;
-    let customOutput = req.body.customOutput;
+    let customOutput = req.body.customFileOutput;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
-
     const new_sub = {
                         name: name,
                         url: url,
@@ -2119,11 +2118,11 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
     }
 
     if (customArgs && customArgs !== '') {
-        sub.custom_args = customArgs;
+        new_sub.custom_args = customArgs;
     }
 
     if (customOutput && customOutput !== '') {
-        sub.custom_output = customOutput;
+        new_sub.custom_output = customOutput;
     }
 
     const result_obj = await subscriptions_api.subscribe(new_sub, user_uid);
@@ -2486,7 +2485,8 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
                 basePath = path.join(usersFileFolder, req.user.uid, 'subscriptions');
             else
                 basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-            file = path.join(__dirname, basePath, (subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + '.mp4')
+            
+            file = path.join(__dirname, basePath, (subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + ext);
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
@@ -2687,9 +2687,21 @@ app.get('/api/audio/:id', optionalJwt, function(req , res){
     var head;
     let id = decodeURIComponent(req.params.id);
     let file_path = "audio/" + id + '.mp3';
+    let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+    let optionalParams = url_api.parse(req.url,true).query;
     if (req.isAuthenticated()) {
-        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-        file_path = path.join(usersFileFolder, req.user.uid, 'audio', id + '.mp3');
+        if (optionalParams['subName']) {
+            const isPlaylist = optionalParams['subPlaylist'];
+            file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + '.mp3')
+        } else {
+            let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+            file_path = path.join(usersFileFolder, req.user.uid, 'audio', id + '.mp3');
+        }
+    } else if (optionalParams['subName']) {
+        let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        const isPlaylist = optionalParams['subPlaylist'];
+        basePath += (isPlaylist === 'true' ? 'playlists/' : 'channels/');
+        file_path = basePath + optionalParams['subName'] + '/' + id + '.mp3'; 
     }
     file_path = file_path.replace(/\"/g, '\'');
   const stat = fs.statSync(file_path)

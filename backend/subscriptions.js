@@ -191,8 +191,9 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     sub_db.get('videos').remove({uid: file_uid}).write();
     return new Promise(resolve => {
         let filePath = appendedBasePath;
+        const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
         var jsonPath = path.join(__dirname,filePath,name+'.info.json');
-        var videoFilePath = path.join(__dirname,filePath,name+'.mp4');
+        var videoFilePath = path.join(__dirname,filePath,name+ext);
         var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
 
         jsonExists = fs.existsSync(jsonPath);
@@ -266,7 +267,30 @@ async function getVideosForSub(sub, user_uid = null) {
             }
         }
 
-        let downloadConfig = ['-o', appendedBasePath + '/%(title)s.mp4', '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '-ciw', '--write-info-json', '--print-json'];
+        const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
+
+        let fullOutput = appendedBasePath + '/%(title)s' + ext;
+        if (sub.custom_output) {
+            fullOutput = appendedBasePath + '/' + sub.custom_output + ext;
+        }
+
+        let downloadConfig = ['-o', fullOutput, '-ciw', '--write-info-json', '--print-json'];
+        
+        let qualityPath = null;
+        if (sub.type && sub.type === 'audio') {
+            qualityPath = ['-f', 'bestaudio']
+            qualityPath.push('-x');
+            qualityPath.push('--audio-format', 'mp3');
+        } else {
+            qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4']
+        }
+
+        downloadConfig.push(...qualityPath)
+
+        if (sub.custom_args) {
+            customArgsArray = sub.custom_args.split(',,');
+            downloadConfig.push(...customArgsArray);
+        }
 
         let archive_dir = null;
         let archive_path = null;

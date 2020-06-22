@@ -195,7 +195,7 @@ export class PlayerComponent implements OnInit {
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
       } else {
         // default to video but include subscription name param
-        baseLocation = 'video/';
+        baseLocation = this.type === 'audio' ? 'audio/' : 'video/';
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
                         '&subPlaylist=' + this.subPlaylist;
       }

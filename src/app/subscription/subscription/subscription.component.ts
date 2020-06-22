@@ -92,8 +92,9 @@ export class SubscriptionComponent implements OnInit {
     if (this.subscription.streamingOnly) {
       this.router.navigate(['/player', {name: name, url: url}]);
     } else {
-      this.router.navigate(['/player', {fileNames: name, type: 'subscription', subscriptionName: this.subscription.name,
-                                        subPlaylist: this.subscription.isPlaylist, uuid: this.postsService.user ? this.postsService.user.uid : null}]);
+      this.router.navigate(['/player', {fileNames: name,
+        type: this.subscription.type ? this.subscription.type : 'video', subscriptionName: this.subscription.name,
+        subPlaylist: this.subscription.isPlaylist, uuid: this.postsService.user ? this.postsService.user.uid : null}]);
     }
   }
 

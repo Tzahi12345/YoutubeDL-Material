@@ -39,8 +39,8 @@ function getJSONMp4(name, customPath, openReadPerms = false) {
 function getJSONMp3(name, customPath, openReadPerms = false) {
     var obj = null;
     if (!customPath) customPath = config_api.getConfigItem('ytdl_audio_folder_path');
-    var jsonPath = customPath + name + ".info.json";
-    var alternateJsonPath = customPath + name + ".mp3.info.json";
+    var jsonPath = path.join(customPath, name + ".info.json");
+    var alternateJsonPath = path.join(customPath, name + ".mp3.info.json");
     if (fs.existsSync(jsonPath)) {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
         if (!is_windows && openReadPerms) fs.chmodSync(jsonPath, 0o755);
