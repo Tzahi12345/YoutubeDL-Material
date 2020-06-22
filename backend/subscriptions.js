@@ -6,17 +6,20 @@ var path = require('path');
 
 var youtubedl = require('youtube-dl');
 const config_api = require('./config');
+var utils = require('./utils')
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
 var logger = null;
 var db = null;
 var users_db = null;
-function setDB(input_db, input_users_db) { db = input_db; users_db = input_users_db } 
+var db_api = null;
+
+function setDB(input_db, input_users_db, input_db_api) { db = input_db; users_db = input_users_db; db_api = input_db_api } 
 function setLogger(input_logger) { logger = input_logger; }
 
-function initialize(input_db, input_users_db, input_logger) {
-    setDB(input_db, input_users_db);
+function initialize(input_db, input_users_db, input_logger, input_db_api) {
+    setDB(input_db, input_users_db, input_db_api);
     setLogger(input_logger);
 }
 
@@ -28,6 +31,7 @@ async function subscribe(sub, user_uid = null) {
     return new Promise(async resolve => {
         // sub should just have url and name. here we will get isPlaylist and path
         sub.isPlaylist = sub.url.includes('playlist');
+        sub.videos = [];
 
         let url_exists = false;
 
@@ -44,15 +48,25 @@ async function subscribe(sub, user_uid = null) {
         }
 
         // add sub to db
-        if (user_uid)
+        let sub_db = null;
+        if (user_uid) {
             users_db.get('users').find({uid: user_uid}).get('subscriptions').push(sub).write();
-        else
+            sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
+        } else {
             db.get('subscriptions').push(sub).write();
-
+            sub_db = db.get('subscriptions').find({id: sub.id});
+        }
         let success = await getSubscriptionInfo(sub, user_uid);
+        
+        if (success) {
+            sub = sub_db.value();
+            getVideosForSub(sub, user_uid);
+        } else {
+            logger.error('Subscribe: Failed to get subscription info. Subscribe failed.')
+        };
+
         result_obj.success = success;
         result_obj.sub = sub;
-        getVideosForSub(sub, user_uid);
         resolve(result_obj);
     });
     
@@ -160,20 +174,26 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
 
 }
 
-async function deleteSubscriptionFile(sub, file, deleteForever, user_uid = null) {
+async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
     let basePath = null;
-    if (user_uid)
+    let sub_db = null;
+    if (user_uid) {
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
-    else
+        sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
+    } else {
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+        sub_db = db.get('subscriptions').find({id: sub.id});
+    }
     const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const name = file;
     let retrievedID = null;
+    sub_db.get('videos').remove({uid: file_uid}).write();
     return new Promise(resolve => {
         let filePath = appendedBasePath;
+        const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
         var jsonPath = path.join(__dirname,filePath,name+'.info.json');
-        var videoFilePath = path.join(__dirname,filePath,name+'.mp4');
+        var videoFilePath = path.join(__dirname,filePath,name+ext);
         var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
 
         jsonExists = fs.existsSync(jsonPath);
@@ -237,13 +257,45 @@ async function getVideosForSub(sub, user_uid = null) {
         const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
 
         let appendedBasePath = null
-        if (sub.name) {
-            appendedBasePath = getAppendedBasePath(sub, basePath);
-        } else {
-            appendedBasePath = path.join(basePath, (sub.isPlaylist ? 'playlists/%(playlist_title)s' : 'channels/%(uploader)s'));
+        appendedBasePath = getAppendedBasePath(sub, basePath);
+
+        let multiUserMode = null;
+        if (user_uid) {
+            multiUserMode = {
+                user: user_uid,
+                file_path: appendedBasePath
+            }
         }
 
-        let downloadConfig = ['-o', appendedBasePath + '/%(title)s.mp4', '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4', '-ciw', '--write-info-json', '--print-json'];
+        const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
+
+        let fullOutput = appendedBasePath + '/%(title)s' + ext;
+        if (sub.custom_output) {
+            fullOutput = appendedBasePath + '/' + sub.custom_output + ext;
+        }
+
+        let downloadConfig = ['-o', fullOutput, '-ciw', '--write-info-json', '--print-json'];
+        
+        let qualityPath = null;
+        if (sub.type && sub.type === 'audio') {
+            qualityPath = ['-f', 'bestaudio']
+            qualityPath.push('-x');
+            qualityPath.push('--audio-format', 'mp3');
+        } else {
+            qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4']
+        }
+
+        downloadConfig.push(...qualityPath)
+
+        if (sub.custom_args) {
+            customArgsArray = sub.custom_args.split(',,');
+            if (customArgsArray.indexOf('-f') !== -1) {
+                // if custom args has a custom quality, replce the original quality with that of custom args
+                const original_output_index = downloadConfig.indexOf('-f');
+                downloadConfig.splice(original_output_index, 2);
+            }
+            downloadConfig.push(...customArgsArray);
+        }
 
         let archive_dir = null;
         let archive_path = null;
@@ -286,7 +338,7 @@ async function getVideosForSub(sub, user_uid = null) {
                         const outputs = err.stdout.split(/\r\n|\r|\n/);
                         for (let i = 0; i < outputs.length; i++) {
                             const output = JSON.parse(outputs[i]);
-                            handleOutputJSON(sub, sub_db, output, i === 0)
+                            handleOutputJSON(sub, sub_db, output, i === 0, multiUserMode)
                             if (err.stderr.includes(output['id']) && archive_path) {
                                 // we found a video that errored! add it to the archive to prevent future errors
                                 fs.appendFileSync(archive_path, output['id']);
@@ -315,7 +367,7 @@ async function getVideosForSub(sub, user_uid = null) {
                     }
 
                     const reset_videos = i === 0;
-                    handleOutputJSON(sub, sub_db, output_json, reset_videos);
+                    handleOutputJSON(sub, sub_db, output_json, multiUserMode, reset_videos);
 
                     // TODO: Potentially store downloaded files in db?
         
@@ -323,10 +375,12 @@ async function getVideosForSub(sub, user_uid = null) {
                 resolve(true);
             }
         });
+    }, err => {
+        logger.error(err);
     });
 }
 
-function handleOutputJSON(sub, sub_db, output_json, reset_videos = false) {
+function handleOutputJSON(sub, sub_db, output_json, multiUserMode = null, reset_videos = false) {
     if (sub.streamingOnly) {
         if (reset_videos) {
             sub_db.assign({videos: []}).write();
@@ -337,6 +391,9 @@ function handleOutputJSON(sub, sub_db, output_json, reset_videos = false) {
 
         // add to db
         sub_db.get('videos').push(output_json).write();
+    } else {
+        // TODO: make multiUserMode obj
+        db_api.registerFileDB(path.basename(output_json['_filename']), sub.type, multiUserMode, sub);
     }
 }
 

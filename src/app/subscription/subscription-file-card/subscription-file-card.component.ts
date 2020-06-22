@@ -71,14 +71,14 @@ export class SubscriptionFileCardComponent implements OnInit {
   }
 
   deleteAndRedownload() {
-    this.postsService.deleteSubscriptionFile(this.sub, this.file.id, false).subscribe(res => {
+    this.postsService.deleteSubscriptionFile(this.sub, this.file.id, false, this.file.uid).subscribe(res => {
       this.reloadSubscription.emit(true);
       this.openSnackBar(`Successfully deleted file: '${this.file.id}'`, 'Dismiss.');
     });
   }
 
   deleteForever() {
-    this.postsService.deleteSubscriptionFile(this.sub, this.file.id, true).subscribe(res => {
+    this.postsService.deleteSubscriptionFile(this.sub, this.file.id, true, this.file.uid).subscribe(res => {
       this.reloadSubscription.emit(true);
       this.openSnackBar(`Successfully deleted file: '${this.file.id}'`, 'Dismiss.');
     });

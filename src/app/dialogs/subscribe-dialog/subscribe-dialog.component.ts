@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostsService } from 'app/posts.services';
+import { ArgModifierDialogComponent } from '../arg-modifier-dialog/arg-modifier-dialog.component';
 
 @Component({
   selector: 'app-subscribe-dialog',
@@ -22,6 +23,12 @@ export class SubscribeDialogComponent implements OnInit {
   // no videos actually downloaded, just streamed
   streamingOnlyMode = false;
 
+  // audio only mode
+  audioOnlyMode = false;
+
+  customFileOutput = '';
+  customArgs = '';
+
   time_units = [
     'day',
     'week',
@@ -31,6 +38,7 @@ export class SubscribeDialogComponent implements OnInit {
 
   constructor(private postsService: PostsService,
               private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               public dialogRef: MatDialogRef<SubscribeDialogComponent>) { }
 
   ngOnInit() {
@@ -49,7 +57,8 @@ export class SubscribeDialogComponent implements OnInit {
       if (!this.download_all) {
         timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
       }
-      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode).subscribe(res => {
+      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode,
+                                          this.audioOnlyMode, this.customArgs, this.customFileOutput).subscribe(res => {
         this.subscribing = false;
         if (res['new_sub']) {
           this.dialogRef.close(res['new_sub']);
@@ -61,6 +70,20 @@ export class SubscribeDialogComponent implements OnInit {
         }
       });
     }
+  }
+
+  // modify custom args
+  openArgsModifierDialog() {
+    const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
+      data: {
+       initial_args: this.customArgs
+      }
+    });
+    dialogRef.afterClosed().subscribe(new_args => {
+      if (new_args !== null && new_args !== undefined) {
+        this.customArgs = new_args;
+      }
+    });
   }
 
   public openSnackBar(message: string, action = '') {

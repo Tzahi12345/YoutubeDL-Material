@@ -127,7 +127,7 @@ export class PlayerComponent implements OnInit {
       this.currentItem = this.playlist[0];
       this.currentIndex = 0;
       this.show_player = true;
-    } else if (this.type === 'subscription' || this.fileNames) {
+    } else if (this.subscriptionName || this.fileNames) {
       this.show_player = true;
       this.parseFileNames();
     }
@@ -181,9 +181,6 @@ export class PlayerComponent implements OnInit {
       fileType = 'audio/mp3';
     } else if (this.type === 'video') {
       fileType = 'video/mp4';
-    } else if (this.type === 'subscription') {
-      // only supports mp4 for now
-      fileType = 'video/mp4';
     } else {
       // error
       console.error('Must have valid file type! Use \'audio\', \'video\', or \'subscription\'.');
@@ -198,7 +195,7 @@ export class PlayerComponent implements OnInit {
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
       } else {
         // default to video but include subscription name param
-        baseLocation = 'video/';
+        baseLocation = this.type === 'audio' ? 'audio/' : 'video/';
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
                         '&subPlaylist=' + this.subPlaylist;
       }
