@@ -289,6 +289,11 @@ async function getVideosForSub(sub, user_uid = null) {
 
         if (sub.custom_args) {
             customArgsArray = sub.custom_args.split(',,');
+            if (customArgsArray.indexOf('-f') !== -1) {
+                // if custom args has a custom quality, replce the original quality with that of custom args
+                const original_output_index = downloadConfig.indexOf('-f');
+                downloadConfig.splice(original_output_index, 2);
+            }
             downloadConfig.push(...customArgsArray);
         }
 
