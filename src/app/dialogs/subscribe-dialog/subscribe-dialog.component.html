@@ -43,9 +43,10 @@
                     <mat-checkbox [disabled]="audioOnlyMode" [(ngModel)]="streamingOnlyMode"><ng-container i18n="Streaming-only mode">Streaming-only mode</ng-container></mat-checkbox>
                 </div>
             </div>
-            <div class="col-12 mb-2">
+            <div class="col-12 mb-3">
                 <mat-form-field color="accent">
                     <input [(ngModel)]="customArgs" matInput placeholder="Custom args" i18n-placeholder="Subscription custom args placeholder">
+                    <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                     <mat-hint>
                         <ng-container i18n="Custom args hint">These are added after the standard args.</ng-container>
                     </mat-hint>

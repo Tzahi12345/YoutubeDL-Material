@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostsService } from 'app/posts.services';
+import { ArgModifierDialogComponent } from '../arg-modifier-dialog/arg-modifier-dialog.component';
 
 @Component({
   selector: 'app-subscribe-dialog',
@@ -25,8 +26,8 @@ export class SubscribeDialogComponent implements OnInit {
   // audio only mode
   audioOnlyMode = false;
 
-  customFileOutput = null;
-  customArgs = null;
+  customFileOutput = '';
+  customArgs = '';
 
   time_units = [
     'day',
@@ -37,6 +38,7 @@ export class SubscribeDialogComponent implements OnInit {
 
   constructor(private postsService: PostsService,
               private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               public dialogRef: MatDialogRef<SubscribeDialogComponent>) { }
 
   ngOnInit() {
@@ -68,6 +70,20 @@ export class SubscribeDialogComponent implements OnInit {
         }
       });
     }
+  }
+
+  // modify custom args
+  openArgsModifierDialog() {
+    const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
+      data: {
+       initial_args: this.customArgs
+      }
+    });
+    dialogRef.afterClosed().subscribe(new_args => {
+      if (new_args !== null && new_args !== undefined) {
+        this.customArgs = new_args;
+      }
+    });
   }
 
   public openSnackBar(message: string, action = '') {
