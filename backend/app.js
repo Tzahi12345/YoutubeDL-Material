@@ -2537,7 +2537,7 @@ app.post('/api/downloadArchive', async (req, res) => {
     let sub = req.body.sub;
     let archive_dir = sub.archive;
     
-    let full_archive_path = path.join(__dirname, archive_dir, 'archive.txt');
+    let full_archive_path = path.join(archive_dir, 'archive.txt');
 
     if (fs.existsSync(full_archive_path)) {
         res.sendFile(full_archive_path);
