@@ -71,6 +71,7 @@ import { AddUserDialogComponent } from './dialogs/add-user-dialog/add-user-dialo
 import { ManageUserComponent } from './components/manage-user/manage-user.component';
 import { ManageRoleComponent } from './components/manage-role/manage-role.component';
 import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
+import { LogsViewerComponent } from './components/logs-viewer/logs-viewer.component';
 
 registerLocaleData(es, 'es');
 
@@ -109,7 +110,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     AddUserDialogComponent,
     ManageUserComponent,
     ManageRoleComponent,
-    CookiesUploaderDialogComponent
+    CookiesUploaderDialogComponent,
+    LogsViewerComponent
   ],
   imports: [
     CommonModule,

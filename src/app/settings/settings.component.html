@@ -311,6 +311,13 @@
         </div>
         <app-modify-users></app-modify-users>
     </mat-tab>
+    <mat-tab *ngIf="postsService.config" label="Logs" i18n-label="Logs settings label">
+        <ng-template matTabContent>
+            <div style="margin-left: 48px; margin-top: 24px; height: 340px">
+                <app-logs-viewer></app-logs-viewer>
+            </div>
+        </ng-template>
+    </mat-tab>
 </mat-tab-group>
 </mat-dialog-content>
 

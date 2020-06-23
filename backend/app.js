@@ -1830,6 +1830,21 @@ app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
 });
 
+app.get('/api/logs', function(req, res) {
+    let logs = null;
+    logs_path = path.join('appdata', 'logs', 'combined.log')
+    if (fs.existsSync(logs_path))
+        logs = fs.readFileSync(logs_path, 'utf8');
+    else
+        logger.error(`Failed to find logs file at the expected location: ${logs_path}`)
+    
+    console.log(logs)
+    res.send({
+        logs: logs,
+        success: !!logs
+    });
+});
+
 app.post('/api/tomp3', optionalJwt, async function(req, res) {
     var url = req.body.url;
     var options = {
