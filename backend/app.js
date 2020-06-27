@@ -1,8 +1,9 @@
+require('./api/config/application');
 var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
 var auth_api = require('./authentication/auth');
-var winston = require('winston');
+
 var path = require('path');
 var youtubedl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
@@ -37,42 +38,29 @@ var app = express();
 // database setup
 const FileSync = require('lowdb/adapters/FileSync')
 
+
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
 
 const users_adapter = new FileSync('./appdata/users.json');
 const users_db = low(users_adapter);
 
+// Routes
+const configRouter = require('./api/routes/configRouter');
+const logRouter = require('./api/routes/logRouter');
+
 // env var setup
 
 const umask = process.env.YTDL_UMASK;
 if (umask) process.umask(parseInt(umask));
 
-// check if debug mode
-let debugMode = process.env.YTDL_MODE === 'debug';
 
 const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 
 // logging setup
+const { logger } = require('./api/services/logger');
 
 // console format
-const defaultFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-    return `${timestamp} ${level.toUpperCase()}: ${message}`;
-});
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(winston.format.timestamp(), defaultFormat),
-    defaultMeta: {},
-    transports: [
-      //
-      // - Write to all logs with level `info` and below to `combined.log`
-      // - Write all logs error (and below) to `error.log`.
-      //
-      new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
-      new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
-      new winston.transports.Console({level: !debugMode ? 'info' : 'debug', name: 'console'})
-    ]
-});
 
 config_api.initialize(logger);
 auth_api.initialize(users_db, logger);
@@ -602,7 +590,9 @@ function loadConfigValues() {
         logger_level = 'info';
     }
     logger.level = logger_level;
-    winston.loggers.get('console').level = logger_level;
+
+    // TODO: Unsure what this logger was for
+    // winston.loggers.get('console').level = logger_level;
     logger.transports[2].level = logger_level;
 }
 
@@ -1803,46 +1793,11 @@ const optionalJwt = function (req, res, next) {
     return next();
 };
 
-app.get('/api/config', function(req, res) {
-    let config_file = config_api.getConfigFile();
-    res.send({
-        config_file: config_file,
-        success: !!config_file
-    });
-});
-
-app.post('/api/setConfig', function(req, res) {
-    let new_config_file = req.body.new_config_file;
-    if (new_config_file && new_config_file['YoutubeDLMaterial']) {
-        let success = config_api.setConfigFile(new_config_file);
-        loadConfigValues(); // reloads config values that exist as variables
-        res.send({
-            success: success
-        });
-    } else {
-        logger.error('Tried to save invalid config file!')
-        res.sendStatus(400);
-    }
-
-});
+app.use('/api/config', configRouter);
+app.use('/api/logs', logRouter);
 
 app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
-});
-
-app.get('/api/logs', function(req, res) {
-    let logs = null;
-    logs_path = path.join('appdata', 'logs', 'combined.log')
-    if (fs.existsSync(logs_path))
-        logs = fs.readFileSync(logs_path, 'utf8');
-    else
-        logger.error(`Failed to find logs file at the expected location: ${logs_path}`)
-
-    console.log(logs)
-    res.send({
-        logs: logs,
-        success: !!logs
-    });
 });
 
 app.post('/api/tomp3', optionalJwt, async function(req, res) {
