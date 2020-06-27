@@ -51,7 +51,7 @@ function getJSONMp3(name, customPath, openReadPerms = false) {
     }
     else
         obj = 0;
-    
+
     return obj;
 }
 

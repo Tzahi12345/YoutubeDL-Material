@@ -69,7 +69,7 @@ exports.passport = require('passport');
 exports.passport.serializeUser(function(user, done) {
     done(null, user);
 });
-  
+
 exports.passport.deserializeUser(function(user, done) {
     done(null, user);
 });
@@ -87,7 +87,7 @@ exports.registerUser = function(req, res) {
     logger.error(`Registration failed for user ${userid}. Registration is disabled.`);
     return;
   }
-  
+
   bcrypt.hash(plaintextPassword, saltRounds)
     .then(function(hash) {
       let new_user = {
@@ -127,7 +127,7 @@ exports.registerUser = function(req, res) {
       }
     })
     .then(function(result) {
-      
+
     })
     .catch(function(err) {
       logger.error(err);
@@ -146,7 +146,7 @@ exports.registerUser = function(req, res) {
 /*************************************************
  * This gets called when passport.authenticate()
  * gets called.
- * 
+ *
  * This checks that the credentials are valid.
  * If so, passes the user info to the next middleware.
  ************************************************/
@@ -181,12 +181,12 @@ exports.passport.use(new LocalStrategy({
  * This is a wrapper for auth.passport.authenticate().
  * We use this to change WWW-Authenticate header so
  * the browser doesn't pop-up challenge dialog box by default.
- * Browser's will pop-up up dialog when status is 401 and 
+ * Browser's will pop-up up dialog when status is 401 and
  * "WWW-Authenticate:Basic..."
  *************************************************************/
 /*
 exports.authenticateViaPassport = function(req, res, next) {
-  exports.passport.authenticate('basic',{session:false}, 
+  exports.passport.authenticate('basic',{session:false},
     function(err, user, info) {
       if(!user){
         res.set('WWW-Authenticate', 'x'+info); // change to xBasic
@@ -212,7 +212,7 @@ exports.generateJWT = function(req, res, next) {
     , user: req.user.uid
   };
   req.token = jwt.sign(payload, SERVER_SECRET);
-  next();  
+  next();
 }
 
 exports.returnAuthResponse = function(req, res) {
@@ -221,11 +221,11 @@ exports.returnAuthResponse = function(req, res) {
     token: req.token,
     permissions: exports.userPermissions(req.user.uid),
     available_permissions: consts['AVAILABLE_PERMISSIONS']
-  });  
+  });
 }
 
 /***************************************
- * Authorization: middleware that checks the 
+ * Authorization: middleware that checks the
  * JWT token for validity before allowing
  * the user to access anything.
  *
@@ -392,7 +392,7 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
       } catch(e) {
 
       }
-    } 
+    }
 
     const full_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext);
     users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
@@ -454,7 +454,7 @@ exports.changeSharingMode = function(user_uid, file_uid, type, is_playlist, enab
       file_db_obj.assign({sharingEnabled: enabled}).write();
     }
   }
-  
+
   return success;
 }
 
@@ -470,7 +470,7 @@ exports.userHasPermission = function(user_uid, permission) {
 
   const user_has_explicit_permission = user_obj['permissions'].includes(permission);
   const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
-  
+
   // check if user has a negative/positive override
   if (user_has_explicit_permission && permission_in_overrides) {
     // positive override
@@ -505,7 +505,7 @@ exports.userPermissions = function(user_uid) {
 
     const user_has_explicit_permission = user_obj['permissions'].includes(permission);
     const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
-    
+
     // check if user has a negative/positive override
     if (user_has_explicit_permission && permission_in_overrides) {
       // positive override

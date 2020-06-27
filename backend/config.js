@@ -119,8 +119,8 @@ function setConfigItem(key, value) {
         let parent_parent_single_key = parent_path_arr[parent_path_arr.length-1];
         parent_parent_object[parent_parent_single_key] = {};
         parent_object = Object.byString(config_json, parent_path);
-    }    
-    
+    }
+
     if (value === 'false' || value === 'true') {
         parent_object[element_name] = (value === 'true');
     } else {
@@ -146,7 +146,7 @@ function setConfigItems(items) {
         let item_path = CONFIG_ITEMS[key]['path'];
         let item_parent_path = getParentPath(item_path);
         let item_element_name = getElementNameInConfig(item_path);
-        
+
         let item_parent_object = Object.byString(config_json, item_parent_path);
         item_parent_object[item_element_name] = value;
     }

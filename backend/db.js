@@ -7,7 +7,7 @@ const config_api = require('./config');
 var logger = null;
 var db = null;
 var users_db = null;
-function setDB(input_db, input_users_db) { db = input_db; users_db = input_users_db } 
+function setDB(input_db, input_users_db) { db = input_db; users_db = input_users_db }
 function setLogger(input_logger) { logger = input_logger; }
 
 function initialize(input_db, input_users_db, input_logger) {
