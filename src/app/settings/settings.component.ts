@@ -17,7 +17,7 @@ import { CookiesUploaderDialogComponent } from 'app/dialogs/cookies-uploader-dia
 })
 export class SettingsComponent implements OnInit {
   all_locales = isoLangs;
-  supported_locales = ['en', 'es'];
+  supported_locales = ['en', 'es', 'de'];
   initialLocale = localStorage.getItem('locale');
 
   initial_config = null;
