@@ -286,7 +286,7 @@
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target xml:lang="de-DE">Der Pfad ist relativ zum Konfigurations-Download-Pfad. Dateiendung nicht angeben.</target>
+        <target xml:lang="de-DE">Der Pfad ist relativ zum Konfigurations-Download-Pfad. Dateiendung auslassen.</target>
 <note from="description" priority="1">Custom Output input hint</note><context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
           <context context-type="linenumber">134</context>
