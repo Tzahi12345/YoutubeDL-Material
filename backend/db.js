@@ -93,11 +93,25 @@ function generateFileObject(id, type, customPath = null, sub = null) {
     return file_obj;
 }
 
+function updatePlaylist(playlist, user_uid) {
+    let playlistID = playlist.id;
+    let type = playlist.type;
+    let db_loc = null;
+    if (user_uid) {
+        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID});
+    } else {
+        db_loc = db.get(`playlists.${type}`).find({id: playlistID});
+    }
+    db_loc.assign(playlist).write();
+    return true;
+}
+
 function getAppendedBasePathSub(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
 module.exports = {
     initialize: initialize,
-    registerFileDB: registerFileDB
+    registerFileDB: registerFileDB,
+    updatePlaylist: updatePlaylist
 }

@@ -62,6 +62,8 @@ export class PlayerComponent implements OnInit {
 
   downloading = false;
 
+  original_volume = null;
+
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.innerWidth = window.innerWidth;
@@ -235,12 +237,25 @@ export class PlayerComponent implements OnInit {
   onPlayerReady(api: VgAPI) {
       this.api = api;
 
+      // checks if volume has been previously set. if so, use that as default
+      if (localStorage.getItem('player_volume')) {
+        this.api.volume = parseFloat(localStorage.getItem('player_volume'));
+      }
+      setInterval(() => this.saveVolume(this.api), 2000)
+
       this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
       this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
 
       if (this.timestamp) {
         this.api.seekTime(+this.timestamp);
       }
+  }
+
+  saveVolume(api) {
+    if (this.original_volume !== api.volume) {
+      localStorage.setItem('player_volume', api.volume)
+      this.original_volume = api.volume;
+    }
   }
 
   nextVideo() {
@@ -374,7 +389,7 @@ export class PlayerComponent implements OnInit {
   updatePlaylist() {
     const fileNames = this.getFileNames();
     this.playlist_updating = true;
-    this.postsService.updatePlaylist(this.id, fileNames, this.type).subscribe(res => {
+    this.postsService.updatePlaylistFiles(this.id, fileNames, this.type).subscribe(res => {
     this.playlist_updating = false;
       if (res['success']) {
         const fileNamesEncoded = fileNames.join('|nvr|');

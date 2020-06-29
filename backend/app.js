@@ -1858,7 +1858,8 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
 
-    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
+    if (safeDownloadOverride) logger.verbose('Download is running with the safe download override.');
     const is_playlist = url.includes('playlist');
 
     let result_obj = null;
@@ -1888,7 +1889,8 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
     
-    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
+    if (safeDownloadOverride) logger.verbose('Download is running with the safe download override.');
     const is_playlist = url.includes('playlist');
 
     let result_obj = null;
@@ -2354,7 +2356,7 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     });
 });
 
-app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
+app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let fileNames = req.body.fileNames;
     let type = req.body.type;
@@ -2362,7 +2364,7 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     let success = false;
     try {
         if (req.isAuthenticated()) {
-            auth_api.updatePlaylist(req.user.uid, playlistID, fileNames, type);
+            auth_api.updatePlaylistFiles(req.user.uid, playlistID, fileNames, type);
         } else {
             db.get(`playlists.${type}`)
                 .find({id: playlistID})
@@ -2378,6 +2380,14 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     res.send({
         success: success
     })
+});
+
+app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
+    let playlist = req.body.playlist;
+    let success = db_api.updatePlaylist(playlist, req.user && req.user.uid);
+    res.send({
+        success: success
+    });
 });
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
