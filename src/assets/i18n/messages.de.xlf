@@ -250,7 +250,7 @@
       </trans-unit>
       <trans-unit id="a6911c2157f1b775284bbe9654ce5eb30cf45d7f" datatype="html">
         <source>No need to include URL, just everything after. Args are delimited using two commas like so: ,,</source>
-        <target xml:lang="de-DE">Der FQDN muss nicht angegeben werden, sondern nur der Teil danach. Argumente werden wie folgt getrennt: ,,</target>
+        <target xml:lang="de-DE">Der FQDN muss nicht angegeben werden, sondern nur der Teil danach. Argumente werden mit zwei Kommata getrennt: ,,</target>
 <note from="description" priority="1">Custom Args input hint</note><context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
           <context context-type="linenumber">118</context>
@@ -583,7 +583,7 @@
       </trans-unit>
       <trans-unit id="54c512cca1923ab72faf1a0bd98d3d172469629a" datatype="html">
         <source>URL this app will be accessed from, without the port.</source>
-        <target xml:lang="de-DE">URL, über die auf diese Applikation zugegriffen wird, ohne den Port.</target>
+        <target xml:lang="de-DE">URL, über die auf diese Applikation zugegriffen wird, ohne Port.</target>
 <note from="description" priority="1">URL setting input hint</note><context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">19</context>
@@ -610,7 +610,7 @@
       </trans-unit>
       <trans-unit id="d4477669a560750d2064051a510ef4d7679e2f3e" datatype="html">
         <source>Multi-user mode</source>
-        <target xml:lang="de-DE">Multi-user</target>
+        <target xml:lang="de-DE">Multi-User Modus</target>
 <note from="description" priority="1">Multi user mode setting</note><context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">34</context>
@@ -915,7 +915,7 @@
       </trans-unit>
       <trans-unit id="d8b47221b5af9e9e4cd5cb434d76fc0c91611409" datatype="html">
         <source>Require pin for settings</source>
-        <target xml:lang="de-DE">Einstellungen durch Pin schützen</target>
+        <target xml:lang="de-DE">Einstellungen durch PIN schützen</target>
 <note from="description" priority="1">Require pin for settings setting</note><context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">186</context>
