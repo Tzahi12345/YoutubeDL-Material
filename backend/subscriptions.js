@@ -15,7 +15,7 @@ var db = null;
 var users_db = null;
 var db_api = null;
 
-function setDB(input_db, input_users_db, input_db_api) { db = input_db; users_db = input_users_db; db_api = input_db_api } 
+function setDB(input_db, input_users_db, input_db_api) { db = input_db; users_db = input_users_db; db_api = input_db_api }
 function setLogger(input_logger) { logger = input_logger; }
 
 function initialize(input_db, input_users_db, input_logger, input_db_api) {
@@ -57,7 +57,7 @@ async function subscribe(sub, user_uid = null) {
             sub_db = db.get('subscriptions').find({id: sub.id});
         }
         let success = await getSubscriptionInfo(sub, user_uid);
-        
+
         if (success) {
             sub = sub_db.value();
             getVideosForSub(sub, user_uid);
@@ -69,7 +69,7 @@ async function subscribe(sub, user_uid = null) {
         result_obj.sub = sub;
         resolve(result_obj);
     });
-    
+
 }
 
 async function getSubscriptionInfo(sub, user_uid = null) {
@@ -80,7 +80,7 @@ async function getSubscriptionInfo(sub, user_uid = null) {
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
     return new Promise(resolve => {
-        // get videos 
+        // get videos
         let downloadConfig = ['--dump-json', '--playlist-end', '1']
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             if (debugMode) {
@@ -229,7 +229,7 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
             // TODO: tell user that the file didn't exist
             resolve(true);
         }
-        
+
     });
 }
 
@@ -275,7 +275,7 @@ async function getVideosForSub(sub, user_uid = null) {
         }
 
         let downloadConfig = ['-o', fullOutput, '-ciw', '--write-info-json', '--print-json'];
-        
+
         let qualityPath = null;
         if (sub.type && sub.type === 'audio') {
             qualityPath = ['-f', 'bestaudio']
@@ -326,7 +326,7 @@ async function getVideosForSub(sub, user_uid = null) {
             }
         }
 
-        // get videos 
+        // get videos
         logger.verbose('Subscription: getting videos for subscription ' + sub.name);
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             logger.verbose('Subscription: finished check for ' + sub.name);
@@ -370,7 +370,7 @@ async function getVideosForSub(sub, user_uid = null) {
                     handleOutputJSON(sub, sub_db, output_json, multiUserMode, reset_videos);
 
                     // TODO: Potentially store downloaded files in db?
-        
+
                 }
                 resolve(true);
             }
@@ -407,7 +407,7 @@ function getAllSubscriptions(user_uid = null) {
 function getSubscription(subID, user_uid = null) {
     if (user_uid)
         return users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: subID}).value();
-    else 
+    else
         return db.get('subscriptions').find({id: subID}).value();
 }
 
@@ -454,7 +454,7 @@ function removeIDFromArchive(archive_path, id) {
     for (let index=0; index<dataArray.length; index++) {
         if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
             lastIndex = index; // found a line includes a id keyword
-            break; 
+            break;
         }
     }
 
