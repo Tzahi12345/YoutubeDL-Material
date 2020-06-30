@@ -88,6 +88,15 @@ export class FileCardComponent implements OnInit {
         width: '65vw'
       }
     });
+
+    dialogRef.afterClosed().subscribe(res => {
+      // updates playlist in file manager if it changed
+      if (dialogRef.componentInstance.playlist_updated) {
+        this.playlist = dialogRef.componentInstance.original_playlist;
+        this.title = this.playlist.name;
+        this.count = this.playlist.fileNames.length;
+      }
+    });
   }
 
   onImgError(event) {

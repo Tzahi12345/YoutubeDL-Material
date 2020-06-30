@@ -14,6 +14,7 @@ export class ModifyPlaylistComponent implements OnInit {
   playlist = null;
   available_files = [];
   all_files = [];
+  playlist_updated = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private postsService: PostsService,
@@ -46,6 +47,7 @@ export class ModifyPlaylistComponent implements OnInit {
 
   updatePlaylist() {
     this.postsService.updatePlaylist(this.playlist).subscribe(res => {
+      this.playlist_updated = true;
       this.postsService.openSnackBar('Playlist updated successfully.');
       this.getPlaylist();
     });
