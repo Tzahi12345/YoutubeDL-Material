@@ -213,7 +213,7 @@
                 <mat-grid-list *ngIf="playlists.audio.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.audio; let i = index;">
                         <app-file-card #audiofilecard (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
-                            [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
+                            [length]="null" [isAudio]="true" [playlist]="playlist" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
@@ -255,7 +255,7 @@
                 <mat-grid-list *ngIf="playlists.video.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.video; let i = index;">
                         <app-file-card #videofilecard (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
-                            [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
+                            [length]="null" [isAudio]="false" [playlist]="playlist" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>

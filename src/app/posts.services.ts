@@ -274,8 +274,12 @@ export class PostsService implements CanActivate {
                                                             type: type, uuid: uuid}, this.httpOptions);
     }
 
-    updatePlaylist(playlistID, fileNames, type) {
-        return this.http.post(this.path + 'updatePlaylist', {playlistID: playlistID,
+    updatePlaylist(playlist) {
+        return this.http.post(this.path + 'updatePlaylist', {playlist: playlist}, this.httpOptions);
+    }
+
+    updatePlaylistFiles(playlistID, fileNames, type) {
+        return this.http.post(this.path + 'updatePlaylistFiles', {playlistID: playlistID,
                                                             fileNames: fileNames,
                                                             type: type}, this.httpOptions);
     }
