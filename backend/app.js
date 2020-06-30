@@ -649,6 +649,11 @@ async function watchSubscriptions() {
 
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(async () => {
+            const multiUserModeChanged = config_api.getConfigItem('ytdl_multi_user_mode') !== multiUserMode;
+            if (multiUserModeChanged) {
+                logger.verbose(`Skipping subscription ${sub.name} due to multi-user mode change.`);
+                return;
+            }
             await subscriptions_api.getVideosForSub(sub, sub.user_uid);
             subscription_timeouts[sub.id] = false;
         }, current_delay);
