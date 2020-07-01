@@ -156,7 +156,7 @@ function setConfigItems(items) {
 }
 
 function globalArgsRequiresSafeDownload() {
-    const globalArgs = config_api.getConfigItem('ytdl_custom_args');
+    const globalArgs = getConfigItem('ytdl_custom_args');
     const argsThatRequireSafeDownload = ['--write-sub', '--write-srt'];
     const failedArgs = globalArgs.filter(arg => argsThatRequireSafeDownload.includes(arg));
     return failedArgs && failedArgs.length > 0;
