@@ -884,16 +884,26 @@ async function deleteAudioFile(name, blacklistMode = false) {
         var jsonPath = path.join(audioFolderPath,name+'.mp3.info.json');
         var altJSONPath = path.join(audioFolderPath,name+'.info.json');
         var audioFilePath = path.join(audioFolderPath,name+'.mp3');
+        var thumbnailPath = path.join(filePath,name+'.webp');
+        var altThumbnailPath = path.join(filePath,name+'.jpg');
         jsonPath = path.join(__dirname, jsonPath);
         altJSONPath = path.join(__dirname, altJSONPath);
         audioFilePath = path.join(__dirname, audioFilePath);
 
         let jsonExists = fs.existsSync(jsonPath);
+        let thumbnailExists = fs.existsSync(thumbnailPath);
 
         if (!jsonExists) {
             if (fs.existsSync(altJSONPath)) {
                 jsonExists = true;
                 jsonPath = altJSONPath;
+            }
+        }
+
+        if (!thumbnailExists) {
+            if (fs.existsSync(altThumbnailPath)) {
+                thumbnailExists = true;
+                thumbnailPath = altThumbnailPath;
             }
         }
 
@@ -930,6 +940,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
         }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
+        if (thumbnailExists) fs.unlinkSync(thumbnailPath);
         if (audioFileExists) {
             fs.unlink(audioFilePath, function(err) {
                 if (fs.existsSync(jsonPath) || fs.existsSync(audioFilePath)) {
@@ -950,12 +961,30 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
         let filePath = customPath ? customPath : videoFolderPath;
         var jsonPath = path.join(filePath,name+'.info.json');
+        var altJSONPath = path.join(filePath,name+'.mp4.info.json');
         var videoFilePath = path.join(filePath,name+'.mp4');
+        var thumbnailPath = path.join(filePath,name+'.webp');
+        var altThumbnailPath = path.join(filePath,name+'.jpg');
         jsonPath = path.join(__dirname, jsonPath);
         videoFilePath = path.join(__dirname, videoFilePath);
 
-        jsonExists = fs.existsSync(jsonPath);
-        videoFileExists = fs.existsSync(videoFilePath);
+        let jsonExists = fs.existsSync(jsonPath);
+        let videoFileExists = fs.existsSync(videoFilePath);
+        let thumbnailExists = fs.existsSync(thumbnailPath);
+
+        if (!jsonExists) {
+            if (fs.existsSync(altJSONPath)) {
+                jsonExists = true;
+                jsonPath = altJSONPath;
+            }
+        }
+        
+        if (!thumbnailExists) {
+            if (fs.existsSync(altThumbnailPath)) {
+                thumbnailExists = true;
+                thumbnailPath = altThumbnailPath;
+            }
+        }
 
         if (config_api.descriptors[name]) {
             try {
@@ -988,6 +1017,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
         }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
+        if (thumbnailExists) fs.unlinkSync(thumbnailPath);
         if (videoFileExists) {
             fs.unlink(videoFilePath, function(err) {
                 if (fs.existsSync(jsonPath) || fs.existsSync(videoFilePath)) {

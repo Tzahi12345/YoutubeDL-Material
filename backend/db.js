@@ -23,6 +23,8 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
         return false;
     }
 
+    utils.fixVideoMetadataPerms(file_id, type, multiUserMode && multiUserMode.file_path);
+
     // add additional info
     file_object['uid'] = uuid();
     file_object['registered'] = Date.now();

@@ -195,10 +195,12 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
         var jsonPath = path.join(__dirname,filePath,name+'.info.json');
         var videoFilePath = path.join(__dirname,filePath,name+ext);
         var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
+        var altImageFilePath = path.join(__dirname,filePath,name+'.jpg');
 
         jsonExists = fs.existsSync(jsonPath);
         videoFileExists = fs.existsSync(videoFilePath);
         imageFileExists = fs.existsSync(imageFilePath);
+        altImageFileExists = fs.existsSync(altImageFilePath);
 
         if (jsonExists) {
             retrievedID = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))['id'];
@@ -207,6 +209,10 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
 
         if (imageFileExists) {
             fs.unlinkSync(imageFilePath);
+        }
+
+        if (altImageFileExists) {
+            fs.unlinkSync(altImageFilePath);
         }
 
         if (videoFileExists) {
