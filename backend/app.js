@@ -2901,7 +2901,7 @@ app.post('/api/auth/jwtAuth'
         , auth_api.returnAuthResponse
 );
 app.post('/api/auth/changePassword', optionalJwt, async (req, res) => {
-    let user_uid = req.user.uid;
+    let user_uid = req.body.user_uid;
     let password = req.body.new_password;
     let success = await auth_api.changeUserPassword(user_uid, password);
     res.send({success: success});
