@@ -593,6 +593,8 @@ function loadConfigValues() {
         };
     }
 
+    // empty url defaults to default URL
+    if (!url || url === '') url = 'http://example.com'
     url_domain = new URL(url);
 
     let logger_level = config_api.getConfigItem('ytdl_logger_level');
