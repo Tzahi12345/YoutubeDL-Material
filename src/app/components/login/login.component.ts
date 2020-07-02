@@ -49,9 +49,19 @@ export class LoginComponent implements OnInit {
       this.loggingIn = false;
       if (res['token']) {
         this.postsService.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
+      } else {
+        this.openSnackBar('Login failed, unknown error.');
       }
     }, err => {
       this.loggingIn = false;
+      const error_code = err.status;
+      if (error_code === 401) {
+        this.openSnackBar('User name or password is incorrect!');
+      } else if (error_code === 404) {
+        this.openSnackBar('Login failed, cannot connect to the server.');
+      } else {
+        this.openSnackBar('Login failed, unknown error.');
+      }
     });
   }
 
@@ -84,7 +94,7 @@ export class LoginComponent implements OnInit {
         this.loginUsernameInput = res['user']['name'];
         this.selectedTabIndex = 0;
       } else {
-
+        this.openSnackBar('Failed to register user, unknown error.');
       }
     }, err => {
       this.registering = false;
