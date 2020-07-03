@@ -331,7 +331,7 @@ exports.addPlaylist = function(user_uid, new_playlist, type) {
   return true;
 }
 
-exports.updatePlaylist = function(user_uid, playlistID, new_filenames, type) {
+exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames, type) {
   users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).assign({fileNames: new_filenames});
   return true;
 }

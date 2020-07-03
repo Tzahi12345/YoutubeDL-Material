@@ -43,7 +43,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   valid_sessions_length = 0;
 
   sort_downloads = (a, b) => {
-    const result = a.value.timestamp_start < b.value.timestamp_start;
+    const result = b.value.timestamp_start - a.value.timestamp_start;
     return result;
   }
 
@@ -81,7 +81,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   clearDownload(session_id, download_uid) {
     this.postsService.clearDownloads(false, session_id, download_uid).subscribe(res => {
       if (res['success']) {
-        this.downloads = res['downloads'];
+        // this.downloads = res['downloads'];
       } else {
       }
     });
@@ -107,10 +107,31 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   assignNewValues(new_downloads_by_session) {
     const session_keys = Object.keys(new_downloads_by_session);
+
+    // remove missing session IDs
+    const current_session_ids = Object.keys(this.downloads);
+    const missing_session_ids = current_session_ids.filter(session => session_keys.indexOf(session) === -1)
+
+    for (const missing_session_id of missing_session_ids) {
+      delete this.downloads[missing_session_id];
+    }
+
+    // loop through sessions
     for (let i = 0; i < session_keys.length; i++) {
       const session_id = session_keys[i];
       const session_downloads_by_id = new_downloads_by_session[session_id];
       const session_download_ids = Object.keys(session_downloads_by_id);
+
+      if (this.downloads[session_id]) {
+        // remove missing download IDs
+        const current_download_ids = Object.keys(this.downloads[session_id]);
+        const missing_download_ids = current_download_ids.filter(download => session_download_ids.indexOf(download) === -1)
+
+        for (const missing_download_id of missing_download_ids) {
+          console.log('removing missing download id');
+          delete this.downloads[session_id][missing_download_id];
+        }
+      }
 
       if (!this.downloads[session_id]) {
         this.downloads[session_id] = session_downloads_by_id;

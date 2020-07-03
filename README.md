@@ -87,7 +87,7 @@ If you'd like to install YoutubeDL-Material, go to the Installation section. If 
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
 
 The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
 
@@ -101,9 +101,9 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 
 1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/youtubedl-material-docker.zip -o youtubedl-material-docker.zip` to download the latest Docker zip release, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
 2. Unzip the `youtubedl-material-docker.zip` and navigate into the root folder.
-3. Modify the config items in the `appdata` folder to your liking. The default options will work, however, and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
+3. Modify the config items in the `appdata` folder to your liking. The default options will work, however, and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section.
 4. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
-5. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar. 
+5. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar.
 6. Make sure you can connect to the specified URL + port, and if so, you are done!
 
 ## API

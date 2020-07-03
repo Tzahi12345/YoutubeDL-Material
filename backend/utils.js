@@ -27,10 +27,8 @@ function getJSONMp4(name, customPath, openReadPerms = false) {
     if (fs.existsSync(jsonPath))
     {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        if (openReadPerms) fs.chmodSync(jsonPath, 0o644);
     } else if (fs.existsSync(alternateJsonPath)) {
         obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
-        if (openReadPerms) fs.chmodSync(alternateJsonPath, 0o644);
     }
     else obj = 0;
     return obj;
@@ -43,16 +41,36 @@ function getJSONMp3(name, customPath, openReadPerms = false) {
     var alternateJsonPath = path.join(customPath, name + ".mp3.info.json");
     if (fs.existsSync(jsonPath)) {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        if (!is_windows && openReadPerms) fs.chmodSync(jsonPath, 0o755);
     }
     else if (fs.existsSync(alternateJsonPath)) {
         obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
-        if (!is_windows && openReadPerms) fs.chmodSync(alternateJsonPath, 0o755);
     }
     else
         obj = 0;
 
     return obj;
+}
+
+function fixVideoMetadataPerms(name, type, customPath = null) {
+    if (is_windows) return;
+    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
+                                                   : config_api.getConfigItem('ytdl_video_folder_path');
+
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+    
+    const files_to_fix = [
+        // JSONs
+        path.join(customPath, name + '.info.json'),
+        path.join(customPath, name + ext + '.info.json'),
+        // Thumbnails
+        path.join(customPath, name + '.webp'),
+        path.join(customPath, name + '.jpg')
+    ];
+
+    for (const file of files_to_fix) {
+        if (!fs.existsSync(file)) continue;
+        fs.chmodSync(file, 0o644);
+    }
 }
 
 // objects
@@ -74,5 +92,6 @@ module.exports = {
     getJSONMp3: getJSONMp3,
     getJSONMp4: getJSONMp4,
     getTrueFileName: getTrueFileName,
+    fixVideoMetadataPerms: fixVideoMetadataPerms,
     File: File
 }

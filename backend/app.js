@@ -582,6 +582,11 @@ async function watchSubscriptions() {
 
         logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
         setTimeout(async () => {
+            const multiUserModeChanged = config_api.getConfigItem('ytdl_multi_user_mode') !== multiUserMode;
+            if (multiUserModeChanged) {
+                logger.verbose(`Skipping subscription ${sub.name} due to multi-user mode change.`);
+                return;
+            }
             await subscriptions_api.getVideosForSub(sub, sub.user_uid);
             subscription_timeouts[sub.id] = false;
         }, current_delay);
@@ -812,16 +817,26 @@ async function deleteAudioFile(name, blacklistMode = false) {
         var jsonPath = path.join(audioFolderPath,name+'.mp3.info.json');
         var altJSONPath = path.join(audioFolderPath,name+'.info.json');
         var audioFilePath = path.join(audioFolderPath,name+'.mp3');
+        var thumbnailPath = path.join(filePath,name+'.webp');
+        var altThumbnailPath = path.join(filePath,name+'.jpg');
         jsonPath = path.join(__dirname, jsonPath);
         altJSONPath = path.join(__dirname, altJSONPath);
         audioFilePath = path.join(__dirname, audioFilePath);
 
         let jsonExists = fs.existsSync(jsonPath);
+        let thumbnailExists = fs.existsSync(thumbnailPath);
 
         if (!jsonExists) {
             if (fs.existsSync(altJSONPath)) {
                 jsonExists = true;
                 jsonPath = altJSONPath;
+            }
+        }
+
+        if (!thumbnailExists) {
+            if (fs.existsSync(altThumbnailPath)) {
+                thumbnailExists = true;
+                thumbnailPath = altThumbnailPath;
             }
         }
 
@@ -858,6 +873,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
         }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
+        if (thumbnailExists) fs.unlinkSync(thumbnailPath);
         if (audioFileExists) {
             fs.unlink(audioFilePath, function(err) {
                 if (fs.existsSync(jsonPath) || fs.existsSync(audioFilePath)) {
@@ -878,12 +894,30 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
         let filePath = customPath ? customPath : videoFolderPath;
         var jsonPath = path.join(filePath,name+'.info.json');
+        var altJSONPath = path.join(filePath,name+'.mp4.info.json');
         var videoFilePath = path.join(filePath,name+'.mp4');
+        var thumbnailPath = path.join(filePath,name+'.webp');
+        var altThumbnailPath = path.join(filePath,name+'.jpg');
         jsonPath = path.join(__dirname, jsonPath);
         videoFilePath = path.join(__dirname, videoFilePath);
 
-        jsonExists = fs.existsSync(jsonPath);
-        videoFileExists = fs.existsSync(videoFilePath);
+        let jsonExists = fs.existsSync(jsonPath);
+        let videoFileExists = fs.existsSync(videoFilePath);
+        let thumbnailExists = fs.existsSync(thumbnailPath);
+
+        if (!jsonExists) {
+            if (fs.existsSync(altJSONPath)) {
+                jsonExists = true;
+                jsonPath = altJSONPath;
+            }
+        }
+
+        if (!thumbnailExists) {
+            if (fs.existsSync(altThumbnailPath)) {
+                thumbnailExists = true;
+                thumbnailPath = altThumbnailPath;
+            }
+        }
 
         if (config_api.descriptors[name]) {
             try {
@@ -916,6 +950,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
         }
 
         if (jsonExists) fs.unlinkSync(jsonPath);
+        if (thumbnailExists) fs.unlinkSync(thumbnailPath);
         if (videoFileExists) {
             fs.unlink(videoFilePath, function(err) {
                 if (fs.existsSync(jsonPath) || fs.existsSync(videoFilePath)) {
@@ -1756,7 +1791,8 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
 
-    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
+    if (safeDownloadOverride) logger.verbose('Download is running with the safe download override.');
     const is_playlist = url.includes('playlist');
 
     let result_obj = null;
@@ -1786,7 +1822,8 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         user: req.isAuthenticated() ? req.user.uid : null
     }
 
-    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override');
+    const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
+    if (safeDownloadOverride) logger.verbose('Download is running with the safe download override.');
     const is_playlist = url.includes('playlist');
 
     let result_obj = null;
@@ -2252,7 +2289,7 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     });
 });
 
-app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
+app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let fileNames = req.body.fileNames;
     let type = req.body.type;
@@ -2260,7 +2297,7 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     let success = false;
     try {
         if (req.isAuthenticated()) {
-            auth_api.updatePlaylist(req.user.uid, playlistID, fileNames, type);
+            auth_api.updatePlaylistFiles(req.user.uid, playlistID, fileNames, type);
         } else {
             db.get(`playlists.${type}`)
                 .find({id: playlistID})
@@ -2276,6 +2313,14 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     res.send({
         success: success
     })
+});
+
+app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
+    let playlist = req.body.playlist;
+    let success = db_api.updatePlaylist(playlist, req.user && req.user.uid);
+    res.send({
+        success: success
+    });
 });
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
@@ -2754,7 +2799,7 @@ app.post('/api/auth/jwtAuth'
         , auth_api.returnAuthResponse
 );
 app.post('/api/auth/changePassword', optionalJwt, async (req, res) => {
-    let user_uid = req.user.uid;
+    let user_uid = req.body.user_uid;
     let password = req.body.new_password;
     let success = await auth_api.changeUserPassword(user_uid, password);
     res.send({success: success});

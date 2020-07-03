@@ -53,6 +53,7 @@ backend/public/assets/default.json
 backend/subscriptions/channels/*
 backend/subscriptions/playlists/*
 backend/subscriptions/archives/*
+backend/*.exe
 src/assets/default.json
 backend/appdata/db.json
 backend/appdata/archives/archive_audio.txt
@@ -63,3 +64,4 @@ backend/appdata/logs/combined.log
 backend/appdata/logs/error.log
 backend/appdata/users.json
 backend/users/*
+backend/appdata/cookies.txt
