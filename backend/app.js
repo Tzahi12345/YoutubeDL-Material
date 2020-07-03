@@ -58,7 +58,22 @@ if (umask) process.umask(parseInt(umask));
 const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 
 // logging setup
-const { logger } = require('./api/services/logger');
+const { logger } = require('./api/services/logger_service');
+
+// config setup
+const {
+  url_domain,
+  options,
+  backendPort,
+  usingEncryption,
+  audioFolderPath,
+  videoFolderPath,
+  useDefaultDownloadingAgent,
+  customDownloadingAgent,
+  subscriptionsCheckInterval,
+  allowSubscriptions,
+  loadConfigValues
+} = require('./api/services/config_service');
 
 // console format
 
@@ -111,25 +126,9 @@ users_db.defaults(
     }
 ).write();
 
-// config values
-var frontendUrl = null;
-var backendUrl = null;
-var backendPort = null;
-var usingEncryption = null;
-var basePath = null;
-var audioFolderPath = null;
-var videoFolderPath = null;
-var downloadOnlyMode = null;
-var useDefaultDownloadingAgent = null;
-var customDownloadingAgent = null;
-var allowSubscriptions = null;
-var subscriptionsCheckInterval = null;
-var archivePath = path.join(__dirname, 'appdata', 'archives');
 
-// other needed values
-var options = null; // encryption options
-var url_domain = null;
 var updaterStatus = null;
+var archivePath = path.join(__dirname, 'appdata', 'archives');
 
 var timestamp_server_start = Date.now();
 
@@ -148,15 +147,6 @@ if (just_restarted) {
 // updates & starts youtubedl
 startYoutubeDL();
 
-var validDownloadingAgents = [
-    'aria2c',
-    'avconv',
-    'axel',
-    'curl',
-    'ffmpeg',
-    'httpie',
-    'wget'
-];
 
 const subscription_timeouts = {};
 
@@ -547,53 +537,6 @@ async function loadConfig() {
         resolve(true);
     });
 
-}
-
-function loadConfigValues() {
-    url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
-    backendPort = config_api.getConfigItem('ytdl_port');
-    usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
-    audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
-    videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
-    downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
-    useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
-    customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
-    allowSubscriptions = config_api.getConfigItem('ytdl_allow_subscriptions');
-    subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
-
-    if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
-        logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
-    } else {
-        customDownloadingAgent = null;
-    }
-
-    if (usingEncryption)
-    {
-        var certFilePath = path.resolve(config_api.getConfigItem('ytdl_cert_file_path'));
-        var keyFilePath = path.resolve(config_api.getConfigItem('ytdl_key_file_path'));
-
-        var certKeyFile = fs.readFileSync(keyFilePath);
-        var certFile = fs.readFileSync(certFilePath);
-
-        options = {
-            key: certKeyFile,
-            cert: certFile
-        };
-    }
-
-    url_domain = new URL(url);
-
-    let logger_level = config_api.getConfigItem('ytdl_logger_level');
-    const possible_levels = ['error', 'warn', 'info', 'verbose', 'debug'];
-    if (!possible_levels.includes(logger_level)) {
-        logger.error(`${logger_level} is not a valid logger level! Choose one of the following: ${possible_levels.join(', ')}.`)
-        logger_level = 'info';
-    }
-    logger.level = logger_level;
-
-    // TODO: Unsure what this logger was for
-    // winston.loggers.get('console').level = logger_level;
-    logger.transports[2].level = logger_level;
 }
 
 function calculateSubcriptionRetrievalDelay(subscriptions_amount) {

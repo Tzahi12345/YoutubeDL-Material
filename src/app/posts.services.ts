@@ -184,7 +184,7 @@ export class PostsService implements CanActivate {
     }
 
     setConfig(config) {
-        return this.http.post(this.path + 'setConfig', {new_config_file: config}, this.httpOptions);
+        return this.http.post(this.path + 'config/setConfig', {new_config_file: config}, this.httpOptions);
     }
 
     deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {

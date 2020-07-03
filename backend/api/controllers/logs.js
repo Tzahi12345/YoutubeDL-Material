@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs-extra');
-const { logger } = require('../services/logger');
+const { logger } = require('../services/logger_service');
 
 function getLogs(req, res){
   let logs = null;
