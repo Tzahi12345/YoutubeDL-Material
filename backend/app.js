@@ -29,6 +29,7 @@ var config_api = require('./config.js');
 var subscriptions_api = require('./subscriptions')
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
+const read_last_lines = require('read-last-lines');
 
 const is_windows = process.platform === 'win32';
 
@@ -1867,15 +1868,17 @@ app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
 });
 
-app.get('/api/logs', function(req, res) {
+app.post('/api/logs', async function(req, res) {
     let logs = null;
+    let lines = req.body.lines;
     logs_path = path.join('appdata', 'logs', 'combined.log')
-    if (fs.existsSync(logs_path))
-        logs = fs.readFileSync(logs_path, 'utf8');
+    if (fs.existsSync(logs_path)) {
+        if (lines) logs = await read_last_lines.read(logs_path, lines);
+        else       logs = fs.readFileSync(logs_path, 'utf8');
+    }
     else
         logger.error(`Failed to find logs file at the expected location: ${logs_path}`)
 
-    console.log(logs)
     res.send({
         logs: logs,
         success: !!logs

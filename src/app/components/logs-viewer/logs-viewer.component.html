@@ -1,3 +1,21 @@
 <div style="height: 100%">
-    <textarea style="height: 100%" matInput readonly [(ngModel)]="logs" placeholder="Logs will appear here" i18n-placeholder="Logs placeholder"></textarea>
+    <div *ngIf="logs_loading" style="position: absolute; top: 40%; left: 50%">
+        <mat-spinner [diameter]="32"></mat-spinner>
+    </div>
+    <textarea style="height: 275px" matInput readonly [(ngModel)]="logs" placeholder="Logs will appear here" i18n-placeholder="Logs placeholder"></textarea>
+    <div>
+        <button style="margin-top: 12px;" [cdkCopyToClipboard]="logs" (click)="copiedLogsToClipboard()" mat-flat-button color="primary"><ng-container i18n="Copy to clipboard button text">Copy to clipboard</ng-container></button>
+        <div style="float: right">
+            <ng-container i18n="Label for lines select in logger view">Lines:</ng-container>&nbsp;
+            <mat-form-field style="width: 75px;">
+                <mat-select (selectionChange)="getLogs()" [(ngModel)]="requested_lines">
+                    <mat-option [value]="10">10</mat-option>
+                    <mat-option [value]="25">25</mat-option>
+                    <mat-option [value]="50">50</mat-option>
+                    <mat-option [value]="100">100</mat-option>
+                    <mat-option [value]="0">All</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
 </div>

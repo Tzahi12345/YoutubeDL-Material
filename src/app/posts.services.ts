@@ -234,8 +234,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode}, this.httpOptions);
     }
 
-    getLogs() {
-        return this.http.get(this.path + 'logs', this.httpOptions);
+    getLogs(lines = 50) {
+        return this.http.post(this.path + 'logs', {lines: lines}, this.httpOptions);
     }
 
     isPinSet() {
