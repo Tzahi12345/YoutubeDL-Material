@@ -1,6 +1,7 @@
 FROM arm32v7/alpine:3.11
 
-RUN apk add --update npm python ffmpeg
+RUN apk add --update nodejs npm ffmpeg youtube-dl
+RUN apk --no-cache add --virtual builds-deps build-base python
 
 # Change directory so that our commands run inside this new directory
 WORKDIR /app
@@ -12,14 +13,16 @@ COPY ./ /app/
 WORKDIR /app
 
 # Install dependencies on backend
+#RUN apk --no-cache add --virtual builds-deps build-base python
+RUN npm config set python /usr/bin/python
+RUN npm i -g npm
 RUN npm install
+#RUN npm rebuild bcrypt --build-from-source
+RUN apk del builds-deps
+
 
 # Expose the port the app runs in
 EXPOSE 17442
-
-##added to change directory to backend to launch app##
-WORKDIR backend/
-RUN ls -acl
 
 # Run the specified command within the container.
 CMD [ "node", "app.js" ]
