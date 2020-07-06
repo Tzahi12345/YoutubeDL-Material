@@ -1868,23 +1868,6 @@ app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
 });
 
-app.post('/api/logs', async function(req, res) {
-    let logs = null;
-    let lines = req.body.lines;
-    logs_path = path.join('appdata', 'logs', 'combined.log')
-    if (fs.existsSync(logs_path)) {
-        if (lines) logs = await read_last_lines.read(logs_path, lines);
-        else       logs = fs.readFileSync(logs_path, 'utf8');
-    }
-    else
-        logger.error(`Failed to find logs file at the expected location: ${logs_path}`)
-
-    res.send({
-        logs: logs,
-        success: !!logs
-    });
-});
-
 app.post('/api/tomp3', optionalJwt, async function(req, res) {
     var url = req.body.url;
     var options = {
@@ -2867,6 +2850,42 @@ app.get('/api/audio/:id', optionalJwt, function(req , res){
     updateDownloads();
     res.send({success: success, downloads: downloads});
   });
+
+// logs management
+
+app.post('/api/logs', async function(req, res) {
+    let logs = null;
+    let lines = req.body.lines;
+    logs_path = path.join('appdata', 'logs', 'combined.log')
+    if (fs.existsSync(logs_path)) {
+        if (lines) logs = await read_last_lines.read(logs_path, lines);
+        else       logs = fs.readFileSync(logs_path, 'utf8');
+    }
+    else
+        logger.error(`Failed to find logs file at the expected location: ${logs_path}`)
+
+    res.send({
+        logs: logs,
+        success: !!logs
+    });
+});
+
+app.post('/api/clearAllLogs', async function(req, res) {
+    logs_path = path.join('appdata', 'logs', 'combined.log');
+    logs_err_path = path.join('appdata', 'logs', 'error.log');
+    let success = false;
+    try {
+        fs.writeFileSync(logs_path, '');
+        fs.writeFileSync(logs_err_path, '');
+        success = true;
+    } catch(e) {
+        logger.error(e);
+    }
+
+    res.send({
+        success: success
+    });
+});
 
   app.post('/api/getVideoInfos', async (req, res) => {
     let fileNames = req.body.fileNames;

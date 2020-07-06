@@ -238,6 +238,10 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'logs', {lines: lines}, this.httpOptions);
     }
 
+    clearAllLogs() {
+        return this.http.post(this.path + 'clearAllLogs', {}, this.httpOptions);
+    }
+
     isPinSet() {
         return this.http.post(this.path + 'isPinSet', {}, this.httpOptions);
     }
