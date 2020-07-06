@@ -196,5 +196,20 @@
   "52c1447c1ec9570a2a3025c7e566557b8d19ed92": " Rol ",
   "59a8c38db3091a63ac1cb9590188dc3a972acfb3": " Acciones ",
   "4d92a0395dd66778a931460118626c5794a3fc7a": "Agregar Usuarios",
-  "b0d7dd8a1b0349622d6e0c6e643e24a9ea0efa1d": "Editar Rol"
+  "b0d7dd8a1b0349622d6e0c6e643e24a9ea0efa1d": "Editar Rol",
+  "4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1": "Modify playlist",
+  "28f86ffd419b869711aa13f5e5ff54be6d70731c": "Editar",
+  "ebadf946ae90f13ecd0c70f09edbc0f983af8a0f": "Sube nuevas cookies",
+  "98a8a42e5efffe17ab786636ed0139b4c7032d0e": "Arrastrar y soltar",
+  "85e0725c870b28458fd3bbba905397d890f00a69": "NOTA: Cargar nuevas cookies anulará sus cookies anteriores. También tenga en cuenta que las cookies son de toda la instancia, no por usuario.",
+  "d01715b75228878a773ae6d059acc639d4898a03": "Anulación de descarga segura",
+  "00e274c496b094a019f0679c3fab3945793f3335": "Seleccione un nivel de registrador",
+  "431e5f3a0dde88768d1074baedd65266412b3f02": "Utilizar Cookies",
+  "80651a7ad1229ea6613557d3559f702cfa5aecf5": "Establecer Cookies",
+  "eb3d5aefff38a814b76da74371cbf02c0789a1ef": "Registros",
+  "c76a955642714b8949ff3e4b4990864a2e2cac95": "Solo audio",
+  "f432e1a8d6adb12e612127978ce2e0ced933959c": "Estos se agregan después de los argumentos estándar.",
+  "98b6ec9ec138186d663e64770267b67334353d63": "Salida de archivo personalizada",
+  "fd59fb984749fcdb5e386ae85faec82f8e5ac098": "Los registros aparecerán aquí",
+  "5009630cdf32ab4f1c78737b9617b8773512c05a": "Líneas:"
 }
