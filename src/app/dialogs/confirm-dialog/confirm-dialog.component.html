@@ -1,0 +1,12 @@
+<h4 mat-dialog-title>{{dialogTitle}}</h4>
+<mat-dialog-content>
+  <div>
+    {{dialogText}}
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+  <button color="primary" mat-flat-button type="submit" [mat-dialog-close]="true">{{submitText}}</button>
+  <span class="spacer"></span>
+  <button style="float: right;" mat-stroked-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>
