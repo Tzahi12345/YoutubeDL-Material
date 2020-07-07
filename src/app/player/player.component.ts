@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, OnDestroy } from '@angular/core';
 import { VgAPI } from 'ngx-videogular';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,7 @@ export interface IMedia {
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.css']
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, OnDestroy {
 
   playlist: Array<IMedia> = [];
   original_playlist: string = null;
@@ -62,6 +62,7 @@ export class PlayerComponent implements OnInit {
 
   downloading = false;
 
+  save_volume_timer = null;
   original_volume = null;
 
   @HostListener('window:resize', ['$event'])
@@ -92,6 +93,11 @@ export class PlayerComponent implements OnInit {
         }
       });
     }
+  }
+
+  ngOnDestroy() {
+    // prevents volume save feature from running in the background
+    clearInterval(this.save_volume_timer);
   }
 
   constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
@@ -241,7 +247,8 @@ export class PlayerComponent implements OnInit {
       if (localStorage.getItem('player_volume')) {
         this.api.volume = parseFloat(localStorage.getItem('player_volume'));
       }
-      setInterval(() => this.saveVolume(this.api), 2000)
+
+      this.save_volume_timer = setInterval(() => this.saveVolume(this.api), 2000)
 
       this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
       this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
