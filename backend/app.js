@@ -1,8 +1,9 @@
+require('./api/config/application');
 var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
 var auth_api = require('./authentication/auth');
-var winston = require('winston');
+
 var path = require('path');
 var youtubedl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
@@ -38,42 +39,44 @@ var app = express();
 // database setup
 const FileSync = require('lowdb/adapters/FileSync')
 
+
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
 
 const users_adapter = new FileSync('./appdata/users.json');
 const users_db = low(users_adapter);
 
+// Routes
+const configRouter = require('./api/routes/configRouter');
+const logRouter = require('./api/routes/logRouter');
+
 // env var setup
 
 const umask = process.env.YTDL_UMASK;
 if (umask) process.umask(parseInt(umask));
 
-// check if debug mode
-let debugMode = process.env.YTDL_MODE === 'debug';
 
 const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 
 // logging setup
+const { logger } = require('./api/services/logger_service');
+
+// config setup
+const {
+  url_domain,
+  options,
+  backendPort,
+  usingEncryption,
+  audioFolderPath,
+  videoFolderPath,
+  useDefaultDownloadingAgent,
+  customDownloadingAgent,
+  subscriptionsCheckInterval,
+  allowSubscriptions,
+  loadConfigValues
+} = require('./api/services/config_service');
 
 // console format
-const defaultFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-    return `${timestamp} ${level.toUpperCase()}: ${message}`;
-});
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(winston.format.timestamp(), defaultFormat),
-    defaultMeta: {},
-    transports: [
-      //
-      // - Write to all logs with level `info` and below to `combined.log`
-      // - Write all logs error (and below) to `error.log`.
-      //
-      new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
-      new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
-      new winston.transports.Console({level: !debugMode ? 'info' : 'debug', name: 'console'})
-    ]
-});
 
 config_api.initialize(logger);
 auth_api.initialize(users_db, logger);
@@ -124,25 +127,9 @@ users_db.defaults(
     }
 ).write();
 
-// config values
-var frontendUrl = null;
-var backendUrl = null;
-var backendPort = null;
-var usingEncryption = null;
-var basePath = null;
-var audioFolderPath = null;
-var videoFolderPath = null;
-var downloadOnlyMode = null;
-var useDefaultDownloadingAgent = null;
-var customDownloadingAgent = null;
-var allowSubscriptions = null;
-var subscriptionsCheckInterval = null;
-var archivePath = path.join(__dirname, 'appdata', 'archives');
 
-// other needed values
-var options = null; // encryption options
-var url_domain = null;
 var updaterStatus = null;
+var archivePath = path.join(__dirname, 'appdata', 'archives');
 
 var timestamp_server_start = Date.now();
 
@@ -161,15 +148,6 @@ if (just_restarted) {
 // updates & starts youtubedl
 startYoutubeDL();
 
-var validDownloadingAgents = [
-    'aria2c',
-    'avconv',
-    'axel',
-    'curl',
-    'ffmpeg',
-    'httpie',
-    'wget'
-];
 
 const subscription_timeouts = {};
 
@@ -562,53 +540,6 @@ async function loadConfig() {
 
 }
 
-function loadConfigValues() {
-    url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
-    backendPort = config_api.getConfigItem('ytdl_port');
-    usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
-    audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
-    videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
-    downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
-    useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
-    customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
-    allowSubscriptions = config_api.getConfigItem('ytdl_allow_subscriptions');
-    subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
-
-    if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
-        logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
-    } else {
-        customDownloadingAgent = null;
-    }
-
-    if (usingEncryption)
-    {
-        var certFilePath = path.resolve(config_api.getConfigItem('ytdl_cert_file_path'));
-        var keyFilePath = path.resolve(config_api.getConfigItem('ytdl_key_file_path'));
-
-        var certKeyFile = fs.readFileSync(keyFilePath);
-        var certFile = fs.readFileSync(certFilePath);
-
-        options = {
-            key: certKeyFile,
-            cert: certFile
-        };
-    }
-
-    // empty url defaults to default URL
-    if (!url || url === '') url = 'http://example.com'
-    url_domain = new URL(url);
-
-    let logger_level = config_api.getConfigItem('ytdl_logger_level');
-    const possible_levels = ['error', 'warn', 'info', 'verbose', 'debug'];
-    if (!possible_levels.includes(logger_level)) {
-        logger.error(`${logger_level} is not a valid logger level! Choose one of the following: ${possible_levels.join(', ')}.`)
-        logger_level = 'info';
-    }
-    logger.level = logger_level;
-    winston.loggers.get('console').level = logger_level;
-    logger.transports[2].level = logger_level;
-}
-
 function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
     // frequency is once every 5 mins by default
     let interval_in_ms = subscriptionsCheckInterval * 1000;
@@ -981,7 +912,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
                 jsonPath = altJSONPath;
             }
         }
-        
+
         if (!thumbnailExists) {
             if (fs.existsSync(altThumbnailPath)) {
                 thumbnailExists = true;
@@ -1841,28 +1772,8 @@ const optionalJwt = function (req, res, next) {
     return next();
 };
 
-app.get('/api/config', function(req, res) {
-    let config_file = config_api.getConfigFile();
-    res.send({
-        config_file: config_file,
-        success: !!config_file
-    });
-});
-
-app.post('/api/setConfig', function(req, res) {
-    let new_config_file = req.body.new_config_file;
-    if (new_config_file && new_config_file['YoutubeDLMaterial']) {
-        let success = config_api.setConfigFile(new_config_file);
-        loadConfigValues(); // reloads config values that exist as variables
-        res.send({
-            success: success
-        });
-    } else {
-        logger.error('Tried to save invalid config file!')
-        res.sendStatus(400);
-    }
-
-});
+app.use('/api/config', configRouter);
+app.use('/api/logs', logRouter);
 
 app.get('/api/using-encryption', function(req, res) {
     res.send(usingEncryption);
@@ -1911,7 +1822,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         ui_uid: req.body.ui_uid,
         user: req.isAuthenticated() ? req.user.uid : null
     }
-    
+
     const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
     if (safeDownloadOverride) logger.verbose('Download is running with the safe download override.');
     const is_playlist = url.includes('playlist');
