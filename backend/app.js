@@ -96,7 +96,6 @@ db.defaults(
         configWriteFlag: false,
         downloads: {},
         subscriptions: [],
-        pin_md5: '',
         files_to_db_migration_complete: false
 }).write();
 
@@ -2621,49 +2620,6 @@ app.post('/api/updateServer', async (req, res) => {
         success: true
     });
 
-});
-
-// Pin API calls
-
-app.post('/api/isPinSet', async (req, res) => {
-    let stored_pin = db.get('pin_md5').value();
-    let is_set = false;
-    if (!stored_pin || stored_pin.length === 0) {
-    } else {
-        is_set = true;
-    }
-
-    res.send({
-        is_set: is_set
-    });
-});
-
-app.post('/api/setPin', async (req, res) => {
-    let unhashed_pin = req.body.pin;
-    let hashed_pin = md5(unhashed_pin);
-
-    db.set('pin_md5', hashed_pin).write();
-
-    res.send({
-        success: true
-    });
-});
-
-app.post('/api/checkPin', async (req, res) => {
-    let input_pin = req.body.input_pin;
-    let input_pin_md5 = md5(input_pin);
-
-    let stored_pin = db.get('pin_md5').value();
-
-    let successful = false;
-
-    if (input_pin_md5 === stored_pin) {
-        successful = true;
-    }
-
-    res.send({
-        success: successful
-    });
 });
 
 // API Key API calls

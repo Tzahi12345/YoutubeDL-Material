@@ -242,18 +242,6 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'clearAllLogs', {}, this.httpOptions);
     }
 
-    isPinSet() {
-        return this.http.post(this.path + 'isPinSet', {}, this.httpOptions);
-    }
-
-    setPin(unhashed_pin) {
-        return this.http.post(this.path + 'setPin', {pin: unhashed_pin}, this.httpOptions);
-    }
-
-    checkPin(unhashed_pin) {
-        return this.http.post(this.path + 'checkPin', {input_pin: unhashed_pin}, this.httpOptions);
-    }
-
     generateNewAPIKey() {
         return this.http.post(this.path + 'generateNewAPIKey', {}, this.httpOptions);
     }

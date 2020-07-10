@@ -21,7 +21,6 @@ import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
-import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
 import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
@@ -42,8 +41,6 @@ export class AppComponent implements OnInit {
   allowThemeChange = null;
   allowSubscriptions = false;
   enableDownloadsManager = false;
-  // defaults to true to prevent attack
-  settingsPinRequired = true;
 
   @ViewChild('sidenav') sidenav: MatSidenav;
   @ViewChild('hamburgerMenu', { read: ElementRef }) hamburgerMenuButton: ElementRef;
@@ -79,7 +76,6 @@ export class AppComponent implements OnInit {
   loadConfig() {
     // loading config
     this.topBarTitle = this.postsService.config['Extra']['title_top'];
-    this.settingsPinRequired = this.postsService.config['Extra']['settings_pin_required'];
     const themingExists = this.postsService.config['Themes'];
     this.defaultTheme = themingExists ? this.postsService.config['Themes']['default_theme'] : 'default';
     this.allowThemeChange = themingExists ? this.postsService.config['Themes']['allow_theme_change'] : true;
@@ -175,29 +171,9 @@ onSetTheme(theme, old_theme) {
   }
 
   openSettingsDialog() {
-    if (this.settingsPinRequired) {
-      this.openPinDialog();
-    } else {
-      this.actuallyOpenSettingsDialog();
-    }
-  }
-
-  actuallyOpenSettingsDialog() {
     const dialogRef = this.dialog.open(SettingsComponent, {
       width: '80vw'
     });
-  }
-
-  openPinDialog() {
-    const dialogRef = this.dialog.open(CheckOrSetPinDialogComponent, {
-    });
-
-    dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.actuallyOpenSettingsDialog();
-      }
-    });
-
   }
 
   openAboutDialog() {
