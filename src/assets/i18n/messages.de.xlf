@@ -1772,7 +1772,7 @@
       </trans-unit>
       <trans-unit id="29c97c8e76763bb15b6d515648fa5bd1eb0f7510" datatype="html">
         <source>User UID:</source>
-        <target xml:lang="de-DE">Benutzer-UID</target>
+        <target xml:lang="de-DE">Benutzer-UID:</target>
 <note from="description" priority="1">User UID</note><context-group purpose="location">
           <context context-type="sourcefile">app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">4</context>

@@ -16,7 +16,7 @@
                 <h3 matLine>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</h3>
                 <span matLine>
                     <mat-radio-group [disabled]="permission === 'settings' && postsService.user.uid === user.uid" (change)="changeUserPermissions($event, permission)" [(ngModel)]="permissions[permission]" [attr.aria-label]="'Give user permission for ' + permission">
-                        <mat-radio-button value="default"><ng-container i18n="Use default">Use default</ng-container></mat-radio-button>
+                        <mat-radio-button value="default"><ng-container i18n="Use role default">Use role default</ng-container></mat-radio-button>
                         <mat-radio-button value="yes"><ng-container i18n="Yes">Yes</ng-container></mat-radio-button>
                         <mat-radio-button value="no"><ng-container i18n="No">No</ng-container></mat-radio-button>
                     </mat-radio-group>
@@ -27,5 +27,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close><ng-container i18n="Close">Close</ng-container></button>
+    <button style="margin-bottom: 5px;" mat-stroked-button mat-dialog-close><ng-container i18n="Close">Close</ng-container></button>
 </mat-dialog-actions>
