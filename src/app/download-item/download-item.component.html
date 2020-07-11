@@ -5,8 +5,8 @@
         </mat-grid-tile>
         <mat-grid-tile [colspan]="13">
                 <mat-progress-bar [value]="(download.complete || download.error) ? 100 : download.percent_complete" [mode]="(!download.complete && download.percent_complete === 0 && !download.error) ? 'indeterminate' : 'determinate'"></mat-progress-bar>
-                <mat-icon *ngIf="download.complete" style="margin-left: 25px; cursor: default" matTooltip="The download is complete" matTooltip-i18n>done</mat-icon>
-                <mat-icon *ngIf="download.error" style="margin-left: 25px; cursor: default" matTooltip="An error has occurred" matTooltip-i18n>error</mat-icon>
+                <mat-icon *ngIf="download.complete" style="margin-left: 25px; cursor: default" matTooltip="The download was successful" i18n-matTooltip="download successful tooltip">done</mat-icon>
+                <mat-icon *ngIf="download.error" style="margin-left: 25px; cursor: default" matTooltip="An error has occurred" i18n-matTooltip="download error tooltip">error</mat-icon>
         </mat-grid-tile>
         <mat-grid-tile [colspan]="4">
             <button style="margin-bottom: 2px;" (click)="cancelTheDownload()" mat-icon-button color="warn"><mat-icon fontSet="material-icons-outlined">cancel</mat-icon></button>
