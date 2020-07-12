@@ -86,9 +86,11 @@ Once you have enabled the API and have the key, you can start sending requests b
 
 ## Contributing
 
-Feel free to submit a pull request! I have no guidelines as of yet, so no need to worry about that.
+If you're interested in contributing, first: awesome! Second, please refer to the guidelines/setup information located in the [Contributing](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Contributing) wiki page, it's a helpful way to get you on your feet and coding away.
 
-If you're interested in doing translations, check out the wiki page [here.](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Translate)
+Pull requests are always appreciated! If you're a bit rusty with coding, that's no problem: we can always help you learn. And if that's too scary, that's OK too! You can create issues for features you'd like to see or bugs you encounter, it all helps this project grow.
+
+If you're interested in translating the app into a new language, check out the [Translate](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Translate) wiki page.
 
 ## Authors
 
