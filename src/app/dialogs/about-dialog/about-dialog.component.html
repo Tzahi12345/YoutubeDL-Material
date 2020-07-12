@@ -18,7 +18,7 @@
         <h5 style="margin-top: 10px;">Installation details:</h5>
         <p>
             <ng-container i18n="Version label">Installed version:</ng-container>&nbsp;{{current_version_tag}} - <span style="display: inline-block" *ngIf="checking_for_updates"><mat-spinner class="version-spinner" [diameter]="22"></mat-spinner>&nbsp;<ng-container i18n="Checking for updates text">Checking for updates...</ng-container></span>
-            <mat-icon *ngIf="!checking_for_updates" class="version-checked-icon">done</mat-icon>&nbsp;&nbsp;<a *ngIf="!checking_for_updates && latestGithubRelease['tag_name'] !== current_version_tag" [href]="latestUpdateLink" target="_blank"><ng-container i18n="View latest update">Update available</ng-container> - {{latestGithubRelease['tag_name']}}</a>. <ng-container i18n="Update through settings menu hint">You can update from the settings menu.</ng-container>
+            <mat-icon *ngIf="!checking_for_updates" class="version-checked-icon">done</mat-icon>&nbsp;&nbsp;<span *ngIf="!checking_for_updates && latestGithubRelease['tag_name'] !== current_version_tag"><a [href]="latestUpdateLink" target="_blank"><ng-container i18n="View latest update">Update available</ng-container> - {{latestGithubRelease['tag_name']}}</a>. <ng-container i18n="Update through settings menu hint">You can update from the settings menu.</ng-container></span>
             <span *ngIf="!checking_for_updates && latestGithubRelease['tag_name'] === current_version_tag">You are up to date.</span>
         </p>
         <p>
