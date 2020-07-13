@@ -18,6 +18,11 @@ RUN npm config set python /usr/bin/python
 RUN npm i -g npm
 RUN npm install
 #RUN npm rebuild bcrypt --build-from-source
+
+# to test if readding python fixes download errors
+#https://github.com/Tzahi12345/YoutubeDL-Material/issues/137#issuecomment-657781754
+RUN apk --no-cache add python
+
 RUN apk del builds-deps
 
 
