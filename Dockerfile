@@ -13,7 +13,7 @@ COPY ./ /app/
 WORKDIR /app
 
 # Install dependencies on backend
-RUN apk add --no-cache  --virtual builds-deps build-base python
+RUN apk add --no-cache  --virtual builds-deps build-base
 RUN npm config set python /usr/bin/python
 RUN npm i -g npm
 RUN npm install
