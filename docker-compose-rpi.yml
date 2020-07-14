@@ -2,7 +2,7 @@
 version: "2"
 services:
     youtubedl-material-docker-rpi:
-        build: .
+#        build: .
         environment: 
             ALLOW_CONFIG_MUTATIONS: 'true'
         restart: unless-stopped
