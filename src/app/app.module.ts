@@ -53,6 +53,7 @@ import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dia
 import { SettingsComponent } from './settings/settings.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxFileDropModule } from 'ngx-file-drop';
+import { AvatarModule } from 'ngx-avatar';
 
 import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
@@ -73,6 +74,8 @@ import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialo
 import { LogsViewerComponent } from './components/logs-viewer/logs-viewer.component';
 import { ModifyPlaylistComponent } from './dialogs/modify-playlist/modify-playlist.component';
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
+import { UnifiedFileCardComponent } from './components/unified-file-card/unified-file-card.component';
+import { RecentVideosComponent } from './components/recent-videos/recent-videos.component';
 
 registerLocaleData(es, 'es');
 
@@ -113,7 +116,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     CookiesUploaderDialogComponent,
     LogsViewerComponent,
     ModifyPlaylistComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    UnifiedFileCardComponent,
+    RecentVideosComponent
   ],
   imports: [
     CommonModule,
@@ -154,6 +159,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     DragDropModule,
     ClipboardModule,
     NgxFileDropModule,
+    AvatarModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

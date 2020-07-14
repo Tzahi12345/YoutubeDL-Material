@@ -2046,6 +2046,24 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     }
 });
 
+app.post('/api/getAllFiles', optionalJwt, function (req, res) {
+    files = null;
+    playlists = null;
+    if (req.isAuthenticated()) {
+        const videos = auth_api.getUserVideos(req.user.uid, 'video');
+        const audios = auth_api.getUserVideos(req.user.uid, 'audio');
+        const audio_playlists = null;
+        const video_playlists = null;
+    } else {
+
+    }
+
+    res.send({
+        files: files,
+        playlists: playlists
+    })
+});
+
 // video sharing
 app.post('/api/enableSharing', optionalJwt, function(req, res) {
     var type = req.body.type;

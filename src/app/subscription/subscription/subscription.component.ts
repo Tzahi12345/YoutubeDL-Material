@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'app-subscription',
@@ -43,9 +43,26 @@ export class SubscriptionComponent implements OnInit {
   filterProperty = this.filterProperties['upload_date'];
   downloading = false;
 
+  initialized = false;
+
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      this.id = params.get('id');
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.initialized = true;
+          this.getConfig();
+          this.getSubscription();
+        }
+      });
+
+      if (!this.initialized) {
+        this.getConfig();
+        this.getSubscription();
+      }
+    });
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
