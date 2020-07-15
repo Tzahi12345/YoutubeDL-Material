@@ -1,6 +1,6 @@
 # YoutubeDL-Material
-[![](https://img.shields.io/docker/pulls/tzahi12345/youtubedl-material.svg)](https://hub.docker.com/repository/docker/tzahi12345/youtubedl-material)
-[![](https://img.shields.io/docker/image-size/tzahi12345/youtubedl-material?sort=date)](https://hub.docker.com/repository/docker/tzahi12345/youtubedl-material)
+[![](https://img.shields.io/docker/pulls/tzahi12345/youtubedl-material.svg)](https://hub.docker.com/r/tzahi12345/youtubedl-material)
+[![](https://img.shields.io/docker/image-size/tzahi12345/youtubedl-material?sort=date)](https://hub.docker.com/r/tzahi12345/youtubedl-material)
 [![](https://img.shields.io/badge/%E2%86%91_Deploy_to-Heroku-7056bf.svg)](https://heroku.com/deploy?template=https://github.com/Tzahi12345/YoutubeDL-Material)
 [![](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
 [![](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
@@ -36,6 +36,9 @@ Make sure you have these dependencies installed on your system: nodejs and youtu
 sudo apt-get install nodejs youtube-dl
 ```
 
+Optional dependencies:
+* AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
+
 ### Installing
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
@@ -50,41 +53,13 @@ NOTE: If you are intending to use a [reverse proxy](https://github.com/Tzahi1234
 
 If you experience problems, know that it's usually caused by a configuration problem. The first thing you should do is check the console. To get there, right click anywhere on the page and click "Inspect element." Then on the menu that pops up, click console. Look at the error there, and try to investigate.
 
-### Configuration
-
-NOTE: If you are using YoutubeDL-Material v3.2 or lower, click [here](https://github.com/Tzahi12345/YoutubeDL-Material/blob/b87a9f1e2fd896b8e3b2f12429b7ffb15ea4521b/README.md#configuration) for the old README
-
-Here is an explanation for the configuration entries. Check out the [default config](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/backend/config/default.json) for more context.
-
-| Config item | Description | Default |
-| ------------- | ------------- | ------------- |
-| url  | URL to the server hosting YoutubeDL-Material | "http://example.com" |
-| port  | Desired port for YoutubeDL-Material | "17442" |
-| use-encryption | true if you intend to use SSL encryption (https) | false |
-| cert-file-path | Cert file path - required if using encryption | "/etc/letsencrypt/live/example.com/fullchain.pem" |
-| key-file-path | Private key file path - required if using encryption |  "/etc/letsencrypt/live/example.com/privkey.pem" |
-| path-audio | Path to audio folder for saved mp3s | "audio/" |
-| path-video | Path to video folder for saved mp4s | "video/" |
-| title_top | Title shown on the top toolbar | "Youtube Downloader" |
-| file_manager_enabled | true if you want to use the file manager | true |
-| allow_quality_select | true if you want to select a videos quality level before downloading | true |
-| download_only_mode | true if you want files to directly download to the client with no media player | false |
-| allow_multi_download_mode | true if you want the ability to download multiple videos at the same time | true |
-| use_youtube_API | true if you want to use the Youtube API which is used for YT searches | false |
-| youtube_API_key | Youtube API key. Required if use_youtube_API is enabled | "" |
-| default_theme | Default theme to use. Options are "default" and "dark" | "default" |
-| allow_theme_change | true if you want the icon in the top toolbar that toggles dark mode | true |
-| use_default_downloading_agent | true if you want to use youtube-dl's default downloader | true |
-| custom_downloading_agent | If not using the default downloader, this is the downloader you want to use | "" |
-| allow_advanced_download | true if you want to use the Advanced download options | false |
-
 ## Build it yourself
 
 If you'd like to install YoutubeDL-Material, go to the Installation section. If you want to build it yourself and/or develop the repository, then this section is for you.
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/dist` folder. Drag those files into the `public` directory in the `backend` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
 
 The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
 
@@ -96,12 +71,10 @@ Alternatively, you can port forward the port specified in the config (defaults t
 
 If you are looking to setup YoutubeDL-Material with Docker, this section is for you. And you're in luck! Docker setup is quite simple.
 
-1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/youtubedl-material-docker.zip -o youtubedl-material-docker.zip` to download the latest Docker zip release, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
-2. Unzip the `youtubedl-material-docker.zip` and navigate into the root folder.
-3. Modify the config items in the `appdata` folder to your liking. The default options will work, however, and point to `http://localhost:8998`. You can find an explanation of these configuration items in [Configuration](#Configuration) section. 
-4. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
-5. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar. 
-6. Make sure you can connect to the specified URL + port, and if so, you are done!
+1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml -o docker-compose.yml` to download the latest Docker Compose, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
+2. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
+3. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar.
+4. Make sure you can connect to the specified URL + port, and if so, you are done!
 
 ## API
 
@@ -113,11 +86,19 @@ Once you have enabled the API and have the key, you can start sending requests b
 
 ## Contributing
 
-Feel free to submit a pull request! I have no guidelines as of yet, so no need to worry about that.
+If you're interested in contributing, first: awesome! Second, please refer to the guidelines/setup information located in the [Contributing](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Contributing) wiki page, it's a helpful way to get you on your feet and coding away.
+
+Pull requests are always appreciated! If you're a bit rusty with coding, that's no problem: we can always help you learn. And if that's too scary, that's OK too! You can create issues for features you'd like to see or bugs you encounter, it all helps this project grow.
+
+If you're interested in translating the app into a new language, check out the [Translate](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Translate) wiki page.
 
 ## Authors
 
 * **Isaac Grynsztein** (me!) - *Initial work*
+
+Official translators:
+* Spanish - tzahi12345
+* German - UnlimitedCookies
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 

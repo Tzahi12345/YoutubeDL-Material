@@ -1,0 +1,17 @@
+<h4 mat-dialog-title>{{inputTitle}}</h4>
+<mat-dialog-content>
+  <div>
+    <mat-form-field color="accent">
+      <input matInput (keyup.enter)="enterPressed()" [(ngModel)]="inputText" [placeholder]="inputPlaceholder">
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <!-- TODO: Internationalize these buttons -->
+  <button mat-button mat-dialog-close>Cancel</button>
+  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+  <button mat-button [disabled]="!inputText" type="submit" (click)="enterPressed()">{{submitText}}</button>
+  <div class="mat-spinner" *ngIf="inputSubmitted">
+    <mat-spinner [diameter]="25"></mat-spinner>
+  </div>
+</mat-dialog-actions>

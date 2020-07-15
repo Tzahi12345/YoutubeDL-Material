@@ -1,0 +1,31 @@
+<h4 *ngIf="user" mat-dialog-title><ng-container i18n="Manage user dialog title">Manage user</ng-container>&nbsp;-&nbsp;{{user.name}}</h4>
+
+<mat-dialog-content *ngIf="user">
+    <p><ng-container i18n="User UID">User UID:</ng-container>&nbsp;{{user.uid}}</p>
+
+    <div>
+        <mat-form-field style="margin-right: 15px;">
+            <input matInput [(ngModel)]="newPasswordInput" type="password" placeholder="New password" i18n-placeholder="New password placeholder">
+        </mat-form-field>
+        <button mat-raised-button color="accent" (click)="setNewPassword()" [disabled]="newPasswordInput.length === 0"><ng-container i18n="Set new password">Set new password</ng-container></button>
+    </div>
+
+    <div>
+        <mat-list>
+            <mat-list-item role="listitem" *ngFor="let permission of available_permissions">
+                <h3 matLine>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</h3>
+                <span matLine>
+                    <mat-radio-group [disabled]="permission === 'settings' && postsService.user.uid === user.uid" (change)="changeUserPermissions($event, permission)" [(ngModel)]="permissions[permission]" [attr.aria-label]="'Give user permission for ' + permission">
+                        <mat-radio-button value="default"><ng-container i18n="Use role default">Use role default</ng-container></mat-radio-button>
+                        <mat-radio-button value="yes"><ng-container i18n="Yes">Yes</ng-container></mat-radio-button>
+                        <mat-radio-button value="no"><ng-container i18n="No">No</ng-container></mat-radio-button>
+                    </mat-radio-group>
+                </span>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button style="margin-bottom: 5px;" mat-stroked-button mat-dialog-close><ng-container i18n="Close">Close</ng-container></button>
+</mat-dialog-actions>

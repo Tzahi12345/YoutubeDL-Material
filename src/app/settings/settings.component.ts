@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
-import { CheckOrSetPinDialogComponent } from 'app/dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 import { isoLangs } from './locales_list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -8,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { CURRENT_VERSION } from 'app/consts';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { CookiesUploaderDialogComponent } from 'app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -16,7 +16,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 })
 export class SettingsComponent implements OnInit {
   all_locales = isoLangs;
-  supported_locales = ['en', 'es'];
+  supported_locales = ['en', 'es', 'de'];
   initialLocale = localStorage.getItem('locale');
 
   initial_config = null;
@@ -39,7 +39,7 @@ export class SettingsComponent implements OnInit {
     this._settingsSame = val;
   }
 
-  constructor(private postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
+  constructor(public postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
     private dialog: MatDialog) { }
 
   ngOnInit() {
@@ -51,14 +51,8 @@ export class SettingsComponent implements OnInit {
   }
 
   getConfig() {
-    this.loading_config = true;
-    this.postsService.loadNavItems().subscribe(res => {
-      this.loading_config = false;
-      // successfully loaded config
-
-      this.initial_config = !this.postsService.debugMode ? res['config_file']['YoutubeDLMaterial'] : res['YoutubeDLMaterial'];
-      this.new_config = JSON.parse(JSON.stringify(this.initial_config));
-    });
+    this.initial_config = this.postsService.config;
+    this.new_config = JSON.parse(JSON.stringify(this.initial_config));
   }
 
   settingsSame() {
@@ -69,21 +63,17 @@ export class SettingsComponent implements OnInit {
     const settingsToSave = {'YoutubeDLMaterial': this.new_config};
     this.postsService.setConfig(settingsToSave).subscribe(res => {
       if (res['success']) {
+        if (!this.initial_config['Advanced']['multi_user_mode'] && this.new_config['Advanced']['multi_user_mode']) {
+          // multi user mode was enabled, let's check if default admin account exists
+          this.postsService.checkAdminCreationStatus(true);
+        }
         // sets new config as old config
-        this.postsService.settings_changed.next(true);
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
+        this.postsService.reload_config.next(true);
       }
     }, err => {
       console.error('Failed to save config!');
     })
-  }
-
-  setNewPin() {
-    const dialogRef = this.dialog.open(CheckOrSetPinDialogComponent, {
-      data: {
-        resetMode: true
-      }
-    });
   }
 
   generateAPIKey() {
@@ -146,15 +136,21 @@ export class SettingsComponent implements OnInit {
      }
    });
    dialogRef.afterClosed().subscribe(new_args => {
-     if (new_args) {
+    if (new_args !== null && new_args !== undefined) {
       this.new_config['Downloader']['custom_args'] = new_args;
-     }
+    }
    });
  }
 
  getLatestGithubRelease() {
     this.postsService.getLatestGithubRelease().subscribe(res => {
       this.latestGithubRelease = res;
+    });
+  }
+
+  openCookiesUploaderDialog() {
+    this.dialog.open(CookiesUploaderDialogComponent, {
+      width: '65vw'
     });
   }
 

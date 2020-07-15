@@ -1,0 +1,28 @@
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+  
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+}
+
+.theme-slide-toggle {
+    top: 2px;
+    left: 10px;
+    position: relative;
+    pointer-events: none;
+}
+
+.sidenav-container {
+    z-index: -1 !important;
+}
+
+.top-toolbar {
+    height: 64px;
+}

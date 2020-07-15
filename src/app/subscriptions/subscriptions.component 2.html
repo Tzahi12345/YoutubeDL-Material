@@ -1,0 +1,50 @@
+<br/>
+
+<h2 i18n="Subscriptions title" style="text-align: center; margin-bottom: 15px;">Your subscriptions</h2>
+
+<mat-divider style="width: 80%; margin: 0 auto"></mat-divider>
+<br/>
+
+<h4 i18n="Subscriptions channels title" style="text-align: center;">Channels</h4>
+<mat-nav-list class="sub-nav-list">
+    <mat-list-item *ngFor="let sub of channel_subscriptions">
+        <a class="a-list-item" matLine (click)="goToSubscription(sub)" href="javascript:void(0)">
+            <strong *ngIf="sub.name">{{ sub.name }}</strong>
+            <div *ngIf="!sub.name">
+                <ng-container i18n="Subscription playlist not available text">Name not available. Channel retrieval in progress.</ng-container>
+            </div>
+        </a>
+        <button mat-icon-button (click)="showSubInfo(sub)">
+            <mat-icon>info</mat-icon>
+        </button>
+    </mat-list-item>
+ </mat-nav-list>
+
+<div style="width: 80%; margin: 0 auto; padding-left: 15px;" *ngIf="channel_subscriptions.length === 0 && subscriptions">
+    <p i18n="No channel subscriptions text">You have no channel subscriptions.</p>
+</div>
+
+<h4 i18n="Subscriptions playlists title" style="text-align: center; margin-top: 10px;">Playlists</h4>
+<mat-nav-list class="sub-nav-list">
+    <mat-list-item *ngFor="let sub of playlist_subscriptions">
+        <a class="a-list-item" matLine (click)="goToSubscription(sub)" href="javascript:void(0)">
+            <strong>{{ sub.name }}</strong>
+            <div class="content-loading-div" *ngIf="!sub.name">
+                <ng-container i18n="Subscription playlist not available text">Name not available. Playlist retrieval in progress.</ng-container>
+            </div>
+        </a>
+        <button mat-icon-button (click)="showSubInfo(sub)">
+            <mat-icon>info</mat-icon>
+        </button>
+    </mat-list-item>
+</mat-nav-list>
+
+<div style="width: 80%; margin: 0 auto; padding-left: 15px;" *ngIf="playlist_subscriptions.length === 0 && subscriptions">
+    <p i18n="No playlist subscriptions text">You have no playlist subscriptions.</p>
+</div>
+
+<div style="margin: 0 auto; width: 80%" *ngIf="subscriptions_loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+
+<button class="add-subscription-button" (click)="openSubscribeDialog()" mat-fab><mat-icon>add</mat-icon></button>

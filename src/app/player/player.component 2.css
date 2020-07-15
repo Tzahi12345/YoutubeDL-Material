@@ -1,0 +1,87 @@
+.video-player {
+    margin: 0 auto;
+    min-width: 300px;
+}
+
+.video-player:focus {
+    outline: none;
+}
+
+.audio-styles {
+    height: 50px;
+    background-color: transparent;
+    width: 100%;
+}
+
+.video-styles {
+    width: 100%;
+}
+
+::ng-deep .mat-button-toggle-label-content {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.container-video {
+    max-width: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.progress-bar {
+    position: absolute;
+    left: 0px;
+    bottom: -1px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    bottom: 3px;
+    left: 3px;
+    position: absolute;
+}
+
+.save-button {
+    right: 25px;
+    position: fixed;
+    bottom: 25px;
+}
+
+.share-button {
+    left: 25px;
+    position: fixed;
+    bottom: 25px;
+}
+
+.favorite-button {
+    left: 25px;
+    position: fixed;
+    bottom: 25px;
+}
+
+.video-col {
+    padding-right: 0px;
+    padding-left: 0.01px;
+    height: 100%;
+}
+
+.save-icon {
+    bottom: 1px;
+    position: relative;
+}
+
+.update-playlist-button-div {
+    float: right;
+    margin-right: 30px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.spinner-div {
+    position: relative;
+    display: inline-block;
+    margin-right: 12px;
+    top: 8px;
+}

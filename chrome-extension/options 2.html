@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YoutubeDL-Material Extension Options</title>
+    <!-- Scripts -->
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    
+    <!-- Cascading Style Sheets -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+
+<h2>Settings</h2>
+
+<div style="width: 95%; margin: 0 auto;">
+    <div class="form-group">
+    <label for="frontend_url">Frontend URL:</label>
+    <input class="form-control" type="text" id="frontend_url">
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="audio_only">
+            Audio only
+        </label>
+    </div>
+
+    <div id="status"></div>
+    <button style="margin-bottom: 10px;" class="btn btn-primary" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" id="save">Save</button>
+
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+        Settings successfully saved!
+        </div>
+    </div>
+</div>
+
+<script src="options.js"></script>
+</body>
+</html>

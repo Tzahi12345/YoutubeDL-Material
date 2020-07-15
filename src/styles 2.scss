@@ -1,0 +1,70 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+//@import './app-theme';
+/* You can add global styles to this file, and also import other style files */
+// @import "../node_modules/@angular/material/prebuilt-themes/purple-green.css";
+@import "palette.scss";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+/*// Typography
+$custom-typography: mat-typography-config(
+  $font-family: Raleway,
+  $headline: mat-typography-level(24px, 48px, 400),
+  $body-1: mat-typography-level(16px, 24px, 400)
+);
+@include angular-material-typography($custom-typography);
+*/
+// Default colors
+$my-app-primary: mat-palette($mat-light-blue, 700, 100, 800);
+$my-app-accent:  mat-palette($mat-blue, 700, 100, 800);
+$my-app-warn: mat-palette($mat-red, 700, 100, 800);
+
+$my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
+@include angular-material-theme($my-app-theme);
+
+// Dark theme
+$dark-primary: mat-palette($mat-light-blue, 700, 100, 800);
+$dark-accent:  mat-palette($mat-blue);
+$dark-warn:    mat-palette($mat-deep-orange);
+
+$dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+
+.dark-theme {
+  @include angular-material-theme($dark-theme);
+}
+
+// Light theme
+$light-primary: mat-palette($mat-grey, 200, 500, 300);
+$light-accent: mat-palette($mat-brown, 200);
+$light-warn: mat-palette($mat-deep-orange, 200);
+
+$light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
+
+.light-theme {
+  @include angular-material-theme($light-theme)
+}
+
+.no-outline {
+  outline: none;
+}
+
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// @import '../node_modules/@angular/material/theming';
+
+.centered {
+    margin: 0 auto;
+    left: 50%;
+    top: 50%;
+}

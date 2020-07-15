@@ -21,8 +21,9 @@ import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
 import { SettingsComponent } from './settings/settings.component';
-import { CheckOrSetPinDialogComponent } from './dialogs/check-or-set-pin-dialog/check-or-set-pin-dialog.component';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
+import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
+import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -39,8 +40,7 @@ export class AppComponent implements OnInit {
   defaultTheme = null;
   allowThemeChange = null;
   allowSubscriptions = false;
-  // defaults to true to prevent attack
-  settingsPinRequired = true;
+  enableDownloadsManager = false;
 
   @ViewChild('sidenav') sidenav: MatSidenav;
   @ViewChild('hamburgerMenu', { read: ElementRef }) hamburgerMenuButton: ElementRef;
@@ -61,8 +61,7 @@ export class AppComponent implements OnInit {
     }
     });
 
-    this.loadConfig();
-    this.postsService.settings_changed.subscribe(changed => {
+    this.postsService.config_reloaded.subscribe(changed => {
       if (changed) {
         this.loadConfig();
       }
@@ -76,22 +75,17 @@ export class AppComponent implements OnInit {
 
   loadConfig() {
     // loading config
-    this.postsService.loadNavItems().subscribe(res => { // loads settings
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.topBarTitle = result['YoutubeDLMaterial']['Extra']['title_top'];
-      this.settingsPinRequired = result['YoutubeDLMaterial']['Extra']['settings_pin_required'];
-      const themingExists = result['YoutubeDLMaterial']['Themes'];
-      this.defaultTheme = themingExists ? result['YoutubeDLMaterial']['Themes']['default_theme'] : 'default';
-      this.allowThemeChange = themingExists ? result['YoutubeDLMaterial']['Themes']['allow_theme_change'] : true;
-      this.allowSubscriptions = result['YoutubeDLMaterial']['Subscriptions']['allow_subscriptions'];
+    this.topBarTitle = this.postsService.config['Extra']['title_top'];
+    const themingExists = this.postsService.config['Themes'];
+    this.defaultTheme = themingExists ? this.postsService.config['Themes']['default_theme'] : 'default';
+    this.allowThemeChange = themingExists ? this.postsService.config['Themes']['allow_theme_change'] : true;
+    this.allowSubscriptions = this.postsService.config['Subscriptions']['allow_subscriptions'];
+    this.enableDownloadsManager = this.postsService.config['Extra']['enable_downloads_manager'];
 
-      // sets theme to config default if it doesn't exist
-      if (!localStorage.getItem('theme')) {
-        this.setTheme(themingExists ? this.defaultTheme : 'default');
-      }
-    }, error => {
-      console.log(error);
-    });
+    // sets theme to config default if it doesn't exist
+    if (!localStorage.getItem('theme')) {
+      this.setTheme(themingExists ? this.defaultTheme : 'default');
+    }
   }
 
   // theme stuff
@@ -153,6 +147,18 @@ onSetTheme(theme, old_theme) {
     } else {
     //
     }
+    this.postsService.open_create_default_admin_dialog.subscribe(open => {
+      if (open) {
+        const dialogRef = this.dialog.open(SetDefaultAdminDialogComponent);
+        dialogRef.afterClosed().subscribe(success => {
+          if (success) {
+            if (this.router.url !== '/login') { this.router.navigate(['/login']); }
+          } else {
+            console.error('Failed to create default admin account. See logs for details.');
+          }
+        });
+      }
+    });
   }
 
 
@@ -165,34 +171,20 @@ onSetTheme(theme, old_theme) {
   }
 
   openSettingsDialog() {
-    if (this.settingsPinRequired) {
-      this.openPinDialog();
-    } else {
-      this.actuallyOpenSettingsDialog();
-    }
-  }
-
-  actuallyOpenSettingsDialog() {
     const dialogRef = this.dialog.open(SettingsComponent, {
       width: '80vw'
     });
   }
 
-  openPinDialog() {
-    const dialogRef = this.dialog.open(CheckOrSetPinDialogComponent, {
-    });
-
-    dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.actuallyOpenSettingsDialog();
-      }
-    });
-
-  }
-
   openAboutDialog() {
     const dialogRef = this.dialog.open(AboutDialogComponent, {
       width: '80vw'
+    });
+  }
+
+  openProfileDialog() {
+    const dialogRef = this.dialog.open(UserProfileDialogComponent, {
+      width: '60vw'
     });
   }
 

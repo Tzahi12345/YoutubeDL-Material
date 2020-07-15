@@ -67,8 +67,8 @@ mat-form-field.mat-form-field {
 
 .input-clear-button {
     position: absolute;
-    right: -10px;
-    top: 5px;
+    right: 5px;
+    top: 22px;
 }
 
 .spinner-div {

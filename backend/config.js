@@ -8,6 +8,27 @@ let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.jso
 var logger = null;
 function setLogger(input_logger) { logger = input_logger; }
 
+function initialize(input_logger) {
+    setLogger(input_logger);
+    ensureConfigFileExists();
+    ensureConfigItemsExist();
+}
+
+function ensureConfigItemsExist() {
+    const config_keys = Object.keys(CONFIG_ITEMS);
+    for (let i = 0; i < config_keys.length; i++) {
+        const config_key = config_keys[i];
+        getConfigItem(config_key);
+    }
+}
+
+function ensureConfigFileExists() {
+    if (!fs.existsSync(configPath)) {
+        logger.info('Cannot find config file. Creating one with default values...');
+        fs.writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
+    }
+}
+
 // https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
 Object.byString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
@@ -49,8 +70,8 @@ function configExistsCheck() {
 * Gets config file and returns as a json
 */
 function getConfigFile() {
-    let raw_data = fs.readFileSync(configPath);
     try {
+        let raw_data = fs.readFileSync(configPath);
         let parsed_data = JSON.parse(raw_data);
         return parsed_data;
     } catch(e) {
@@ -77,7 +98,7 @@ function getConfigItem(key) {
     let path = CONFIG_ITEMS[key]['path'];
     const val = Object.byString(config_json, path);
     if (val === undefined && Object.byString(DEFAULT_CONFIG, path)) {
-        logger.warning(`Cannot find config with key '${key}'. Creating one with the default value...`);
+        logger.warn(`Cannot find config with key '${key}'. Creating one with the default value...`);
         setConfigItem(key, Object.byString(DEFAULT_CONFIG, path));
         return Object.byString(DEFAULT_CONFIG, path);
     }
@@ -88,10 +109,18 @@ function setConfigItem(key, value) {
     let success = false;
     let config_json = getConfigFile();
     let path = CONFIG_ITEMS[key]['path'];
-    let parent_path = getParentPath(path);
     let element_name = getElementNameInConfig(path);
-    
+    let parent_path = getParentPath(path);
     let parent_object = Object.byString(config_json, parent_path);
+    if (!parent_object) {
+        let parent_parent_path = getParentPath(parent_path);
+        let parent_parent_object = Object.byString(config_json, parent_parent_path);
+        let parent_path_arr = parent_path.split('.');
+        let parent_parent_single_key = parent_path_arr[parent_path_arr.length-1];
+        parent_parent_object[parent_parent_single_key] = {};
+        parent_object = Object.byString(config_json, parent_path);
+    }
+
     if (value === 'false' || value === 'true') {
         parent_object[element_name] = (value === 'true');
     } else {
@@ -117,13 +146,20 @@ function setConfigItems(items) {
         let item_path = CONFIG_ITEMS[key]['path'];
         let item_parent_path = getParentPath(item_path);
         let item_element_name = getElementNameInConfig(item_path);
-        
+
         let item_parent_object = Object.byString(config_json, item_parent_path);
         item_parent_object[item_element_name] = value;
     }
 
     success = setConfigFile(config_json);
     return success;
+}
+
+function globalArgsRequiresSafeDownload() {
+    const globalArgs = getConfigItem('ytdl_custom_args').split(',,');
+    const argsThatRequireSafeDownload = ['--write-sub', '--write-srt'];
+    const failedArgs = globalArgs.filter(arg => argsThatRequireSafeDownload.includes(arg));
+    return failedArgs && failedArgs.length > 0;
 }
 
 module.exports = {
@@ -134,15 +170,17 @@ module.exports = {
     setConfigFile: setConfigFile,
     configExistsCheck: configExistsCheck,
     CONFIG_ITEMS: CONFIG_ITEMS,
-    setLogger: setLogger
+    initialize: initialize,
+    descriptors: {},
+    globalArgsRequiresSafeDownload: globalArgsRequiresSafeDownload
 }
 
 DEFAULT_CONFIG = {
     "YoutubeDLMaterial": {
-        "Host": {
-            "url": "http://example.com",
-            "port": "17442"
-        },
+      "Host": {
+        "url": "http://example.com",
+        "port": "17442"
+      },
       "Encryption": {
         "use-encryption": false,
         "cert-file-path": "/etc/letsencrypt/live/example.com/fullchain.pem",
@@ -152,15 +190,17 @@ DEFAULT_CONFIG = {
         "path-audio": "audio/",
         "path-video": "video/",
         "use_youtubedl_archive": false,
-        "custom_args": ""
+        "custom_args": "",
+        "safe_download_override": false
       },
       "Extra": {
-        "title_top": "Youtube Downloader",
+        "title_top": "YoutubeDL-Material",
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
         "allow_multi_download_mode": true,
-        "settings_pin_required": false
+        "settings_pin_required": false,
+        "enable_downloads_manager": true
       },
       "API": {
         "use_API_key": false,
@@ -178,10 +218,17 @@ DEFAULT_CONFIG = {
         "subscriptions_check_interval": "300",
         "subscriptions_use_youtubedl_archive": true
       },
+      "Users": {
+        "base_path": "users/",
+        "allow_registration": true
+      },
       "Advanced": {
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",
-        "allow_advanced_download": false
+        "multi_user_mode": false,
+        "allow_advanced_download": false,
+        "use_cookies": false,
+        "logger_level": "info"
       }
     }
   }

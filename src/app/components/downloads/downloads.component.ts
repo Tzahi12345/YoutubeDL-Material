@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-downloads',
@@ -31,22 +32,40 @@ import { trigger, transition, animateChild, stagger, query, style, animate } fro
     ])
   ],
 })
-export class DownloadsComponent implements OnInit {
+export class DownloadsComponent implements OnInit, OnDestroy {
 
-  downloads_check_interval = 500;
+  downloads_check_interval = 1000;
   downloads = {};
+  interval_id = null;
 
   keys = Object.keys;
 
   valid_sessions_length = 0;
 
-  constructor(public postsService: PostsService) { }
+  sort_downloads = (a, b) => {
+    const result = b.value.timestamp_start - a.value.timestamp_start;
+    return result;
+  }
+
+  constructor(public postsService: PostsService, private router: Router) { }
 
   ngOnInit(): void {
     this.getCurrentDownloads();
-    setInterval(() => {
+    this.interval_id = setInterval(() => {
       this.getCurrentDownloads();
     }, this.downloads_check_interval);
+
+    this.postsService.service_initialized.subscribe(init => {
+      if (init) {
+        if (!this.postsService.config['Extra']['enable_downloads_manager']) {
+          this.router.navigate(['/home']);
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.interval_id) { clearInterval(this.interval_id) }
   }
 
   getCurrentDownloads() {
@@ -62,7 +81,7 @@ export class DownloadsComponent implements OnInit {
   clearDownload(session_id, download_uid) {
     this.postsService.clearDownloads(false, session_id, download_uid).subscribe(res => {
       if (res['success']) {
-        this.downloads = res['downloads'];
+        // this.downloads = res['downloads'];
       } else {
       }
     });
@@ -88,10 +107,31 @@ export class DownloadsComponent implements OnInit {
 
   assignNewValues(new_downloads_by_session) {
     const session_keys = Object.keys(new_downloads_by_session);
+
+    // remove missing session IDs
+    const current_session_ids = Object.keys(this.downloads);
+    const missing_session_ids = current_session_ids.filter(session => session_keys.indexOf(session) === -1)
+
+    for (const missing_session_id of missing_session_ids) {
+      delete this.downloads[missing_session_id];
+    }
+
+    // loop through sessions
     for (let i = 0; i < session_keys.length; i++) {
       const session_id = session_keys[i];
       const session_downloads_by_id = new_downloads_by_session[session_id];
       const session_download_ids = Object.keys(session_downloads_by_id);
+
+      if (this.downloads[session_id]) {
+        // remove missing download IDs
+        const current_download_ids = Object.keys(this.downloads[session_id]);
+        const missing_download_ids = current_download_ids.filter(download => session_download_ids.indexOf(download) === -1)
+
+        for (const missing_download_id of missing_download_ids) {
+          console.log('removing missing download id');
+          delete this.downloads[session_id][missing_download_id];
+        }
+      }
 
       if (!this.downloads[session_id]) {
         this.downloads[session_id] = session_downloads_by_id;

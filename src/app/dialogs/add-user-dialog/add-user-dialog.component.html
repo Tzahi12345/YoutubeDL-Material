@@ -1,0 +1,19 @@
+<h4 mat-dialog-title i18n="Register user dialog title">Register a user</h4>
+
+<mat-dialog-content>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="User name" i18n-placeholder="User name placeholder" [(ngModel)]="usernameInput">
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Password" i18n-placeholder="Password placeholder" [(ngModel)]="passwordInput" type="password">
+        </mat-form-field>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button color="accent" (click)="createUser()" mat-raised-button><ng-container i18n="Register user button">Register</ng-container></button>
+    <button mat-dialog-close mat-button><ng-container i18n="Close button">Close</ng-container></button>
+</mat-dialog-actions>

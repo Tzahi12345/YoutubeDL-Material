@@ -1,0 +1,21 @@
+<div>
+    <mat-grid-list [rowHeight]="50" [cols]="24">
+        <mat-grid-tile [colspan]="7">
+            <div style="display: inline-block; text-align: center; width: 100%;"><span class="shorten"><ng-container i18n="Download ID">ID:</ng-container>&nbsp;{{url_id ? url_id : download.uid}}</span></div>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="13">
+                <mat-progress-bar [value]="(download.complete || download.error) ? 100 : download.percent_complete" [mode]="(!download.complete && download.percent_complete === 0 && !download.error) ? 'indeterminate' : 'determinate'"></mat-progress-bar>
+                <mat-icon *ngIf="download.complete" style="margin-left: 25px; cursor: default" matTooltip="The download is complete" matTooltip-i18n>done</mat-icon>
+                <mat-icon *ngIf="download.error" style="margin-left: 25px; cursor: default" matTooltip="An error has occurred" matTooltip-i18n>error</mat-icon>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="4">
+            <button style="margin-bottom: 2px;" (click)="cancelTheDownload()" mat-icon-button color="warn"><mat-icon fontSet="material-icons-outlined">cancel</mat-icon></button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-expansion-panel class="ignore-margin" *ngIf="download.error">
+        <mat-expansion-panel-header>
+            Error
+        </mat-expansion-panel-header>
+        {{download.error}}
+    </mat-expansion-panel>
+</div>

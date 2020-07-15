@@ -13,7 +13,8 @@
       "path-audio": "audio/",
       "path-video": "video/",
       "use_youtubedl_archive": false,
-      "custom_args": ""
+      "custom_args": "",
+      "safe_download_override": false
     },
     "Extra": {
       "title_top": "YoutubeDL-Material",
@@ -21,7 +22,8 @@
       "allow_quality_select": true,
       "download_only_mode": false,
       "allow_multi_download_mode": true,
-      "settings_pin_required": false
+      "settings_pin_required": false,
+      "enable_downloads_manager": true
     },
     "API": {
       "use_API_key": false,
@@ -36,13 +38,20 @@
     "Subscriptions": {
       "allow_subscriptions": true,
       "subscriptions_base_path": "subscriptions/",
-      "subscriptions_check_interval": "300",
+      "subscriptions_check_interval": "30",
       "subscriptions_use_youtubedl_archive": true
+    },
+    "Users": {
+      "base_path": "users/",
+      "allow_registration": true
     },
     "Advanced": {
       "use_default_downloading_agent": true,
       "custom_downloading_agent": "",
-      "allow_advanced_download": true
+      "multi_user_mode": true,
+      "allow_advanced_download": true,
+      "logger_level": "debug",
+      "use_cookies": true
     }
   }
 }

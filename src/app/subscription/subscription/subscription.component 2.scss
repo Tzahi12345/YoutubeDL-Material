@@ -1,0 +1,64 @@
+.sub-file-col {
+    max-width: 240px;
+}
+
+.back-button {
+    float: left;
+    position: absolute;
+    left: 15px;
+}
+
+.filter-select-parent {
+    position: absolute;
+    top: 0px;
+    left: 20px;
+    display: block;
+}
+
+.search-bar {
+    transition: all .5s ease;
+    position: relative;
+    float: right;
+}
+ 
+.search-bar-unfocused {
+    width: 100px;
+}
+
+.search-input {
+    transition: all .5s ease;
+}
+
+.search-bar-focused {
+    width: 100%;
+}
+
+.flex-grid {
+    width: 100%;
+    display: block;
+    position: relative;
+}
+
+.col {
+    width: 33%;
+    display: inline-block;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    bottom: 3px;
+    left: 3px;
+    position: absolute;
+}
+
+.save-button {
+    right: 25px;
+    position: absolute;
+    bottom: 25px;
+}
+
+.save-icon {
+    bottom: 1px;
+    position: relative;
+}

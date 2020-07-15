@@ -1,0 +1,22 @@
+.info-item {
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.info-item-value {
+    font-size: 13px;
+    display: inline-block;
+    width: 70%;
+}
+
+.spacer {flex: 1 1 auto;}
+
+.info-item-label {
+    display: inline-block;
+    width: 30%;
+    vertical-align: top;
+}
+
+.a-wrap {
+    word-wrap: break-word
+}

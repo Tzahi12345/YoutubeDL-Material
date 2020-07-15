@@ -1,0 +1,20 @@
+<div style="position: relative; width: fit-content;">
+    <div class="duration-time">
+        <ng-container i18n="Video duration label">Length:</ng-container>&nbsp;{{formattedDuration}}
+    </div>
+    <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+    <mat-menu #action_menu="matMenu">
+        <button (click)="openSubscriptionInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Subscription video info button">Info</ng-container></button>
+        <button (click)="deleteAndRedownload()" mat-menu-item><mat-icon>restore</mat-icon><ng-container i18n="Delete and redownload subscription video button">Delete and redownload</ng-container></button>
+        <button (click)="deleteForever()" mat-menu-item *ngIf="sub.archive && use_youtubedl_archive"><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete forever subscription video button">Delete forever</ng-container></button>
+    </mat-menu>
+    <mat-card (click)="goToFile()" matRipple class="example-card mat-elevation-z6">
+        <div style="padding:5px">
+            <div *ngIf="!image_errored && file.thumbnailURL" class="img-div">
+                <img class="image" (error)="onImgError($event)" [src]="file.thumbnailURL" alt="Thumbnail">
+            </div>
+
+            <span class="max-two-lines"><strong>{{file.title}}</strong></span>      
+        </div>
+    </mat-card>
+</div>

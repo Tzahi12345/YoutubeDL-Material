@@ -11,12 +11,9 @@
                         <div class="row">
                             <div [ngClass]="allowQualitySelect ? 'col-sm-9' : null" class="col-12">
                                 <mat-form-field color="accent" class="example-full-width">
-                                    <input style="padding-right: 25px;" matInput  (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" [formControl]="urlForm" required #urlinput>
-                                    <mat-error *ngIf="urlError || urlForm.invalid">
-                                        <ng-container i18n="Enter valid URL error">Please enter a valid URL!</ng-container>
-                                    </mat-error>
-                                    <button class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
+                                    <input style="padding-right: 25px;" matInput (keyup.enter)="downloadClicked()" (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" #urlinput>
                                 </mat-form-field>
+                                <button type="button" class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>
                             </div>
                             <div *ngIf="allowQualitySelect" class="col-7 col-sm-3">
                                 <mat-form-field color="accent" style="display: inline-block; width: inherit; min-width: 120px;">
@@ -116,7 +113,7 @@
                             <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput placeholder="Custom args" i18n-placeholder="Custom args placeholder">
                             <mat-hint>
                                 <ng-container i18n="Custom Args input hint">
-                                    No need to include URL, just everything after.
+                                    No need to include URL, just everything after. Args are delimited using two commas like so: ,,
                                 </ng-container>
                             </mat-hint>
                         </mat-form-field>
@@ -170,11 +167,11 @@
 <br/>
 <div class="centered big" id="bar_div" *ngIf="current_download && current_download.downloading; else nofile">
     <div class="margined">
-        <div [ngClass]="(percentDownloaded > 15 && percentDownloaded === 100)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="current_download.percent_complete && current_download.percent_complete > 15;else indeterminateprogress">
+        <div [ngClass]="(+percentDownloaded > 99)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="current_download.percent_complete && current_download.percent_complete > 15;else indeterminateprogress">
             <mat-progress-bar style="border-radius: 5px;" mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
             <br/>
         </div>
-        <div *ngIf="percentDownloaded === 100" class="spinner">
+        <div *ngIf="+percentDownloaded > 99" class="spinner">
             <mat-spinner [diameter]="25"></mat-spinner>
         </div>
         <ng-template #indeterminateprogress>
@@ -186,7 +183,7 @@
 <ng-template #nofile>
 
 </ng-template>
-<div style="margin: 20px" *ngIf="fileManagerEnabled">
+<div style="margin: 20px" *ngIf="fileManagerEnabled && (!postsService.isLoggedIn || postsService.permissions.includes('filemanager'))">
     <mat-accordion>
         <mat-expansion-panel (opened)="accordionOpened('audio')" (closed)="accordionClosed('audio')" (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">
             <mat-expansion-panel-header>
@@ -216,7 +213,7 @@
                 <mat-grid-list *ngIf="playlists.audio.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.audio; let i = index;">
                         <app-file-card #audiofilecard (removeFile)="removePlaylistMp3(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
-                            [length]="null" [isAudio]="true" [isPlaylist]="true" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
+                            [length]="null" [isAudio]="true" [playlist]="playlist" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['audio'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>
@@ -258,7 +255,7 @@
                 <mat-grid-list *ngIf="playlists.video.length > 0" (window:resize)="onResize($event)" [cols]="files_cols" rowHeight="150px">
                     <mat-grid-tile *ngFor="let playlist of playlists.video; let i = index;">
                         <app-file-card #videofilecard (removeFile)="removePlaylistMp4(playlist.id, i)" [title]="playlist.name" [name]="playlist.id" [thumbnailURL]="playlist_thumbnails[playlist.id]"
-                            [length]="null" [isAudio]="false" [isPlaylist]="true" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
+                            [length]="null" [isAudio]="false" [playlist]="playlist" [count]="playlist.fileNames.length" [use_youtubedl_archive]="use_youtubedl_archive"></app-file-card>
                         <mat-progress-bar *ngIf="downloading_content['video'][playlist.id]" class="download-progress-bar" mode="indeterminate"></mat-progress-bar>
                     </mat-grid-tile>
                 </mat-grid-list>

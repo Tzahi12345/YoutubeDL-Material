@@ -49,8 +49,12 @@ export class SubscriptionComponent implements OnInit {
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
-      this.getSubscription();
-      this.getConfig();
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.getConfig();
+          this.getSubscription();
+        }
+      });
     }
 
     // set filter property to cached
@@ -78,10 +82,7 @@ export class SubscriptionComponent implements OnInit {
   }
 
   getConfig() {
-    this.postsService.loadNavItems().subscribe(res => {
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.use_youtubedl_archive = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_use_youtubedl_archive'];
-    });
+    this.use_youtubedl_archive = this.postsService.config['Subscriptions']['subscriptions_use_youtubedl_archive'];
   }
 
   goToFile(emit_obj) {
@@ -91,8 +92,9 @@ export class SubscriptionComponent implements OnInit {
     if (this.subscription.streamingOnly) {
       this.router.navigate(['/player', {name: name, url: url}]);
     } else {
-      this.router.navigate(['/player', {fileNames: name, type: 'subscription', subscriptionName: this.subscription.name,
-                                        subPlaylist: this.subscription.isPlaylist}]);
+      this.router.navigate(['/player', {fileNames: name,
+        type: this.subscription.type ? this.subscription.type : 'video', subscriptionName: this.subscription.name,
+        subPlaylist: this.subscription.isPlaylist, uuid: this.postsService.user ? this.postsService.user.uid : null}]);
     }
   }
 

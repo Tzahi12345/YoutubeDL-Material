@@ -1,0 +1,144 @@
+.demo-card {
+    margin: 16px;
+}
+
+.demo-basic {
+    padding: 0;
+}
+
+.demo-basic .mat-card-content {
+    padding: 16px;
+}
+
+mat-toolbar.top {
+    height: 60px;
+    width: 100%;
+    text-align: center;
+}
+
+/*::ng-deep .mat-form-field-placeholder{
+
+    transform: scale(.75) translateY(20px) !important;
+  }*/
+
+.big {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.centered {
+    margin: 0 auto;
+    top: 50%;
+    left: 50%;
+}
+
+.example-full-width {
+    width: 100%;
+}
+
+.example-80-width {
+    width: 80%
+}
+
+mat-form-field.mat-form-field {
+    font-size: 24px;
+  }
+
+.spinner {
+    position: absolute;
+    display: inline-block;
+    margin-left: -28px;
+    margin-top: -10px;
+}
+
+.make-room-for-spinner {
+    padding-right: 40px;
+}
+
+.equal-sizes {
+    padding-right: 20px;
+}
+
+.search-card-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.input-clear-button {
+    position: absolute;
+    right: -10px;
+    top: 5px;
+}
+
+.spinner-div {
+    display: inline-block;
+    position: absolute;
+    top: 15px;
+    right: -40px;
+}
+
+.margined {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.results-div {
+    position: relative;
+    top: -15px;
+}
+
+.first-result-card {
+    border-radius: 4px 4px 0px 0px !important;
+}
+
+.last-result-card {
+    border-radius: 0px 0px 4px 4px !important;
+}
+
+.only-result-card {
+    border-radius: 4px !important;
+}
+
+.result-card {
+    height: 120px;
+    border-radius: 0px;
+    padding-bottom: 5px;
+}
+
+.download-progress-bar {
+    z-index: 999;
+    position: absolute;
+    bottom: 0px;
+    width: 150px;
+    border-radius: 0px 0px 4px 4px;
+    overflow: hidden;
+    bottom: 12px;
+}
+
+.add-playlist-button {
+    float: right;
+}
+
+.advanced-input {
+    width: 100%;
+}
+
+.edit-button {
+    margin-left: 10px;
+    top: -5px;
+}
+
+.no-border-radius-bottom {
+    border-radius: 4px 4px 0px 0px;
+}
+
+.no-border-radius-top {
+    border-radius: 0px 0px 4px 4px;
+}
+
+@media (max-width: 576px) {
+    .download-progress-bar {
+        width: 125px;
+    }
+}

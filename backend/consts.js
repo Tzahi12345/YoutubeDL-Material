@@ -40,6 +40,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_custom_args',
         'path': 'YoutubeDLMaterial.Downloader.custom_args'
     },
+    'ytdl_safe_download_override': {
+        'key': 'ytdl_safe_download_override',
+        'path': 'YoutubeDLMaterial.Downloader.safe_download_override'
+    },
 
     // Extra
     'ytdl_title_top': {
@@ -62,9 +66,9 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_allow_multi_download_mode',
         'path': 'YoutubeDLMaterial.Extra.allow_multi_download_mode'
     },
-    'ytdl_settings_pin_required': {
-        'key': 'ytdl_settings_pin_required',
-        'path': 'YoutubeDLMaterial.Extra.settings_pin_required'
+    'ytdl_enable_downloads_manager': {
+        'key': 'ytdl_enable_downloads_manager',
+        'path': 'YoutubeDLMaterial.Extra.enable_downloads_manager'
     },
 
     // API
@@ -117,6 +121,16 @@ let CONFIG_ITEMS = {
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_use_youtubedl_archive'
     },
 
+    // Users
+    'ytdl_users_base_path': {
+        'key': 'ytdl_users_base_path',
+        'path': 'YoutubeDLMaterial.Users.base_path'
+    },
+    'ytdl_allow_registration': {
+        'key': 'ytdl_allow_registration',
+        'path': 'YoutubeDLMaterial.Users.allow_registration'
+    },
+
     // Advanced
     'ytdl_use_default_downloading_agent': {
         'key': 'ytdl_use_default_downloading_agent',
@@ -126,13 +140,35 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_custom_downloading_agent',
         'path': 'YoutubeDLMaterial.Advanced.custom_downloading_agent'
     },
+    'ytdl_multi_user_mode': {
+        'key': 'ytdl_multi_user_mode',
+        'path': 'YoutubeDLMaterial.Advanced.multi_user_mode'
+    },
     'ytdl_allow_advanced_download': {
         'key': 'ytdl_allow_advanced_download',
         'path': 'YoutubeDLMaterial.Advanced.allow_advanced_download'
     },
+    'ytdl_use_cookies': {
+        'key': 'ytdl_use_cookies',
+        'path': 'YoutubeDLMaterial.Advanced.use_cookies'
+    },
+    'ytdl_logger_level': {
+        'key': 'ytdl_logger_level',
+        'path': 'YoutubeDLMaterial.Advanced.logger_level'
+    }
 };
+
+AVAILABLE_PERMISSIONS = [
+    'filemanager',
+    'settings',
+    'subscriptions',
+    'sharing',
+    'advanced_download',
+    'downloads_manager'
+];
 
 module.exports = {
     CONFIG_ITEMS: CONFIG_ITEMS,
-    CURRENT_VERSION: 'v3.6'
+    AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
+    CURRENT_VERSION: 'v4.1'
 }

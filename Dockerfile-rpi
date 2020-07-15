@@ -1,0 +1,36 @@
+FROM arm32v7/python:rc-alpine3.12
+#FROM arm32v7/node:latest
+
+RUN apk add --no-cache --virtual builds-deps build-base
+RUN apk add --no-cache nodejs npm ffmpeg curl wget nano bash
+
+
+# pull latest youtube-dl from youtubedl site
+RUN wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
+RUN chmod a+rx /usr/local/bin/youtube-dl
+RUN hash -r
+
+# Change directory so that our commands run inside this new directory
+WORKDIR /app
+
+# Copy dependency definitions
+COPY ./ /app/
+
+# Change directory to backend
+WORKDIR /app
+
+# Install dependencies on backend
+#RUN npm config set python /usr/bin/python
+RUN npm i -g npm
+RUN npm install
+RUN apk del builds-deps
+RUN apk add --no-cache python
+
+# update youtube-dl
+RUN youtube-dl -U
+
+# Expose the port the app runs in
+EXPOSE 17442
+
+# Run the specified command within the container.
+CMD [ "node", "app.js" ]

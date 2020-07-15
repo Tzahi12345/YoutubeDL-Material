@@ -1,0 +1,27 @@
+<h4 mat-dialog-title>{{sub.name}}</h4>
+
+<mat-dialog-content>
+    <div class="info-item">
+        <strong><ng-container i18n="Subscription type property">Type:</ng-container>&nbsp;</strong>
+        <span class="info-item-value">{{(sub.isPlaylist ? 'Playlist' : 'Channel')}}</span>
+    </div>
+    <div class="info-item">
+        <strong><ng-container i18n="Subscription URL property">URL:</ng-container>&nbsp;</strong>
+        <span class="info-item-value">{{sub.url}}</span>
+    </div>
+    <div class="info-item">
+        <strong><ng-container i18n="Subscription ID property">ID:</ng-container>&nbsp;</strong>
+        <span class="info-item-value">{{sub.id}}</span>
+    </div>
+    <div class="info-item" *ngIf="sub.archive">
+        <strong><ng-container i18n="Subscription ID property">Archive:</ng-container>&nbsp;</strong>
+        <span class="info-item-value">{{sub.archive}}</span>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Close subscription info button">Close</ng-container></button>
+    <button mat-stroked-button (click)="downloadArchive()" color="accent"><ng-container i18n="Export Archive button">Export Archive</ng-container></button>
+    <span class="spacer"></span>
+    <button mat-button (click)="unsubscribe()" color="warn"><ng-container i18n="Unsubscribe button">Unsubscribe</ng-container></button>
+</mat-dialog-actions>

@@ -1,0 +1,39 @@
+<mat-card class="login-card">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+        <mat-tab label="Login">
+            <div style="margin-top: 10px;">
+                <mat-form-field>
+                    <input [(ngModel)]="loginUsernameInput" matInput placeholder="User name">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input [(ngModel)]="loginPasswordInput" (keyup.enter)="login()" type="password" matInput placeholder="Password">
+                </mat-form-field>
+            </div>
+            <div style="margin-bottom: 10px; margin-top: 10px;">
+                <button [disabled]="loggingIn" color="primary" (click)="login()" mat-raised-button><ng-container i18n="Login">Login</ng-container></button>
+            </div>
+        </mat-tab>
+        <mat-tab *ngIf="registrationEnabled" label="Register">
+            <div style="margin-top: 10px;">
+                <mat-form-field>
+                    <input [(ngModel)]="registrationUsernameInput" matInput placeholder="User name">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input [(ngModel)]="registrationPasswordInput" type="password" matInput placeholder="Password">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input [(ngModel)]="registrationPasswordConfirmationInput" type="password" matInput placeholder="Confirm Password">
+                </mat-form-field>
+            </div>
+            <div style="margin-bottom: 10px; margin-top: 10px;">
+                <button [disabled]="registering" color="primary" (click)="register()" mat-raised-button><ng-container i18n="Register">Register</ng-container></button>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</mat-card>

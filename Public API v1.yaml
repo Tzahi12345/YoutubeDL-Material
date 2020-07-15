@@ -2,18 +2,7 @@ openapi: 3.0.0
 info:
   title: YoutubeDL-Material API Docs - Official
   version: '1.0'
-  description: |-
-    Welcome to the official docs for YoutubeDL-Material.
-
-    You can check out all the available endpoints. Remember to authenticate with your API key using the "Authorization" header with your requests.
-
-    To do so, simply add this header to your API calls:
-
-    `Authorization: API_KEY`
-
-    Note the space between 'Authorization:' and the API_KEY. This is required.
-
-    Replce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.
+  description: "Welcome to the official docs for YoutubeDL-Material.\n\n\nYou can check out all the available endpoints. Remember to authenticate with your API key using the \"apiKey\" query parameter with your requests.\n\n\nTo do so, simply add this to the end of your API call:\n\n\n`?apiKey=API_KEY`\n\n\nReplce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.\n\n### Multi-user mode\n\nWhen using multi-user mode, you will need to supply a JWT token to authenticate requests through that user. This lets the server know which user to run the task for, like downloading a video for a specific user. \n\nTo do this, you must use the `/api/auth/login` endpoint to login using a user's username and password. This will result in an object containing a `token`. Supply this along with your API key like so:\n\n`?apiKey=API_KEY&jwt=JWT_TOKEN`\n\nNotice the `&` between the `API_KEY` and `jwt`."
 servers:
   - url: 'http://localhost:17442'
 paths:
@@ -24,6 +13,7 @@ paths:
       summary: Download audio file
       description: |-
         Downloads an audio file with the given URL. Will include global args if they exist.
+
 
         HTTP requests will return once the audio file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
       operationId: post-tomp3
@@ -40,7 +30,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/tomp4:
     post:
       tags:
@@ -48,6 +38,7 @@ paths:
       summary: Download video file
       description: |-
         Downloads a video file with the given URL. Will include global args if they exist.
+
 
         HTTP requests will return once the video file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
       operationId: post-tomp4
@@ -64,7 +55,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getMp3s:
     get:
       tags:
@@ -81,7 +72,7 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_2'
       requestBody: {}
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getMp4s:
     get:
       tags:
@@ -97,7 +88,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_3'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getFile:
     post:
       tags:
@@ -118,7 +109,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_4'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/enableSharing:
     post:
       tags:
@@ -140,7 +131,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/disableSharing:
     post:
       tags:
@@ -162,7 +153,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/subscribe:
     post:
       tags:
@@ -183,7 +174,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_6'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/unsubscribe:
     post:
       tags:
@@ -204,7 +195,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_7'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteSubscriptionFile:
     post:
       tags:
@@ -227,7 +218,7 @@ paths:
         '500':
           description: Internal Server Error
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getSubscription:
     post:
       tags:
@@ -248,7 +239,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_9'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/downloadVideosForSubscription:
     post:
       tags:
@@ -269,7 +260,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_10'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getAllSubscriptions:
     post:
       tags:
@@ -289,7 +280,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_11'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/createPlaylist:
     post:
       tags:
@@ -310,7 +301,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_12'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/getPlaylist:
     post:
       tags:
@@ -331,7 +322,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_13'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/updatePlaylist:
     post:
       tags:
@@ -352,7 +343,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deletePlaylist:
     post:
       tags:
@@ -373,7 +364,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteMp4:
     post:
       tags:
@@ -395,7 +386,7 @@ paths:
                 type: boolean
                 description: Whether the operation succeeded
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/downloadFile:
     post:
       tags:
@@ -415,7 +406,7 @@ paths:
         '200':
           description: 'The file itself is in the response, as well as an options object.'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteFile:
     post:
       tags:
@@ -431,7 +422,7 @@ paths:
         '200':
           description: OK
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/downloadArchive:
     post:
       tags:
@@ -448,7 +439,7 @@ paths:
         '200':
           description: The archive text file is sent as a response
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/updaterStatus:
     get:
       tags:
@@ -464,7 +455,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_14'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/updateServer:
     post:
       tags:
@@ -485,7 +476,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/isPinSet:
     post:
       tags:
@@ -501,7 +492,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_15'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/checkPin:
     post:
       tags:
@@ -522,7 +513,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/setPin:
     post:
       tags:
@@ -542,7 +533,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
+      description: ''
   /api/generateNewAPIKey:
     post:
       tags:
@@ -558,7 +550,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_16'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/deleteMp3:
     post:
       tags:
@@ -580,7 +572,7 @@ paths:
                 type: boolean
                 description: Whether the operation succeeded
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/config:
     get:
       tags: []
@@ -595,7 +587,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_17'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
   /api/setConfig:
     post:
       summary: Set config
@@ -614,7 +606,364 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
       security:
-        - Authenticate: []
+        - Auth query parameter: []
+  /api/downloads:
+    get:
+      summary: Get info for all downloads
+      tags:
+        - downloader
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloads:
+                    type: object
+                    properties:
+                      uid:
+                        type: string
+                      downloading:
+                        type: boolean
+                      complete:
+                        type: boolean
+                      url:
+                        type: string
+                      type:
+                        type: string
+                      percent_complete:
+                        type: string
+                      is_playlist:
+                        type: boolean
+                      timestamp_start:
+                        type: number
+                      timestamp_end:
+                        type: number
+                      fileNames:
+                        type: array
+                        items:
+                          type: string
+      operationId: get-api-downloads
+      description: Retrieves all downloads recorded by the server and their status.
+      security:
+        - Auth query parameter: []
+  /api/download:
+    post:
+      summary: Get info for one download
+      operationId: post-api-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download:
+                    type: object
+                    properties:
+                      uid:
+                        type: string
+                      downloading:
+                        type: boolean
+                      complete:
+                        type: boolean
+                      url:
+                        type: string
+                      type:
+                        type: string
+                      percent_complete:
+                        type: string
+                      is_playlist:
+                        type: boolean
+                      timestamp_start:
+                        type: number
+                      timestamp_end:
+                        type: number
+                      fileNames:
+                        type: array
+                        items:
+                          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: string
+                download_id:
+                  type: string
+              required:
+                - session_id
+                - download_id
+        description: ''
+      description: "Gets a single download using its download_id and session_id. session_id is the device fingerprint. If none was provided at the time of download, then set session_id is 'undeclared'."
+      security:
+        - Auth query parameter: []
+      tags:
+        - downloader
+  /api/auth/login:
+    post:
+      summary: Login
+      operationId: post-api-auth-login
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/user'
+                  token:
+                    type: string
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+                  available_permissions:
+                    type: array
+                    items:
+                      type: string
+      description: Use this method to log into a user using their username and password and receive a jwt auth token so you can send per-user requests.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  description: 'This is the username, not the user uid'
+                password:
+                  type: string
+              required:
+                - userid
+                - password
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
+  /api/auth/register:
+    post:
+      summary: Register
+      operationId: post-api-auth-register
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/user'
+      description: Use this endpoint to register a user. It will only work if registration is enabled.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - userid
+                - username
+                - password
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
+  /api/updateUser:
+    post:
+      summary: Update user
+      operationId: post-api-updateUser
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                change_object:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    role:
+                      type: string
+              required:
+                - change_object
+      description: Updates certain properties for a user. Only two are possible right now.
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
+  /api/deleteUser:
+    post:
+      summary: Delete user
+      operationId: post-api-deleteUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+      description: Deletes a user by its uid.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uid:
+                  type: string
+              required:
+                - uid
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
+  /api/getRoles:
+    post:
+      summary: Get available roles
+      operationId: post-api-getRoles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: object
+                    properties:
+                      admin:
+                        type: object
+                        properties:
+                          permissions:
+                            type: array
+                            items:
+                              type: string
+                      user:
+                        type: object
+                        properties:
+                          permissions:
+                            type: array
+                            items:
+                              type: string
+      description: Gets the available roles and their permissions
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
+  /api/changeUserPermissions:
+    post:
+      summary: Change user permissions
+      operationId: post-api-changeUserPermissions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+      description: "Changes the permissions for a user. Available values for each permission are: `default`, `yes`, and `no`. `default` will use the user's role's default permission."
+      security:
+        - Auth query parameter: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_uid:
+                  type: string
+                permission:
+                  type: string
+                new_value:
+                  type: string
+              required:
+                - user_uid
+                - permission
+                - new_value
+      tags:
+        - multi-user mode
+  /api/changeRolePermissions:
+    post:
+      summary: Change role permissions
+      operationId: post-api-changeRolePermissions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                permission:
+                  type: string
+                new_value:
+                  type: string
+              required:
+                - role
+                - permission
+                - new_value
+      description: 'Changes the permissions for a role. Available values for each permission are: `yes`, and `no`.'
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
+  /api/getUsers:
+    post:
+      summary: Get all users
+      operationId: post-api-getUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user'
+      description: 'Gets all users, returns a list of the user objects including their user permissions, videos, playlists, subscriptions, etc.'
+      security:
+        - Auth query parameter: []
+      tags:
+        - multi-user mode
 components:
   schemas:
     body:
@@ -1284,9 +1633,68 @@ components:
           type: string
         type:
           type: string
+    user:
+      title: user
+      type: object
+      properties:
+        uid:
+          type: string
+        name:
+          type: string
+        passhash:
+          type: string
+        files:
+          type: object
+          properties:
+            audio:
+              type: array
+              items:
+                $ref: '#/components/schemas/file'
+            video:
+              type: array
+              items:
+                $ref: '#/components/schemas/file'
+        playlists:
+          type: object
+          properties:
+            audio:
+              type: array
+              items:
+                $ref: '#/components/schemas/file'
+            video:
+              type: array
+              items:
+                $ref: '#/components/schemas/file'
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/inline_response_200_9_subscription'
+        created:
+          type: number
+        role:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        permission_overrides:
+          type: array
+          items:
+            type: string
+    file:
+      title: file
+      type: object
+      properties:
+        id:
+          type: string
   securitySchemes:
-    Authenticate:
-      name: Authorization
+    Auth query parameter:
+      name: apiKey
       type: apiKey
-      in: header
+      in: query
       description: Use your public API key generated from the settings menu
+    JWT token parameter:
+      name: jwt
+      type: apiKey
+      in: query
+      description: 'User-specific authentication token, only used in multi-user mode. Retrieve this token by using the login endpoint'

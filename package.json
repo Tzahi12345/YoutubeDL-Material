@@ -1,6 +1,6 @@
 {
   "name": "youtube-dl-material",
-  "version": "3.6.0",
+  "version": "4.1.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -33,7 +33,10 @@
     "core-js": "^2.4.1",
     "file-saver": "^2.0.2",
     "filesize": "^6.1.0",
+    "fingerprintjs2": "^2.1.0",
+    "nan": "^2.14.1",
     "ng-lazyload-image": "^7.0.1",
+    "ngx-file-drop": "^9.0.1",
     "ngx-videogular": "^9.0.1",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.0.0-rc.0",

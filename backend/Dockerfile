@@ -1,21 +1,37 @@
-FROM arm32v7/alpine:3.11
+FROM arm32v7/python:rc-alpine3.12
 
-RUN apk add --update npm python ffmpeg
+ENV UID=1000 \
+  GID=1000 \
+  USER=youtube
 
-# Change directory so that our commands run inside this new directory
+RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
+
+
+RUN apk add --no-cache g++ gcc libgcc libstdc++ linux-headers make 
+RUN apk add --no-cache python2 ffmpeg nodejs npm python2-dev python2 su-exec
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+
+RUN  npm install --quiet node-gyp -g
+RUN  npm install --quiet
+
+RUN wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
+RUN chmod a+rx /usr/local/bin/youtube-dl
+RUN hash -r
+
 WORKDIR /app
+#COPY --chown=$UID:$GID [ "package.json", "package-lock.json", "/app/" ]
 
-# Copy dependency definitions
-COPY ./ /app/
+COPY --chown=$UID:$GID [ "./", "/app/" ]
 
-# Change directory to backend
-WORKDIR /app
+RUN npm i -g npm
+RUN npm install && chown -R $UID:$GID ./
 
-# Install dependencies on backend
-RUN npm install
+# update youtube-dl
+RUN youtube-dl -U
 
-# Expose the port the app runs in
+#COPY --chown=$UID:$GID [ "./", "/app/" ]
+
 EXPOSE 17442
 
-# Run the specified command within the container.
+ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "node", "app.js" ]

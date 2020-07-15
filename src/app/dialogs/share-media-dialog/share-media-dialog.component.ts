@@ -13,9 +13,13 @@ export class ShareMediaDialogComponent implements OnInit {
 
   type = null;
   uid = null;
+  uuid = null;
   share_url = null;
+  default_share_url = null;
   sharing_enabled = null;
   is_playlist = null;
+  current_timestamp = null
+  timestamp_enabled = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public router: Router, private snackBar: MatSnackBar,
               private postsService: PostsService) { }
@@ -24,12 +28,35 @@ export class ShareMediaDialogComponent implements OnInit {
     if (this.data) {
       this.type = this.data.type;
       this.uid = this.data.uid;
+      this.uuid = this.data.uuid;
       this.sharing_enabled = this.data.sharing_enabled;
       this.is_playlist = this.data.is_playlist;
+      this.current_timestamp = (this.data.current_timestamp / 1000).toFixed(2);
 
       const arg = (this.is_playlist ? ';id=' : ';uid=');
-      this.share_url = window.location.href.split(';')[0] + arg + this.uid;
+      this.default_share_url = window.location.href.split(';')[0] + arg + this.uid;
+      if (this.uuid) {
+        this.default_share_url += ';uuid=' + this.uuid;
+      }
+      this.share_url = this.default_share_url;
     }
+  }
+
+  timestampInputChanged(change) {
+    if (!this.timestamp_enabled) {
+      this.share_url = this.default_share_url;
+      return;
+    }
+    const new_val = change.target.value;
+    if (new_val > 0) {
+      this.share_url = this.default_share_url + ';timestamp=' + new_val;
+    } else {
+      this.share_url = this.default_share_url;
+    }
+  }
+
+  useTimestampChanged() {
+    this.timestampInputChanged({target: {value: this.current_timestamp}})
   }
 
   copiedToClipboard() {

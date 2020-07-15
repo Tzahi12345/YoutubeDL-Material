@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, OnDestroy } from '@angular/core';
 import { VgAPI } from 'ngx-videogular';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,7 @@ export interface IMedia {
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.css']
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, OnDestroy {
 
   playlist: Array<IMedia> = [];
   original_playlist: string = null;
@@ -39,6 +39,8 @@ export class PlayerComponent implements OnInit {
   uid = null; // used for non-subscription files (audio, video, playlist)
   subscriptionName = null;
   subPlaylist = null;
+  uuid = null; // used for sharing in multi-user mode, uuid is the user that downloaded the video
+  timestamp = null;
 
   is_shared = false;
 
@@ -50,6 +52,8 @@ export class PlayerComponent implements OnInit {
   videoFolderPath = null;
   subscriptionFolderPath = null;
 
+  sharingEnabled = null;
+
   // url-mode params
   url = null;
   name = null;
@@ -57,6 +61,9 @@ export class PlayerComponent implements OnInit {
   innerWidth: number;
 
   downloading = false;
+
+  save_volume_timer = null;
+  original_volume = null;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -73,62 +80,76 @@ export class PlayerComponent implements OnInit {
     this.subPlaylist = this.route.snapshot.paramMap.get('subPlaylist');
     this.url = this.route.snapshot.paramMap.get('url');
     this.name = this.route.snapshot.paramMap.get('name');
+    this.uuid = this.route.snapshot.paramMap.get('uuid');
+    this.timestamp = this.route.snapshot.paramMap.get('timestamp');
 
     // loading config
-    this.postsService.loadNavItems().subscribe(res => { // loads settings
-      const result = !this.postsService.debugMode ? res['config_file'] : res;
-      this.baseStreamPath = this.postsService.path;
-      this.audioFolderPath = result['YoutubeDLMaterial']['Downloader']['path-audio'];
-      this.videoFolderPath = result['YoutubeDLMaterial']['Downloader']['path-video'];
-      this.subscriptionFolderPath = result['YoutubeDLMaterial']['Subscriptions']['subscriptions_base_path'];
-      this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
-
-      if (!this.fileNames) {
-        this.is_shared = true;
-      }
-
-      if (this.uid && !this.id) {
-        this.getFile();
-      } else if (this.id) {
-        this.getPlaylistFiles();
-      }
-
-      if (this.url) {
-        // if a url is given, just stream the URL
-        this.playlist = [];
-        const imedia: IMedia = {
-          title: this.name,
-          label: this.name,
-          src: this.url,
-          type: 'video/mp4'
+    if (this.postsService.initialized) {
+      this.processConfig();
+    } else {
+      this.postsService.service_initialized.subscribe(init => { // loads settings
+        if (init) {
+          this.processConfig();
         }
-        this.playlist.push(imedia);
-        this.currentItem = this.playlist[0];
-        this.currentIndex = 0;
-        this.show_player = true;
-      } else if (this.type === 'subscription' || this.fileNames) {
-        this.show_player = true;
-        this.parseFileNames();
-      }
-    });
-
-    // this.getFileInfos();
-
+      });
+    }
   }
 
-  constructor(private postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
+  ngOnDestroy() {
+    // prevents volume save feature from running in the background
+    clearInterval(this.save_volume_timer);
+  }
+
+  constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
               public snackBar: MatSnackBar) {
 
   }
 
+  processConfig() {
+    this.baseStreamPath = this.postsService.path;
+    this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
+    this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
+    this.subscriptionFolderPath = this.postsService.config['Subscriptions']['subscriptions_base_path'];
+    this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
+
+    if (!this.fileNames && !this.type) {
+      this.is_shared = true;
+    }
+
+    if (this.uid && !this.id) {
+      this.getFile();
+    } else if (this.id) {
+      this.getPlaylistFiles();
+    }
+
+    if (this.url) {
+      // if a url is given, just stream the URL
+      this.playlist = [];
+      const imedia: IMedia = {
+        title: this.name,
+        label: this.name,
+        src: this.url,
+        type: 'video/mp4'
+      }
+      this.playlist.push(imedia);
+      this.currentItem = this.playlist[0];
+      this.currentIndex = 0;
+      this.show_player = true;
+    } else if (this.subscriptionName || this.fileNames) {
+      this.show_player = true;
+      this.parseFileNames();
+    }
+  }
+
   getFile() {
     const already_has_filenames = !!this.fileNames;
-    this.postsService.getFile(this.uid, null).subscribe(res => {
+    this.postsService.getFile(this.uid, null, this.uuid).subscribe(res => {
       this.db_file = res['file'];
       if (!this.db_file) {
         this.openSnackBar('Failed to get file information from the server.', 'Dismiss');
         return;
       }
+      this.sharingEnabled = this.db_file.sharingEnabled;
       if (!this.fileNames) {
         // means it's a shared video
         if (!this.id) {
@@ -138,7 +159,7 @@ export class PlayerComponent implements OnInit {
           if (!already_has_filenames) { this.parseFileNames(); }
         }
       }
-      if (this.db_file['sharingEnabled']) {
+      if (this.db_file['sharingEnabled'] || !this.uuid) {
         this.show_player = true;
       } else if (!already_has_filenames) {
         this.openSnackBar('Error: Sharing has been disabled for this video!', 'Dismiss');
@@ -147,12 +168,18 @@ export class PlayerComponent implements OnInit {
   }
 
   getPlaylistFiles() {
-    this.postsService.getPlaylist(this.id, null).subscribe(res => {
-      this.db_playlist = res['playlist'];
-      this.fileNames = this.db_playlist['fileNames'];
-      this.type = res['type'];
-      this.show_player = true;
-      this.parseFileNames();
+    this.postsService.getPlaylist(this.id, null, this.uuid).subscribe(res => {
+      if (res['playlist']) {
+        this.db_playlist = res['playlist'];
+        this.fileNames = this.db_playlist['fileNames'];
+        this.type = res['type'];
+        this.show_player = true;
+        this.parseFileNames();
+      } else {
+        this.openSnackBar('Failed to load playlist!', '');
+      }
+    }, err => {
+      this.openSnackBar('Failed to load playlist!', '');
     });
   }
 
@@ -161,9 +188,6 @@ export class PlayerComponent implements OnInit {
     if (this.type === 'audio') {
       fileType = 'audio/mp3';
     } else if (this.type === 'video') {
-      fileType = 'video/mp4';
-    } else if (this.type === 'subscription') {
-      // only supports mp4 for now
       fileType = 'video/mp4';
     } else {
       // error
@@ -179,9 +203,21 @@ export class PlayerComponent implements OnInit {
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
       } else {
         // default to video but include subscription name param
-        baseLocation = 'video/';
+        baseLocation = this.type === 'audio' ? 'audio/' : 'video/';
         fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
                         '&subPlaylist=' + this.subPlaylist;
+      }
+
+      // adds user token if in multi-user-mode
+      const uuid_str = this.uuid ? `&uuid=${this.uuid}` : '';
+      const uid_str = (this.id || !this.db_file) ? '' : `&uid=${this.db_file.uid}`;
+      const type_str = (this.id || !this.db_file) ? '' : `&type=${this.db_file.type}`
+      const id_str = this.id ? `&id=${this.id}` : '';
+      if (this.postsService.isLoggedIn) {
+        fullLocation += (this.subscriptionName ? '&' : '?') + `jwt=${this.postsService.token}`;
+        if (this.is_shared) { fullLocation += `${uuid_str}${uid_str}${type_str}${id_str}`; }
+      } else if (this.is_shared) {
+        fullLocation += (this.subscriptionName ? '&' : '?') + `test=test${uuid_str}${uid_str}${type_str}${id_str}`;
       }
       // if it has a slash (meaning it's in a directory), only get the file name for the label
       let label = null;
@@ -207,8 +243,26 @@ export class PlayerComponent implements OnInit {
   onPlayerReady(api: VgAPI) {
       this.api = api;
 
+      // checks if volume has been previously set. if so, use that as default
+      if (localStorage.getItem('player_volume')) {
+        this.api.volume = parseFloat(localStorage.getItem('player_volume'));
+      }
+
+      this.save_volume_timer = setInterval(() => this.saveVolume(this.api), 2000)
+
       this.api.getDefaultMedia().subscriptions.loadedMetadata.subscribe(this.playVideo.bind(this));
       this.api.getDefaultMedia().subscriptions.ended.subscribe(this.nextVideo.bind(this));
+
+      if (this.timestamp) {
+        this.api.seekTime(+this.timestamp);
+      }
+  }
+
+  saveVolume(api) {
+    if (this.original_volume !== api.volume) {
+      localStorage.setItem('player_volume', api.volume)
+      this.original_volume = api.volume;
+    }
   }
 
   nextVideo() {
@@ -273,7 +327,8 @@ export class PlayerComponent implements OnInit {
     const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
     const filename = this.playlist[0].title;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist).subscribe(res => {
+    this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist,
+                                            this.is_shared ? this.db_file['uid'] : null, this.uuid).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);
@@ -341,7 +396,7 @@ export class PlayerComponent implements OnInit {
   updatePlaylist() {
     const fileNames = this.getFileNames();
     this.playlist_updating = true;
-    this.postsService.updatePlaylist(this.id, fileNames, this.type).subscribe(res => {
+    this.postsService.updatePlaylistFiles(this.id, fileNames, this.type).subscribe(res => {
     this.playlist_updating = false;
       if (res['success']) {
         const fileNamesEncoded = fileNames.join('|nvr|');
@@ -360,7 +415,9 @@ export class PlayerComponent implements OnInit {
         uid: this.id ? this.id : this.uid,
         type: this.type,
         sharing_enabled: this.id ? this.db_playlist.sharingEnabled : this.db_file.sharingEnabled,
-        is_playlist: !!this.id
+        is_playlist: !!this.id,
+        uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : null,
+        current_timestamp: this.api.time.current
       },
       width: '60vw'
     });

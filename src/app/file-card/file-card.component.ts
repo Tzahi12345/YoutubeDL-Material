@@ -7,6 +7,7 @@ import { Subject, Observable } from 'rxjs';
 import 'rxjs/add/observable/merge';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
+import { ModifyPlaylistComponent } from '../dialogs/modify-playlist/modify-playlist.component';
 
 @Component({
   selector: 'app-file-card',
@@ -22,7 +23,7 @@ export class FileCardComponent implements OnInit {
   @Input() thumbnailURL: string;
   @Input() isAudio = true;
   @Output() removeFile: EventEmitter<string> = new EventEmitter<string>();
-  @Input() isPlaylist = false;
+  @Input() playlist = null;
   @Input() count = null;
   @Input() use_youtubedl_archive = false;
   type;
@@ -44,10 +45,17 @@ export class FileCardComponent implements OnInit {
 
   ngOnInit() {
     this.type = this.isAudio ? 'audio' : 'video';
+
+    if (this.file && this.file.url && this.file.url.includes('youtu')) {
+      const string_id = (this.playlist ? '?list=' : '?v=')
+      const index_offset = (this.playlist ? 6 : 3);
+      const end_index = this.file.url.indexOf(string_id) + index_offset;
+      this.name = this.file.url.substring(end_index, this.file.url.length);
+    }
   }
 
   deleteFile(blacklistMode = false) {
-    if (!this.isPlaylist) {
+    if (!this.playlist) {
       this.postsService.deleteFile(this.uid, this.isAudio, blacklistMode).subscribe(result => {
         if (result) {
           this.openSnackBar('Delete success!', 'OK.');
@@ -70,6 +78,24 @@ export class FileCardComponent implements OnInit {
         file: this.file,
       },
       minWidth: '50vw'
+    });
+  }
+
+  editPlaylistDialog() {
+    const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
+      data: {
+        playlist: this.playlist,
+        width: '65vw'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      // updates playlist in file manager if it changed
+      if (dialogRef.componentInstance.playlist_updated) {
+        this.playlist = dialogRef.componentInstance.original_playlist;
+        this.title = this.playlist.name;
+        this.count = this.playlist.fileNames.length;
+      }
     });
   }
 

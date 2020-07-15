@@ -1,0 +1,18 @@
+<h4 i18n="Update progress dialog title" mat-dialog-title>Updater</h4>
+
+<mat-dialog-content>
+    <div *ngIf="updateStatus">
+        <div style="margin-bottom: 8px;">
+            <h6 *ngIf="updateStatus['updating']">Update in progress</h6>
+            <h6 *ngIf="!updateStatus['updating'] && updateStatus['error']">Update failed</h6>
+            <h6 *ngIf="!updateStatus['updating'] && !updateStatus['error']">Update succeeded!</h6>
+        </div>
+        <mat-progress-bar *ngIf="updateStatus['updating']" mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar *ngIf="!updateStatus['updating']" mode="determinate" value="100"></mat-progress-bar>
+        <p style="margin-top: 4px; font-size: 13px;" *ngIf="updateStatus['details']">{{updateStatus['details']}}</p>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Close update progress dialog">Close</ng-container></button>
+</mat-dialog-actions>
