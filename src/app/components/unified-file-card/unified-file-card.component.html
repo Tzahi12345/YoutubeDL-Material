@@ -14,8 +14,8 @@
     </mat-menu>
     <mat-card (click)="navigateToFile()" matRipple class="example-card mat-elevation-z6">
         <div style="padding:5px">
-            <div *ngIf="fileThumbnail" class="img-div">
-                <img class="image" [src]="file_thumbnail" alt="Thumbnail">
+            <div *ngIf="file_obj.thumbnailURL" class="img-div">
+                <img class="image" [src]="file_obj.thumbnailURL" alt="Thumbnail">
             </div>
 
             <span class="max-two-lines"><strong>{{file_title}}</strong></span>      

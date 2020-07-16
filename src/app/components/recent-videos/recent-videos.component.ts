@@ -15,10 +15,19 @@ export class RecentVideosComponent implements OnInit {
   constructor(private postsService: PostsService) { }
 
   ngOnInit(): void {
+    this.postsService.service_initialized.subscribe(init => {
+      if (init) {
+        this.getAllFiles();
+      }
+    });
   }
 
   getAllFiles() {
-
+    this.normal_files_received = false;
+    this.postsService.getAllFiles().subscribe(res => {
+      this.files = res['files'];
+      this.files.sort(this.sortFiles);
+    });
   }
 
   sortFiles(a, b) {

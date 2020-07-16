@@ -207,6 +207,10 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
     }
 
+    getAllFiles() {
+        return this.http.post(this.path + 'getAllFiles', {}, this.httpOptions);
+    }
+
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
                             uid = null, uuid = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,

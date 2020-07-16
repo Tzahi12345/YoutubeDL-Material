@@ -2047,21 +2047,50 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
 });
 
 app.post('/api/getAllFiles', optionalJwt, function (req, res) {
-    files = null;
-    playlists = null;
-    if (req.isAuthenticated()) {
-        const videos = auth_api.getUserVideos(req.user.uid, 'video');
-        const audios = auth_api.getUserVideos(req.user.uid, 'audio');
-        const audio_playlists = null;
-        const video_playlists = null;
-    } else {
+    // these are returned
+    let files = [];
+    let playlists = [];
+    let subscription_files = [];
 
+    let videos = null;
+    let audios = null;
+    let audio_playlists = null;
+    let video_playlists = null;
+    let subscriptions = subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null);
+
+    // get basic info depending on multi-user mode being enabled
+    if (req.isAuthenticated()) {
+        videos = auth_api.getUserVideos(req.user.uid, 'video');
+        audios = auth_api.getUserVideos(req.user.uid, 'audio');
+        audio_playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
+        video_playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
+    } else {
+        videos = db.get('files.audio').value();
+        audios = db.get('files.video').value();
+        audio_playlists = db.get('playlists.audio').value();
+        video_playlists = db.get('playlists.video').value();
+    }
+
+    files = videos.concat(audios);
+    playlists = video_playlists.concat(audio_playlists);
+    
+    // loop through subscriptions and add videos
+    for (let i = 0; i < subscriptions.length; i++) {
+        sub = subscriptions[i];
+        console.log(sub);
+        if (!sub.videos) continue;
+        // add sub id for UI
+        for (let j = 0; j < sub.videos.length; j++) {
+            sub.videos[j].sub_id = sub.id;
+        }
+
+        files = files.concat(sub.videos);
     }
 
     res.send({
         files: files,
         playlists: playlists
-    })
+    });
 });
 
 // video sharing
