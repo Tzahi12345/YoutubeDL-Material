@@ -199,7 +199,6 @@ DEFAULT_CONFIG = {
         "allow_quality_select": true,
         "download_only_mode": false,
         "allow_multi_download_mode": true,
-        "settings_pin_required": false,
         "enable_downloads_manager": true
       },
       "API": {
