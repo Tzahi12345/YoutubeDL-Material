@@ -285,6 +285,10 @@ export class PostsService implements CanActivate {
                                 audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput}, this.httpOptions);
     }
 
+    updateSubscription(subscription) {
+        return this.http.post(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
+    }
+
     unsubscribe(sub, deleteMode = false) {
         return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode}, this.httpOptions)
     }

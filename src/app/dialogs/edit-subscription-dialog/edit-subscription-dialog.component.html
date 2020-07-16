@@ -1,0 +1,60 @@
+<h4 mat-dialog-title i18n="Edit subscription dialog title">Editing {{sub.name}}</h4>
+
+<mat-dialog-content>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 mt-3">
+                <mat-checkbox [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
+            </div>
+            <div class="col-12" *ngIf="!download_all">
+                <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
+                <mat-form-field color="accent" style="width: 50px; text-align: center">
+                    <input type="number" matInput [(ngModel)]="timerange_amount" (ngModelChange)="timerangeChanged($event, false)">
+                </mat-form-field>
+                <mat-select color="accent" class="unit-select" [(ngModel)]="timerange_unit" (ngModelChange)="timerangeChanged($event, true)">
+                    <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
+                        {{time_unit + (timerange_amount === 1 ? '' : 's')}}
+                    </mat-option>
+                </mat-select>
+            </div>
+            <div class="col-12">
+                <div>
+                    <mat-checkbox [(ngModel)]="audioOnlyMode"><ng-container i18n="Streaming-only mode">Audio-only mode</ng-container></mat-checkbox>
+                </div>
+            </div>
+            <div class="col-12">
+                <div>
+                    <mat-checkbox [disabled]="audioOnlyMode" [(ngModel)]="sub.streamingOnly"><ng-container i18n="Streaming-only mode">Streaming-only mode</ng-container></mat-checkbox>
+                </div>
+            </div>
+            <div class="col-12 mb-3">
+                <mat-form-field color="accent">
+                    <input [(ngModel)]="sub.custom_args" matInput placeholder="Custom args" i18n-placeholder="Subscription custom args placeholder">
+                    <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
+                    <mat-hint>
+                        <ng-container i18n="Custom args hint">These are added after the standard args.</ng-container>
+                    </mat-hint>
+                </mat-form-field>
+            </div>
+            <div class="col-12">
+                <mat-form-field color="accent">
+                    <input [(ngModel)]="sub.custom_output" matInput placeholder="Custom file output" i18n-placeholder="Subscription custom file output placeholder">
+                    <mat-hint>
+                        <a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+                        <ng-container i18n="Custom output template documentation link">Documentation</ng-container></a>.
+                        <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
+                    </mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Subscribe cancel button">Cancel</ng-container></button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-button [disabled]="updating || !subChanged()" type="submit" (click)="saveClicked()"><ng-container i18n="Save button">Save</ng-container></button>
+    <div class="mat-spinner" *ngIf="updating">
+      <mat-spinner [diameter]="25"></mat-spinner>
+    </div>
+</mat-dialog-actions>

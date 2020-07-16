@@ -73,6 +73,7 @@ import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialo
 import { LogsViewerComponent } from './components/logs-viewer/logs-viewer.component';
 import { ModifyPlaylistComponent } from './dialogs/modify-playlist/modify-playlist.component';
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
+import { EditSubscriptionDialogComponent } from './dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
 registerLocaleData(es, 'es');
 
@@ -113,7 +114,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     CookiesUploaderDialogComponent,
     LogsViewerComponent,
     ModifyPlaylistComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    EditSubscriptionDialogComponent
   ],
   imports: [
     CommonModule,
