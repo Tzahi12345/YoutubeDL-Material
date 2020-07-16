@@ -5,7 +5,7 @@ var subscriptions_api = require('../subscriptions')
 const fs = require('fs-extra');
 var jwt = require('jsonwebtoken');
 const { uuid } = require('uuidv4');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 
 var LocalStrategy = require('passport-local').Strategy;
