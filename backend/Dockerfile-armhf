@@ -23,5 +23,7 @@ COPY --chown=$UID:$GID [ "./", "/app/" ]
 
 EXPOSE 17442
 
+RUN chmod +x /app/entrypoint.sh
+
 ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "node", "app.js" ]
