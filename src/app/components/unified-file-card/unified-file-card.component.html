@@ -5,6 +5,7 @@
     <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
     <mat-menu #action_menu="matMenu">
         <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
+        <button (click)="navigateToSubscription()" mat-menu-item *ngIf="file_obj.sub_id"><mat-icon>{{file_obj.isAudio ? 'library_music' : 'video_library'}}</mat-icon>&nbsp;<ng-container i18n="Go to subscription menu item">Go to subscription</ng-container></button>
         <button (click)="deleteFile()" mat-menu-item>
             <mat-icon>restore</mat-icon><ng-container i18n="Delete and redownload subscription video button">Delete and redownload</ng-container>
         </button>

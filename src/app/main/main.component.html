@@ -183,6 +183,7 @@
 <ng-template #nofile>
 
 </ng-template>
+<app-recent-videos></app-recent-videos>
 <div style="margin: 20px" *ngIf="fileManagerEnabled && (!postsService.isLoggedIn || postsService.permissions.includes('filemanager'))">
     <mat-accordion>
         <mat-expansion-panel (opened)="accordionOpened('audio')" (closed)="accordionClosed('audio')" (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">

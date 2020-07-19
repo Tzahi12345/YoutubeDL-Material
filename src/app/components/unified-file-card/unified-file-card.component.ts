@@ -1,4 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
 @Component({
   selector: 'app-unified-file-card',
@@ -14,28 +16,46 @@ export class UnifiedFileCardComponent implements OnInit {
   type = null;
   use_youtubedl_archive = false;
 
-  isSubscriptionFile: boolean = null;
-
   @Input() file_obj = null;
+  @Output() goToFile = new EventEmitter<any>();
+  @Output() goToSubscription = new EventEmitter<any>();
 
-  constructor() { }
+  /*
+    Planned sizes:
+    small: 150x175
+    medium: 200x200
+    big: 250x200
+  */
+
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.file_length = fancyTimeFormat(this.file_obj.duration);
   }
 
   deleteFile(blacklistMode = false) {
+    if (this.file_obj.sub_id) {
 
+    }
   }
 
   navigateToFile() {
+    this.goToFile.emit(this.file_obj);
+  }
 
+  navigateToSubscription() {
+    this.goToSubscription.emit(this.file_obj);
   }
 
   openFileInfoDialog() {
-
+    this.dialog.open(VideoInfoDialogComponent, {
+      data: {
+        file: this.file_obj,
+      },
+      minWidth: '50vw'
+    })
   }
-  
+
 }
 
 function fancyTimeFormat(time) {

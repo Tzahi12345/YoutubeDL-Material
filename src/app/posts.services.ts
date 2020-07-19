@@ -47,6 +47,7 @@ export class PostsService implements CanActivate {
     open_create_default_admin_dialog = new BehaviorSubject<boolean>(false);
 
     config = null;
+    subscriptions = null;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar) {
         console.log('PostsService Initialized...');
@@ -111,6 +112,15 @@ export class PostsService implements CanActivate {
 
     setTheme(theme) {
         this.theme = this.THEMES_CONFIG[theme];
+    }
+
+    getSubscriptionByID(sub_id) {
+        for (let i = 0; i < this.subscriptions.length; i++) {
+            if (this.subscriptions[i]['id'] === sub_id) {
+                return this.subscriptions[i];
+            }
+        }
+        return null;
     }
 
     startHandshake(url: string) {

@@ -46,8 +46,6 @@ export class AppComponent implements OnInit {
   @ViewChild('hamburgerMenu', { read: ElementRef }) hamburgerMenuButton: ElementRef;
   navigator: string = null;
 
-  subscriptions = null;
-
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
     public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
 
@@ -92,7 +90,7 @@ export class AppComponent implements OnInit {
     // gets the subscriptions
     if (this.allowSubscriptions) {
       this.postsService.getAllSubscriptions().subscribe(res => {
-        this.subscriptions = res['subscriptions'];
+        this.postsService.subscriptions = res['subscriptions'];
       })
     }
   }
