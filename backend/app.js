@@ -880,14 +880,16 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
 
 }
 
-async function deleteAudioFile(name, blacklistMode = false) {
+async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
-        // TODO: split descriptors into audio and video descriptors, as deleting an audio file will close all video file streams
-        var jsonPath = path.join(audioFolderPath,name+'.mp3.info.json');
-        var altJSONPath = path.join(audioFolderPath,name+'.info.json');
-        var audioFilePath = path.join(audioFolderPath,name+'.mp3');
+        let filePath = customPath ? customPath : audioFolderPath;
+        
+        var jsonPath = path.join(filePath,name+'.mp3.info.json');
+        var altJSONPath = path.join(filePath,name+'.info.json');
+        var audioFilePath = path.join(filePath,name+'.mp3');
         var thumbnailPath = path.join(filePath,name+'.webp');
         var altThumbnailPath = path.join(filePath,name+'.jpg');
+
         jsonPath = path.join(__dirname, jsonPath);
         altJSONPath = path.join(__dirname, altJSONPath);
         audioFilePath = path.join(__dirname, audioFilePath);
@@ -927,7 +929,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
 
             // get ID from JSON
 
-            var jsonobj = utils.getJSONMp3(name, audioFolderPath);
+            var jsonobj = utils.getJSONMp3(name, filePath);
             let id = null;
             if (jsonobj) id = jsonobj.id;
 
@@ -963,10 +965,12 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
         let filePath = customPath ? customPath : videoFolderPath;
         var jsonPath = path.join(filePath,name+'.info.json');
+
         var altJSONPath = path.join(filePath,name+'.mp4.info.json');
         var videoFilePath = path.join(filePath,name+'.mp4');
         var thumbnailPath = path.join(filePath,name+'.webp');
         var altThumbnailPath = path.join(filePath,name+'.jpg');
+        
         jsonPath = path.join(__dirname, jsonPath);
         videoFilePath = path.join(__dirname, videoFilePath);
 
@@ -1004,7 +1008,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
 
             // get ID from JSON
 
-            var jsonobj = utils.getJSONMp4(name, videoFolderPath);
+            var jsonobj = utils.getJSONMp4(name, filePath);
             let id = null;
             if (jsonobj) id = jsonobj.id;
 
@@ -2455,7 +2459,7 @@ app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        deleteAudioFile(name, blacklistMode);
+        deleteAudioFile(name, null, blacklistMode);
         db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
