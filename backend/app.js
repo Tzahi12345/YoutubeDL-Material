@@ -970,7 +970,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
         var videoFilePath = path.join(filePath,name+'.mp4');
         var thumbnailPath = path.join(filePath,name+'.webp');
         var altThumbnailPath = path.join(filePath,name+'.jpg');
-        
+
         jsonPath = path.join(__dirname, jsonPath);
         videoFilePath = path.join(__dirname, videoFilePath);
 
@@ -1898,8 +1898,6 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
     } else {
         res.sendStatus(500);
     }
-
-    res.end("yes");
 });
 
 app.post('/api/tomp4', optionalJwt, async function(req, res) {
@@ -1929,8 +1927,6 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     } else {
         res.sendStatus(500);
     }
-
-    res.end("yes");
 });
 
 // gets the status of the mp3 file that's being downloaded
@@ -1950,9 +1946,7 @@ app.post('/api/fileStatusMp3', function(req, res) {
             percent = downloaded/size;
         exists = ["failed", getFileSizeMp3(name), percent];
     }
-    //logger.info(exists + " " + name);
     res.send(exists);
-    res.end("yes");
 });
 
 // gets the status of the mp4 file that's being downloaded
@@ -1970,9 +1964,7 @@ app.post('/api/fileStatusMp4', function(req, res) {
             percent = downloaded/size;
         exists = ["failed", getFileSizeMp4(name), percent];
     }
-    //logger.info(exists + " " + name);
     res.send(exists);
-    res.end("yes");
 });
 
 // gets all download mp3s
@@ -2463,7 +2455,6 @@ app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
         db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
-        res.end("yes");
     } else if (audio_obj) {
         db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
@@ -2495,7 +2486,6 @@ app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
         db.get('files.video').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
-        res.end("yes");
     } else if (video_obj) {
         db.get('files.video').remove({uid: uid}).write();
         wasDeleted = true;
@@ -2503,7 +2493,6 @@ app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
     } else {
         wasDeleted = false;
         res.send(wasDeleted);
-        res.end("yes");
     }
 });
 
