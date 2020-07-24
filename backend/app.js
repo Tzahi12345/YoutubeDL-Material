@@ -1197,6 +1197,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             options.customFileFolderPath = fileFolderPath;
         }
 
+        options.downloading_method = 'exec';
         const downloadConfig = await generateArgs(url, type, options);
 
         // adds download to download helper
@@ -1332,6 +1333,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             options.customFileFolderPath = fileFolderPath;
         }
 
+        options.downloading_method = 'normal';
         const downloadConfig = await generateArgs(url, type, options);
 
         // adds download to download helper
@@ -1472,24 +1474,24 @@ async function generateArgs(url, type, options) {
         var youtubePassword = options.youtubePassword;
 
         let downloadConfig = null;
-        let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
+        let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'best[ext=mp4]'];
         const is_youtube = url.includes('youtu');
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
             qualityPath = null;
         } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
-            qualityPath = '-f bestvideo+bestaudio'
+            qualityPath = ['-f', 'bestvideo+bestaudio']
         }
 
         if (customArgs) {
             downloadConfig = customArgs.split(',,');
         } else {
             if (customQualityConfiguration) {
-                qualityPath = `-f ${customQualityConfiguration}`;
+                qualityPath = ['-f', customQualityConfiguration];
             } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-                qualityPath = `-f '(mp4)[height=${selectedHeight}]'`;
+                qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
             } else if (maxBitrate && is_audio) {
-                qualityPath = `--audio-quality ${maxBitrate}`
+                qualityPath = ['--audio-quality', maxBitrate]
             }
 
             if (customOutput) {
@@ -1498,7 +1500,7 @@ async function generateArgs(url, type, options) {
                 downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
             }
 
-            if (qualityPath) downloadConfig.push(qualityPath);
+            if (qualityPath && options.downloading_method === 'exec') downloadConfig.push(...qualityPath);
 
             if (is_audio && !options.skip_audio_args) {
                 downloadConfig.push('-x');
