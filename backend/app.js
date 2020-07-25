@@ -30,6 +30,7 @@ var subscriptions_api = require('./subscriptions')
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
+var ps = require('ps-node');
 
 const is_windows = process.platform === 'win32';
 
@@ -499,6 +500,43 @@ async function getLatestVersion() {
             }
             resolve(json['tag_name']);
             return;
+        });
+    });
+}
+
+async function killAllDownloads() {
+    return new Promise(resolve => {
+        ps.lookup({
+            command: 'youtube-dl',
+            }, function(err, resultList ) {
+            if (err) {
+                // failed to get list of processes
+                logger.error('Failed to get a list of running youtube-dl processes.');
+                logger.error(err);
+                resolve({
+                    details: err,
+                    success: false
+                });
+            }
+            
+            // processes that contain the string 'youtube-dl' in the name will be looped
+            resultList.forEach(function( process ){
+                if (process) {
+                    ps.kill(process.pid, 'SIGKILL', function( err ) {
+                        if (err) {
+                            // failed to kill, process may have ended on its own
+                            logger.warn(`Failed to kill process with PID ${process.pid}`);
+                            logger.warn(err);
+                        }
+                        else {
+                            logger.verbose(`Process ${process.pid} has been killed!`);
+                        }
+                    });
+                }
+            });
+            resolve({
+                success: true
+            });
         });
     });
 }
@@ -1931,42 +1969,9 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     }
 });
 
-// gets the status of the mp3 file that's being downloaded
-app.post('/api/fileStatusMp3', function(req, res) {
-    var name = decodeURIComponent(req.body.name + "");
-    var exists = "";
-    var fullpath = audioFolderPath + name + ".mp3";
-    if (fs.existsSync(fullpath)) {
-    	exists = [basePath + audioFolderPath + name, getFileSizeMp3(name)];
-    }
-    else
-    {
-        var percent = 0;
-        var size = getFileSizeMp3(name);
-        var downloaded = getAmountDownloadedMp3(name);
-        if (size > 0)
-            percent = downloaded/size;
-        exists = ["failed", getFileSizeMp3(name), percent];
-    }
-    res.send(exists);
-});
-
-// gets the status of the mp4 file that's being downloaded
-app.post('/api/fileStatusMp4', function(req, res) {
-    var name = decodeURIComponent(req.body.name);
-    var exists = "";
-    var fullpath = videoFolderPath + name + ".mp4";
-    if (fs.existsSync(fullpath)) {
-    	exists = [basePath + videoFolderPath + name, getFileSizeMp4(name)];
-    } else {
-        var percent = 0;
-        var size = getFileSizeMp4(name);
-        var downloaded = getAmountDownloadedMp4(name);
-        if (size > 0)
-            percent = downloaded/size;
-        exists = ["failed", getFileSizeMp4(name), percent];
-    }
-    res.send(exists);
+app.post('/api/killAllDownloads', optionalJwt, async function(req, res) {
+    const result_obj = await killAllDownloads();
+    res.send(result_obj);
 });
 
 // gets all download mp3s

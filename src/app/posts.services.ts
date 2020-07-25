@@ -163,12 +163,8 @@ export class PostsService implements CanActivate {
                                                     ui_uid: ui_uid}, this.httpOptions);
     }
 
-    getFileStatusMp3(name: string) {
-        return this.http.post(this.path + 'fileStatusMp3', {name: name}, this.httpOptions);
-    }
-
-    getFileStatusMp4(name: string) {
-        return this.http.post(this.path + 'fileStatusMp4', {name: name}, this.httpOptions);
+    killAllDownloads() {
+        return this.http.post(this.path + 'killAllDownloads', {}, this.httpOptions);
     }
 
     loadNavItems() {
