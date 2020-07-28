@@ -433,8 +433,8 @@ export class PostsService implements CanActivate {
             password: password}, this.httpOptions);
     }
 
-    checkAdminCreationStatus() {
-        if (!this.config['Advanced']['multi_user_mode']) {
+    checkAdminCreationStatus(force_show = false) {
+        if (!force_show && !this.config['Advanced']['multi_user_mode']) {
             return;
         }
         this.adminExists().subscribe(res => {
