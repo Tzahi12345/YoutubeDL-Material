@@ -1892,7 +1892,7 @@ app.get('/api/config', function(req, res) {
     });
 });
 
-app.post('/api/setConfig', function(req, res) {
+app.post('/api/setConfig', optionalJwt, function(req, res) {
     let new_config_file = req.body.new_config_file;
     if (new_config_file && new_config_file['YoutubeDLMaterial']) {
         let success = config_api.setConfigFile(new_config_file);
