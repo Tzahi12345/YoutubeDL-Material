@@ -81,6 +81,7 @@ export class PostsService implements CanActivate {
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
                 if (this.config['Advanced']['multi_user_mode']) {
+                    this.checkAdminCreationStatus();
                     // login stuff
                     if (localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== 'null') {
                         this.token = localStorage.getItem('jwt_token');
@@ -403,7 +404,6 @@ export class PostsService implements CanActivate {
     }
 
     sendToLogin() {
-        this.checkAdminCreationStatus();
         if (!this.initialized) {
             this.setInitialized();
         }
@@ -433,8 +433,8 @@ export class PostsService implements CanActivate {
             password: password}, this.httpOptions);
     }
 
-    checkAdminCreationStatus(skip_check = false) {
-        if (!skip_check && !this.config['Advanced']['multi_user_mode']) {
+    checkAdminCreationStatus() {
+        if (!this.config['Advanced']['multi_user_mode']) {
             return;
         }
         this.adminExists().subscribe(res => {
