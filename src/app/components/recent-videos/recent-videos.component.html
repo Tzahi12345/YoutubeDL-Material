@@ -1,8 +1,8 @@
 <div>
     <div class="container">
         <div class="row justify-content-center">
-            <div *ngFor="let file of files" class="col-6 col-lg-4 mb-2 mt-2 file-col">
-                <app-unified-file-card (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file"></app-unified-file-card>
+            <div *ngFor="let file of files" [ngClass]="[ card_size === 'small' ? 'col-2 mb-2 mt-2 file-col' : '', card_size === 'medium' ? 'col-6 col-lg-4 mb-2 mt-2 file-col' : '' ]">
+                <app-unified-file-card [card_size]="card_size" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file"></app-unified-file-card>
             </div>
         </div>
     </div>

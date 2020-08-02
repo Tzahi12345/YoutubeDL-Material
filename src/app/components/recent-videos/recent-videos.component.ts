@@ -12,6 +12,7 @@ export class RecentVideosComponent implements OnInit {
   normal_files_received = false;
   subscription_files_received = false;
   files: any[] = null;
+  card_size = 'medium';
 
   constructor(private postsService: PostsService, private router: Router) { }
 
