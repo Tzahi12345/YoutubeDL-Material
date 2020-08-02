@@ -430,6 +430,15 @@ function getSubscription(subID, user_uid = null) {
         return db.get('subscriptions').find({id: subID}).value();
 }
 
+function updateSubscription(sub, user_uid = null) {
+    if (user_uid) {
+        users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id}).assign(sub).write();
+    } else {
+        db.get('subscriptions').find({id: sub.id}).assign(sub).write();
+    }
+    return true;
+}
+
 function subExists(subID, user_uid = null) {
     if (user_uid)
         return !!users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: subID}).value();
@@ -489,6 +498,7 @@ function removeIDFromArchive(archive_path, id) {
 module.exports = {
     getSubscription        : getSubscription,
     getAllSubscriptions    : getAllSubscriptions,
+    updateSubscription     : updateSubscription,
     subscribe              : subscribe,
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,

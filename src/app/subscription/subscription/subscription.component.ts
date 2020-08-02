@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
 @Component({
   selector: 'app-subscription',
@@ -43,7 +45,7 @@ export class SubscriptionComponent implements OnInit {
   filterProperty = this.filterProperties['upload_date'];
   downloading = false;
 
-  constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit() {
     if (this.route.snapshot.paramMap.get('id')) {
@@ -145,6 +147,14 @@ export class SubscriptionComponent implements OnInit {
     }, err => {
       console.log(err);
       this.downloading = false;
+    });
+  }
+
+  editSubscription() {
+    this.dialog.open(EditSubscriptionDialogComponent, {
+      data: {
+        sub: this.subscription
+      }
     });
   }
 
