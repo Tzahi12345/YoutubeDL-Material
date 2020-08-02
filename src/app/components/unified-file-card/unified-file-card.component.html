@@ -1,5 +1,5 @@
 <div style="position: relative; width: fit-content;">
-    <div class="download-time">{{file_obj.registered | date:'shortDate'}}</div>
+    <div class="download-time"><mat-icon class="audio-video-icon">{{file_obj.isAudio ? 'audiotrack' : 'movie'}}</mat-icon>&nbsp;&nbsp;{{file_obj.registered | date:'shortDate'}}</div>
     <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
     <mat-menu #action_menu="matMenu">
         <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>

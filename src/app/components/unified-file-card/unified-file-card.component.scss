@@ -94,9 +94,14 @@
 
 .download-time {
   position: absolute;
-  top: 5px;
+  top: 1px;
   left: 5px;
   z-index: 99999;
+}
+
+.audio-video-icon {
+  position: relative;
+  top: 6px;
 }
 
 @media (max-width: 576px){
