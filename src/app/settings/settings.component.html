@@ -19,7 +19,7 @@
                             <mat-hint><ng-container i18n="URL setting input hint">URL this app will be accessed from, without the port.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mb-4">
+                    <div class="col-12 mb-4 mt-3">
                         <mat-form-field class="text-field" color="accent">
                             <input [(ngModel)]="new_config['Host']['port']" matInput placeholder="Port" i18n-placeholder="Port input placeholder" required>
                             <mat-hint><ng-container i18n="Port setting input hint">The desired port. Default is 17442.</ng-container></mat-hint>
@@ -140,7 +140,7 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-5">
+                    <div class="col-12 mt-4">
                         <mat-form-field class="text-field" style="margin-right: 12px;" color="accent">
                             <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                             <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</ng-container></mat-hint>
@@ -148,13 +148,17 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-4">
+                    <div class="col-12 mt-5">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
                         <p><ng-container i18n="youtubedl archive setting Note">Note: This setting only applies to downloads on the Home page. If you would like to use youtube-dl archive functionality in subscriptions, head to the Main tab and activate this option there.</ng-container></p>
                     </div>
 
-                    <div class="col-12 mt-3">
+                    <div class="col-12 mt-2">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['safe_download_override']"><ng-container i18n="Safe download override setting">Safe download override</ng-container></mat-checkbox>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <button (click)="killAllDownloads()" mat-stroked-button color="warn"><ng-container i18n="Kill all downloads button">Kill all downloads</ng-container></button>
                     </div>
                 </div>
             </div>

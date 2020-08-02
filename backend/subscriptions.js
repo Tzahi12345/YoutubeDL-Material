@@ -81,7 +81,15 @@ async function getSubscriptionInfo(sub, user_uid = null) {
 
     return new Promise(resolve => {
         // get videos
-        let downloadConfig = ['--dump-json', '--playlist-end', '1']
+        let downloadConfig = ['--dump-json', '--playlist-end', '1'];
+        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
+        if (useCookies) {
+            if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+                downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
+            } else {
+                logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
+            }
+        }
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             if (debugMode) {
                 logger.info('Subscribe: got info for subscription ' + sub.id);
@@ -157,6 +165,11 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
             users_db.get('users').find({uid: user_uid}).get('subscriptions').remove({id: id}).write();
         else
             db.get('subscriptions').remove({id: id}).write();
+
+        // failed subs have no name, on unsubscribe they shouldn't error
+        if (!sub.name) {
+            return;
+        }
 
         const appendedBasePath = getAppendedBasePath(sub, basePath);
         if (deleteMode && fs.existsSync(appendedBasePath)) {
@@ -417,6 +430,15 @@ function getSubscription(subID, user_uid = null) {
         return db.get('subscriptions').find({id: subID}).value();
 }
 
+function updateSubscription(sub, user_uid = null) {
+    if (user_uid) {
+        users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id}).assign(sub).write();
+    } else {
+        db.get('subscriptions').find({id: sub.id}).assign(sub).write();
+    }
+    return true;
+}
+
 function subExists(subID, user_uid = null) {
     if (user_uid)
         return !!users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: subID}).value();
@@ -476,6 +498,7 @@ function removeIDFromArchive(archive_path, id) {
 module.exports = {
     getSubscription        : getSubscription,
     getAllSubscriptions    : getAllSubscriptions,
+    updateSubscription     : updateSubscription,
     subscribe              : subscribe,
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,

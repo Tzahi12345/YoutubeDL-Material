@@ -1,5 +1,5 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -8,14 +8,34 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class ConfirmDialogComponent implements OnInit {
 
-  dialogTitle: 'Confirm';
-  dialogText: 'Would you like to confirm?';
-  submitText: 'Yes'
+  dialogTitle = 'Confirm';
+  dialogText = 'Would you like to confirm?';
+  submitText = 'Yes'
+  submitClicked = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+  doneEmitter: EventEmitter<any> = null;
+  onlyEmitOnDone = false;
+  
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmDialogComponent>) {
     if (this.data.dialogTitle) { this.dialogTitle = this.data.dialogTitle };
     if (this.data.dialogText) { this.dialogText = this.data.dialogText };
     if (this.data.submitText) { this.submitText = this.data.submitText };
+
+    // checks if emitter exists, if so don't autoclose as it should be handled by caller
+    if (this.data.doneEmitter) {
+      this.doneEmitter = this.data.doneEmitter;
+      this.onlyEmitOnDone = true;
+    }
+  }
+
+  confirmClicked() {
+    if (this.onlyEmitOnDone) {
+      this.doneEmitter.emit(true);
+      this.submitClicked = true;
+    } else {
+      this.dialogRef.close(true);
+    }
   }
 
   ngOnInit(): void {

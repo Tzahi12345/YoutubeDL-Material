@@ -76,6 +76,7 @@ import { ModifyPlaylistComponent } from './dialogs/modify-playlist/modify-playli
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
 import { UnifiedFileCardComponent } from './components/unified-file-card/unified-file-card.component';
 import { RecentVideosComponent } from './components/recent-videos/recent-videos.component';
+import { EditSubscriptionDialogComponent } from './dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
 registerLocaleData(es, 'es');
 
@@ -118,7 +119,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     ModifyPlaylistComponent,
     ConfirmDialogComponent,
     UnifiedFileCardComponent,
-    RecentVideosComponent
+    RecentVideosComponent,
+    EditSubscriptionDialogComponent
   ],
   imports: [
     CommonModule,

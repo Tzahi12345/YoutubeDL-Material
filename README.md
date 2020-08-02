@@ -69,12 +69,24 @@ Alternatively, you can port forward the port specified in the config (defaults t
 
 ## Docker
 
+### Setup
+
 If you are looking to setup YoutubeDL-Material with Docker, this section is for you. And you're in luck! Docker setup is quite simple.
 
 1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml -o docker-compose.yml` to download the latest Docker Compose, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
 2. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
 3. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar.
 4. Make sure you can connect to the specified URL + port, and if so, you are done!
+
+### Custom UID/GID
+
+By default, the Docker container runs as non-root with UID=1000 and GID=1000. To set this to your own UID/GID, simply update the `environment` section in your `docker-compose.yml` like so:
+
+```
+environment:
+    UID: YOUR_UID
+    GID: YOUR_GID
+```
 
 ## API
 

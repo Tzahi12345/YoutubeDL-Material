@@ -23,7 +23,7 @@
                           <span i18n="Dark mode toggle label">Dark</span>
                           <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
                         </button>
-                        <button *ngIf="!postsService.isLoggedIn || postsService.permissions.includes('settings')" (click)="openSettingsDialog()" mat-menu-item>
+                        <button *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('settings')))" (click)="openSettingsDialog()" mat-menu-item>
                           <mat-icon>settings</mat-icon>
                           <span i18n="Settings menu label">Settings</span>
                         </button>

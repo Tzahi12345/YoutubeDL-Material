@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
 @Component({
   selector: 'app-subscription',
@@ -45,7 +47,7 @@ export class SubscriptionComponent implements OnInit {
 
   initialized = false;
 
-  constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe((params: ParamMap) => {
@@ -162,6 +164,14 @@ export class SubscriptionComponent implements OnInit {
     }, err => {
       console.log(err);
       this.downloading = false;
+    });
+  }
+
+  editSubscription() {
+    this.dialog.open(EditSubscriptionDialogComponent, {
+      data: {
+        sub: this.subscription
+      }
     });
   }
 
