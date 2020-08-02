@@ -30,6 +30,7 @@ var subscriptions_api = require('./subscriptions')
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
+var ps = require('ps-node');
 
 const is_windows = process.platform === 'win32';
 
@@ -503,6 +504,43 @@ async function getLatestVersion() {
     });
 }
 
+async function killAllDownloads() {
+    return new Promise(resolve => {
+        ps.lookup({
+            command: 'youtube-dl',
+            }, function(err, resultList ) {
+            if (err) {
+                // failed to get list of processes
+                logger.error('Failed to get a list of running youtube-dl processes.');
+                logger.error(err);
+                resolve({
+                    details: err,
+                    success: false
+                });
+            }
+            
+            // processes that contain the string 'youtube-dl' in the name will be looped
+            resultList.forEach(function( process ){
+                if (process) {
+                    ps.kill(process.pid, 'SIGKILL', function( err ) {
+                        if (err) {
+                            // failed to kill, process may have ended on its own
+                            logger.warn(`Failed to kill process with PID ${process.pid}`);
+                            logger.warn(err);
+                        }
+                        else {
+                            logger.verbose(`Process ${process.pid} has been killed!`);
+                        }
+                    });
+                }
+            });
+            resolve({
+                success: true
+            });
+        });
+    });
+}
+
 async function setPortItemFromENV() {
     return new Promise(resolve => {
         config_api.setConfigItem('ytdl_port', backendPort.toString());
@@ -880,14 +918,16 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
 
 }
 
-async function deleteAudioFile(name, blacklistMode = false) {
+async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
-        // TODO: split descriptors into audio and video descriptors, as deleting an audio file will close all video file streams
-        var jsonPath = path.join(audioFolderPath,name+'.mp3.info.json');
-        var altJSONPath = path.join(audioFolderPath,name+'.info.json');
-        var audioFilePath = path.join(audioFolderPath,name+'.mp3');
+        let filePath = customPath ? customPath : audioFolderPath;
+        
+        var jsonPath = path.join(filePath,name+'.mp3.info.json');
+        var altJSONPath = path.join(filePath,name+'.info.json');
+        var audioFilePath = path.join(filePath,name+'.mp3');
         var thumbnailPath = path.join(filePath,name+'.webp');
         var altThumbnailPath = path.join(filePath,name+'.jpg');
+
         jsonPath = path.join(__dirname, jsonPath);
         altJSONPath = path.join(__dirname, altJSONPath);
         audioFilePath = path.join(__dirname, audioFilePath);
@@ -927,7 +967,7 @@ async function deleteAudioFile(name, blacklistMode = false) {
 
             // get ID from JSON
 
-            var jsonobj = utils.getJSONMp3(name, audioFolderPath);
+            var jsonobj = utils.getJSONMp3(name, filePath);
             let id = null;
             if (jsonobj) id = jsonobj.id;
 
@@ -963,10 +1003,12 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
     return new Promise(resolve => {
         let filePath = customPath ? customPath : videoFolderPath;
         var jsonPath = path.join(filePath,name+'.info.json');
+
         var altJSONPath = path.join(filePath,name+'.mp4.info.json');
         var videoFilePath = path.join(filePath,name+'.mp4');
         var thumbnailPath = path.join(filePath,name+'.webp');
         var altThumbnailPath = path.join(filePath,name+'.jpg');
+
         jsonPath = path.join(__dirname, jsonPath);
         videoFilePath = path.join(__dirname, videoFilePath);
 
@@ -1004,7 +1046,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
 
             // get ID from JSON
 
-            var jsonobj = utils.getJSONMp4(name, videoFolderPath);
+            var jsonobj = utils.getJSONMp4(name, filePath);
             let id = null;
             if (jsonobj) id = jsonobj.id;
 
@@ -1193,6 +1235,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             options.customFileFolderPath = fileFolderPath;
         }
 
+        options.downloading_method = 'exec';
         const downloadConfig = await generateArgs(url, type, options);
 
         // adds download to download helper
@@ -1328,6 +1371,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             options.customFileFolderPath = fileFolderPath;
         }
 
+        options.downloading_method = 'normal';
         const downloadConfig = await generateArgs(url, type, options);
 
         // adds download to download helper
@@ -1468,24 +1512,24 @@ async function generateArgs(url, type, options) {
         var youtubePassword = options.youtubePassword;
 
         let downloadConfig = null;
-        let qualityPath = (is_audio && !options.skip_audio_args) ? '-f bestaudio' :'-f best[ext=mp4]';
+        let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'best[ext=mp4]'];
         const is_youtube = url.includes('youtu');
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
             qualityPath = null;
         } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
-            qualityPath = '-f bestvideo+bestaudio'
+            qualityPath = ['-f', 'bestvideo+bestaudio']
         }
 
         if (customArgs) {
             downloadConfig = customArgs.split(',,');
         } else {
             if (customQualityConfiguration) {
-                qualityPath = `-f ${customQualityConfiguration}`;
+                qualityPath = ['-f', customQualityConfiguration];
             } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-                qualityPath = `-f '(mp4)[height=${selectedHeight}]'`;
+                qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
             } else if (maxBitrate && is_audio) {
-                qualityPath = `--audio-quality ${maxBitrate}`
+                qualityPath = ['--audio-quality', maxBitrate]
             }
 
             if (customOutput) {
@@ -1494,7 +1538,7 @@ async function generateArgs(url, type, options) {
                 downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
             }
 
-            if (qualityPath) downloadConfig.push(qualityPath);
+            if (qualityPath && options.downloading_method === 'exec') downloadConfig.push(...qualityPath);
 
             if (is_audio && !options.skip_audio_args) {
                 downloadConfig.push('-x');
@@ -1848,7 +1892,7 @@ app.get('/api/config', function(req, res) {
     });
 });
 
-app.post('/api/setConfig', function(req, res) {
+app.post('/api/setConfig', optionalJwt, function(req, res) {
     let new_config_file = req.body.new_config_file;
     if (new_config_file && new_config_file['YoutubeDLMaterial']) {
         let success = config_api.setConfigFile(new_config_file);
@@ -1894,8 +1938,6 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
     } else {
         res.sendStatus(500);
     }
-
-    res.end("yes");
 });
 
 app.post('/api/tomp4', optionalJwt, async function(req, res) {
@@ -1925,50 +1967,11 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     } else {
         res.sendStatus(500);
     }
-
-    res.end("yes");
 });
 
-// gets the status of the mp3 file that's being downloaded
-app.post('/api/fileStatusMp3', function(req, res) {
-    var name = decodeURIComponent(req.body.name + "");
-    var exists = "";
-    var fullpath = audioFolderPath + name + ".mp3";
-    if (fs.existsSync(fullpath)) {
-    	exists = [basePath + audioFolderPath + name, getFileSizeMp3(name)];
-    }
-    else
-    {
-        var percent = 0;
-        var size = getFileSizeMp3(name);
-        var downloaded = getAmountDownloadedMp3(name);
-        if (size > 0)
-            percent = downloaded/size;
-        exists = ["failed", getFileSizeMp3(name), percent];
-    }
-    //logger.info(exists + " " + name);
-    res.send(exists);
-    res.end("yes");
-});
-
-// gets the status of the mp4 file that's being downloaded
-app.post('/api/fileStatusMp4', function(req, res) {
-    var name = decodeURIComponent(req.body.name);
-    var exists = "";
-    var fullpath = videoFolderPath + name + ".mp4";
-    if (fs.existsSync(fullpath)) {
-    	exists = [basePath + videoFolderPath + name, getFileSizeMp4(name)];
-    } else {
-        var percent = 0;
-        var size = getFileSizeMp4(name);
-        var downloaded = getAmountDownloadedMp4(name);
-        if (size > 0)
-            percent = downloaded/size;
-        exists = ["failed", getFileSizeMp4(name), percent];
-    }
-    //logger.info(exists + " " + name);
-    res.send(exists);
-    res.end("yes");
+app.post('/api/killAllDownloads', optionalJwt, async function(req, res) {
+    const result_obj = await killAllDownloads();
+    res.send(result_obj);
 });
 
 // gets all download mp3s
@@ -2455,11 +2458,10 @@ app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        deleteAudioFile(name, blacklistMode);
+        deleteAudioFile(name, null, blacklistMode);
         db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
-        res.end("yes");
     } else if (audio_obj) {
         db.get('files.audio').remove({uid: uid}).write();
         wasDeleted = true;
@@ -2491,7 +2493,6 @@ app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
         db.get('files.video').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
-        res.end("yes");
     } else if (video_obj) {
         db.get('files.video').remove({uid: uid}).write();
         wasDeleted = true;
@@ -2499,7 +2500,6 @@ app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
     } else {
         wasDeleted = false;
         res.send(wasDeleted);
-        res.end("yes");
     }
 });
 
