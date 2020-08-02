@@ -17,6 +17,7 @@ export class UnifiedFileCardComponent implements OnInit {
   use_youtubedl_archive = false;
 
   @Input() file_obj = null;
+  @Input() card_size = 'medium';
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
 
@@ -59,6 +60,9 @@ export class UnifiedFileCardComponent implements OnInit {
 }
 
 function fancyTimeFormat(time) {
+  if (typeof time === 'string') {
+    return time;
+  }
   // Hours, minutes and seconds
   const hrs = ~~(time / 3600);
   const mins = ~~((time % 3600) / 60);

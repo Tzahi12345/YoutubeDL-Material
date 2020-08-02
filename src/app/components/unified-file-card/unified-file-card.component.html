@@ -1,7 +1,5 @@
 <div style="position: relative; width: fit-content;">
-    <div class="duration-time">
-        <ng-container i18n="Video duration label">Length:</ng-container>&nbsp;{{file_length}}
-    </div>
+    <div class="download-time">{{file_obj.registered | date:'shortDate'}}</div>
     <button [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
     <mat-menu #action_menu="matMenu">
         <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
@@ -13,13 +11,20 @@
             <mat-icon>delete_forever</mat-icon><ng-container i18n="Delete forever subscription video button">Delete forever</ng-container>
         </button>
     </mat-menu>
-    <mat-card (click)="navigateToFile()" matRipple class="example-card mat-elevation-z6">
+    <mat-card [matTooltip]="file_obj.title" (click)="navigateToFile()" matRipple class="file-mat-card mat-elevation-z6" [ngClass]="{'small-mat-card': card_size === 'small', 'file-mat-card': card_size === 'medium'}">
+        
         <div style="padding:5px">
             <div *ngIf="file_obj.thumbnailURL" class="img-div">
-                <img class="image" [src]="file_obj.thumbnailURL" alt="Thumbnail">
+                <div style="position: relative">
+                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium'}" [src]="file_obj.thumbnailURL" alt="Thumbnail">
+                    <div class="duration-time">
+                        {{file_length}}
+                    </div>
+                </div>
+                
             </div>
 
-            <span class="max-two-lines"><strong>{{file_title}}</strong></span>      
+            <span [ngClass]="{'max-two-lines': card_size !== 'small', 'max-one-line': card_size === 'small' }"><strong>{{file_obj.title}}</strong></span>      
         </div>
     </mat-card>
 </div>
