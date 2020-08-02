@@ -2310,6 +2310,16 @@ app.post('/api/downloadVideosForSubscription', optionalJwt, async (req, res) => 
     });
 });
 
+app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
+    let updated_sub = req.body.subscription;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    let success = subscriptions_api.updateSubscription(updated_sub, user_uid);
+    res.send({
+        success: success
+    });
+});
+
 app.post('/api/getAllSubscriptions', optionalJwt, async (req, res) => {
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
