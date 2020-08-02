@@ -24,14 +24,16 @@
             </div>
             <div class="col-12" *ngIf="!download_all">
                 <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
-                <mat-form-field color="accent" style="width: 50px; text-align: center">
+                <mat-form-field color="accent" style="width: 50px; text-align: center; margin-left: 10px;">
                     <input type="number" matInput [(ngModel)]="timerange_amount">
                 </mat-form-field>
-                <mat-select color="accent" class="unit-select" [(ngModel)]="timerange_unit">
-                    <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
-                        {{time_unit + (timerange_amount === 1 ? '' : 's')}}
-                    </mat-option>
-                </mat-select>
+                <mat-form-field class="unit-select">
+                    <mat-select color="accent" [(ngModel)]="timerange_unit">
+                        <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
+                            {{time_unit + (timerange_amount === 1 ? '' : 's')}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
             <div class="col-12">
                 <div>
