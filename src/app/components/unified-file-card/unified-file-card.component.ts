@@ -14,10 +14,11 @@ export class UnifiedFileCardComponent implements OnInit {
   file_length = '';
   file_thumbnail = '';
   type = null;
-  use_youtubedl_archive = false;
+  elevated = false;
 
   @Input() file_obj = null;
   @Input() card_size = 'medium';
+  @Input() use_youtubedl_archive = false;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
 
