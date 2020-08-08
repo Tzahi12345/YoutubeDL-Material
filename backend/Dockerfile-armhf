@@ -1,7 +1,5 @@
 FROM arm32v7/alpine:3.12
 
-COPY qemu-arm-static /usr/bin
-
 ENV UID=1000 \
   GID=1000 \
   USER=youtube
