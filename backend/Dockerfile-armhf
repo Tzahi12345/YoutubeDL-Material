@@ -1,5 +1,7 @@
 FROM arm32v7/alpine:3.12
 
+COPY qemu-arm-static /usr/bin
+
 ENV UID=1000 \
   GID=1000 \
   USER=youtube
@@ -22,8 +24,6 @@ RUN npm install && chown -R $UID:$GID ./
 COPY --chown=$UID:$GID [ "./", "/app/" ]
 
 EXPOSE 17442
-
-RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "node", "app.js" ]
