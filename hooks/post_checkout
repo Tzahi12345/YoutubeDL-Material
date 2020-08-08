@@ -1,0 +1,3 @@
+#!/bin/bash
+# downloads a local copy of qemu on docker-hub build machines
+curl -L https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz | tar zxvf - -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
