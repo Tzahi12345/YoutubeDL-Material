@@ -59,11 +59,6 @@ export class SubscriptionComponent implements OnInit {
           this.getSubscription();
         }
       });
-
-      if (!this.initialized) {
-        this.getConfig();
-        this.getSubscription();
-      }
     });
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
@@ -101,7 +96,7 @@ export class SubscriptionComponent implements OnInit {
   }
 
   getConfig() {
-    this.use_youtubedl_archive = this.postsService.config['Subscriptions']['subscriptions_use_youtubedl_archive'];
+    this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
   }
 
   goToFile(emit_obj) {

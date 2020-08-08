@@ -2080,7 +2080,6 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
     // loop through subscriptions and add videos
     for (let i = 0; i < subscriptions.length; i++) {
         sub = subscriptions[i];
-        console.log(sub);
         if (!sub.videos) continue;
         // add sub id for UI
         for (let j = 0; j < sub.videos.length; j++) {
@@ -2590,7 +2589,7 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
             else
                 basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
-            file = path.join(__dirname, basePath, (subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + ext);
+            file = path.join(__dirname, basePath, (subscriptionPlaylist === true || subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + ext);
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
