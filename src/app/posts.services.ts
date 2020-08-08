@@ -81,6 +81,7 @@ export class PostsService implements CanActivate {
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
                 if (this.config['Advanced']['multi_user_mode']) {
+                    this.checkAdminCreationStatus();
                     // login stuff
                     if (localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== 'null') {
                         this.token = localStorage.getItem('jwt_token');
@@ -163,12 +164,8 @@ export class PostsService implements CanActivate {
                                                     ui_uid: ui_uid}, this.httpOptions);
     }
 
-    getFileStatusMp3(name: string) {
-        return this.http.post(this.path + 'fileStatusMp3', {name: name}, this.httpOptions);
-    }
-
-    getFileStatusMp4(name: string) {
-        return this.http.post(this.path + 'fileStatusMp4', {name: name}, this.httpOptions);
+    killAllDownloads() {
+        return this.http.post(this.path + 'killAllDownloads', {}, this.httpOptions);
     }
 
     loadNavItems() {
@@ -283,6 +280,10 @@ export class PostsService implements CanActivate {
     createSubscription(url, name, timerange = null, streamingOnly = false, audioOnly = false, customArgs = null, customFileOutput = null) {
         return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly,
                                 audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput}, this.httpOptions);
+    }
+
+    updateSubscription(subscription) {
+        return this.http.post(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
     }
 
     unsubscribe(sub, deleteMode = false) {
@@ -407,7 +408,6 @@ export class PostsService implements CanActivate {
     }
 
     sendToLogin() {
-        this.checkAdminCreationStatus();
         if (!this.initialized) {
             this.setInitialized();
         }
@@ -437,8 +437,8 @@ export class PostsService implements CanActivate {
             password: password}, this.httpOptions);
     }
 
-    checkAdminCreationStatus(skip_check = false) {
-        if (!skip_check && !this.config['Advanced']['multi_user_mode']) {
+    checkAdminCreationStatus(force_show = false) {
+        if (!force_show && !this.config['Advanced']['multi_user_mode']) {
             return;
         }
         this.adminExists().subscribe(res => {

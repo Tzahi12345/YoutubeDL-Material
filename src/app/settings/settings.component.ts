@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { isoLangs } from './locales_list';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,6 +8,7 @@ import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-
 import { CURRENT_VERSION } from 'app/consts';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CookiesUploaderDialogComponent } from 'app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
+import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -151,6 +152,34 @@ export class SettingsComponent implements OnInit {
   openCookiesUploaderDialog() {
     this.dialog.open(CookiesUploaderDialogComponent, {
       width: '65vw'
+    });
+  }
+
+  killAllDownloads() {
+    const done = new EventEmitter<any>();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: 'Kill downloads',
+        dialogText: 'Are you sure you want to kill all downloads? Any subscription and non-subscription downloads will end immediately, though this operation may take a minute or so to complete.',
+        submitText: 'Kill all downloads',
+        doneEmitter: done
+      }
+    });
+    done.subscribe(confirmed => {
+      if (confirmed) {
+        this.postsService.killAllDownloads().subscribe(res => {
+          if (res['success']) {
+            dialogRef.close();
+            this.postsService.openSnackBar('Successfully killed all downloads!');
+          } else {
+            dialogRef.close();
+            this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
+          }
+        }, err => {
+          dialogRef.close();
+          this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
+        });
+      }
     });
   }
 
