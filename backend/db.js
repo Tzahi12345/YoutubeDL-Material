@@ -61,6 +61,10 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
         } else {
             sub_db = db.get('subscriptions').find({id: sub.id});
         }
+        if (sub_db.get('videos').find({id: file_object.id}).value()) {
+            logger.verbose(`Subscription video ${file_object.id} already exists, skipping DB registration.`);
+            return null;
+        }
         sub_db.get('videos').push(file_object).write();
     }
 
