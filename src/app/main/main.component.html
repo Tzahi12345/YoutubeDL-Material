@@ -1,7 +1,7 @@
 <br/>
 <div class="big demo-basic">
     <mat-card id="card" style="margin-right: 20px; margin-left: 20px;" [ngClass]="(allowAdvancedDownload) ? 'no-border-radius-bottom' : null">
-        <mat-card-content>
+        <mat-card-content style="padding: 0px 8px 0px 8px;">
             <div style="position: relative;">
                 <form class="example-form">
                     <div class="container-fluid">
@@ -180,8 +180,14 @@
 <ng-template #nofile>
 
 </ng-template>
+
+<h4 style="text-align: center">My videos</h4>
 <app-recent-videos></app-recent-videos>
-<div style="margin: 20px" *ngIf="fileManagerEnabled && (!postsService.isLoggedIn || postsService.permissions.includes('filemanager'))">
+<br/>
+<h4 style="text-align: center">Custom playlists</h4>
+<app-custom-playlists></app-custom-playlists>
+
+<!--<div style="margin: 20px" *ngIf="fileManagerEnabled && (!postsService.isLoggedIn || postsService.permissions.includes('filemanager'))">
     <mat-accordion>
         <mat-expansion-panel (opened)="accordionOpened('audio')" (closed)="accordionClosed('audio')" (mouseleave)="accordionLeft('audio')" (mouseenter)="accordionEntered('audio')" class="big">
             <mat-expansion-panel-header>
@@ -258,7 +264,7 @@
                     </mat-grid-tile>
                 </mat-grid-list>
         
-                <!-- Add video playlist button -->
+                <!-- Add video playlist button --<
                 <div class="add-playlist-button"><button (click)="openCreatePlaylistDialog('video')" mat-fab><mat-icon>add</mat-icon></button></div>
                 <div *ngIf="playlists.video.length === 0">
                     <ng-container i18n="No video playlists available text">
@@ -268,12 +274,4 @@
             </div>
         </mat-expansion-panel>
     </mat-accordion>
-</div>
-
-<ng-template #nomp3s>
-
-</ng-template>
-
-<ng-template #nomp4s>
-
-</ng-template>
+</div>-->

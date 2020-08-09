@@ -19,10 +19,12 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() file_obj = null;
   @Input() card_size = 'medium';
   @Input() use_youtubedl_archive = false;
+  @Input() is_playlist = false;
   @Input() index: number;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
+  @Output() editPlaylist = new EventEmitter<any>();
 
   /*
     Planned sizes:
@@ -60,6 +62,13 @@ export class UnifiedFileCardComponent implements OnInit {
       },
       minWidth: '50vw'
     })
+  }
+
+  emitEditPlaylist() {
+    this.editPlaylist.emit({
+      playlist: this.file_obj,
+      index: this.index
+    });
   }
 
 }
