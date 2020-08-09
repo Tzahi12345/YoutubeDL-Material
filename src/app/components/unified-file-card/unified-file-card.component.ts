@@ -19,8 +19,10 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() file_obj = null;
   @Input() card_size = 'medium';
   @Input() use_youtubedl_archive = false;
+  @Input() index: number;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
+  @Output() deleteFile = new EventEmitter<any>();
 
   /*
     Planned sizes:
@@ -35,10 +37,12 @@ export class UnifiedFileCardComponent implements OnInit {
     this.file_length = fancyTimeFormat(this.file_obj.duration);
   }
 
-  deleteFile(blacklistMode = false) {
-    if (this.file_obj.sub_id) {
-
-    }
+  emitDeleteFile(blacklistMode = false) {
+    this.deleteFile.emit({
+      file: this.file_obj,
+      index: this.index,
+      blacklistMode: blacklistMode
+    });
   }
 
   navigateToFile() {

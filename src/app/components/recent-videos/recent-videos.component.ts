@@ -110,29 +110,52 @@ export class RecentVideosComponent implements OnInit {
 
   // deleting
 
-  deleteAndRedownload(file) {
-    const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(res => {
-      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
-    });
+  deleteFile(args) {
+    const file = args.file;
+    const index = args.index;
+    const blacklistMode = args.blacklistMode;
+
+    if (file.sub_id) {
+      this.deleteSubscriptionFile(file, index, blacklistMode);
+    } else {
+      this.deleteNormalFile(file, index, blacklistMode);
+    }
   }
 
-  deleteForever(file) {
-    const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(res => {
-      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
-    });
-  }
-
-  deleteNormalFile(file, blacklistMode = false) {
+  deleteNormalFile(file, index, blacklistMode = false) {
     this.postsService.deleteFile(file.uid, file.isAudio, blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
+        this.files.splice(index, 1);
       } else {
         this.postsService.openSnackBar('Delete failed!', 'OK.');
       }
     }, err => {
       this.postsService.openSnackBar('Delete failed!', 'OK.');
+    });
+  }
+
+  deleteSubscriptionFile(file, index, blacklistMode = false) {
+    if (blacklistMode) {
+      this.deleteForever(file, index);
+    } else {
+      this.deleteAndRedownload(file, index);
+    }
+  }
+
+  deleteAndRedownload(file, index) {
+    const sub = this.postsService.getSubscriptionByID(file.sub_id);
+    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(res => {
+      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
+      this.files.splice(index, 1);
+    });
+  }
+
+  deleteForever(file, index) {
+    const sub = this.postsService.getSubscriptionByID(file.sub_id);
+    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(res => {
+      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
+      this.files.splice(index, 1);
     });
   }
 
