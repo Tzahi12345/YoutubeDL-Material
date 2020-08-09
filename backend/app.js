@@ -2382,13 +2382,16 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let fileNames = req.body.fileNames;
     let type = req.body.type;
     let thumbnailURL = req.body.thumbnailURL;
+    let duration = req.body.duration;
 
     let new_playlist = {
-        'name': playlistName,
+        name: playlistName,
         fileNames: fileNames,
         id: shortid.generate(),
         thumbnailURL: thumbnailURL,
-        type: type
+        type: type,
+        registered: Date.now(),
+        duration: duration
     };
 
     if (req.isAuthenticated()) {

@@ -265,11 +265,12 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
     }
 
-    createPlaylist(playlistName, fileNames, type, thumbnailURL) {
+    createPlaylist(playlistName, fileNames, type, thumbnailURL, duration = null) {
         return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
                                                             fileNames: fileNames,
                                                             type: type,
-                                                            thumbnailURL: thumbnailURL}, this.httpOptions);
+                                                            thumbnailURL: thumbnailURL,
+                                                            duration: duration}, this.httpOptions);
     }
 
     getPlaylist(playlistID, type, uuid = null) {
