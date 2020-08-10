@@ -2,7 +2,7 @@
     <div [ngClass]="(type === 'audio') ? null : 'container-video'">
         <div style="max-width: 100%; margin-left: 0px; height: 70vh">
             <div style="height: fit-content" [ngClass]="(type === 'audio') ? 'audio-col' : 'video-col'">
-                <vg-player style="height: fit-content" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
+                <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
                     <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
                     </video>
                 </vg-player>
