@@ -22,6 +22,8 @@ export class PostsService implements CanActivate {
     handShakeComplete = false;
     THEMES_CONFIG = THEMES_CONFIG;
     theme;
+    card_size = 'medium';
+    sidepanel_mode = 'over';
     settings_changed = new BehaviorSubject<boolean>(false);
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
     session_id = null;
@@ -102,6 +104,14 @@ export class PostsService implements CanActivate {
         this.reload_config.subscribe(yes_reload => {
             if (yes_reload) { this.reloadConfig(); }
         });
+
+        if (localStorage.getItem('sidepanel_mode')) {
+            this.sidepanel_mode = localStorage.getItem('sidepanel_mode');
+        }
+
+        if (localStorage.getItem('card_size')) {
+            this.card_size = localStorage.getItem('card_size');
+        }
     }
     canActivate(route, state): Promise<boolean> {
         return new Promise(resolve => {

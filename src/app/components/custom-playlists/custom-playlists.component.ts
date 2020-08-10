@@ -14,10 +14,9 @@ export class CustomPlaylistsComponent implements OnInit {
 
   playlists = null;
   playlists_received = false;
-  card_size = 'medium';
   downloading_content = {'video': {}, 'audio': {}};
 
-  constructor(private postsService: PostsService, private router: Router, private dialog: MatDialog) { }
+  constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.postsService.service_initialized.subscribe(init => {

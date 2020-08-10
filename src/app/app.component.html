@@ -38,7 +38,7 @@
     </div>
     <div class="sidenav-container" style="height: calc(100% - 64px)">
         <mat-sidenav-container style="height: 100%">
-            <mat-sidenav mode="side" #sidenav>
+            <mat-sidenav [mode]="postsService.sidepanel_mode" #sidenav>
                 <mat-nav-list>
                     <a *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || postsService.isLoggedIn)" mat-list-item (click)="sidenav.close()" routerLink='/home'><ng-container i18n="Navigation menu Home Page title">Home</ng-container></a>
                     <a *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode && !postsService.isLoggedIn" mat-list-item (click)="sidenav.close()" routerLink='/login'><ng-container i18n="Navigation menu Login Page title">Login</ng-container></a>

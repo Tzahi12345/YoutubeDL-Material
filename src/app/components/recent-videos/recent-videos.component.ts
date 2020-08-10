@@ -13,7 +13,6 @@ export class RecentVideosComponent implements OnInit {
   subscription_files_received = false;
   files: any[] = null;
   filtered_files: any[] = null;
-  card_size = 'medium';
   downloading_content = {'video': {}, 'audio': {}};
   search_mode = false;
   search_text = '';
@@ -48,7 +47,7 @@ export class RecentVideosComponent implements OnInit {
   };
   filterProperty = this.filterProperties['upload_date'];
 
-  constructor(private postsService: PostsService, private router: Router) { }
+  constructor(public postsService: PostsService, private router: Router) { }
 
   ngOnInit(): void {
     this.postsService.service_initialized.subscribe(init => {

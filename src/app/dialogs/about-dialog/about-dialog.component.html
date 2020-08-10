@@ -24,6 +24,34 @@
         <p>
             <ng-container i18n="About bug prefix">Found a bug or have a suggestion?</ng-container>&nbsp;<a [href]="issuesLink" target="_blank"><ng-container i18n="About bug click here">Click here</ng-container></a>&nbsp;<ng-container i18n="About bug suffix">to create an issue!</ng-container>
         </p>
+        <mat-divider></mat-divider>
+        <div style="margin-top: 10px;">
+            <h5>Personal settings:</h5>
+            <mat-form-field placeholder="Sidepanel mode">
+                <mat-select [(ngModel)]="sidepanel_mode" (selectionChange)="sidePanelModeChanged($event.value)">
+                    <mat-option value="over">
+                        Over
+                    </mat-option>
+                    <mat-option value="side">
+                        Side
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br/>
+            <mat-form-field placeholder="Card size">
+                <mat-select [(ngModel)]="card_size" (selectionChange)="cardSizeOptionChanged($event.value)">
+                    <mat-option value="large" [disabled]="true">
+                        Large
+                    </mat-option>
+                    <mat-option value="medium">
+                        Medium
+                    </mat-option>
+                    <mat-option value="small">
+                        Small
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
     </div>
 </mat-dialog-content>
 
