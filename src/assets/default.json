@@ -50,6 +50,7 @@
       "custom_downloading_agent": "",
       "multi_user_mode": true,
       "allow_advanced_download": true,
+      "jwt_expiration": 86400,
       "logger_level": "debug",
       "use_cookies": true
     }

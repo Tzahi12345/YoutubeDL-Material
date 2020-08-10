@@ -29,7 +29,7 @@ exports.initialize = function(input_users_db, input_logger) {
    ************************/
   saltRounds = 10;
 
-  JWT_EXPIRATION = (60 * 60); // one hour
+  JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
 
   SERVER_SECRET = null;
   if (users_db.get('jwt_secret').value()) {

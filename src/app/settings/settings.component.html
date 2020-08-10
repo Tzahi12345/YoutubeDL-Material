@@ -285,6 +285,18 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
+                    <div class="col-12 mt-2 mb-1">
+                        <mat-form-field>
+                            <mat-label><ng-container i18n="Login expiration select label">Login expiration</ng-container></mat-label>
+                            <mat-select color="accent" [(ngModel)]="new_config['Advanced']['jwt_expiration']">
+                                <mat-option [value]="3600">1 Hour</mat-option>
+                                <mat-option [value]="86400">1 Day</mat-option>
+                                <mat-option [value]="604800">1 Week</mat-option>
+                                <mat-option [value]="2592000">1 Month</mat-option>
+                                <mat-option [value]="31536000">1 Year</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
                     <div class="col-12">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['allow_advanced_download']"><ng-container i18n="Allow advanced downloading setting">Allow advanced download</ng-container></mat-checkbox>
                     </div>

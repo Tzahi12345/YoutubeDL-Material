@@ -152,6 +152,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_use_cookies',
         'path': 'YoutubeDLMaterial.Advanced.use_cookies'
     },
+    'ytdl_jwt_expiration': {
+        'key': 'ytdl_jwt_expiration',
+        'path': 'YoutubeDLMaterial.Advanced.jwt_expiration'
+    },
     'ytdl_logger_level': {
         'key': 'ytdl_logger_level',
         'path': 'YoutubeDLMaterial.Advanced.logger_level'

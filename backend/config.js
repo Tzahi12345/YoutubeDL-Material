@@ -227,6 +227,7 @@ DEFAULT_CONFIG = {
         "multi_user_mode": false,
         "allow_advanced_download": false,
         "use_cookies": false,
+        "jwt_expiration": 86400,
         "logger_level": "info"
       }
     }
