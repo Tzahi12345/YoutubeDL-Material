@@ -135,7 +135,6 @@ export class SubscriptionComponent implements OnInit {
   }
 
   filterOptionChanged(value) {
-    // this.filterProperty = value;
     this.filterByProperty(value['property']);
     localStorage.setItem('filter_property', value['key']);
   }

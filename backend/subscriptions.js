@@ -411,7 +411,6 @@ function handleOutputJSON(sub, sub_db, output_json, multiUserMode = null, reset_
         // add to db
         sub_db.get('videos').push(output_json).write();
     } else {
-        // TODO: make multiUserMode obj
         db_api.registerFileDB(path.basename(output_json['_filename']), sub.type, multiUserMode, sub);
     }
 }
