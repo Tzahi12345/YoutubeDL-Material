@@ -86,6 +86,13 @@ export class AppComponent implements OnInit {
     if (!localStorage.getItem('theme')) {
       this.setTheme(themingExists ? this.defaultTheme : 'default');
     }
+
+    // gets the subscriptions
+    if (this.allowSubscriptions) {
+      this.postsService.getAllSubscriptions().subscribe(res => {
+        this.postsService.subscriptions = res['subscriptions'];
+      })
+    }
   }
 
   // theme stuff
@@ -159,6 +166,11 @@ onSetTheme(theme, old_theme) {
         });
       }
     });
+  }
+
+
+  getSubscriptions() {
+
   }
 
 

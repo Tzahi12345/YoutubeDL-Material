@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
@@ -45,9 +45,21 @@ export class SubscriptionComponent implements OnInit {
   filterProperty = this.filterProperties['upload_date'];
   downloading = false;
 
+  initialized = false;
+
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit() {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      this.id = params.get('id');
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.initialized = true;
+          this.getConfig();
+          this.getSubscription();
+        }
+      });
+    });
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
@@ -84,7 +96,7 @@ export class SubscriptionComponent implements OnInit {
   }
 
   getConfig() {
-    this.use_youtubedl_archive = this.postsService.config['Subscriptions']['subscriptions_use_youtubedl_archive'];
+    this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
   }
 
   goToFile(emit_obj) {
@@ -123,7 +135,6 @@ export class SubscriptionComponent implements OnInit {
   }
 
   filterOptionChanged(value) {
-    // this.filterProperty = value;
     this.filterByProperty(value['property']);
     localStorage.setItem('filter_property', value['key']);
   }

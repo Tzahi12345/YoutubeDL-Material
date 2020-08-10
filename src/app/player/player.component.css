@@ -65,6 +65,13 @@
     padding-right: 0px;
     padding-left: 0.01px;
     height: 100%;
+    width: 100%;
+}
+
+.audio-col {
+    margin: 0 auto;
+    margin-top: 10px;
+    width: 95%;
 }
 
 .save-icon {

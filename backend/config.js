@@ -214,8 +214,7 @@ DEFAULT_CONFIG = {
       "Subscriptions": {
         "allow_subscriptions": true,
         "subscriptions_base_path": "subscriptions/",
-        "subscriptions_check_interval": "300",
-        "subscriptions_use_youtubedl_archive": true
+        "subscriptions_check_interval": "300"
       },
       "Users": {
         "base_path": "users/",

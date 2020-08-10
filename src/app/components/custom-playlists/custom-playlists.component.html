@@ -1,0 +1,13 @@
+<div *ngIf="playlists && playlists.length > 0">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div *ngFor="let playlist of playlists; let i = index" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 mb-2 mt-2 file-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 mb-2 mt-2 file-col' : '' ]">
+                <app-unified-file-card [index]="i" [card_size]="postsService.card_size" (goToFile)="goToPlaylist($event)" [file_obj]="playlist" [is_playlist]="true" (editPlaylist)="editPlaylistDialog($event)" (deleteFile)="deletePlaylist($event)"></app-unified-file-card>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="playlists && playlists.length === 0" style="text-align: center;">
+    No playlists available. Create one from your downloading files by clicking the blue plus button.
+</div>
+<div class="add-playlist-button"><button (click)="openCreatePlaylistDialog()" mat-fab><mat-icon>add</mat-icon></button></div>

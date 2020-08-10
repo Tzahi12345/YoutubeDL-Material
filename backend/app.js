@@ -2049,6 +2049,52 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     }
 });
 
+app.post('/api/getAllFiles', optionalJwt, function (req, res) {
+    // these are returned
+    let files = [];
+    let playlists = [];
+    let subscription_files = [];
+
+    let videos = null;
+    let audios = null;
+    let audio_playlists = null;
+    let video_playlists = null;
+    let subscriptions = subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null);
+
+    // get basic info depending on multi-user mode being enabled
+    if (req.isAuthenticated()) {
+        videos = auth_api.getUserVideos(req.user.uid, 'video');
+        audios = auth_api.getUserVideos(req.user.uid, 'audio');
+        audio_playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
+        video_playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
+    } else {
+        videos = db.get('files.audio').value();
+        audios = db.get('files.video').value();
+        audio_playlists = db.get('playlists.audio').value();
+        video_playlists = db.get('playlists.video').value();
+    }
+
+    files = videos.concat(audios);
+    playlists = video_playlists.concat(audio_playlists);
+    
+    // loop through subscriptions and add videos
+    for (let i = 0; i < subscriptions.length; i++) {
+        sub = subscriptions[i];
+        if (!sub.videos) continue;
+        // add sub id for UI
+        for (let j = 0; j < sub.videos.length; j++) {
+            sub.videos[j].sub_id = sub.id;
+        }
+
+        files = files.concat(sub.videos);
+    }
+
+    res.send({
+        files: files,
+        playlists: playlists
+    });
+});
+
 // video sharing
 app.post('/api/enableSharing', optionalJwt, function(req, res) {
     var type = req.body.type;
@@ -2336,13 +2382,16 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let fileNames = req.body.fileNames;
     let type = req.body.type;
     let thumbnailURL = req.body.thumbnailURL;
+    let duration = req.body.duration;
 
     let new_playlist = {
-        'name': playlistName,
+        name: playlistName,
         fileNames: fileNames,
         id: shortid.generate(),
         thumbnailURL: thumbnailURL,
-        type: type
+        type: type,
+        registered: Date.now(),
+        duration: duration
     };
 
     if (req.isAuthenticated()) {
@@ -2543,7 +2592,7 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
             else
                 basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
-            file = path.join(__dirname, basePath, (subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + ext);
+            file = path.join(__dirname, basePath, (subscriptionPlaylist === true || subscriptionPlaylist === 'true' ? 'playlists' : 'channels'), subscriptionName, fileNames + ext);
         }
     } else {
         for (let i = 0; i < fileNames.length; i++) {
