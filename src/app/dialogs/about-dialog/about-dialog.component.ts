@@ -16,11 +16,13 @@ export class AboutDialogComponent implements OnInit {
   checking_for_updates = true;
 
   current_version_tag = CURRENT_VERSION;
+  sidepanel_mode = this.postsService.sidepanel_mode;
+  card_size = this.postsService.card_size;
 
   constructor(private postsService: PostsService) { }
 
   ngOnInit(): void {
-    this.getLatestGithubRelease()
+    this.getLatestGithubRelease();
   }
 
   getLatestGithubRelease() {
@@ -28,6 +30,16 @@ export class AboutDialogComponent implements OnInit {
       this.checking_for_updates = false;
       this.latestGithubRelease = res;
     });
+  }
+
+  sidePanelModeChanged(new_mode) {
+    localStorage.setItem('sidepanel_mode', new_mode);
+    this.postsService.sidepanel_mode = new_mode;
+  }
+
+  cardSizeOptionChanged(new_size) {
+    localStorage.setItem('card_size', new_size);
+    this.postsService.card_size = new_size;
   }
 
 }

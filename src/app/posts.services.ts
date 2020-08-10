@@ -22,6 +22,8 @@ export class PostsService implements CanActivate {
     handShakeComplete = false;
     THEMES_CONFIG = THEMES_CONFIG;
     theme;
+    card_size = 'medium';
+    sidepanel_mode = 'over';
     settings_changed = new BehaviorSubject<boolean>(false);
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
     session_id = null;
@@ -47,6 +49,7 @@ export class PostsService implements CanActivate {
     open_create_default_admin_dialog = new BehaviorSubject<boolean>(false);
 
     config = null;
+    subscriptions = null;
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar) {
         console.log('PostsService Initialized...');
@@ -101,6 +104,14 @@ export class PostsService implements CanActivate {
         this.reload_config.subscribe(yes_reload => {
             if (yes_reload) { this.reloadConfig(); }
         });
+
+        if (localStorage.getItem('sidepanel_mode')) {
+            this.sidepanel_mode = localStorage.getItem('sidepanel_mode');
+        }
+
+        if (localStorage.getItem('card_size')) {
+            this.card_size = localStorage.getItem('card_size');
+        }
     }
     canActivate(route, state): Promise<boolean> {
         return new Promise(resolve => {
@@ -112,6 +123,15 @@ export class PostsService implements CanActivate {
 
     setTheme(theme) {
         this.theme = this.THEMES_CONFIG[theme];
+    }
+
+    getSubscriptionByID(sub_id) {
+        for (let i = 0; i < this.subscriptions.length; i++) {
+            if (this.subscriptions[i]['id'] === sub_id) {
+                return this.subscriptions[i];
+            }
+        }
+        return null;
     }
 
     startHandshake(url: string) {
@@ -204,6 +224,10 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
     }
 
+    getAllFiles() {
+        return this.http.post(this.path + 'getAllFiles', {}, this.httpOptions);
+    }
+
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
                             uid = null, uuid = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
@@ -251,11 +275,12 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
     }
 
-    createPlaylist(playlistName, fileNames, type, thumbnailURL) {
+    createPlaylist(playlistName, fileNames, type, thumbnailURL, duration = null) {
         return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
                                                             fileNames: fileNames,
                                                             type: type,
-                                                            thumbnailURL: thumbnailURL}, this.httpOptions);
+                                                            thumbnailURL: thumbnailURL,
+                                                            duration: duration}, this.httpOptions);
     }
 
     getPlaylist(playlistID, type, uuid = null) {

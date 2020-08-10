@@ -116,10 +116,6 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_subscriptions_check_interval',
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
     },
-    'ytdl_subscriptions_use_youtubedl_archive': {
-        'key': 'ytdl_use_youtubedl_archive',
-        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_use_youtubedl_archive'
-    },
 
     // Users
     'ytdl_users_base_path': {

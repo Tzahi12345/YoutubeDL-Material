@@ -79,11 +79,6 @@
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-4">
-                        <mat-checkbox color="accent" [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_use_youtubedl_archive']"><ng-container i18n="Use youtube-dl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
-                        <p><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#how-do-i-download-only-new-videos-from-a-playlist"><ng-container i18n="youtube-dl archive explanation prefix link">With youtube-dl's archive</ng-container></a>&nbsp;<ng-container i18n="youtube-dl archive explanation middle">feature, downloaded videos from your subscriptions get recorded in a text file in the subscriptions archive sub-directory.</ng-container></p>
-                        <p><ng-container i18n="youtube-dl archive explanation suffix">This enables the ability to permanently delete videos from your subscriptions without unsubscribing, and allows you to record which videos you downloaded in case of data loss.</ng-container></p>
-                    </div>
                 </div>
             </div>
             <mat-divider></mat-divider>
@@ -150,7 +145,6 @@
 
                     <div class="col-12 mt-5">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
-                        <p><ng-container i18n="youtubedl archive setting Note">Note: This setting only applies to downloads on the Home page. If you would like to use youtube-dl archive functionality in subscriptions, head to the Main tab and activate this option there.</ng-container></p>
                     </div>
 
                     <div class="col-12 mt-2">

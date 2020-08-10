@@ -123,7 +123,7 @@ async function getSubscriptionInfo(sub, user_uid = null) {
                         }
                     }
 
-                    const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
+                    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
                     if (useArchive && !sub.archive) {
                         // must create the archive
                         const archive_dir = path.join(__dirname, basePath, 'archives', sub.name);
@@ -197,7 +197,7 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         sub_db = db.get('subscriptions').find({id: sub.id});
     }
-    const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
+    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const name = file;
     let retrievedID = null;
@@ -273,7 +273,7 @@ async function getVideosForSub(sub, user_uid = null) {
         else
             basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
-        const useArchive = config_api.getConfigItem('ytdl_subscriptions_use_youtubedl_archive');
+        const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
 
         let appendedBasePath = null
         appendedBasePath = getAppendedBasePath(sub, basePath);
@@ -411,7 +411,6 @@ function handleOutputJSON(sub, sub_db, output_json, multiUserMode = null, reset_
         // add to db
         sub_db.get('videos').push(output_json).write();
     } else {
-        // TODO: make multiUserMode obj
         db_api.registerFileDB(path.basename(output_json['_filename']), sub.type, multiUserMode, sub);
     }
 }
