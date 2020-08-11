@@ -137,7 +137,7 @@ export class RecentVideosComponent implements OnInit {
       } else {
         this.router.navigate(['/player', {fileNames: file.id,
           type: file.isAudio ? 'audio' : 'video', subscriptionName: sub.name,
-          subPlaylist: sub.isPlaylist, uuid: this.postsService.user ? this.postsService.user.uid : null}]);
+          subPlaylist: sub.isPlaylist}]);
       }
     } else {
       this.router.navigate(['/player', {type: file.isAudio ? 'audio' : 'video', uid: file.uid}]);
