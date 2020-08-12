@@ -1866,7 +1866,8 @@ const optionalJwt = function (req, res, next) {
         const uuid = using_body ? req.body.uuid : req.query.uuid;
         const uid = using_body ? req.body.uid : req.query.uid;
         const type = using_body ? req.body.type : req.query.type;
-        const is_shared = !req.query.id ? auth_api.getUserVideo(uuid, uid, type, true) : auth_api.getUserPlaylist(uuid, req.query.id, null, true);
+        const file = !req.query.id ? auth_api.getUserVideo(uuid, uid, type, true, req.body) : auth_api.getUserPlaylist(uuid, req.query.id, null, true);
+        const is_shared = file ? file['sharingEnabled'] : false;
         if (is_shared) {
             req.can_watch = true;
             return next();
@@ -2579,9 +2580,10 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
 
         let base_path = fileFolderPath;
         let usersFileFolder = null;
-        if (req.isAuthenticated()) {
+        const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+        if (multiUserMode && req.body.uuid) {
             usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-            base_path = path.join(usersFileFolder, req.user.uid, type);
+            base_path = path.join(usersFileFolder, req.body.uuid, type);
         }
         if (!subscriptionName) {
             file = path.join(__dirname, base_path, fileNames + ext);
