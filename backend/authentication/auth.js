@@ -307,21 +307,27 @@ exports.getUserVideos = function(user_uid, type) {
     return user['files'][type];
 }
 
-exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false) {
-  if (!type) {
-    file = users_db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
-    if (!file) {
-        file = users_db.get('users').find({uid: user_uid}).get(`files.video`).find({uid: file_uid}).value();
-        if (file) type = 'video';
-    } else {
-        type = 'audio';
+exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false, reqBody = null) {
+  // check if it's a subscription first
+  let file = null;
+  if (reqBody && reqBody.subscriptionName) {
+    file = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({name: reqBody.subscriptionName}).get('videos').find({id: reqBody.fileNames}).value();
+  } else {
+    if (!type) {
+      file = users_db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
+      if (!file) {
+          file = users_db.get('users').find({uid: user_uid}).get(`files.video`).find({uid: file_uid}).value();
+          if (file) type = 'video';
+      } else {
+          type = 'audio';
+      }
     }
+  
+    if (!file && type) file = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
   }
 
-  if (!file && type) file = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
-
   // prevent unauthorized users from accessing the file info
-  if (requireSharing && !file['sharingEnabled']) file = null;
+  if (file && requireSharing && !file['sharingEnabled']) file = null;
 
   return file;
 }
