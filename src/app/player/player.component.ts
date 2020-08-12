@@ -330,7 +330,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist,
                                             this.is_shared ? this.db_file['uid'] : null, this.uuid).subscribe(res => {
       this.downloading = false;
-      const blob: Blob = res;
+      const blob = new Blob([res], {type: this.type === 'audio' ? 'audio/mp3' : 'video/mp4'})
       saveAs(blob, filename + ext);
     }, err => {
       console.log(err);
