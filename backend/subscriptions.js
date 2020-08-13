@@ -41,7 +41,7 @@ async function subscribe(sub, user_uid = null) {
             url_exists = !!db.get('subscriptions').find({url: sub.url}).value();
 
         if (!sub.name && url_exists) {
-            logger.error(`Sub with the same URL already exists -- please provide a custom name for this new subscription.`);
+            logger.error(`Sub with the same URL "${sub.url}" already exists -- please provide a custom name for this new subscription.`);
             result_obj.error = 'Subcription with URL ' + sub.url + ' already exists! Custom name is required.';
             resolve(result_obj);
             return;
