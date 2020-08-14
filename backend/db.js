@@ -16,6 +16,7 @@ function initialize(input_db, input_users_db, input_logger) {
 }
 
 function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
+    let db_path = null;
     const file_id = file_path.substring(0, file_path.length-4);
     const file_object = generateFileObject(file_id, type, multiUserMode && multiUserMode.file_path, sub);
     if (!file_object) {
@@ -34,40 +35,35 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
     if (!sub) {
         if (multiUserMode) {
             const user_uid = multiUserMode.user;
-            users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
-                .remove({
-                    path: file_object['path']
-                }).write();
-
-            users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
-                .push(file_object)
-                .write();
+            db_path = users_db.get('users').find({uid: user_uid}).get(`files.${type}`);
         } else {
-            // remove existing video if overwriting
-            db.get(`files.${type}`)
-                .remove({
-                    path: file_object['path']
-                }).write();
-
-            db.get(`files.${type}`)
-                .push(file_object)
-                .write();
+            db_path = db.get(`files.${type}`)
         }
     } else {
-        sub_db = null;
         if (multiUserMode) {
             const user_uid = multiUserMode.user;
-            sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
+            db_path = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id}).get('videos');
         } else {
-            sub_db = db.get('subscriptions').find({id: sub.id});
+            db_path = db.get('subscriptions').find({id: sub.id}).get('videos');
         }
-        if (sub_db.get('videos').find({id: file_object.id}).value()) {
-            logger.verbose(`Subscription video ${file_object.id} already exists, skipping DB registration.`);
-            return null;
-        }
-        sub_db.get('videos').push(file_object).write();
     }
 
+    const file_uid = registerFileDBManual(db_path, file_object)
+    return file_uid;
+}
+
+function registerFileDBManual(db_path, file_object) {
+    // add additional info
+    file_object['uid'] = uuid();
+    file_object['registered'] = Date.now();
+    path_object = path.parse(file_object['path']);
+    file_object['path'] = path.format(path_object);
+
+    // remove duplicate(s)
+    db_path.remove({path: file_object['path']}).write();
+
+    // add new file to db
+    db_path.push(file_object).write();
     return file_object['uid'];
 }
 
@@ -169,7 +165,6 @@ async function importUnregisteredFiles() {
     // add subscriptions to check list
     for (let i = 0; i < subscriptions_to_check.length; i++) {
         let subscription_to_check = subscriptions_to_check[i];
-        console.log(subscription_to_check);
         dirs_to_check.push({
             basePath: multi_user_mode ? path.join(usersFileFolder, subscription_to_check.user_uid, 'subscriptions', subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name)
                                       : path.join(subscriptions_base_path, subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name),
@@ -188,7 +183,8 @@ async function importUnregisteredFiles() {
             // check if file exists in db, if not add it
             const file_is_registered = !!(dir_to_check.dbPath.find({id: file.id}).value())
             if (!file_is_registered) {
-                dir_to_check.dbPath.push(file).write();
+                // add additional info
+                registerFileDBManual(dir_to_check.dbPath, file);
                 logger.verbose(`Added discovered file to the database: ${file.id}`);
             }
         });
