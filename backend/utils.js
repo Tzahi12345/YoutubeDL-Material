@@ -19,6 +19,36 @@ function getTrueFileName(unfixed_path, type) {
     return fixed_path;
 }
 
+function getDownloadedFilesByType(basePath, type) {
+    let files = [];
+    const ext = type === 'audio' ? 'mp3' : 'mp4';
+    var located_files = recFindByExt(basePath, ext);
+    for (let i = 0; i < located_files.length; i++) {
+        let file = located_files[i];
+        var file_path = path.basename(file);
+
+        var stats = fs.statSync(file);
+
+        var id = file_path.substring(0, file_path.length-4);
+        var jsonobj = getJSONByType(type, id, basePath);
+        if (!jsonobj) continue;
+        var title = jsonobj.title;
+        var url = jsonobj.webpage_url;
+        var uploader = jsonobj.uploader;
+        var upload_date = jsonobj.upload_date;
+        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
+        var thumbnail = jsonobj.thumbnail;
+        var duration = jsonobj.duration;
+
+        var size = stats.size;
+
+        var isaudio = type === 'audio';
+        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+        files.push(file_obj);
+    }
+    return files;
+}
+
 function getJSONMp4(name, customPath, openReadPerms = false) {
     var obj = null; // output
     if (!customPath) customPath = config_api.getConfigItem('ytdl_video_folder_path');
@@ -51,6 +81,10 @@ function getJSONMp3(name, customPath, openReadPerms = false) {
     return obj;
 }
 
+function getJSONByType(type, name, customPath, openReadPerms = false) {
+    return type === 'audio' ? getJSONMp3(name, customPath, openReadPerms) : getJSONMp4(name, customPath, openReadPerms)
+}
+
 function fixVideoMetadataPerms(name, type, customPath = null) {
     if (is_windows) return;
     if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
@@ -73,6 +107,30 @@ function fixVideoMetadataPerms(name, type, customPath = null) {
     }
 }
 
+function recFindByExt(base,ext,files,result)
+{
+    files = files || fs.readdirSync(base)
+    result = result || []
+
+    files.forEach(
+        function (file) {
+            var newbase = path.join(base,file)
+            if ( fs.statSync(newbase).isDirectory() )
+            {
+                result = recFindByExt(newbase,ext,fs.readdirSync(newbase),result)
+            }
+            else
+            {
+                if ( file.substr(-1*(ext.length+1)) == '.' + ext )
+                {
+                    result.push(newbase)
+                }
+            }
+        }
+    )
+    return result
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date) {
@@ -93,5 +151,7 @@ module.exports = {
     getJSONMp4: getJSONMp4,
     getTrueFileName: getTrueFileName,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
+    getDownloadedFilesByType: getDownloadedFilesByType,
+    recFindByExt: recFindByExt,
     File: File
 }
