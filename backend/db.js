@@ -116,8 +116,89 @@ function getAppendedBasePathSub(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
+async function importUnregisteredFiles() {
+    let dirs_to_check = [];
+    let subscriptions_to_check = [];
+    const subscriptions_base_path = config_api.getConfigItem('ytdl_subscriptions_base_path'); // only for single-user mode
+    const multi_user_mode = config_api.getConfigItem('ytdl_multi_user_mode');
+    const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+    const subscriptions_enabled = config_api.getConfigItem('ytdl_allow_subscriptions');
+    if (multi_user_mode) {
+        let users = users_db.get('users').value();
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+
+            if (subscriptions_enabled) subscriptions_to_check = subscriptions_to_check.concat(users[i]['subscriptions']);
+
+            // add user's audio dir to check list
+            dirs_to_check.push({
+                basePath: path.join(usersFileFolder, user.uid, 'audio'),
+                dbPath: users_db.get('users').find({uid: user.uid}).get('files.audio'),
+                type: 'audio'
+            });
+
+            // add user's video dir to check list
+            dirs_to_check.push({
+                basePath: path.join(usersFileFolder, user.uid, 'video'),
+                dbPath: users_db.get('users').find({uid: user.uid}).get('files.video'),
+                type: 'video'
+            });
+        }
+    } else {
+        const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
+        const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+        const subscriptions = db.get('subscriptions').value();
+
+        if (subscriptions_enabled && subscriptions) subscriptions_to_check = subscriptions_to_check.concat(subscriptions);
+
+        // add audio dir to check list
+        dirs_to_check.push({
+            basePath: audioFolderPath,
+            dbPath: db.get('files.audio'),
+            type: 'audio'
+        });
+
+        // add video dir to check list
+        dirs_to_check.push({
+            basePath: videoFolderPath,
+            dbPath: db.get('files.video'),
+            type: 'video'
+        });
+    }
+
+    // add subscriptions to check list
+    for (let i = 0; i < subscriptions_to_check.length; i++) {
+        let subscription_to_check = subscriptions_to_check[i];
+        console.log(subscription_to_check);
+        dirs_to_check.push({
+            basePath: multi_user_mode ? path.join(usersFileFolder, subscription_to_check.user_uid, 'subscriptions', subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name)
+                                      : path.join(subscriptions_base_path, subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name),
+            dbPath: multi_user_mode ? users_db.get('users').find({uid: subscription_to_check.user_uid}).get('subscriptions').find({id: subscription_to_check.id}).get('videos')
+                                    : db.get('subscriptions').find({id: subscription_to_check.id}).get('videos'),
+            type: subscription_to_check.type
+        });
+    }
+
+    // run through check list and check each file to see if it's missing from the db
+    dirs_to_check.forEach(dir_to_check => {
+        // recursively get all files in dir's path
+        const files = utils.getDownloadedFilesByType(dir_to_check.basePath, dir_to_check.type);
+
+        files.forEach(file => {
+            // check if file exists in db, if not add it
+            const file_is_registered = !!(dir_to_check.dbPath.find({id: file.id}).value())
+            if (!file_is_registered) {
+                dir_to_check.dbPath.push(file).write();
+                logger.verbose(`Added discovered file to the database: ${file.id}`);
+            }
+        });
+    });
+
+}
+
 module.exports = {
     initialize: initialize,
     registerFileDB: registerFileDB,
-    updatePlaylist: updatePlaylist
+    updatePlaylist: updatePlaylist,
+    importUnregisteredFiles: importUnregisteredFiles
 }
