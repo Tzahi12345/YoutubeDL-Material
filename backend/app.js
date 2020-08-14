@@ -585,6 +585,8 @@ async function loadConfig() {
             }, subscriptionsCheckInterval * 1000);
         }
 
+        db_api.importUnregisteredFiles();
+
         // check migrations
         await checkMigrations();
 
@@ -730,7 +732,7 @@ function generateEnvVarConfigItem(key) {
 
 function getMp3s() {
     let mp3s = [];
-    var files = recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
+    var files = utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(audioFolderPath.length, file.length);
@@ -759,7 +761,7 @@ function getMp3s() {
 
 function getMp4s(relative_path = true) {
     let mp4s = [];
-    var files = recFindByExt(videoFolderPath, 'mp4');
+    var files = utils.recFindByExt(videoFolderPath, 'mp4');
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(videoFolderPath.length, file.length);
@@ -1078,88 +1080,6 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
     });
 }
 
-function recFindByExt(base,ext,files,result)
-{
-    files = files || fs.readdirSync(base)
-    result = result || []
-
-    files.forEach(
-        function (file) {
-            var newbase = path.join(base,file)
-            if ( fs.statSync(newbase).isDirectory() )
-            {
-                result = recFindByExt(newbase,ext,fs.readdirSync(newbase),result)
-            }
-            else
-            {
-                if ( file.substr(-1*(ext.length+1)) == '.' + ext )
-                {
-                    result.push(newbase)
-                }
-            }
-        }
-    )
-    return result
-}
-/*
-function registerFileDB(file_path, type, multiUserMode = null) {
-    const file_id = file_path.substring(0, file_path.length-4);
-    const file_object = generateFileObject(file_id, type, multiUserMode && multiUserMode.file_path);
-    if (!file_object) {
-        logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
-        return false;
-    }
-
-    // add additional info
-    file_object['uid'] = uuid();
-    file_object['registered'] = Date.now();
-    path_object = path.parse(file_object['path']);
-    file_object['path'] = path.format(path_object);
-
-    if (multiUserMode) {
-        auth_api.registerUserFile(multiUserMode.user, file_object, type);
-    } else if (type === 'audio' || type === 'video') {
-        // remove existing video if overwriting
-        db.get(`files.${type}`)
-        .remove({
-            path: file_object['path']
-        }).write();
-
-        db.get(`files.${type}`)
-            .push(file_object)
-            .write();
-    } else if (type == 'subscription') {
-
-    }
-
-    return file_object['uid'];
-}
-
-function generateFileObject(id, type, customPath = null) {
-    var jsonobj = (type === 'audio') ? utils.getJSONMp3(id, customPath, true) : utils.getJSONMp4(id, customPath, true);
-    if (!jsonobj) {
-        return null;
-    }
-    const ext = (type === 'audio') ? '.mp3' : '.mp4'
-    const file_path = getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
-    // console.
-    var stats = fs.statSync(path.join(__dirname, file_path));
-
-    var title = jsonobj.title;
-    var url = jsonobj.webpage_url;
-    var uploader = jsonobj.uploader;
-    var upload_date = jsonobj.upload_date;
-    upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : 'N/A';
-
-    var size = stats.size;
-
-    var thumbnail = jsonobj.thumbnail;
-    var duration = jsonobj.duration;
-    var isaudio = type === 'audio';
-    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
-    return file_obj;
-}
-*/
 // replaces .webm with appropriate extension
 function getTrueFileName(unfixed_path, type) {
     let fixed_path = unfixed_path;
@@ -2292,7 +2212,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
             let appended_base_path = path.join(base_path, (subscription.isPlaylist ? 'playlists' : 'channels'), subscription.name, '/');
             let files;
             try {
-                files = recFindByExt(appended_base_path, 'mp4');
+                files = utils.recFindByExt(appended_base_path, 'mp4');
             } catch(e) {
                 files = null;
                 logger.info('Failed to get folder for subscription: ' + subscription.name + ' at path ' + appended_base_path);
