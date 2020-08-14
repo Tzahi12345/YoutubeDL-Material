@@ -181,11 +181,6 @@ DEFAULT_CONFIG = {
         "url": "http://example.com",
         "port": "17442"
       },
-      "Encryption": {
-        "use-encryption": false,
-        "cert-file-path": "/etc/letsencrypt/live/example.com/fullchain.pem",
-        "key-file-path": "/etc/letsencrypt/live/example.com/privkey.pem"
-      },
       "Downloader": {
         "path-audio": "audio/",
         "path-video": "video/",

@@ -45,26 +45,6 @@
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
                     <div class="col-12 mt-3">
-                        <mat-checkbox color="accent" [(ngModel)]="new_config['Encryption']['use-encryption']"><ng-container i18n="Use encryption setting">Use encryption</ng-container></mat-checkbox>
-                    </div>
-
-                    <div class="col-12">
-                        <mat-form-field class="text-field" color="accent">
-                            <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['cert-file-path']" matInput placeholder="Cert file path" i18n-placeholder="Cert file path input placeholder">
-                        </mat-form-field>
-                    </div>
-
-                    <div class="col-12">
-                        <mat-form-field class="text-field" color="accent">
-                            <input [disabled]="!new_config['Encryption']['use-encryption']" [(ngModel)]="new_config['Encryption']['key-file-path']" matInput placeholder="Key file path" i18n-placeholder="Key file path input placeholder">
-                        </mat-form-field>
-                    </div>
-                </div>
-            </div>
-            <mat-divider></mat-divider>
-            <div *ngIf="new_config" class="container-fluid">
-                <div class="row">
-                    <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['allow_subscriptions']"><ng-container i18n="Allow subscriptions setting">Allow subscriptions</ng-container></mat-checkbox>
                     </div>
                     <div class="col-12">
@@ -73,7 +53,7 @@
                             <mat-hint><ng-container i18n="Subscriptions base path setting input hint">Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-5">
+                    <div class="col-12 mt-5 mb-3">
                         <mat-form-field class="text-field" color="accent">
                             <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_check_interval']" matInput placeholder="Check interval" i18n-placeholder="Check interval input setting placeholder">
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
