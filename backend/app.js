@@ -128,7 +128,6 @@ users_db.defaults(
 var frontendUrl = null;
 var backendUrl = null;
 var backendPort = null;
-var usingEncryption = null;
 var basePath = null;
 var audioFolderPath = null;
 var videoFolderPath = null;
@@ -140,7 +139,6 @@ var subscriptionsCheckInterval = null;
 var archivePath = path.join(__dirname, 'appdata', 'archives');
 
 // other needed values
-var options = null; // encryption options
 var url_domain = null;
 var updaterStatus = null;
 
@@ -256,18 +254,10 @@ async function startServer() {
         // set config to port
         await setPortItemFromENV();
     }
-    if (usingEncryption)
-    {
-        https.createServer(options, app).listen(backendPort, function() {
-            logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on port ${backendPort} - using SSL`);
-        });
-    }
-    else
-    {
-        app.listen(backendPort,function(){
-            logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
-        });
-    }
+
+    app.listen(backendPort,function(){
+        logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
+    });
 }
 
 async function restartServer() {
@@ -604,7 +594,6 @@ async function loadConfig() {
 function loadConfigValues() {
     url = !debugMode ? config_api.getConfigItem('ytdl_url') : 'http://localhost:4200';
     backendPort = config_api.getConfigItem('ytdl_port');
-    usingEncryption = config_api.getConfigItem('ytdl_use_encryption');
     audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
     downloadOnlyMode = config_api.getConfigItem('ytdl_download_only_mode');
@@ -617,20 +606,6 @@ function loadConfigValues() {
         logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
     } else {
         customDownloadingAgent = null;
-    }
-
-    if (usingEncryption)
-    {
-        var certFilePath = path.resolve(config_api.getConfigItem('ytdl_cert_file_path'));
-        var keyFilePath = path.resolve(config_api.getConfigItem('ytdl_key_file_path'));
-
-        var certKeyFile = fs.readFileSync(keyFilePath);
-        var certFile = fs.readFileSync(certFilePath);
-
-        options = {
-            key: certKeyFile,
-            cert: certFile
-        };
     }
 
     // empty url defaults to default URL
@@ -1826,10 +1801,6 @@ app.post('/api/setConfig', optionalJwt, function(req, res) {
         res.sendStatus(400);
     }
 
-});
-
-app.get('/api/using-encryption', function(req, res) {
-    res.send(usingEncryption);
 });
 
 app.post('/api/tomp3', optionalJwt, async function(req, res) {

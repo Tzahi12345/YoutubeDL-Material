@@ -9,20 +9,6 @@ let CONFIG_ITEMS = {
         'path': 'YoutubeDLMaterial.Host.port'
     },
 
-    // Encryption
-    'ytdl_use_encryption': {
-        'key': 'ytdl_use_encryption',
-        'path': 'YoutubeDLMaterial.Encryption.use-encryption'
-    },
-    'ytdl_cert_file_path': {
-        'key': 'ytdl_cert_file_path',
-        'path': 'YoutubeDLMaterial.Encryption.cert-file-path'
-    },
-    'ytdl_key_file_path': {
-        'key': 'ytdl_key_file_path',
-        'path': 'YoutubeDLMaterial.Encryption.key-file-path'
-    },
-
     // Downloader
     'ytdl_audio_folder_path': {
         'key': 'ytdl_audio_folder_path',
