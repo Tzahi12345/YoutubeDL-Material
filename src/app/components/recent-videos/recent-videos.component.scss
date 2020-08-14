@@ -9,7 +9,7 @@
 }
  
 .search-bar-unfocused {
-    width: 100px;
+    width: 132px;
 }
 
 .search-input {
@@ -28,7 +28,13 @@
     padding-right: 12px;
 }
 
-.col {
+.column {
     width: 33%;
     display: inline-block;
+}
+
+.sort-dir-div {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
 }
