@@ -3,13 +3,15 @@ FROM alpine:3.12 as frontend
 RUN apk add --no-cache \
   npm
 
+RUN npm install -g @angular/cli
+
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
 RUN npm install
 
 COPY [ "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
-RUN npm run ng build --prod
+RUN ng build --prod
 
 #--------------#
 
