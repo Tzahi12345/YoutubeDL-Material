@@ -1,9 +1,12 @@
-FROM alpine:3.12 as frontend
+FROM arm32v7/alpine:3.12 as frontend
 
 RUN apk add --no-cache \
-  npm
+  npm \
+  curl
 
 RUN npm install -g @angular/cli
+
+RUN curl -L https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/qemu-3.0.0+resin-arm.tar.gz | tar zxvf - -C . && mv qemu-3.0.0+resin-arm/qemu-arm-static .
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
@@ -17,7 +20,7 @@ RUN ng build --prod
 
 FROM arm32v7/alpine:3.12
 
-COPY qemu-arm-static /usr/bin
+COPY --from=frontend /qemu-arm-static /usr/bin
 
 ENV UID=1000 \
   GID=1000 \
