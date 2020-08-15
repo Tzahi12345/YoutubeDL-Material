@@ -20,6 +20,9 @@ function getTrueFileName(unfixed_path, type) {
 }
 
 function getDownloadedFilesByType(basePath, type) {
+    // return empty array if the path doesn't exist
+    if (!fs.existsSync(basePath)) return [];
+
     let files = [];
     const ext = type === 'audio' ? 'mp3' : 'mp4';
     var located_files = recFindByExt(basePath, ext);
