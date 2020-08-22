@@ -21,11 +21,11 @@
             <button (click)="emitDeleteFile()" mat-menu-item><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete playlist">Delete</ng-container></button>
         </ng-container>
     </mat-menu>
-    <mat-card [matTooltip]="null" (click)="navigateToFile()" matRipple class="file-mat-card" [ngClass]="{'small-mat-card': card_size === 'small', 'file-mat-card': card_size === 'medium', 'mat-elevation-z4': !elevated, 'mat-elevation-z8': elevated}">
+    <mat-card [matTooltip]="null" (click)="navigateToFile()" matRipple class="file-mat-card" [ngClass]="{'small-mat-card': card_size === 'small', 'file-mat-card': card_size === 'medium', 'large-mat-card': card_size === 'large', 'mat-elevation-z4': !elevated, 'mat-elevation-z8': elevated}">
         <div style="padding:5px">
             <div *ngIf="file_obj.thumbnailURL" class="img-div">
                 <div style="position: relative">
-                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium'}" [src]="file_obj.thumbnailURL" alt="Thumbnail">
+                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailURL" alt="Thumbnail">
                     <div class="duration-time">
                         {{file_length}}
                     </div>
@@ -33,7 +33,7 @@
                 
             </div>
 
-            <span [ngClass]="{'max-two-lines': card_size !== 'small', 'max-one-line': card_size === 'small' }"><strong>{{!is_playlist ? file_obj.title : file_obj.name}}</strong></span>      
+            <span [ngClass]="{'max-two-lines': card_size !== 'small', 'max-one-line': card_size === 'small' }">{{card_size === 'large' && file_obj.uploader ? file_obj.uploader + ' - ' : ''}}<strong>{{!is_playlist ? file_obj.title : file_obj.name}}</strong></span>      
         </div>
     </mat-card>
 </div>

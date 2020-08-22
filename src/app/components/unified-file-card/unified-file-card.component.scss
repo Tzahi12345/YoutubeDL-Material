@@ -1,3 +1,10 @@
+.large-mat-card {
+  width: 300px;
+  height: 250px;
+  padding: 0px;
+  cursor: pointer;
+}
+
 .file-mat-card {
     width: 200px;
     height: 200px;
@@ -24,6 +31,12 @@
 .mat-icon-button .mat-button-wrapper {
   display: flex;
   justify-content: center;
+}
+
+.image-large {
+  width: 300px;
+  height: 167.5px;
+  object-fit: cover;
 }
 
 .image {
