@@ -54,6 +54,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { AvatarModule } from 'ngx-avatar';
+import { ContentLoaderModule } from '@ngneat/content-loader';
 
 import es from '@angular/common/locales/es';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
@@ -152,7 +153,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatMenuModule,
     MatDialogModule,
     MatSlideToggleModule,
-    MatMenuModule,
     MatAutocompleteModule,
     MatTabsModule,
     MatTooltipModule,
@@ -164,6 +164,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     ClipboardModule,
     NgxFileDropModule,
     AvatarModule,
+    ContentLoaderModule,
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,

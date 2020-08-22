@@ -9,6 +9,9 @@ import { Router } from '@angular/router';
 })
 export class RecentVideosComponent implements OnInit {
 
+  cached_file_count = 0;
+  loading_files = null;
+
   normal_files_received = false;
   subscription_files_received = false;
   files: any[] = null;
@@ -47,7 +50,14 @@ export class RecentVideosComponent implements OnInit {
   };
   filterProperty = this.filterProperties['upload_date'];
 
-  constructor(public postsService: PostsService, private router: Router) { }
+  constructor(public postsService: PostsService, private router: Router) {
+    // get cached file count
+    if (localStorage.getItem('cached_file_count')) {
+      this.cached_file_count = +localStorage.getItem('cached_file_count');
+      this.loading_files = Array(this.cached_file_count).fill(0);
+      console.log(this.loading_files);
+    }
+  }
 
   ngOnInit(): void {
     this.postsService.service_initialized.subscribe(init => {
@@ -114,6 +124,11 @@ export class RecentVideosComponent implements OnInit {
         this.filtered_files = this.files;
       }
       this.filterByProperty(this.filterProperty['property']);
+
+      // set cached file count for future use, note that we convert the amount of files to a string
+      localStorage.setItem('cached_file_count', '' + this.files.length);
+
+      this.normal_files_received = true;
     });
   }
 

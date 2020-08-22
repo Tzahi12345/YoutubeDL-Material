@@ -30,6 +30,7 @@
     "@angular/platform-browser": "^9.1.0",
     "@angular/platform-browser-dynamic": "^9.1.0",
     "@angular/router": "^9.1.0",
+    "@ngneat/content-loader": "^5.0.0",
     "core-js": "^2.4.1",
     "file-saver": "^2.0.2",
     "filesize": "^6.1.0",

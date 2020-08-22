@@ -46,3 +46,15 @@
     position: absolute;
     top: 10px;
 }
+
+.my-videos-title {
+    text-align: center;
+    position: relative;
+    top: 12px;
+}
+
+@media (max-width: 576px) {
+    .my-videos-title {
+        top: 0px;
+    }
+}

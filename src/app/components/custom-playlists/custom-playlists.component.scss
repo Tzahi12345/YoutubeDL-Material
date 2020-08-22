@@ -5,6 +5,14 @@
     right: 15px;
 }
 
-.file-col {
+.large-col {
+    max-width: 320px;
+}
+
+.medium-col {
+    max-width: 240px;
+}
+
+.small-col {
     max-width: 240px;
 }

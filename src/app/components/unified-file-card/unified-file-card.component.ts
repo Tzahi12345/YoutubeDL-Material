@@ -16,6 +16,7 @@ export class UnifiedFileCardComponent implements OnInit {
   type = null;
   elevated = false;
 
+  @Input() loading = true;
   @Input() file_obj = null;
   @Input() card_size = 'medium';
   @Input() use_youtubedl_archive = false;
@@ -36,7 +37,9 @@ export class UnifiedFileCardComponent implements OnInit {
   constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.file_length = fancyTimeFormat(this.file_obj.duration);
+    if (!this.loading) {
+      this.file_length = fancyTimeFormat(this.file_obj.duration);
+    }
   }
 
   emitDeleteFile(blacklistMode = false) {
