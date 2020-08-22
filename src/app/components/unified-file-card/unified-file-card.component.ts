@@ -17,6 +17,7 @@ export class UnifiedFileCardComponent implements OnInit {
   elevated = false;
 
   @Input() loading = true;
+  @Input() theme = null;
   @Input() file_obj = null;
   @Input() card_size = 'medium';
   @Input() use_youtubedl_archive = false;
