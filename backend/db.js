@@ -165,6 +165,10 @@ async function importUnregisteredFiles() {
     // add subscriptions to check list
     for (let i = 0; i < subscriptions_to_check.length; i++) {
         let subscription_to_check = subscriptions_to_check[i];
+        if (!subscription_to_check.name) {
+            // TODO: Remove subscription as it'll never complete
+            continue;
+        }
         dirs_to_check.push({
             basePath: multi_user_mode ? path.join(usersFileFolder, subscription_to_check.user_uid, 'subscriptions', subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name)
                                       : path.join(subscriptions_base_path, subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name),
