@@ -55,16 +55,20 @@ export class RecentVideosComponent implements OnInit {
     if (localStorage.getItem('cached_file_count')) {
       this.cached_file_count = +localStorage.getItem('cached_file_count');
       this.loading_files = Array(this.cached_file_count).fill(0);
-      console.log(this.loading_files);
     }
   }
 
   ngOnInit(): void {
+    if (this.postsService.initialized) {
+      this.getAllFiles();
+    }
+
     this.postsService.service_initialized.subscribe(init => {
       if (init) {
         this.getAllFiles();
       }
     });
+
 
     // set filter property to cached
     const cached_filter_property = localStorage.getItem('filter_property');
@@ -145,7 +149,7 @@ export class RecentVideosComponent implements OnInit {
   navigateToFile(file) {
     localStorage.setItem('player_navigator', this.router.url);
     if (file.sub_id) {
-      const sub = this.postsService.getSubscriptionByID(file.sub_id)
+      const sub = this.postsService.getSubscriptionByID(file.sub_id);
       if (sub.streamingOnly) {
         this.router.navigate(['/player', {name: file.id,
                                           url: file.requested_formats ? file.requested_formats[0].url : file.url}]);
@@ -177,7 +181,6 @@ export class RecentVideosComponent implements OnInit {
     const type = file.isAudio ? 'audio' : 'video';
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    console.log(sub.isPlaylist)
     this.postsService.downloadFileFromServer(file.id, type, null, null, sub.name, sub.isPlaylist,
       this.postsService.user ? this.postsService.user.uid : null, null).subscribe(res => {
           const blob: Blob = res;
