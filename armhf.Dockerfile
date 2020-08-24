@@ -1,4 +1,4 @@
-FROM arm32v7/alpine:3.12 as frontend
+FROM alpine:3.12 as frontend
 
 RUN apk add --no-cache \
   npm \
