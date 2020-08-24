@@ -398,6 +398,8 @@ export class PostsService implements CanActivate {
         }, err => {
             if (err.status === 401) {
                 this.sendToLogin();
+                this.token = null;
+                this.resetHttpParams();
             }
             console.log(err);
         });
@@ -414,14 +416,7 @@ export class PostsService implements CanActivate {
             this.router.navigate(['/login']);
         }
 
-        // resets http params
-        this.http_params = `apiKey=${this.auth_token}&sessionID=${this.session_id}`
-
-        this.httpOptions = {
-            params: new HttpParams({
-              fromString: this.http_params
-            }),
-        };
+        this.resetHttpParams();
     }
 
     // user methods
@@ -444,6 +439,17 @@ export class PostsService implements CanActivate {
 
         // send login notification
         this.openSnackBar('You must log in to access this page!');
+    }
+
+    resetHttpParams() {
+        // resets http params
+        this.http_params = `apiKey=${this.auth_token}&sessionID=${this.session_id}`
+
+        this.httpOptions = {
+            params: new HttpParams({
+              fromString: this.http_params
+            }),
+        };
     }
 
     setInitialized() {
