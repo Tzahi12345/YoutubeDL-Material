@@ -458,6 +458,12 @@ export class PostsService implements CanActivate {
         this.config_reloaded.next(true);
     }
 
+    reloadSubscriptions() {
+        this.getAllSubscriptions().subscribe(res => {
+            this.subscriptions = res['subscriptions'];
+        });
+    }
+
     adminExists() {
         return this.http.post(this.path + 'auth/adminExists', {}, this.httpOptions);
     }

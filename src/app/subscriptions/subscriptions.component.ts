@@ -80,6 +80,7 @@ export class SubscriptionsComponent implements OnInit {
         } else {
           this.channel_subscriptions.push(result);
         }
+        this.postsService.reloadSubscriptions();
       }
     });
   }
@@ -96,6 +97,7 @@ export class SubscriptionsComponent implements OnInit {
       if (success) {
         this.openSnackBar(`${sub.name} successfully deleted!`)
         this.getSubscriptions();
+        this.postsService.reloadSubscriptions();
       }
     })
   }

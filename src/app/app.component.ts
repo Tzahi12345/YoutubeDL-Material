@@ -89,9 +89,7 @@ export class AppComponent implements OnInit {
 
     // gets the subscriptions
     if (this.allowSubscriptions) {
-      this.postsService.getAllSubscriptions().subscribe(res => {
-        this.postsService.subscriptions = res['subscriptions'];
-      })
+      this.postsService.reloadSubscriptions();
     }
   }
 
