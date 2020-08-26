@@ -292,8 +292,50 @@
         </ng-template>
     </mat-tab>
     <mat-tab *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode" label="Users" i18n-label="Users settings label">
-        <div style="margin-left: 48px; margin-top: 24px;">
-            <mat-checkbox color="accent" [(ngModel)]="new_config['Users']['allow_registration']"><ng-container i18n="Allow registration setting">Allow user registration</ng-container></mat-checkbox>
+        
+        <div style="margin-left: 48px; margin-top: 24px; margin-bottom: -25px;">
+            <div>
+                <mat-checkbox color="accent" [(ngModel)]="new_config['Users']['allow_registration']"><ng-container i18n="Allow registration setting">Allow user registration</ng-container></mat-checkbox>
+            </div>
+            <mat-divider></mat-divider>
+            <mat-form-field style="margin-top: 15px;">
+                <mat-select [(ngModel)]="new_config['Users']['auth_method']" placeholder="Auth method" i18n-placeholder="Auth method select">
+                    <mat-option value="internal">
+                        <ng-container i18n="Internal auth method">Internal</ng-container>
+                    </mat-option>
+                    <mat-option value="ldap">
+                        <ng-container i18n="LDAP auth method">LDAP</ng-container>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div *ngIf="new_config['Users']['auth_method'] === 'ldap'">
+                <div>
+                    <mat-form-field>
+                        <input matInput i18n-placeholder="LDAP URL" placeholder="LDAP URL" [(ngModel)]="new_config['Users']['ldap_config']['url']">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field>
+                        <input matInput i18n-placeholder="Bind DN" placeholder="Bind DN" [(ngModel)]="new_config['Users']['ldap_config']['bindDN']">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field>
+                        <input matInput i18n-placeholder="Bind Credentials" placeholder="Bind Credentials" [(ngModel)]="new_config['Users']['ldap_config']['bindCredentials']">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field>
+                        <input matInput i18n-placeholder="Search Base" placeholder="Search Base" [(ngModel)]="new_config['Users']['ldap_config']['searchBase']">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field>
+                        <input matInput i18n-placeholder="Search Filter" placeholder="Search Filter" [(ngModel)]="new_config['Users']['ldap_config']['searchFilter']">
+                    </mat-form-field>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
         </div>
         <app-modify-users></app-modify-users>
     </mat-tab>

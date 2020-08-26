@@ -384,7 +384,7 @@ export class PostsService implements CanActivate {
 
     // user methods
     login(username, password) {
-        const call = this.http.post(this.path + 'auth/login', {userid: username, password: password}, this.httpOptions);
+        const call = this.http.post(this.path + 'auth/login', {username: username, password: password}, this.httpOptions);
         return call;
     }
 

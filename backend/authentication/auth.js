@@ -9,6 +9,7 @@ var bcrypt = require('bcryptjs');
 
 
 var LocalStrategy = require('passport-local').Strategy;
+var LdapStrategy = require('passport-ldapauth');
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
@@ -90,24 +91,7 @@ exports.registerUser = function(req, res) {
 
   bcrypt.hash(plaintextPassword, saltRounds)
     .then(function(hash) {
-      let new_user = {
-        name: username,
-        uid: userid,
-        passhash: hash,
-        files: {
-          audio: [],
-          video: []
-        },
-        playlists: {
-          audio: [],
-          video: []
-        },
-        subscriptions: [],
-        created: Date.now(),
-        role: userid === 'admin' ? 'admin' : 'user',
-        permissions: [],
-        permission_overrides: []
-      };
+      let new_user = generateUserObject(userid, username, hash);
       // check if user exists
       if (users_db.get('users').find({uid: userid}).value()) {
         // user id is taken!
@@ -153,52 +137,43 @@ exports.registerUser = function(req, res) {
 
 
 exports.passport.use(new LocalStrategy({
-    usernameField: 'userid',
+    usernameField: 'username',
     passwordField: 'password'},
     function(username, password, done) {
         const user = users_db.get('users').find({name: username}).value();
         if (!user) { logger.error(`User ${username} not found`); return done(null, false); }
+        if (user.auth_method && user.auth_method !== 'internal') { return done(null, false); }
         if (user) {
             return done(null, bcrypt.compareSync(password, user.passhash) ? user : false);
         }
     }
 ));
 
-/*passport.use(new BasicStrategy(
-  function(userid, plainTextPassword, done) {
-    const user = users_db.get('users').find({name: userid}).value();
-    if (user) {
-          var hashedPwd = user.passhash;
-          return bcrypt.compare(plainTextPassword, hashedPwd);
-    } else {
-          return false;
+var getLDAPConfiguration = function(req, callback) {
+  const ldap_config = config_api.getConfigItem('ytdl_ldap_config');
+  const opts = {server: ldap_config};
+  callback(null, opts);
+};
+
+exports.passport.use(new LdapStrategy(getLDAPConfiguration,
+  function(user, done) {
+    // check if ldap auth is enabled
+    const ldap_enabled = config_api.getConfigItem('ytdl_auth_method') === 'ldap';
+    if (!ldap_enabled) return done(null, false);
+    
+    const user_uid = user.uid;
+    let db_user = users_db.get('users').find({uid: user_uid}).value();
+    if (!db_user) {
+      // generate DB user
+      let new_user = generateUserObject(user_uid, user_uid, null, 'ldap');
+      users_db.get('users').push(new_user).write();
+      db_user = new_user;
+      logger.verbose(`Generated new user ${user_uid} using LDAP`);
     }
+    return done(null, db_user);
   }
 ));
-*/
 
-/*************************************************************
- * This is a wrapper for auth.passport.authenticate().
- * We use this to change WWW-Authenticate header so
- * the browser doesn't pop-up challenge dialog box by default.
- * Browser's will pop-up up dialog when status is 401 and
- * "WWW-Authenticate:Basic..."
- *************************************************************/
-/*
-exports.authenticateViaPassport = function(req, res, next) {
-  exports.passport.authenticate('basic',{session:false},
-    function(err, user, info) {
-      if(!user){
-        res.set('WWW-Authenticate', 'x'+info); // change to xBasic
-        res.status(401).send('Invalid Authentication');
-      } else {
-        req.user = user;
-        next();
-      }
-    }
-  )(req, res, next);
-};
-*/
 
 /**********************************
  * Generating/Signing a JWT token
@@ -538,3 +513,26 @@ function getToken(queryParams) {
     return null;
   }
 };
+
+function generateUserObject(userid, username, hash, auth_method = 'internal') {
+  let new_user = {
+    name: username,
+    uid: userid,
+    passhash: auth_method === 'internal' ? hash : null,
+    files: {
+      audio: [],
+      video: []
+    },
+    playlists: {
+      audio: [],
+      video: []
+    },
+    subscriptions: [],
+    created: Date.now(),
+    role: userid === 'admin' && auth_method === 'internal' ? 'admin' : 'user',
+    permissions: [],
+    permission_overrides: [],
+    auth_method: auth_method 
+  };
+  return new_user;
+}
