@@ -112,6 +112,14 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_allow_registration',
         'path': 'YoutubeDLMaterial.Users.allow_registration'
     },
+    'ytdl_auth_method': {
+        'key': 'ytdl_auth_method',
+        'path': 'YoutubeDLMaterial.Users.auth_method'
+    },
+    'ytdl_ldap_config': {
+        'key': 'ytdl_ldap_config',
+        'path': 'YoutubeDLMaterial.Users.ldap_config'
+    },
 
     // Advanced
     'ytdl_use_default_downloading_agent': {

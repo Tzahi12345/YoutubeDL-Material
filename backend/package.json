@@ -48,6 +48,7 @@
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
+    "passport-ldapauth": "^2.1.4",
     "passport-local": "^1.0.0",
     "progress": "^2.0.3",
     "ps-node": "^0.1.6",

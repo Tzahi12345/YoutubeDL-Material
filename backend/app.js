@@ -2821,8 +2821,7 @@ app.post('/api/auth/register'
         , optionalJwt
         , auth_api.registerUser);
 app.post('/api/auth/login'
-        , auth_api.passport.authenticate('local', {})
-        , auth_api.passport.authorize('local')
+        , auth_api.passport.authenticate(['local', 'ldapauth'], {})
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
 );

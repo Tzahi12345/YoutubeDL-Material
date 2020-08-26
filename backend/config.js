@@ -213,7 +213,15 @@ DEFAULT_CONFIG = {
       },
       "Users": {
         "base_path": "users/",
-        "allow_registration": true
+        "allow_registration": true,
+        "auth_method": "internal",
+        "ldap_config": {
+            "url": "ldap://localhost:389",
+            "bindDN": "cn=root",
+            "bindCredentials": "secret",
+            "searchBase": "ou=passport-ldapauth",
+            "searchFilter": "(uid={{username}})"
+        }
       },
       "Advanced": {
         "use_default_downloading_agent": true,
