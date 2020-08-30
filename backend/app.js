@@ -1904,6 +1904,8 @@ app.get('/api/getMp3s', optionalJwt, function(req, res) {
         playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
     }
 
+    mp3s = JSON.parse(JSON.stringify(mp3s));
+
     // add thumbnails if present
     mp3s.forEach(mp3 => {
         if (mp3['thumbnailPath'] && fs.existsSync(mp3['thumbnailPath']))
@@ -1928,6 +1930,8 @@ app.get('/api/getMp4s', optionalJwt, function(req, res) {
         mp4s = auth_api.getUserVideos(req.user.uid, 'video');
         playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
     }
+
+    mp4s = JSON.parse(JSON.stringify(mp4s));
 
     // add thumbnails if present
     mp4s.forEach(mp4 => {
@@ -2018,6 +2022,8 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
 
         files = files.concat(sub.videos);
     }
+
+    files = JSON.parse(JSON.stringify(files));
 
     // add thumbnails if present
     files.forEach(file => {
