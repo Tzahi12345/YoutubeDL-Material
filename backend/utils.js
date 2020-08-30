@@ -119,7 +119,7 @@ function getExpectedFileSize(info_json) {
             }
         });
     });
-    
+
     return expected_filesize;
 }
 
@@ -144,6 +144,19 @@ function fixVideoMetadataPerms(name, type, customPath = null) {
         fs.chmodSync(file, 0o644);
     }
 }
+
+function deleteJSONFile(name, type, customPath = null) {
+    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
+                                                   : config_api.getConfigItem('ytdl_video_folder_path');
+
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+    let json_path = path.join(customPath, name + '.info.json');
+    let alternate_json_path = path.join(customPath, name + ext + '.info.json');
+
+    if (fs.existsSync(json_path)) fs.unlinkSync(json_path);
+    if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
+}
+
 
 function recFindByExt(base,ext,files,result)
 {
@@ -191,6 +204,7 @@ module.exports = {
     getDownloadedThumbnail: getDownloadedThumbnail,
     getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
+    deleteJSONFile: deleteJSONFile,
     getDownloadedFilesByType: getDownloadedFilesByType,
     recFindByExt: recFindByExt,
     File: File
