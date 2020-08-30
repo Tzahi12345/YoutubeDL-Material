@@ -7,7 +7,7 @@ var path = require('path');
 var youtubedl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var compression = require('compression');
-var https = require('https');
+var glob = require("glob")
 var multer  = require('multer');
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -1146,12 +1146,29 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             type: type,
             percent_complete: 0,
             is_playlist: url.includes('playlist'),
-            timestamp_start: Date.now()
+            timestamp_start: Date.now(),
+            filesize: null
         };
         const download = downloads[session][download_uid];
         updateDownloads();
 
+        // get video info prior to download
+        const info = await getVideoInfoByURL(url, downloadConfig, download);
+        if (!info) {
+            resolve(false);
+            return;
+        } else {
+            // store info in download for future use
+            download['_filename'] = info['_filename']; // .substring(fileFolderPath.length, info['_filename'].length-4);
+            download['filesize'] = utils.getExpectedFileSize(info);
+        }
+
+        const download_checker = setInterval(() => checkDownloadPercent(download), 1000);
+
+        // download file
         youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+            clearInterval(download_checker); // stops the download checker from running as the download finished (or errored)
+
             download['downloading'] = false;
             download['timestamp_end'] = Date.now();
             var file_uid = null;
@@ -1164,7 +1181,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                 download['error'] = err.stderr;
                 updateDownloads();
                 resolve(false);
-                throw err;
+                return;
             } else if (output) {
                 if (output.length === 0 || output[0].length === 0) {
                     download['error'] = 'No output. Check if video already exists in your archive.';
@@ -1407,7 +1424,7 @@ async function generateArgs(url, type, options) {
         var youtubePassword = options.youtubePassword;
 
         let downloadConfig = null;
-        let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'best[ext=mp4]'];
+        let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'bestvideo+bestaudio', '--merge-output-format', 'mp4'];
         const is_youtube = url.includes('youtu');
         if (!is_audio && !is_youtube) {
             // tiktok videos fail when using the default format
@@ -1485,6 +1502,10 @@ async function generateArgs(url, type, options) {
                 downloadConfig.push('--download-archive', merged_path);
             }
 
+            if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+                downloadConfig.push('--write-thumbnail');
+            }
+
             if (globalArgs && globalArgs !== '') {
                 // adds global args
                 if (downloadConfig.indexOf('-o') !== -1 && globalArgs.split(',,').indexOf('-o') !== -1) {
@@ -1497,8 +1518,33 @@ async function generateArgs(url, type, options) {
 
         }
         logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
-        // downloadConfig.map((arg) => `"${arg}"`);
         resolve(downloadConfig);
+    });
+}
+
+async function getVideoInfoByURL(url, args = [], download = null) {
+    return new Promise(resolve => {
+        // remove bad args
+        const new_args = [...args];
+        
+        const archiveArgIndex = new_args.indexOf('--download-archive');
+        if (archiveArgIndex !== -1) {
+            new_args.splice(archiveArgIndex, 2);
+        }
+
+        // actually get info
+        youtubedl.getInfo(url, new_args, (err, output) => {
+            if (output) {
+                resolve(output);
+            } else {
+                logger.error(`Error while retrieving info on video with URL ${url} with the following message: ${err}`);
+                if (download) {
+                    download['error'] = `Failed pre-check for video info: ${err}`;
+                    updateDownloads();
+                }
+                resolve(null);
+            }
+        });
     });
 }
 
@@ -1559,47 +1605,26 @@ function updateDownloads() {
     db.assign({downloads: downloads}).write();
 }
 
-/*
-function checkDownloads() {
-    for (let [session_id, session_downloads] of Object.entries(downloads)) {
-        for (let [download_uid, download_obj] of Object.entries(session_downloads)) {
-            if (download_obj && !download_obj['complete'] && !download_obj['error']
-                             && download_obj.timestamp_start > timestamp_server_start) {
-                // download is still running (presumably)
-                download_obj.percent_complete = getDownloadPercent(download_obj);
-            }
-        }
-    }
-}
-*/
+function checkDownloadPercent(download) {
+    const file_id = download['file_id'];
+    const filename = path.format(path.parse(download['_filename'].substring(0, download['_filename'].length-4)));
+    const resulting_file_size = download['filesize'];
 
-function getDownloadPercent(download_obj) {
-    if (!download_obj.final_size) {
-        if (fs.existsSync(download_obj.expected_json_path)) {
-            const file_json = JSON.parse(fs.readFileSync(download_obj.expected_json_path, 'utf8'));
-            let calculated_filesize = null;
-            if (file_json['format_id']) {
-                calculated_filesize = 0;
-                const formats_used = file_json['format_id'].split('+');
-                for (let i = 0; i < file_json['formats'].length; i++) {
-                    if (formats_used.includes(file_json['formats'][i]['format_id'])) {
-                        calculated_filesize += file_json['formats'][i]['filesize'];
-                    }
+    glob(`${filename}*`, (err, files) => {
+        let sum_size = 0;
+        files.forEach(file => {
+            try {
+                const file_stats = fs.statSync(file);
+                if (file_stats && file_stats.size) {
+                    sum_size += file_stats.size;
                 }
+            } catch (e) {
+
             }
-            download_obj.final_size = calculated_filesize;
-        } else {
-            console.log('could not find json file');
-        }
-    }
-    if (fs.existsSync(download_obj.expected_path)) {
-        const stats = fs.statSync(download_obj.expected_path);
-        const size = stats.size;
-        return (size / download_obj.final_size)*100;
-    } else {
-        console.log('could not find file');
-        return 0;
-    }
+        });
+        download['percent_complete'] = (sum_size/resulting_file_size * 100).toFixed(2);
+        updateDownloads();
+    });
 }
 
 // youtube-dl functions
@@ -1821,7 +1846,7 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
     const is_playlist = url.includes('playlist');
 
     let result_obj = null;
-    if (safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
+    if (true || safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.maxBitrate)
         result_obj = await downloadFileByURL_exec(url, 'audio', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'audio', options, req.query.sessionID);
@@ -1833,6 +1858,7 @@ app.post('/api/tomp3', optionalJwt, async function(req, res) {
 });
 
 app.post('/api/tomp4', optionalJwt, async function(req, res) {
+    req.setTimeout(0); // remove timeout in case of long videos
     var url = req.body.url;
     var options = {
         customArgs: req.body.customArgs,
@@ -1850,7 +1876,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
     const is_playlist = url.includes('playlist');
 
     let result_obj = null;
-    if (safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || !url.includes('youtu'))
+    if (true || safeDownloadOverride || is_playlist || options.customQualityConfiguration || options.customArgs || options.selectedHeight || !url.includes('youtu'))
         result_obj = await downloadFileByURL_exec(url, 'video', options, req.query.sessionID);
     else
         result_obj = await downloadFileByURL_normal(url, 'video', options, req.query.sessionID);
@@ -1878,6 +1904,12 @@ app.get('/api/getMp3s', optionalJwt, function(req, res) {
         playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
     }
 
+    // add thumbnails if present
+    mp3s.forEach(mp3 => {
+        if (mp3['thumbnailPath'] && fs.existsSync(mp3['thumbnailPath']))
+            mp3['thumbnailBlob'] = fs.readFileSync(mp3['thumbnailPath']);
+    });
+
     res.send({
         mp3s: mp3s,
         playlists: playlists
@@ -1896,6 +1928,12 @@ app.get('/api/getMp4s', optionalJwt, function(req, res) {
         mp4s = auth_api.getUserVideos(req.user.uid, 'video');
         playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
     }
+
+    // add thumbnails if present
+    mp4s.forEach(mp4 => {
+        if (mp4['thumbnailPath'] && fs.existsSync(mp4['thumbnailPath']))
+            mp4['thumbnailBlob'] = fs.readFileSync(mp4['thumbnailPath']);
+    });
 
     res.send({
         mp4s: mp4s,
@@ -1980,6 +2018,12 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
 
         files = files.concat(sub.videos);
     }
+
+    // add thumbnails if present
+    files.forEach(file => {
+        if (file['thumbnailPath'] && fs.existsSync(file['thumbnailPath']))
+            file['thumbnailBlob'] = fs.readFileSync(file['thumbnailPath']);
+    });
 
     res.send({
         files: files,

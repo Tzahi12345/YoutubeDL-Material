@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-unified-file-card',
@@ -16,6 +17,10 @@ export class UnifiedFileCardComponent implements OnInit {
   type = null;
   elevated = false;
 
+  // optional vars
+  thumbnailBlobURL = null;
+
+  // input/output
   @Input() loading = true;
   @Input() theme = null;
   @Input() file_obj = null;
@@ -35,11 +40,18 @@ export class UnifiedFileCardComponent implements OnInit {
     big: 250x200
   */
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog, private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     if (!this.loading) {
       this.file_length = fancyTimeFormat(this.file_obj.duration);
+    }
+
+    if (this.file_obj && this.file_obj.thumbnailBlob) {
+      const mime = getMimeByFilename(this.file_obj.thumbnailPath);
+      const blob = new Blob([new Uint8Array(this.file_obj.thumbnailBlob.data)], {type: mime});
+      const bloburl = URL.createObjectURL(blob);
+      this.thumbnailBlobURL = this.sanitizer.bypassSecurityTrustUrl(bloburl);
     }
   }
 
@@ -96,4 +108,17 @@ function fancyTimeFormat(time) {
   ret += '' + mins + ':' + (secs < 10 ? '0' : '');
   ret += '' + secs;
   return ret;
+}
+
+function getMimeByFilename(name) {
+  switch (name.substring(name.length-4, name.length)) {
+    case '.jpg':
+      return 'image/jpeg';
+    case '.png':
+      return 'image/png';
+    case 'webp':
+      return 'image/webp';
+    default:
+      return null;
+  }
 }

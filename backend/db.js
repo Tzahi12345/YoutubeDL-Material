@@ -29,8 +29,8 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
     // add additional info
     file_object['uid'] = uuid();
     file_object['registered'] = Date.now();
-    path_object = path.parse(file_object['path']);
-    file_object['path'] = path.format(path_object);
+    file_object['path'] = path.format(path.parse(file_object['path']));
+    file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, multiUserMode && multiUserMode.file_path);
 
     if (!sub) {
         if (multiUserMode) {

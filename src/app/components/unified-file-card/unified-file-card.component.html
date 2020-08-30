@@ -29,7 +29,7 @@
         <div style="padding:5px">
             <div *ngIf="!loading && file_obj.thumbnailURL" class="img-div">
                 <div style="position: relative">
-                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailURL" alt="Thumbnail">
+                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailBlob ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
                     <div class="duration-time">
                         {{file_length}}
                     </div>

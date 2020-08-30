@@ -30,6 +30,14 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_safe_download_override',
         'path': 'YoutubeDLMaterial.Downloader.safe_download_override'
     },
+    'ytdl_include_thumbnail': {
+        'key': 'ytdl_include_thumbnail',
+        'path': 'YoutubeDLMaterial.Downloader.include_thumbnail'
+    },
+    'ytdl_include_metadata': {
+        'key': 'ytdl_include_metadata',
+        'path': 'YoutubeDLMaterial.Downloader.include_metadata'
+    },
 
     // Extra
     'ytdl_title_top': {
