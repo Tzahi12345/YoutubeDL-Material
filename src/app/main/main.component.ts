@@ -1033,8 +1033,8 @@ export class MainComponent implements OnInit {
         }
       } else if (format_obj.type === 'video') {
         // check if video format is mp4
-        const key = format.height.toString();
-        if (format.ext === 'mp4') {
+        const key = format.format_note.replace('p', '');
+        if (format.ext === 'mp4' || format.ext === 'mkv' || format.ext === 'webm') {
           format_obj['height'] = format.height;
           format_obj['acodec'] = format.acodec;
           format_obj['format_id'] = format.format_id;
