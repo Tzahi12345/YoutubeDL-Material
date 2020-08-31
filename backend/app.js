@@ -1159,7 +1159,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             return;
         } else {
             // store info in download for future use
-            download['_filename'] = info['_filename']; // .substring(fileFolderPath.length, info['_filename'].length-4);
+            download['_filename'] = info['_filename'];
             download['filesize'] = utils.getExpectedFileSize(info);
         }
 
@@ -1606,6 +1606,13 @@ function updateDownloads() {
 }
 
 function checkDownloadPercent(download) {
+    /*
+    This is more of an art than a science, we're just selecting files that start with the file name,
+    thus capturing the parts being downloaded in files named like so: '<video title>.<format>.<ext>.part'.
+
+    Any file that starts with <video title> will be counted as part of the "bytes downloaded", which will
+    be divided by the "total expected bytes."
+    */
     const file_id = download['file_id'];
     const filename = path.format(path.parse(download['_filename'].substring(0, download['_filename'].length-4)));
     const resulting_file_size = download['filesize'];
