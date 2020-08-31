@@ -88,6 +88,41 @@ function getJSONByType(type, name, customPath, openReadPerms = false) {
     return type === 'audio' ? getJSONMp3(name, customPath, openReadPerms) : getJSONMp4(name, customPath, openReadPerms)
 }
 
+function getDownloadedThumbnail(name, type, customPath = null) {
+    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path') : config_api.getConfigItem('ytdl_video_folder_path');
+
+    let jpgPath = path.join(customPath, name + '.jpg');
+    let webpPath = path.join(customPath, name + '.webp');
+    let pngPath = path.join(customPath, name + '.png');
+
+    if (fs.existsSync(jpgPath))
+        return jpgPath;
+    else if (fs.existsSync(webpPath))
+        return webpPath;
+    else if (fs.existsSync(pngPath))
+        return pngPath;
+    else
+        return null;
+}
+
+function getExpectedFileSize(info_json) {
+    if (info_json['filesize']) {
+        return info_json['filesize'];
+    }
+
+    const formats = info_json['format_id'].split('+');
+    let expected_filesize = 0;
+    formats.forEach(format_id => {
+        info_json.formats.forEach(available_format => {
+            if (available_format.format_id === format_id && available_format.filesize) {
+                expected_filesize += available_format.filesize;
+            }
+        });
+    });
+
+    return expected_filesize;
+}
+
 function fixVideoMetadataPerms(name, type, customPath = null) {
     if (is_windows) return;
     if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
@@ -109,6 +144,19 @@ function fixVideoMetadataPerms(name, type, customPath = null) {
         fs.chmodSync(file, 0o644);
     }
 }
+
+function deleteJSONFile(name, type, customPath = null) {
+    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
+                                                   : config_api.getConfigItem('ytdl_video_folder_path');
+
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+    let json_path = path.join(customPath, name + '.info.json');
+    let alternate_json_path = path.join(customPath, name + ext + '.info.json');
+
+    if (fs.existsSync(json_path)) fs.unlinkSync(json_path);
+    if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
+}
+
 
 function recFindByExt(base,ext,files,result)
 {
@@ -153,7 +201,10 @@ module.exports = {
     getJSONMp3: getJSONMp3,
     getJSONMp4: getJSONMp4,
     getTrueFileName: getTrueFileName,
+    getDownloadedThumbnail: getDownloadedThumbnail,
+    getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
+    deleteJSONFile: deleteJSONFile,
     getDownloadedFilesByType: getDownloadedFilesByType,
     recFindByExt: recFindByExt,
     File: File

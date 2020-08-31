@@ -345,6 +345,10 @@ async function getVideosForSub(sub, user_uid = null) {
             }
         }
 
+        if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+            downloadConfig.push('--write-thumbnail');
+        }
+
         // get videos
         logger.verbose('Subscription: getting videos for subscription ' + sub.name);
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {

@@ -128,7 +128,11 @@
                     </div>
 
                     <div class="col-12 mt-2">
-                        <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['safe_download_override']"><ng-container i18n="Safe download override setting">Safe download override</ng-container></mat-checkbox>
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['include_thumbnail']"><ng-container i18n="Include thumbnail setting">Include thumbnail</ng-container></mat-checkbox>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['include_metadata']"><ng-container i18n="Include metadata setting">Include metadata</ng-container></mat-checkbox>
                     </div>
 
                     <div class="col-12 mt-2">

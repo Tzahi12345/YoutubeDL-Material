@@ -26,11 +26,8 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
 
     utils.fixVideoMetadataPerms(file_id, type, multiUserMode && multiUserMode.file_path);
 
-    // add additional info
-    file_object['uid'] = uuid();
-    file_object['registered'] = Date.now();
-    path_object = path.parse(file_object['path']);
-    file_object['path'] = path.format(path_object);
+    // add thumbnail path
+    file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, multiUserMode && multiUserMode.file_path);
 
     if (!sub) {
         if (multiUserMode) {
@@ -48,7 +45,13 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
         }
     }
 
-    const file_uid = registerFileDBManual(db_path, file_object)
+    const file_uid = registerFileDBManual(db_path, file_object);
+
+    // remove metadata JSON if needed
+    if (!config_api.getConfigItem('ytdl_include_metadata')) {
+        utils.deleteJSONFile(file_id, type, multiUserMode && multiUserMode.file_path)
+    }
+
     return file_uid;
 }
 
