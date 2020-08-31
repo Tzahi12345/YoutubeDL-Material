@@ -15,16 +15,14 @@ import * as Fingerprint2 from 'fingerprintjs2';
 @Injectable()
 export class PostsService implements CanActivate {
     path = '';
-    audioFolder = '';
-    videoFolder = '';
-    startPath = null; // 'http://localhost:17442/';
-    startPathSSL = null; // 'https://localhost:17442/'
-    handShakeComplete = false;
+
+    // local settings
     THEMES_CONFIG = THEMES_CONFIG;
     theme;
     card_size = 'medium';
     sidepanel_mode = 'over';
-    settings_changed = new BehaviorSubject<boolean>(false);
+
+    // auth
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
     session_id = null;
     httpOptions = null;
@@ -41,20 +39,24 @@ export class PostsService implements CanActivate {
 
     available_permissions = null;
 
+    // behavior subjects
     reload_config = new BehaviorSubject<boolean>(false);
     config_reloaded = new BehaviorSubject<boolean>(false);
     service_initialized = new BehaviorSubject<boolean>(false);
-    initialized = false;
-
+    settings_changed = new BehaviorSubject<boolean>(false);
     open_create_default_admin_dialog = new BehaviorSubject<boolean>(false);
 
+    // app status
+    initialized = false;
+
+    // global vars
     config = null;
     subscriptions = null;
+    sidenav = null;
+
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar) {
         console.log('PostsService Initialized...');
-        // this.startPath = window.location.href + '/api/';
-        // this.startPathSSL = window.location.href + '/api/';
         this.path = this.document.location.origin + '/api/';
 
         if (isDevMode()) {
@@ -150,14 +152,6 @@ export class PostsService implements CanActivate {
                 this.config_reloaded.next(true);
             }
         });
-    }
-
-    getVideoFolder() {
-        return this.http.get(this.startPath + 'videofolder');
-    }
-
-    getAudioFolder() {
-        return this.http.get(this.startPath + 'audiofolder');
     }
 
     // tslint:disable-next-line: max-line-length

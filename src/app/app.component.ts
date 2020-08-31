@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, HostBinding } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostBinding, AfterViewInit } from '@angular/core';
 import {PostsService} from './posts.services';
 import {FileCardComponent} from './file-card/file-card.component';
 import { Observable } from 'rxjs/Observable';
@@ -30,10 +30,12 @@ import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dial
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
 
   @HostBinding('class') componentCssClass;
   THEMES_CONFIG = THEMES_CONFIG;
+
+  window = window;
 
   // config items
   topBarTitle = 'Youtube Downloader';
@@ -67,6 +69,29 @@ export class AppComponent implements OnInit {
       }
     });
 
+  }
+
+  ngOnInit() {
+    if (localStorage.getItem('theme')) {
+      this.setTheme(localStorage.getItem('theme'));
+    }
+    
+    this.postsService.open_create_default_admin_dialog.subscribe(open => {
+      if (open) {
+        const dialogRef = this.dialog.open(SetDefaultAdminDialogComponent);
+        dialogRef.afterClosed().subscribe(success => {
+          if (success) {
+            if (this.router.url !== '/login') { this.router.navigate(['/login']); }
+          } else {
+            console.error('Failed to create default admin account. See logs for details.');
+          }
+        });
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.postsService.sidenav = this.sidenav;
   }
 
   toggleSidenav() {
@@ -122,9 +147,9 @@ export class AppComponent implements OnInit {
     this.postsService.setTheme(theme);
 
     this.onSetTheme(this.THEMES_CONFIG[theme]['css_label'], old_theme ? this.THEMES_CONFIG[old_theme]['css_label'] : old_theme);
-}
+  }
 
-onSetTheme(theme, old_theme) {
+  onSetTheme(theme, old_theme) {
     if (old_theme) {
       document.body.classList.remove(old_theme);
       this.overlayContainer.getContainerElement().classList.remove(old_theme);
@@ -145,27 +170,6 @@ onSetTheme(theme, old_theme) {
     this.flipTheme();
     event.stopPropagation();
   }
-
-  ngOnInit() {
-    if (localStorage.getItem('theme')) {
-      this.setTheme(localStorage.getItem('theme'));
-    } else {
-    //
-    }
-    this.postsService.open_create_default_admin_dialog.subscribe(open => {
-      if (open) {
-        const dialogRef = this.dialog.open(SetDefaultAdminDialogComponent);
-        dialogRef.afterClosed().subscribe(success => {
-          if (success) {
-            if (this.router.url !== '/login') { this.router.navigate(['/login']); }
-          } else {
-            console.error('Failed to create default admin account. See logs for details.');
-          }
-        });
-      }
-    });
-  }
-
 
   getSubscriptions() {
 

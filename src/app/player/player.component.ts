@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit } from '@angular/core';
 import { VgAPI } from 'ngx-videogular';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,7 @@ export interface IMedia {
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.css']
 })
-export class PlayerComponent implements OnInit, OnDestroy {
+export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   playlist: Array<IMedia> = [];
   original_playlist: string = null;
@@ -93,6 +93,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  ngAfterViewInit() {
+    this.postsService.sidenav.close();
   }
 
   ngOnDestroy() {
