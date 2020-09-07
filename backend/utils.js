@@ -28,7 +28,7 @@ function getDownloadedFilesByType(basePath, type) {
     var located_files = recFindByExt(basePath, ext);
     for (let i = 0; i < located_files.length; i++) {
         let file = located_files[i];
-        var file_path = file.substring(basePath.length+1, file.length);
+        var file_path = file.substring(basePath.includes('\\') ? basePath.length+1 : basePath.length, file.length);
 
         var stats = fs.statSync(file);
 
