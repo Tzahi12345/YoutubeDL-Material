@@ -1,6 +1,7 @@
 var fs = require('fs-extra')
 var path = require('path')
 const config_api = require('./config');
+const { create } = require('xmlbuilder2');
 
 const is_windows = process.platform === 'win32';
 
@@ -145,6 +146,35 @@ function fixVideoMetadataPerms(name, type, customPath = null) {
     }
 }
 
+function generateNFOFile(file_id, type, customPath = null) {
+    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
+                                                   : config_api.getConfigItem('ytdl_video_folder_path');
+
+    const file_obj = getJSONByType(type, file_id, customPath);
+
+    const target_dir = path.dirname(file_obj['_filename']);
+
+    const file_name = path.basename(file_obj['_filename']);
+    const target_file_name = file_name.substring(0, file_name.length-4) + '.nfo';
+
+    const xml_obj = {
+        episodedetails: {
+            title: file_obj['fulltitle'],
+            episode: file_obj['playlist_index'] ? file_obj['playlist_index'] : undefined,
+            premiered: file_obj['upload_date'],
+            plot: `${file_obj['uploader_url']}\n${file_obj['description']}\n${file_obj['playlist_title']}`
+        }
+    };
+
+    const generated_xml = create(xml_obj).end({prettyPrint: true});
+
+    const xml_parts = generated_xml.split('\n');
+    xml_parts[0] = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'; 
+    const final_xml = xml_parts.join('\n');
+
+    fs.writeFileSync(path.join(target_dir, target_file_name), final_xml);
+}
+
 function deleteJSONFile(name, type, customPath = null) {
     if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
                                                    : config_api.getConfigItem('ytdl_video_folder_path');
@@ -204,6 +234,7 @@ module.exports = {
     getDownloadedThumbnail: getDownloadedThumbnail,
     getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
+    generateNFOFile: generateNFOFile,
     deleteJSONFile: deleteJSONFile,
     getDownloadedFilesByType: getDownloadedFilesByType,
     recFindByExt: recFindByExt,

@@ -26,6 +26,9 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
 
     utils.fixVideoMetadataPerms(file_id, type, multiUserMode && multiUserMode.file_path);
 
+    // creates XML if kodi support is enabled
+    if (true) utils.generateNFOFile(file_id, type, multiUserMode && multiUserMode.file_path);
+
     // add thumbnail path
     file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, multiUserMode && multiUserMode.file_path);
 
