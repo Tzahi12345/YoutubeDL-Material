@@ -52,6 +52,7 @@ export class PostsService implements CanActivate {
     // global vars
     config = null;
     subscriptions = null;
+    categories = null;
     sidenav = null;
 
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
@@ -294,6 +295,31 @@ export class PostsService implements CanActivate {
 
     removePlaylist(playlistID, type) {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type}, this.httpOptions);
+    }
+
+    // categories
+
+    getAllCategories() {
+        return this.http.post(this.path + 'getAllCategories', {}, this.httpOptions);
+    }
+
+    createCategory(name) {
+        console.log(name);
+        return this.http.post(this.path + 'createCategory', {name: name}, this.httpOptions);
+    }
+
+    updateCategory(category) {
+        return this.http.post(this.path + 'updateCategory', {category: category}, this.httpOptions);
+    }
+
+    updateCategories(categories) {
+        return this.http.post(this.path + 'updateCategories', {categories: categories}, this.httpOptions);
+    }
+
+    reloadCategories() {
+        this.getAllCategories().subscribe(res => {
+            this.categories = res['categories'];
+        });
     }
 
     createSubscription(url, name, timerange = null, streamingOnly = false, audioOnly = false, customArgs = null, customFileOutput = null) {

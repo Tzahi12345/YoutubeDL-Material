@@ -1,0 +1,47 @@
+<h4 mat-dialog-title>Editing category {{category['name']}}</h4>
+
+<mat-dialog-content>
+    <mat-form-field>
+        <input matInput placeholder="Name" i18n-placeholder="Name" [(ngModel)]="category['name']">
+    </mat-form-field>
+
+    <h6 i18n="Rules">Rules</h6>
+
+    <mat-list>
+        <mat-list-item *ngFor="let rule of category['rules']; let i = index">
+            <mat-form-field [style.visibility]="i === 0 ? 'hidden' : null" class="operator-select">
+                <mat-select [disabled]="i === 0" [(ngModel)]="rule['preceding_operator']">
+                    <mat-option value="or">OR</mat-option>
+                    <mat-option value="and">AND</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="property-select">
+                <mat-select [(ngModel)]="rule['property']">
+                    <mat-option *ngFor="let propertyOption of propertyOptions" [value]="propertyOption.value">{{propertyOption.label}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="comparator-select">
+                <mat-select [(ngModel)]="rule['comparator']">
+                    <mat-option *ngFor="let comparatorOption of comparatorOptions" [value]="comparatorOption.value">{{comparatorOption.label}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="value-input">
+                <input matInput [(ngModel)]="rule['value']">
+            </mat-form-field>
+            <button [disabled]="i === category['rules'].length-1" (click)="swapRules(i, i+1)" mat-icon-button><mat-icon>arrow_downward</mat-icon></button>
+            <button [disabled]="i === 0" (click)="swapRules(i, i-1)" mat-icon-button><mat-icon>arrow_upward</mat-icon></button>
+            <button (click)="removeRule(i)" mat-icon-button><mat-icon>cancel</mat-icon></button>
+        </mat-list-item>
+    </mat-list>
+
+    <button mat-icon-button (click)="addNewRule()" matTooltip="Add new rule" i18n-matTooltip="Add new rule tooltip"><mat-icon>add</mat-icon></button>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Cancel">Cancel</ng-container></button>
+
+    <button mat-button [disabled]="categoryChanged()" type="submit" (click)="saveClicked()"><ng-container i18n="Save button">Save</ng-container></button>
+    <div class="mat-spinner" *ngIf="updating">
+      <mat-spinner [diameter]="25"></mat-spinner>
+    </div>
+</mat-dialog-actions>

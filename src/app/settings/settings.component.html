@@ -115,15 +115,38 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-4">
+                    <div class="col-12 mt-4 mb-5">
                         <mat-form-field class="text-field" style="margin-right: 12px;" color="accent">
                             <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                             <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</ng-container></mat-hint>
                             <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                         </mat-form-field>
                     </div>
-
-                    <div class="col-12 mt-5">
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3 mb-2">
+                        <h6 i18n="Categories">Categories</h6>
+                        <div cdkDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
+                            <div class="category-box" *ngFor="let category of postsService.categories" cdkDrag>
+                                <div class="category-custom-placeholder" *cdkDragPlaceholder></div>
+                                {{category['name']}}
+                                <span style="float: right">
+                                    <button mat-icon-button (click)="openEditCategoryDialog(category)"><mat-icon>edit</mat-icon></button>
+                                    <button mat-icon-button><mat-icon>cancel</mat-icon></button>
+                                </span>
+                            </div>
+                        </div>
+                        <button style="margin-top: 10px;" mat-mini-fab (click)="openAddCategoryDialog()"><mat-icon>add</mat-icon></button>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
                     </div>
 

@@ -27,6 +27,7 @@ const shortid = require('shortid')
 const url_api = require('url');
 var config_api = require('./config.js');
 var subscriptions_api = require('./subscriptions')
+var categories_api = require('./categories');
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
@@ -37,7 +38,7 @@ const is_windows = process.platform === 'win32';
 var app = express();
 
 // database setup
-const FileSync = require('lowdb/adapters/FileSync')
+const FileSync = require('lowdb/adapters/FileSync');
 
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
@@ -80,6 +81,15 @@ config_api.initialize(logger);
 auth_api.initialize(users_db, logger);
 db_api.initialize(db, users_db, logger);
 subscriptions_api.initialize(db, users_db, logger, db_api);
+categories_api.initialize(db, users_db, logger, db_api);
+
+
+async function test() {
+    const test_cat = await categories_api.categorize(fs.readJSONSync('video/Claire Lost Her First Tooth!.info.json'));
+    console.log(test_cat);
+}
+
+test();
 
 // var GithubContent = require('github-content');
 
@@ -1115,6 +1125,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         var is_audio = type === 'audio';
         var ext = is_audio ? '.mp3' : '.mp4';
         var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+        let category = null;
 
         // prepend with user if needed
         let multiUserMode = null;
@@ -1131,7 +1142,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         }
 
         options.downloading_method = 'exec';
-        const downloadConfig = await generateArgs(url, type, options);
+        let downloadConfig = await generateArgs(url, type, options);
 
         // adds download to download helper
         const download_uid = uuid();
@@ -1153,11 +1164,22 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         updateDownloads();
 
         // get video info prior to download
-        const info = await getVideoInfoByURL(url, downloadConfig, download);
+        let info = await getVideoInfoByURL(url, downloadConfig, download);
         if (!info) {
             resolve(false);
             return;
         } else {
+            // check if it fits into a category. If so, then get info again using new downloadConfig
+            category = await categories_api.categorize(info);
+
+            // set custom output if the category has one and re-retrieve info so the download manager has the right file name
+            if (category && category['custom_output']) {
+                options.customOutput = category['custom_output'];
+                options.noRelativePath = true;
+                downloadConfig = await generateArgs(url, type, options);
+                info = await getVideoInfoByURL(url, downloadConfig, download);
+            }
+
             // store info in download for future use
             download['_filename'] = info['_filename'];
             download['filesize'] = utils.getExpectedFileSize(info);
@@ -1445,7 +1467,8 @@ async function generateArgs(url, type, options) {
             }
 
             if (customOutput) {
-                downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
+                customOutput = options.noRelativePath ? customOutput : path.join(fileFolderPath, customOutput);
+                downloadConfig = ['-o', `${customOutput}.%(ext)s`, '--write-info-json', '--print-json'];
             } else {
                 downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
             }
@@ -2130,6 +2153,43 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
         success: success
     });
 });
+
+// categories
+
+app.post('/api/getAllCategories', optionalJwt, async (req, res) => {
+    const categories = db.get('categories').value();
+    res.send({categories: categories});
+});
+
+app.post('/api/createCategory', optionalJwt, async (req, res) => {
+    const name = req.body.name;
+    const new_category = {
+        name: name,
+        uid: uuid(),
+        rules: []
+    };
+
+    db.get('categories').push(new_category).write();
+
+    res.send({
+        new_category: new_category,
+        success: !!new_category
+    });
+});
+
+app.post('/api/updateCategory', optionalJwt, async (req, res) => {
+    const category = req.body.category;
+    db.get('categories').find({uid: category.uid}).assign(category).write();
+    res.send({success: true});
+});
+
+app.post('/api/updateCategories', optionalJwt, async (req, res) => {
+    const categories = req.body.categories;
+    db.get('categories').assign(categories).write();
+    res.send({success: true});
+});
+
+// subscriptions
 
 app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let name = req.body.name;
