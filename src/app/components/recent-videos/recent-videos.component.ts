@@ -138,28 +138,36 @@ export class RecentVideosComponent implements OnInit {
 
   // navigation
 
-  goToFile(file) {
+  goToFile(info_obj) {
+    const file = info_obj['file'];
+    const event = info_obj['event'];
     if (this.postsService.config['Extra']['download_only_mode']) {
       this.downloadFile(file);
     } else {
-      this.navigateToFile(file);
+      this.navigateToFile(file, event.ctrlKey);
     }
   }
 
-  navigateToFile(file) {
+  navigateToFile(file, new_tab) {
     localStorage.setItem('player_navigator', this.router.url);
     if (file.sub_id) {
       const sub = this.postsService.getSubscriptionByID(file.sub_id);
       if (sub.streamingOnly) {
-        this.router.navigate(['/player', {name: file.id,
-                                          url: file.requested_formats ? file.requested_formats[0].url : file.url}]);
+        // streaming only mode subscriptions
+        !new_tab ? this.router.navigate(['/player', {name: file.id,
+                                          url: file.requested_formats ? file.requested_formats[0].url : file.url}])
+                : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
       } else {
-        this.router.navigate(['/player', {fileNames: file.id,
-          type: file.isAudio ? 'audio' : 'video', subscriptionName: sub.name,
-          subPlaylist: sub.isPlaylist}]);
+        // normal subscriptions
+        !new_tab ? this.router.navigate(['/player', {fileNames: file.id,
+                                          type: file.isAudio ? 'audio' : 'video', subscriptionName: sub.name,
+                                          subPlaylist: sub.isPlaylist}]) 
+                 : window.open(`/#/player;fileNames=${file.id};type=${file.isAudio ? 'audio' : 'video'};subscriptionName=${sub.name};subPlaylist=${sub.isPlaylist}`);
       }
     } else {
-      this.router.navigate(['/player', {type: file.isAudio ? 'audio' : 'video', uid: file.uid}]);
+      // normal files
+      !new_tab ? this.router.navigate(['/player', {type: file.isAudio ? 'audio' : 'video', uid: file.uid}])
+               : window.open(`/#/player;type=${file.isAudio ? 'audio' : 'video'};uid=${file.uid}`);
     }
   }
 

@@ -63,8 +63,8 @@ export class UnifiedFileCardComponent implements OnInit {
     });
   }
 
-  navigateToFile() {
-    this.goToFile.emit(this.file_obj);
+  navigateToFile(event) {
+    this.goToFile.emit({file: this.file_obj, event: event});
   }
 
   navigateToSubscription() {
