@@ -181,10 +181,12 @@
 
 </ng-template>
 
-<app-recent-videos></app-recent-videos>
-<br/>
-<h4 style="text-align: center">Custom playlists</h4>
-<app-custom-playlists></app-custom-playlists>
+<ng-container *ngIf="cachedFileManagerEnabled || fileManagerEnabled">
+    <app-recent-videos></app-recent-videos>
+    <br/>
+    <h4 style="text-align: center">Custom playlists</h4>
+    <app-custom-playlists></app-custom-playlists>
+</ng-container>
 
 <!--<div style="margin: 20px" *ngIf="fileManagerEnabled && (!postsService.isLoggedIn || postsService.permissions.includes('filemanager'))">
     <mat-accordion>
