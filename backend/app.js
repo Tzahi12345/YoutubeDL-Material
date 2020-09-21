@@ -1162,6 +1162,8 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             if (Array.isArray(info)) {
                 download['fileNames'] = [];
                 for (let info_obj of info) download['fileNames'].push(info_obj['_filename']);
+            } else {
+                download['_filename'] = info['_filename'];
             }
             download['filesize'] = utils.getExpectedFileSize(info);
         }
