@@ -2000,7 +2000,7 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
     let audios = null;
     let audio_playlists = null;
     let video_playlists = null;
-    let subscriptions = subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null);
+    let subscriptions =  config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
 
     // get basic info depending on multi-user mode being enabled
     if (req.isAuthenticated()) {
