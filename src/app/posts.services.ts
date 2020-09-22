@@ -8,9 +8,9 @@ import { THEMES_CONFIG } from '../themes';
 import { Router, CanActivate } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
-import { v4 as uuid } from 'uuid';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
+import type { FileType, GetAllFilesResponse, GetFileRequest, GetFileResponse, GetMp3sResponse, GetMp4sResponse, Mp3DownloadRequest, Mp3DownloadResponse, Mp4DownloadRequest, Mp4DownloadResponse } from 'api-types';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -25,7 +25,9 @@ export class PostsService implements CanActivate {
     // auth
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
     session_id = null;
-    httpOptions = null;
+    httpOptions: {
+        params: HttpParams
+    };
     http_params: string = null;
     unauthorized = false;
 
@@ -155,27 +157,29 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
-        return this.http.post(this.path + 'tomp3', {url: url,
-                                                    maxBitrate: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration,
-                                                    customArgs: customArgs,
-                                                    customOutput: customOutput,
-                                                    youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword,
-                                                    ui_uid: ui_uid}, this.httpOptions);
+    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid: string = null) {
+        const body: Mp3DownloadRequest = {url: url,
+            maxBitrate: selectedQuality,
+            customQualityConfiguration: customQualityConfiguration,
+            customArgs: customArgs,
+            customOutput: customOutput,
+            youtubeUsername: youtubeUsername,
+            youtubePassword: youtubePassword,
+            ui_uid: ui_uid}
+        return this.http.post<Mp3DownloadResponse>(this.path + 'tomp3', body, this.httpOptions);
     }
 
     // tslint:disable-next-line: max-line-length
     makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
-        return this.http.post(this.path + 'tomp4', {url: url,
-                                                    selectedHeight: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration,
-                                                    customArgs: customArgs,
-                                                    customOutput: customOutput,
-                                                    youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword,
-                                                    ui_uid: ui_uid}, this.httpOptions);
+        const body: Mp4DownloadRequest = {url: url,
+            selectedHeight: selectedQuality,
+            customQualityConfiguration: customQualityConfiguration,
+            customArgs: customArgs,
+            customOutput: customOutput,
+            youtubeUsername: youtubeUsername,
+            youtubePassword: youtubePassword,
+            ui_uid: ui_uid}
+        return this.http.post<Mp4DownloadResponse>(this.path + 'tomp4', body, this.httpOptions);
     }
 
     killAllDownloads() {
@@ -207,19 +211,20 @@ export class PostsService implements CanActivate {
     }
 
     getMp3s() {
-        return this.http.get(this.path + 'getMp3s', this.httpOptions);
+        return this.http.get<GetMp3sResponse>(this.path + 'getMp3s', this.httpOptions);
     }
 
     getMp4s() {
-        return this.http.get(this.path + 'getMp4s', this.httpOptions);
+        return this.http.get<GetMp4sResponse>(this.path + 'getMp4s', this.httpOptions);
     }
 
-    getFile(uid, type, uuid = null) {
-        return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
+    getFile(uid: string, type: FileType, uuid: string = null) {
+        const body: GetFileRequest = {uid: uid, type: type, uuid: uuid};
+        return this.http.post<GetFileResponse>(this.path + 'getFile', body, this.httpOptions);
     }
 
     getAllFiles() {
-        return this.http.post(this.path + 'getAllFiles', {}, this.httpOptions);
+        return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {}, this.httpOptions);
     }
 
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,

@@ -21,14 +21,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body'
+              $ref: '#/components/schemas/Mp3DownloadRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/Mp3DownloadResponse'
+        '500':
+          description: Server download error
       security:
         - Auth query parameter: []
   /api/tomp4:
@@ -46,14 +48,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_1'
+              $ref: '#/components/schemas/Mp4DownloadRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/Mp4DownloadResponse'
+        '500':
+          description: Server download error
       security:
         - Auth query parameter: []
   /api/getMp3s:
@@ -69,8 +73,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
-      requestBody: {}
+                $ref: '#/components/schemas/GetMp3sResponse'
       security:
         - Auth query parameter: []
   /api/getMp4s:
@@ -86,7 +89,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_3'
+                $ref: '#/components/schemas/GetMp4sResponse'
+      security:
+        - Auth query parameter: []
+  /api/getAllFiles:
+    post:
+      tags:
+        - files
+      summary: Get all files
+      description: Gets all files and playlists stored in the db
+      operationId: get-getAllFiles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllFilesResponse'
       security:
         - Auth query parameter: []
   /api/getFile:
@@ -100,14 +119,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_2'
+              $ref: '#/components/schemas/GetFileRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_4'
+                $ref: '#/components/schemas/GetFileResponse'
       security:
         - Auth query parameter: []
   /api/enableSharing:
@@ -122,7 +141,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_3'
+              $ref: '#/components/schemas/SharingToggle'
       responses:
         '200':
           description: OK
@@ -144,7 +163,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_4'
+              $ref: '#/components/schemas/SharingToggle'
       responses:
         '200':
           description: OK
@@ -718,7 +737,7 @@ paths:
                 type: object
                 properties:
                   user:
-                    $ref: '#/components/schemas/user'
+                    $ref: '#/components/schemas/User'
                   token:
                     type: string
                   permissions:
@@ -761,7 +780,7 @@ paths:
                 type: object
                 properties:
                   user:
-                    $ref: '#/components/schemas/user'
+                    $ref: '#/components/schemas/User'
       description: Use this endpoint to register a user. It will only work if registration is enabled.
       requestBody:
         content:
@@ -958,7 +977,7 @@ paths:
                   users:
                     type: array
                     items:
-                      $ref: '#/components/schemas/user'
+                      $ref: '#/components/schemas/User'
       description: 'Gets all users, returns a list of the user objects including their user permissions, videos, playlists, subscriptions, etc.'
       security:
         - Auth query parameter: []
@@ -966,7 +985,12 @@ paths:
         - multi-user mode
 components:
   schemas:
-    body:
+    FileType:
+      type: string
+      enum:
+        - audio
+        - video
+    BaseDownloadRequest:
       required:
         - url
       type: object
@@ -975,64 +999,72 @@ components:
           type: string
         customQualityConfiguration:
           type: string
+          description: Video format code. Overrides other quality options.
           example: '251'
-        maxBitrate:
-          type: string
-          example: '160'
         customArgs:
           type: string
+          description: Custom command-line arguments for youtubedl. Overrides all other options, except url.
         customOutput:
           type: string
+          description: Custom output filename template.
         youtubeUsername:
           type: string
+          description: Login with this account ID
         youtubePassword:
           type: string
-    inline_response_200:
+          description: Account password
+        ui_uid:
+          type: string
+          nullable: true
+    Mp3DownloadRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseDownloadRequest'
+        - type: object
+          properties:
+            maxBitrate:
+              type: string
+              description: Specify ffmpeg/avconv audio quality
+              example: '160'
+    Mp4DownloadRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseDownloadRequest'
+        - type: object
+          properties:
+            selectedHeight:
+              type: string
+              description: Height of the video, if known
+              example: '1080'
+    BaseDownloadResponse:
       required:
-        - audiopathEncoded
         - uid
       type: object
       properties:
         uid:
           type: string
         file_names:
-          type: string
-        audiopathEncoded:
-          type: string
-    body_1:
-      required:
-        - url
-      type: object
-      properties:
-        url:
-          type: string
-        customQualityConfiguration:
-          type: string
-          example: 242+251
-        selectedHeight:
-          type: string
-          example: '1080'
-        customArgs:
-          type: string
-        customOutput:
-          type: string
-        youtubeUsername:
-          type: string
-        youtubePassword:
-          type: string
-    inline_response_200_1:
-      required:
-        - uid
-        - videopathEncoded
-      type: object
-      properties:
-        uid:
-          type: string
-        file_names:
-          type: string
-        videopathEncoded:
-          type: string
-    inline_response_200_2:
+          nullable: true
+          type: array
+          items:
+            type: string
+    Mp3DownloadResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseDownloadResponse'
+        - type: object
+          required:
+            - audiopathEncoded
+          properties:
+            audiopathEncoded:
+              type: string
+    Mp4DownloadResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseDownloadResponse'
+        - type: object
+          required:
+            - videopathEncoded
+          properties:
+            videopathEncoded:
+              type: string
+    GetMp3sResponse:
       required:
         - mp3s
         - playlists
@@ -1041,48 +1073,66 @@ components:
         mp3s:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_2_mp3s'
+            $ref: '#/components/schemas/DatabaseFile'
         playlists:
           type: array
           description: All audio playlists
           items:
-            $ref: '#/components/schemas/inline_response_200_2_playlists'
-    inline_response_200_3:
+            $ref: '#/components/schemas/Playlist'
+    GetMp4sResponse:
       required:
         - mp4s
+        - playlists
       type: object
       properties:
         mp4s:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_3_mp4s'
+            $ref: '#/components/schemas/DatabaseFile'
         playlists:
           type: array
           description: All video playlists
           items:
-            type: object
-    body_2:
+            $ref: '#/components/schemas/Playlist'
+    GetAllFilesResponse:
+      required:
+        - files
+        - playlists
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseFile'
+        playlists:
+          type: array
+          description: All video playlists
+          items:
+            $ref: '#/components/schemas/Playlist'
+    GetFileRequest:
       required:
         - uid
       type: object
       properties:
         uid:
           type: string
+          description: Video UID
         type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
           type: string
-    inline_response_200_4:
+          description: User UID
+    GetFileResponse:
       required:
-        - file
         - success
       type: object
       properties:
         success:
-          type: string
+          type: boolean
         file:
-          $ref: '#/components/schemas/inline_response_200_2_mp3s'
-    body_3:
+          $ref: '#/components/schemas/DatabaseFile'
+    SharingToggle:
       required:
-        - is_playlist
         - type
         - uid
       type: object
@@ -1090,7 +1140,7 @@ components:
         uid:
           type: string
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
         is_playlist:
           type: boolean
     inline_response_200_5:
@@ -1099,19 +1149,6 @@ components:
       type: object
       properties:
         success:
-          type: boolean
-    body_4:
-      required:
-        - type
-        - uid
-      type: object
-      properties:
-        type:
-          type: string
-        uid:
-          type: string
-          description: uid is either the video uid or the playlist ID
-        is_playlist:
           type: boolean
     body_5:
       required:
@@ -1303,7 +1340,7 @@ components:
       type: object
       properties:
         playlist:
-          $ref: '#/components/schemas/inline_response_200_2_playlists'
+          $ref: '#/components/schemas/Playlist'
         type:
           type: string
         success:
@@ -1457,7 +1494,7 @@ components:
       properties:
         new_config_file:
           type: object
-    inline_response_200_2_mp3s:
+    DatabaseFile:
       required:
         - duration
         - id
@@ -1497,7 +1534,7 @@ components:
           type: string
         sharingEnabled:
           type: boolean
-    inline_response_200_2_playlists:
+    Playlist:
       required:
         - fileNames
         - id
@@ -1515,45 +1552,6 @@ components:
           type: string
         thumbnailURL:
           type: string
-    inline_response_200_3_mp4s:
-      required:
-        - duration
-        - id
-        - isAudio
-        - path
-        - size
-        - thumbnailURL
-        - title
-        - uid
-        - upload_date
-        - uploader
-        - url
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        thumbnailURL:
-          type: string
-        isAudio:
-          type: boolean
-        duration:
-          type: number
-        url:
-          type: string
-        uploader:
-          type: string
-        size:
-          type: number
-        path:
-          type: string
-        upload_date:
-          type: string
-        uid:
-          type: string
-        sharingEnabled:
-          type: boolean
     inline_response_200_6_new_sub:
       required:
         - id
@@ -1633,7 +1631,7 @@ components:
           type: string
         type:
           type: string
-    user:
+    User:
       title: user
       type: object
       properties:

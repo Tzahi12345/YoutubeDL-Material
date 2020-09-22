@@ -63,7 +63,7 @@ export class MainComponent implements OnInit {
   youtubeUsername = null;
   youtubePassword = null;
   urlError = false;
-  path = '';
+  path: string | string[] = '';
   url = '';
   exists = '';
   percentDownloaded: number;
