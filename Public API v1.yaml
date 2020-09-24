@@ -395,7 +395,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_14'
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
       responses:
         '200':
           description: OK
@@ -436,7 +436,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_16'
+              $ref: '#/components/schemas/DeleteFileRequest'
       responses:
         '200':
           description: OK
@@ -581,7 +581,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_21'
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
       responses:
         '200':
           description: OK
@@ -637,33 +637,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  downloads:
-                    type: object
-                    properties:
-                      uid:
-                        type: string
-                      downloading:
-                        type: boolean
-                      complete:
-                        type: boolean
-                      url:
-                        type: string
-                      type:
-                        type: string
-                      percent_complete:
-                        type: string
-                      is_playlist:
-                        type: boolean
-                      timestamp_start:
-                        type: number
-                      timestamp_end:
-                        type: number
-                      fileNames:
-                        type: array
-                        items:
-                          type: string
+                $ref: '#/components/schemas/GetAllDownloadsResponse'
       operationId: get-api-downloads
       description: Retrieves all downloads recorded by the server and their status.
       security:
@@ -678,46 +652,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  download:
-                    type: object
-                    properties:
-                      uid:
-                        type: string
-                      downloading:
-                        type: boolean
-                      complete:
-                        type: boolean
-                      url:
-                        type: string
-                      type:
-                        type: string
-                      percent_complete:
-                        type: string
-                      is_playlist:
-                        type: boolean
-                      timestamp_start:
-                        type: number
-                      timestamp_end:
-                        type: number
-                      fileNames:
-                        type: array
-                        items:
-                          type: string
+                $ref: '#/components/schemas/GetDownloadResponse'
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                session_id:
-                  type: string
-                download_id:
-                  type: string
-              required:
-                - session_id
-                - download_id
+              $ref: '#/components/schemas/GetDownloadRequest'
         description: ''
       description: "Gets a single download using its download_id and session_id. session_id is the device fingerprint. If none was provided at the time of download, then set session_id is 'undeclared'."
       security:
@@ -809,6 +749,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
       requestBody:
         content:
           application/json:
@@ -816,8 +760,12 @@ paths:
               type: object
               properties:
                 change_object:
+                  required:
+                    - uid
                   type: object
                   properties:
+                    uid:
+                      type: string
                     name:
                       type: string
                     role:
@@ -839,10 +787,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: '#/components/schemas/SuccessObject'
       description: Deletes a user by its uid.
       requestBody:
         content:
@@ -879,14 +824,14 @@ paths:
                           permissions:
                             type: array
                             items:
-                              type: string
+                              $ref: '#/components/schemas/UserPermission'
                       user:
                         type: object
                         properties:
                           permissions:
                             type: array
                             items:
-                              type: string
+                              $ref: '#/components/schemas/UserPermission'
       description: Gets the available roles and their permissions
       security:
         - Auth query parameter: []
@@ -902,10 +847,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: '#/components/schemas/SuccessObject'
       description: "Changes the permissions for a user. Available values for each permission are: `default`, `yes`, and `no`. `default` will use the user's role's default permission."
       security:
         - Auth query parameter: []
@@ -913,18 +855,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                user_uid:
-                  type: string
-                permission:
-                  type: string
-                new_value:
-                  type: string
-              required:
-                - user_uid
-                - permission
-                - new_value
+              $ref: '#/components/schemas/ChangeUserPermissionsRequest'
       tags:
         - multi-user mode
   /api/changeRolePermissions:
@@ -937,26 +868,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: '#/components/schemas/SuccessObject'
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                role:
-                  type: string
-                permission:
-                  type: string
-                new_value:
-                  type: string
-              required:
-                - role
-                - permission
-                - new_value
+              $ref: '#/components/schemas/ChangeRolePermissionsRequest'
       description: 'Changes the permissions for a role. Available values for each permission are: `yes`, and `no`.'
       security:
         - Auth query parameter: []
@@ -985,6 +902,13 @@ paths:
         - multi-user mode
 components:
   schemas:
+    SuccessObject:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
     FileType:
       type: string
       enum:
@@ -1064,6 +988,33 @@ components:
           properties:
             videopathEncoded:
               type: string
+    GetDownloadRequest:
+      type: object
+      properties:
+        session_id:
+          type: string
+        download_id:
+          type: string
+      required:
+        - session_id
+        - download_id
+    GetDownloadResponse:
+      type: object
+      properties:
+        download:
+          $ref: '#/components/schemas/Download'
+          nullable: true
+    GetAllDownloadsResponse:
+      type: object
+      properties:
+        downloads:
+          type: object
+          description: Map of Session ID to inner map
+          additionalProperties:
+            type: object
+            description: Map of Download UID to downoad
+            additionalProperties:
+              $ref: '#/components/schemas/Download'
     GetMp3sResponse:
       required:
         - mp3s
@@ -1370,13 +1321,6 @@ components:
           type: string
         type:
           type: string
-    body_14:
-      required:
-        - uid
-      type: object
-      properties:
-        uid:
-          type: string
     body_15:
       required:
         - fileNames
@@ -1402,7 +1346,7 @@ components:
         subscriptionPlaylist:
           type: boolean
           description: Only used for subscriptions
-    body_16:
+    DeleteFileRequest:
       required:
         - fileName
         - type
@@ -1411,7 +1355,7 @@ components:
         fileName:
           type: string
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
     apidownloadArchive_sub:
       required:
         - archive_dir
@@ -1470,13 +1414,15 @@ components:
         new_api_key:
           type: string
           example: 4241b401-7236-493e-92b5-b72696b9d853
-    body_21:
+    DeleteMp3Mp4Request:
       required:
         - uid
       type: object
       properties:
         uid:
           type: string
+        blacklistMode:
+          type: boolean
     inline_response_200_17:
       required:
         - config_file
@@ -1552,6 +1498,49 @@ components:
           type: string
         thumbnailURL:
           type: string
+    Download:
+      required:
+        - uid
+        - ui_uid
+        - downloading
+        - complete
+        - url
+        - type
+        - percent_complete
+        - is_playlist
+        - timestamp_start
+      type: object
+      properties:
+        uid:
+          type: string
+        ui_uid:
+          type: string
+        downloading:
+          type: boolean
+        complete:
+          type: boolean
+        url:
+          type: string
+        type:
+          type: string
+        percent_complete:
+          type: number
+        is_playlist:
+          type: boolean
+        timestamp_start:
+          type: number
+        timestamp_end:
+          type: number
+        filesize:
+          type: number
+          nullable: true
+        error:
+          type: string
+          description: Error text, set if download fails.
+        fileNames:
+          type: array
+          items:
+            type: string
     inline_response_200_6_new_sub:
       required:
         - id
@@ -1674,11 +1663,51 @@ components:
         permissions:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UserPermission'
         permission_overrides:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UserPermission'
+    UserPermission:
+      type: string
+      enum:
+        - filemanager
+        - settings
+        - subscriptions
+        - sharing
+        - advanced_download
+        - downloads_manager
+    BaseChangePermissionsRequest:
+      required:
+        - permission
+        - new_value
+      type: object
+      properties:
+        permission:
+          $ref: '#/components/schemas/UserPermission'
+        new_value:
+          type: string
+          enum:
+            - 'yes'
+            - 'no'
+    ChangeUserPermissionsRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseChangePermissionsRequest'
+        - type: object
+          properties:
+            user_uid:
+              type: string
+          required:
+            - user_uid
+    ChangeRolePermissionsRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseChangePermissionsRequest'
+        - type: object
+          properties:
+            role:
+              type: string
+          required:
+            - role
     file:
       title: file
       type: object

@@ -10,7 +10,10 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
-import type { FileType, GetAllFilesResponse, GetFileRequest, GetFileResponse, GetMp3sResponse, GetMp4sResponse, Mp3DownloadRequest, Mp3DownloadResponse, Mp4DownloadRequest, Mp4DownloadResponse } from 'api-types';
+import type { DeleteMp3Mp4Request, FileType, GetAllFilesResponse, GetFileRequest, GetFileResponse, GetMp3sResponse, GetMp4sResponse, Mp3DownloadRequest, Mp3DownloadResponse, Mp4DownloadRequest, Mp4DownloadResponse } from 'api-types';
+import { GetAllDownloadsResponse } from 'api-types/models/GetAllDownloadsResponse';
+import { GetDownloadResponse } from 'api-types/models/GetDownloadResponse';
+import { GetDownloadRequest } from 'api-types/models/GetDownloadRequest';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -203,10 +206,11 @@ export class PostsService implements CanActivate {
     }
 
     deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
+        const body: DeleteMp3Mp4Request = {uid: uid, blacklistMode: blacklistMode}
         if (isAudio) {
-            return this.http.post(this.path + 'deleteMp3', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
+            return this.http.post<boolean>(this.path + 'deleteMp3', body, this.httpOptions);
         } else {
-            return this.http.post(this.path + 'deleteMp4', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
+            return this.http.post<boolean>(this.path + 'deleteMp4', body, this.httpOptions);
         }
     }
 
@@ -330,12 +334,13 @@ export class PostsService implements CanActivate {
 
     // current downloads
     getCurrentDownloads() {
-        return this.http.get(this.path + 'downloads', this.httpOptions);
+        return this.http.get<GetAllDownloadsResponse>(this.path + 'downloads', this.httpOptions);
     }
 
     // current download
-    getCurrentDownload(session_id, download_id) {
-        return this.http.post(this.path + 'download', {download_id: download_id, session_id: session_id}, this.httpOptions);
+    getCurrentDownload(session_id: string, download_id: string) {
+        const body: GetDownloadRequest = {download_id: download_id, session_id: session_id};
+        return this.http.post<GetDownloadResponse>(this.path + 'download', body, this.httpOptions);
     }
 
     // clear downloads. download_id is optional, if it exists only 1 download will be cleared
