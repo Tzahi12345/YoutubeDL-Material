@@ -397,7 +397,7 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
 
           // use subscriptions API to remove video from the archive file, and write it to the blacklist
           if (fs.existsSync(archive_path)) {
-              const line = youtube_id ? subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
+              let line = youtube_id ? subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
               if (blacklistMode && line) {
                 let blacklistPath = path.join(usersFileFolder, user_uid, 'archives', `blacklist_${type}.txt`);
                 // adds newline to the beginning of the line

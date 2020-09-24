@@ -1239,7 +1239,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                 if (options.merged_string !== null && options.merged_string !== undefined) {
                     let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                     let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                    const archive_path = options.user ? path.join(config_api.getConfigItem('ytdl_users_base_path'), options.user, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -1374,7 +1374,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             if (options.merged_string !== null && options.merged_string !== undefined) {
                 let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                 let diff = current_merged_archive.replace(options.merged_string, '');
-                const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                const archive_path = options.user ? path.join(config_api.getConfigItem('ytdl_users_base_path'), options.user, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                 fs.appendFileSync(archive_path, diff);
             }
 
@@ -1475,7 +1475,7 @@ async function generateArgs(url, type, options) {
 
             let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
             if (useYoutubeDLArchive) {
-                const archive_folder = options.user ? path.join(fileFolderPath, 'archives') : archivePath;
+                const archive_folder = options.user ? path.join(config_api.getConfigItem('ytdl_users_base_path'), options.user, 'archives') : archivePath;
                 const archive_path = path.join(archive_folder, `archive_${type}.txt`);
 
                 fs.ensureDirSync(archive_folder);
@@ -1485,7 +1485,7 @@ async function generateArgs(url, type, options) {
                     fs.closeSync(fs.openSync(archive_path, 'w'));
                 }
 
-                let blacklist_path = options.user ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
+                let blacklist_path = options.user ? path.join(config_api.getConfigItem('ytdl_users_base_path'), options.user, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
                 // create blacklist file if it doesn't exist
                 if (!fs.existsSync(blacklist_path)) {
                     fs.closeSync(fs.openSync(blacklist_path, 'w'));
@@ -1990,7 +1990,7 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     }
 });
 
-app.post('/api/getAllFiles', optionalJwt, function (req, res) {
+app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
     let files = [];
     let playlists = [];
