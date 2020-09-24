@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
+import type { FileType } from 'api-types';
 
 export interface IMedia {
   title: string;
@@ -360,7 +361,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         // Eventually do additional checks on name
         if (name) {
           const fileNames = this.getFileNames();
-          this.postsService.createPlaylist(name, fileNames, this.type, null).subscribe(res => {
+          this.postsService.createPlaylist(name, fileNames, this.type as FileType, null).subscribe(res => {
             if (res['success']) {
               dialogRef.close();
               const new_playlist = res['new_playlist'];
@@ -401,7 +402,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   updatePlaylist() {
     const fileNames = this.getFileNames();
     this.playlist_updating = true;
-    this.postsService.updatePlaylistFiles(this.id, fileNames, this.type).subscribe(res => {
+    this.postsService.updatePlaylistFiles(this.id, fileNames, this.type as FileType).subscribe(res => {
     this.playlist_updating = false;
       if (res['success']) {
         const fileNamesEncoded = fileNames.join('|nvr|');

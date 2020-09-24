@@ -20,6 +20,7 @@ import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.com
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
+import type { FileType } from 'api-types';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
@@ -453,7 +454,7 @@ export class MainComponent implements OnInit {
   }
 
   public removePlaylistMp3(playlistID, index) {
-    this.postsService.removePlaylist(playlistID, 'audio').subscribe(res => {
+    this.postsService.removePlaylist(playlistID, 'audio' as FileType).subscribe(res => {
       if (res['success']) {
         this.playlists.audio.splice(index, 1);
         this.openSnackBar('Playlist successfully removed.', '');
@@ -472,7 +473,7 @@ export class MainComponent implements OnInit {
   }
 
   public removePlaylistMp4(playlistID, index) {
-    this.postsService.removePlaylist(playlistID, 'video').subscribe(res => {
+    this.postsService.removePlaylist(playlistID, 'video' as FileType).subscribe(res => {
       if (res['success']) {
         this.playlists.video.splice(index, 1);
         this.openSnackBar('Playlist successfully removed.', '');

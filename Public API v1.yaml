@@ -148,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/disableSharing:
@@ -170,7 +170,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/subscribe:
@@ -311,14 +311,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_10'
+              $ref: '#/components/schemas/CreatePlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_12'
+                $ref: '#/components/schemas/CreatePlaylistResponse'
       security:
         - Auth query parameter: []
   /api/getPlaylist:
@@ -332,28 +332,49 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_11'
+              $ref: '#/components/schemas/GetPlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_13'
+                $ref: '#/components/schemas/GetPlaylistResponse'
       security:
         - Auth query parameter: []
   /api/updatePlaylist:
     post:
       tags:
         - playlists
-      summary: Update playlist files
-      description: Updates the list of filenames in the playlist object
+      summary: Update playlist
+      description: Updates the playlist object
       operationId: post-api-updatePlaylist
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_12'
+              $ref: '#/components/schemas/UpdatePlaylistRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/updatePlaylistFiles:
+    post:
+      tags:
+        - playlists
+      summary: Update playlist files
+      description: Updates the list of filenames in the playlist object
+      operationId: post-api-updatePlaylistFiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlaylistFilesRequest'
       responses:
         '200':
           description: OK
@@ -374,14 +395,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_13'
+              $ref: '#/components/schemas/DeletePlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/deleteMp4:
@@ -495,7 +516,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/isPinSet:
@@ -532,7 +553,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/setPin:
@@ -552,7 +573,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
       description: ''
@@ -625,7 +646,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/downloads:
@@ -1196,12 +1217,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Subscription'
-    body_10:
+    CreatePlaylistRequest:
       required:
         - fileNames
         - playlistName
         - thumbnailURL
         - type
+        - duration
       type: object
       properties:
         playlistName:
@@ -1211,30 +1233,33 @@ components:
           items:
             type: string
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
         thumbnailURL:
           type: string
-    inline_response_200_12:
+        duration:
+          type: number
+    CreatePlaylistResponse:
       required:
         - new_playlist
         - success
       type: object
       properties:
         new_playlist:
-          $ref: '#/components/schemas/inline_response_200_12_new_playlist'
+          $ref: '#/components/schemas/Playlist'
         success:
           type: boolean
-    body_11:
+    GetPlaylistRequest:
       required:
         - playlistID
-        - type
       type: object
       properties:
         playlistID:
           type: string
         type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
           type: string
-    inline_response_200_13:
+    GetPlaylistResponse:
       required:
         - playlist
         - success
@@ -1244,10 +1269,17 @@ components:
         playlist:
           $ref: '#/components/schemas/Playlist'
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
         success:
           type: boolean
-    body_12:
+    UpdatePlaylistRequest:
+      required:
+        - playlist
+      type: object
+      properties:
+        playlist:
+          $ref: '#/components/schemas/Playlist'
+    UpdatePlaylistFilesRequest:
       required:
         - fileNames
         - playlistID
@@ -1261,8 +1293,8 @@ components:
           items:
             type: string
         type:
-          type: string
-    body_13:
+          $ref: '#/components/schemas/FileType'
+    DeletePlaylistRequest:
       required:
         - playlistID
         - type
@@ -1271,7 +1303,7 @@ components:
         playlistID:
           type: string
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
     body_15:
       required:
         - fileNames
@@ -1435,6 +1467,9 @@ components:
         - id
         - name
         - thumbnailURL
+        - type
+        - registered
+        - duration
       type: object
       properties:
         name:
@@ -1447,6 +1482,12 @@ components:
           type: string
         thumbnailURL:
           type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        registered:
+          type: number
+        duration:
+          type: number
     Download:
       required:
         - uid
@@ -1545,25 +1586,6 @@ components:
           type: array
           items:
             type: object
-    inline_response_200_12_new_playlist:
-      required:
-        - fileNames
-        - id
-        - name
-        - thumbnailURL
-        - type
-      type: object
-      properties:
-        name:
-          type: string
-        fileNames:
-          type: string
-        id:
-          type: string
-        thumbnailURL:
-          type: string
-        type:
-          type: string
     User:
       title: user
       type: object

@@ -11,7 +11,10 @@ import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
 import {
+    CreatePlaylistRequest,
+    CreatePlaylistResponse,
     DeleteMp3Mp4Request,
+    DeletePlaylistRequest,
     DeleteSubscriptionFileRequest,
     FileType,
     GetAllDownloadsResponse,
@@ -23,18 +26,24 @@ import {
     GetFileResponse,
     GetMp3sResponse,
     GetMp4sResponse,
+    GetPlaylistRequest,
+    GetPlaylistResponse,
     GetSubscriptionRequest,
     GetSubscriptionResponse,
     Mp3DownloadRequest,
     Mp3DownloadResponse,
     Mp4DownloadRequest,
     Mp4DownloadResponse,
+    Playlist,
+    SharingToggle,
     SubscribeRequest,
     SubscribeResponse,
     SubscriptionRequestData,
     SuccessObject,
     UnsubscribeRequest,
-    UnsubscribeResponse
+    UnsubscribeResponse,
+    UpdatePlaylistFilesRequest,
+    UpdatePlaylistRequest,
 } from 'api-types';
 
 @Injectable()
@@ -293,39 +302,46 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'generateNewAPIKey', {}, this.httpOptions);
     }
 
-    enableSharing(uid, type, is_playlist) {
-        return this.http.post(this.path + 'enableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
+    enableSharing(uid: string, type: FileType, is_playlist: boolean) {
+        const body: SharingToggle = {uid: uid, type: type, is_playlist: is_playlist};
+        return this.http.post<SuccessObject>(this.path + 'enableSharing', body, this.httpOptions);
     }
 
-    disableSharing(uid, type, is_playlist) {
-        return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
+    disableSharing(uid: string, type: FileType, is_playlist: boolean) {
+        const body: SharingToggle = {uid: uid, type: type, is_playlist: is_playlist};
+        return this.http.post<SuccessObject>(this.path + 'disableSharing', body, this.httpOptions);
     }
 
-    createPlaylist(playlistName, fileNames, type, thumbnailURL, duration = null) {
-        return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
-                                                            fileNames: fileNames,
-                                                            type: type,
-                                                            thumbnailURL: thumbnailURL,
-                                                            duration: duration}, this.httpOptions);
+    createPlaylist(playlistName: string, fileNames: string[], type: FileType, thumbnailURL: string, duration: number = null) {
+        const body: CreatePlaylistRequest = {playlistName: playlistName,
+            fileNames: fileNames,
+            type: type,
+            thumbnailURL: thumbnailURL,
+            duration: duration};
+        return this.http.post<CreatePlaylistResponse>(this.path + 'createPlaylist', body, this.httpOptions);
     }
 
-    getPlaylist(playlistID, type, uuid = null) {
-        return this.http.post(this.path + 'getPlaylist', {playlistID: playlistID,
-                                                            type: type, uuid: uuid}, this.httpOptions);
+    getPlaylist(playlistID: string, type: FileType, uuid: string = null) {
+        const body: GetPlaylistRequest = {playlistID: playlistID,
+            type: type, uuid: uuid};
+        return this.http.post<GetPlaylistResponse>(this.path + 'getPlaylist', body, this.httpOptions);
     }
 
-    updatePlaylist(playlist) {
-        return this.http.post(this.path + 'updatePlaylist', {playlist: playlist}, this.httpOptions);
+    updatePlaylist(playlist: Playlist) {
+        const body: UpdatePlaylistRequest = {playlist: playlist};
+        return this.http.post<SuccessObject>(this.path + 'updatePlaylist', body, this.httpOptions);
     }
 
-    updatePlaylistFiles(playlistID, fileNames, type) {
-        return this.http.post(this.path + 'updatePlaylistFiles', {playlistID: playlistID,
-                                                            fileNames: fileNames,
-                                                            type: type}, this.httpOptions);
+    updatePlaylistFiles(playlistID: string, fileNames: string[], type: FileType) {
+        const body: UpdatePlaylistFilesRequest = {playlistID: playlistID,
+            fileNames: fileNames,
+            type: type};
+        return this.http.post<SuccessObject>(this.path + 'updatePlaylistFiles', body, this.httpOptions);
     }
 
-    removePlaylist(playlistID, type) {
-        return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type}, this.httpOptions);
+    removePlaylist(playlistID: string, type: FileType) {
+        const body: DeletePlaylistRequest = {playlistID: playlistID, type: type};
+        return this.http.post<SuccessObject>(this.path + 'deletePlaylist', body, this.httpOptions);
     }
 
     createSubscription(url: string, name: string, timerange: string = null, streamingOnly = false, audioOnly = false, customArgs: string = null, customFileOutput: string = null) {
