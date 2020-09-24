@@ -849,12 +849,13 @@ function getVideoFormatID(name)
     }
 }
 
-async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvided = null) {
+async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvided = null, user_uid = null) {
     return new Promise(async resolve => {
         let zipFolderPath = null;
 
         if (!fullPathProvided) {
-            zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
+            zipFolderPath = path.join(type === 'audio' ? audioFolderPath : videoFolderPath);
+            if (user_uid) zipFolderPath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, zipFolderPath);
         } else {
             zipFolderPath = path.join(__dirname, config_api.getConfigItem('ytdl_subscriptions_base_path'));
         }
@@ -879,7 +880,7 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
         for (let i = 0; i < fileNames.length; i++) {
             let fileName = fileNames[i];
             let fileNamePathRemoved = path.parse(fileName).base;
-            let file_path = !fullPathProvided ? zipFolderPath + fileName + ext : fileName;
+            let file_path = !fullPathProvided ? path.join(zipFolderPath, fileName + ext) : fileName;
             archive.file(file_path, {name: fileNamePathRemoved + ext})
         }
 
@@ -1793,9 +1794,9 @@ const optionalJwt = function (req, res, next) {
         const uuid = using_body ? req.body.uuid : req.query.uuid;
         const uid = using_body ? req.body.uid : req.query.uid;
         const type = using_body ? req.body.type : req.query.type;
-        const file = !req.query.id ? auth_api.getUserVideo(uuid, uid, type, true, req.body) : auth_api.getUserPlaylist(uuid, req.query.id, null, true);
-        const is_shared = file ? file['sharingEnabled'] : false;
-        if (is_shared) {
+        const playlist_id = using_body ? req.body.id : req.query.id;
+        const file = !playlist_id ? auth_api.getUserVideo(uuid, uid, type, true, req.body) : auth_api.getUserPlaylist(uuid, playlist_id, null, false);
+        if (file) {
             req.can_watch = true;
             return next();
         } else {
@@ -2548,7 +2549,8 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
         for (let i = 0; i < fileNames.length; i++) {
             fileNames[i] = decodeURIComponent(fileNames[i]);
         }
-        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided);
+        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided, req.body.uuid);
+        file = path.join(__dirname, file);
     }
     res.sendFile(file, function (err) {
         if (err) {
