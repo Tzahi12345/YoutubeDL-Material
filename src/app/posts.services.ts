@@ -10,10 +10,32 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
-import type { DeleteMp3Mp4Request, FileType, GetAllFilesResponse, GetFileRequest, GetFileResponse, GetMp3sResponse, GetMp4sResponse, Mp3DownloadRequest, Mp3DownloadResponse, Mp4DownloadRequest, Mp4DownloadResponse } from 'api-types';
-import { GetAllDownloadsResponse } from 'api-types/models/GetAllDownloadsResponse';
-import { GetDownloadResponse } from 'api-types/models/GetDownloadResponse';
-import { GetDownloadRequest } from 'api-types/models/GetDownloadRequest';
+import {
+    DeleteMp3Mp4Request,
+    DeleteSubscriptionFileRequest,
+    FileType,
+    GetAllDownloadsResponse,
+    GetAllFilesResponse,
+    GetAllSubscriptionsResponse,
+    GetDownloadResponse,
+    GetDownloadRequest,
+    GetFileRequest,
+    GetFileResponse,
+    GetMp3sResponse,
+    GetMp4sResponse,
+    GetSubscriptionRequest,
+    GetSubscriptionResponse,
+    Mp3DownloadRequest,
+    Mp3DownloadResponse,
+    Mp4DownloadRequest,
+    Mp4DownloadResponse,
+    SubscribeRequest,
+    SubscribeResponse,
+    SubscriptionRequestData,
+    SuccessObject,
+    UnsubscribeRequest,
+    UnsubscribeResponse
+} from 'api-types';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -306,30 +328,34 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type}, this.httpOptions);
     }
 
-    createSubscription(url, name, timerange = null, streamingOnly = false, audioOnly = false, customArgs = null, customFileOutput = null) {
-        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly,
-                                audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput}, this.httpOptions);
+    createSubscription(url: string, name: string, timerange: string = null, streamingOnly = false, audioOnly = false, customArgs: string = null, customFileOutput: string = null) {
+        const body: SubscribeRequest = {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly,
+            audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput};
+        return this.http.post<SubscribeResponse>(this.path + 'subscribe', body, this.httpOptions);
     }
 
     updateSubscription(subscription) {
         return this.http.post(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
     }
 
-    unsubscribe(sub, deleteMode = false) {
-        return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode}, this.httpOptions)
+    unsubscribe(sub: SubscriptionRequestData, deleteMode = false) {
+        const body: UnsubscribeRequest = {sub: sub, deleteMode: deleteMode};
+        return this.http.post<UnsubscribeResponse>(this.path + 'unsubscribe', body, this.httpOptions)
     }
 
-    deleteSubscriptionFile(sub, file, deleteForever, file_uid) {
-        return this.http.post(this.path + 'deleteSubscriptionFile', {sub: sub, file: file, deleteForever: deleteForever,
-                                                                    file_uid: file_uid}, this.httpOptions)
+    deleteSubscriptionFile(sub: SubscriptionRequestData, file: string, deleteForever: boolean, file_uid: string) {
+        const body: DeleteSubscriptionFileRequest = {sub: sub, file: file, deleteForever: deleteForever,
+            file_uid: file_uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteSubscriptionFile', body, this.httpOptions)
     }
 
-    getSubscription(id) {
-        return this.http.post(this.path + 'getSubscription', {id: id}, this.httpOptions);
+    getSubscription(id: string) {
+        const body: GetSubscriptionRequest = {id: id};
+        return this.http.post<GetSubscriptionResponse>(this.path + 'getSubscription', body, this.httpOptions);
     }
 
     getAllSubscriptions() {
-        return this.http.post(this.path + 'getAllSubscriptions', {}, this.httpOptions);
+        return this.http.post<GetAllSubscriptionsResponse>(this.path + 'getAllSubscriptions', {}, this.httpOptions);
     }
 
     // current downloads

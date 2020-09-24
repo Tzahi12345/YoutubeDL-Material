@@ -184,14 +184,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_5'
+              $ref: '#/components/schemas/SubscribeRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_6'
+                $ref: '#/components/schemas/SubscribeResponse'
       security:
         - Auth query parameter: []
   /api/unsubscribe:
@@ -205,14 +205,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_6'
+              $ref: '#/components/schemas/UnsubscribeRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_7'
+                $ref: '#/components/schemas/UnsubscribeResponse'
       security:
         - Auth query parameter: []
   /api/deleteSubscriptionFile:
@@ -226,14 +226,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_7'
+              $ref: '#/components/schemas/DeleteSubscriptionFileRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_8'
+                $ref: '#/components/schemas/SuccessObject'
         '500':
           description: Internal Server Error
       security:
@@ -249,14 +249,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_8'
+              $ref: '#/components/schemas/GetSubscriptionRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_9'
+                $ref: '#/components/schemas/GetSubscriptionResponse'
       security:
         - Auth query parameter: []
   /api/downloadVideosForSubscription:
@@ -270,14 +270,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_9'
+              $ref: '#/components/schemas/DownloadVideosForSubscriptionRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_10'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/getAllSubscriptions:
@@ -297,7 +297,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_11'
+                $ref: '#/components/schemas/GetAllSubscriptionsResponse'
       security:
         - Auth query parameter: []
   /api/createPlaylist:
@@ -360,7 +360,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/deletePlaylist:
@@ -457,6 +457,8 @@ paths:
       responses:
         '200':
           description: The archive text file is sent as a response
+        '404':
+          description: If the archive dir is not found, 404 is sent as a response
       security:
         - Auth query parameter: []
   /api/updaterStatus:
@@ -1094,16 +1096,11 @@ components:
           $ref: '#/components/schemas/FileType'
         is_playlist:
           type: boolean
-    inline_response_200_5:
+    SubscribeRequest:
       required:
-        - success
-      type: object
-      properties:
-        success:
-          type: boolean
-    body_5:
-      required:
+        - name
         - url
+        - streamingOnly
       type: object
       properties:
         name:
@@ -1114,46 +1111,32 @@ components:
           type: string
         streamingOnly:
           type: boolean
-    inline_response_200_6:
+        audioOnly:
+          type: boolean
+        customArgs:
+          type: string
+        customFileOutput:
+          type: string
+    SubscribeResponse:
       required:
         - new_sub
       type: object
       properties:
         new_sub:
-          $ref: '#/components/schemas/inline_response_200_6_new_sub'
+          $ref: '#/components/schemas/Subscription'
         error:
           type: string
-    apiunsubscribe_sub:
-      required:
-        - id
-        - name
-        - url
-        - videos
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        videos:
-          type: array
-          items:
-            type: object
-    body_6:
+    UnsubscribeRequest:
       required:
         - sub
       type: object
       properties:
         sub:
-          $ref: '#/components/schemas/apiunsubscribe_sub'
+          $ref: '#/components/schemas/SubscriptionRequestData'
         deleteMode:
           type: boolean
           description: Defaults to false
-    inline_response_200_7:
+    UnsubscribeResponse:
       required:
         - success
       type: object
@@ -1162,30 +1145,7 @@ components:
           type: boolean
         error:
           type: string
-    apideleteSubscriptionFile_sub:
-      required:
-        - id
-        - isPlaylist
-        - name
-        - url
-        - videos
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        isPlaylist:
-          type: boolean
-        videos:
-          type: array
-          items:
-            type: object
-    body_7:
+    DeleteSubscriptionFileRequest:
       required:
         - file
         - sub
@@ -1193,50 +1153,41 @@ components:
       properties:
         file:
           type: string
+        file_uid:
+          type: string
         sub:
-          $ref: '#/components/schemas/apideleteSubscriptionFile_sub'
+          $ref: '#/components/schemas/SubscriptionRequestData'
         deleteForever:
           type: boolean
           description: 'If true, does not remove id from archive. Only valid if youtube-dl archive is enabled in settings.'
-    inline_response_200_8:
-      type: object
-      properties:
-        success:
-          type: boolean
-    body_8:
+    GetSubscriptionRequest:
       required:
-        - subID
+        - id
       type: object
       properties:
-        subID:
+        id:
           type: string
-    inline_response_200_9:
+          description: Subscription ID
+    GetSubscriptionResponse:
       required:
         - files
         - subscription
       type: object
       properties:
         subscription:
-          $ref: '#/components/schemas/inline_response_200_9_subscription'
+          $ref: '#/components/schemas/Subscription'
         files:
           type: array
           items:
             type: object
-    body_9:
+    DownloadVideosForSubscriptionRequest:
       required:
         - subID
       type: object
       properties:
         subID:
           type: string
-    inline_response_200_10:
-      required:
-        - success
-      type: object
-      properties:
-        success:
-          type: number
-    inline_response_200_11:
+    GetAllSubscriptionsResponse:
       required:
         - subscriptions
       type: object
@@ -1244,7 +1195,7 @@ components:
         subscriptions:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_11_subscriptions'
+            $ref: '#/components/schemas/Subscription'
     body_10:
       required:
         - fileNames
@@ -1356,20 +1307,18 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/FileType'
-    apidownloadArchive_sub:
-      required:
-        - archive_dir
-      type: object
-      properties:
-        archive_dir:
-          type: string
-    body_17:
+    DownloadArchiveRequest:
       required:
         - sub
       type: object
       properties:
         sub:
-          $ref: '#/components/schemas/apidownloadArchive_sub'
+          required:
+            - archive_dir
+          type: object
+          properties:
+            archive_dir:
+              type: string
     inline_response_200_14:
       required:
         - details
@@ -1541,11 +1490,32 @@ components:
           type: array
           items:
             type: string
-    inline_response_200_6_new_sub:
+    SubscriptionRequestData:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        isPlaylist:
+          type: boolean
+        archive:
+          type: string
+    Subscription:
       required:
         - id
         - name
         - url
+        - type
+        - user_uid
+        - streamingOnly
+        - isPlaylist
+        - videos
       type: object
       properties:
         name:
@@ -1554,53 +1524,27 @@ components:
           type: string
         id:
           type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        user_uid:
+          type: string
+          nullable: true
         streamingOnly:
           type: boolean
+        isPlaylist:
+          type: boolean
+        archive:
+          type: string
         timerange:
           type: string
-    inline_response_200_9_subscription:
-      required:
-        - archive
-        - id
-        - isPlaylist
-        - name
-        - url
-      type: object
-      properties:
-        name:
+        custom_args:
           type: string
-        url:
+        custom_output:
           type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        isPlaylist:
-          type: boolean
-        archive:
-          type: string
-    inline_response_200_11_subscriptions:
-      required:
-        - archive
-        - id
-        - isPlaylist
-        - name
-        - streamingOnly
-        - url
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        isPlaylist:
-          type: boolean
-        archive:
-          type: string
+        videos:
+          type: array
+          items:
+            type: object
     inline_response_200_12_new_playlist:
       required:
         - fileNames
