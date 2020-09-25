@@ -55,7 +55,6 @@ backend/subscriptions/playlists/*
 backend/subscriptions/archives/*
 backend/*.exe
 src/assets/default.json
-src/api-types
 backend/appdata/db.json
 backend/appdata/archives/archive_audio.txt
 backend/appdata/archives/archive_video.txt
