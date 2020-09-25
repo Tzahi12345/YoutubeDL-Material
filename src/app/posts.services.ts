@@ -19,6 +19,7 @@ import type {
     DeleteMp3Mp4Request,
     DeletePlaylistRequest,
     DeleteSubscriptionFileRequest,
+    DeleteUserRequest,
     DownloadArchiveRequest,
     DownloadFileRequest,
     FileType,
@@ -34,13 +35,19 @@ import type {
     GetMp4sResponse,
     GetPlaylistRequest,
     GetPlaylistResponse,
+    GetRolesResponse,
     GetSubscriptionRequest,
     GetSubscriptionResponse,
+    GetUsersResponse,
+    LoginRequest,
+    LoginResponse,
     Mp3DownloadRequest,
     Mp3DownloadResponse,
     Mp4DownloadRequest,
     Mp4DownloadResponse,
     Playlist,
+    RegisterRequest,
+    RegisterResponse,
     SetConfigRequest,
     SharingToggle,
     SubscribeRequest,
@@ -53,6 +60,7 @@ import type {
     UpdatePlaylistFilesRequest,
     UpdatePlaylistRequest,
     UpdateServerRequest,
+    UpdateUserRequest,
     UserPermission,
     YesNo,
 } from '../api-types';
@@ -444,9 +452,9 @@ export class PostsService implements CanActivate {
     }
 
     // user methods
-    login(username, password) {
-        const call = this.http.post(this.path + 'auth/login', {username: username, password: password}, this.httpOptions);
-        return call;
+    login(username: string, password: string) {
+        const body: LoginRequest = {username: username, password: password};
+        return this.http.post<LoginResponse>(this.path + 'auth/login', body, this.httpOptions);
     }
 
     // user methods
@@ -481,10 +489,11 @@ export class PostsService implements CanActivate {
     }
 
     // user methods
-    register(username, password) {
-        const call = this.http.post(this.path + 'auth/register', {userid: username,
-                                                                username: username,
-                                                                password: password}, this.httpOptions);
+    register(username: string, password: string) {
+        const body: RegisterRequest = {userid: username,
+            username: username,
+            password: password}
+        const call = this.http.post<RegisterResponse>(this.path + 'auth/register', body, this.httpOptions);
         return call;
     }
 
@@ -529,10 +538,11 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'auth/adminExists', {}, this.httpOptions);
     }
 
-    createAdminAccount(password) {
-        return this.http.post(this.path + 'auth/register', {userid: 'admin',
-            username: 'admin',
-            password: password}, this.httpOptions);
+    createAdminAccount(password: string) {
+        const body: RegisterRequest = {userid: 'admin',
+        username: 'admin',
+        password: password};
+        return this.http.post<RegisterResponse>(this.path + 'auth/register', body, this.httpOptions);
     }
 
     checkAdminCreationStatus(force_show = false) {
@@ -547,12 +557,14 @@ export class PostsService implements CanActivate {
         });
     }
 
-    changeUser(change_obj) {
-        return this.http.post<SuccessObject>(this.path + 'updateUser', {change_object: change_obj}, this.httpOptions);
+    changeUser(change_obj: UpdateUserRequest['change_object']) {
+        const body: UpdateUserRequest = {change_object: change_obj};
+        return this.http.post<SuccessObject>(this.path + 'updateUser', body, this.httpOptions);
     }
 
-    deleteUser(uid) {
-        return this.http.post<SuccessObject>(this.path + 'deleteUser', {uid: uid}, this.httpOptions);
+    deleteUser(uid: string) {
+        const body: DeleteUserRequest = {uid: uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteUser', body, this.httpOptions);
     }
 
     changeUserPassword(user_uid, new_password) {
@@ -560,11 +572,11 @@ export class PostsService implements CanActivate {
     }
 
     getUsers() {
-        return this.http.post(this.path + 'getUsers', {}, this.httpOptions);
+        return this.http.post<GetUsersResponse>(this.path + 'getUsers', {}, this.httpOptions);
     }
 
     getRoles() {
-        return this.http.post(this.path + 'getRoles', {}, this.httpOptions);
+        return this.http.post<GetRolesResponse>(this.path + 'getRoles', {}, this.httpOptions);
     }
 
     setUserPermission(user_uid: string, permission: UserPermission, new_value: YesNo) {

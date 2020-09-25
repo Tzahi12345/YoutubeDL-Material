@@ -695,35 +695,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  user:
-                    $ref: '#/components/schemas/User'
-                  token:
-                    type: string
-                  permissions:
-                    type: array
-                    items:
-                      type: string
-                  available_permissions:
-                    type: array
-                    items:
-                      type: string
+                $ref: '#/components/schemas/LoginResponse'
       description: Use this method to log into a user using their username and password and receive a jwt auth token so you can send per-user requests.
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userid:
-                  type: string
-                  description: 'This is the username, not the user uid'
-                password:
-                  type: string
-              required:
-                - userid
-                - password
+              $ref: '#/components/schemas/LoginRequest'
       security:
         - Auth query parameter: []
       tags:
@@ -738,27 +716,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/RegisterResponse'
       description: Use this endpoint to register a user. It will only work if registration is enabled.
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userid:
-                  type: string
-                username:
-                  type: string
-                password:
-                  type: string
-              required:
-                - userid
-                - username
-                - password
+              $ref: '#/components/schemas/RegisterRequest'
       security:
         - Auth query parameter: []
       tags:
@@ -778,21 +742,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                change_object:
-                  required:
-                    - uid
-                  type: object
-                  properties:
-                    uid:
-                      type: string
-                    name:
-                      type: string
-                    role:
-                      type: string
-              required:
-                - change_object
+              $ref: '#/components/schemas/UpdateUserRequest'
       description: Updates certain properties for a user. Only two are possible right now.
       security:
         - Auth query parameter: []
@@ -814,12 +764,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                uid:
-                  type: string
-              required:
-                - uid
+              $ref: '#/components/schemas/DeleteUserRequest'
       security:
         - Auth query parameter: []
       tags:
@@ -834,25 +779,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  roles:
-                    type: object
-                    properties:
-                      admin:
-                        type: object
-                        properties:
-                          permissions:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/UserPermission'
-                      user:
-                        type: object
-                        properties:
-                          permissions:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/UserPermission'
+                $ref: '#/components/schemas/GetRolesResponse'
       description: Gets the available roles and their permissions
       security:
         - Auth query parameter: []
@@ -910,12 +837,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/GetUsersResponse'
       description: 'Gets all users, returns a list of the user objects including their user permissions, videos, playlists, subscriptions, etc.'
       security:
         - Auth query parameter: []
@@ -1695,6 +1617,103 @@ components:
       properties:
         id:
           type: string
+    RegisterRequest:
+      required:
+        - userid
+        - username
+        - password
+      type: object
+      properties:
+        userid:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    RegisterResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+    LoginRequest:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPermission'
+        available_permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPermission'
+    UpdateUserRequest:
+      required:
+        - change_object
+      type: object
+      properties:
+        change_object:
+          required:
+            - uid
+          type: object
+          properties:
+            uid:
+              type: string
+            name:
+              type: string
+            role:
+              type: string
+    DeleteUserRequest:
+      required:
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+    GetUsersResponse:
+      required:
+        - users
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    GetRolesResponse:
+      required:
+        - roles
+      type: object
+      properties:
+        roles:
+          type: object
+          properties:
+            admin:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserPermission'
+            user:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserPermission'
   securitySchemes:
     Auth query parameter:
       name: apiKey
