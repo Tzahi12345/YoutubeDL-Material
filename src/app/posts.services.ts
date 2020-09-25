@@ -10,13 +10,19 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
-import {
+import type {
+    ChangeRolePermissionsRequest,
+    ChangeUserPermissionsRequest,
+    ConfigResponse,
     CreatePlaylistRequest,
     CreatePlaylistResponse,
     DeleteMp3Mp4Request,
     DeletePlaylistRequest,
     DeleteSubscriptionFileRequest,
+    DownloadArchiveRequest,
+    DownloadFileRequest,
     FileType,
+    GenerateNewApiKeyResponse,
     GetAllDownloadsResponse,
     GetAllFilesResponse,
     GetAllSubscriptionsResponse,
@@ -35,16 +41,21 @@ import {
     Mp4DownloadRequest,
     Mp4DownloadResponse,
     Playlist,
+    SetConfigRequest,
     SharingToggle,
     SubscribeRequest,
     SubscribeResponse,
     SubscriptionRequestData,
     SuccessObject,
+    UpdaterStatus,
     UnsubscribeRequest,
     UnsubscribeResponse,
     UpdatePlaylistFilesRequest,
     UpdatePlaylistRequest,
-} from 'api-types';
+    UpdateServerRequest,
+    UserPermission,
+    YesNo,
+} from '../api-types';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -224,7 +235,7 @@ export class PostsService implements CanActivate {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');
         } else {
-            return this.http.get(this.path + 'config', this.httpOptions);
+            return this.http.get<ConfigResponse>(this.path + 'config', this.httpOptions);
         }
     }
 
@@ -233,7 +244,8 @@ export class PostsService implements CanActivate {
     }
 
     setConfig(config) {
-        return this.http.post(this.path + 'setConfig', {new_config_file: config}, this.httpOptions);
+        const body: SetConfigRequest = {new_config_file: config};
+        return this.http.post<SuccessObject>(this.path + 'setConfig', body, this.httpOptions);
     }
 
     deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
@@ -262,19 +274,19 @@ export class PostsService implements CanActivate {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {}, this.httpOptions);
     }
 
-    downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
-                            uid = null, uuid = null, id = null) {
-        return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
-                                                            type: type,
-                                                            zip_mode: Array.isArray(fileName),
-                                                            outputName: outputName,
-                                                            fullPathProvided: fullPathProvided,
-                                                            subscriptionName: subscriptionName,
-                                                            subPlaylist: subPlaylist,
-                                                            uuid: uuid,
-                                                            uid: uid,
-                                                            id: id
-                                                            },
+    downloadFileFromServer(fileName: string | string[], type: FileType, outputName: string = null, fullPathProvided: boolean = null, subscriptionName: boolean = null, subPlaylist: boolean = null,
+                            uid = null, uuid: string = null, id = null) {
+        const body: DownloadFileRequest = {fileNames: fileName,
+            type: type,
+            zip_mode: Array.isArray(fileName),
+            outputName: outputName,
+            fullPathProvided: fullPathProvided,
+            subscriptionName: subscriptionName,
+            subPlaylist: subPlaylist,
+            uuid: uuid,
+            id: id,
+        };
+        return this.http.post(this.path + 'downloadFile', body,
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }
 
@@ -283,7 +295,8 @@ export class PostsService implements CanActivate {
     }
 
     downloadArchive(sub) {
-        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadArchiveRequest = {sub: sub};
+        return this.http.post(this.path + 'downloadArchive', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFileInfo(fileNames, type, urlMode) {
@@ -299,7 +312,7 @@ export class PostsService implements CanActivate {
     }
 
     generateNewAPIKey() {
-        return this.http.post(this.path + 'generateNewAPIKey', {}, this.httpOptions);
+        return this.http.post<GenerateNewApiKeyResponse>(this.path + 'generateNewAPIKey', {}, this.httpOptions);
     }
 
     enableSharing(uid: string, type: FileType, is_playlist: boolean) {
@@ -393,12 +406,13 @@ export class PostsService implements CanActivate {
     }
 
     // updates the server to the latest version
-    updateServer(tag) {
-        return this.http.post(this.path + 'updateServer', {tag: tag}, this.httpOptions);
+    updateServer(tag: string) {
+        const body: UpdateServerRequest = {tag: tag};
+        return this.http.post<SuccessObject>(this.path + 'updateServer', body, this.httpOptions);
     }
 
     getUpdaterStatus() {
-        return this.http.get(this.path + 'updaterStatus', this.httpOptions);
+        return this.http.get<UpdaterStatus>(this.path + 'updaterStatus', this.httpOptions);
     }
 
     // gets tag of the latest version of youtubedl-material
@@ -534,11 +548,11 @@ export class PostsService implements CanActivate {
     }
 
     changeUser(change_obj) {
-        return this.http.post(this.path + 'updateUser', {change_object: change_obj}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'updateUser', {change_object: change_obj}, this.httpOptions);
     }
 
     deleteUser(uid) {
-        return this.http.post(this.path + 'deleteUser', {uid: uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'deleteUser', {uid: uid}, this.httpOptions);
     }
 
     changeUserPassword(user_uid, new_password) {
@@ -553,13 +567,15 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getRoles', {}, this.httpOptions);
     }
 
-    setUserPermission(user_uid, permission, new_value) {
-        return this.http.post(this.path + 'changeUserPermissions', {user_uid: user_uid, permission: permission, new_value: new_value},
+    setUserPermission(user_uid: string, permission: UserPermission, new_value: YesNo) {
+        const body: ChangeUserPermissionsRequest = {user_uid: user_uid, permission: permission, new_value: new_value};
+        return this.http.post<SuccessObject>(this.path + 'changeUserPermissions', body,
                                                                     this.httpOptions);
     }
 
-    setRolePermission(role_name, permission, new_value) {
-        return this.http.post(this.path + 'changeRolePermissions', {role: role_name, permission: permission, new_value: new_value},
+    setRolePermission(role_name: string, permission: UserPermission, new_value: YesNo) {
+        const body: ChangeRolePermissionsRequest = {role: role_name, permission: permission, new_value: new_value};
+        return this.http.post<SuccessObject>(this.path + 'changeRolePermissions', body,
                                                                     this.httpOptions);
     }
 

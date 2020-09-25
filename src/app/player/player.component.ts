@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
-import type { FileType } from 'api-types';
+import type { FileType } from '../../api-types';
 
 export interface IMedia {
   title: string;
@@ -35,7 +35,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // params
   fileNames: string[];
-  type: string;
+  type: FileType;
   id = null; // used for playlists (not subscription)
   uid = null; // used for non-subscription files (audio, video, playlist)
   subscriptionName = null;
@@ -74,7 +74,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
 
-    this.type = this.route.snapshot.paramMap.get('type');
+    this.type = this.route.snapshot.paramMap.get('type') as FileType;
     this.id = this.route.snapshot.paramMap.get('id');
     this.uid = this.route.snapshot.paramMap.get('uid');
     this.subscriptionName = this.route.snapshot.paramMap.get('subscriptionName');
@@ -160,7 +160,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.id) {
           // regular video/audio file (not playlist)
           this.fileNames = [this.db_file['id']];
-          this.type = this.db_file['isAudio'] ? 'audio' : 'video';
+          this.type = (this.db_file['isAudio'] ? 'audio' : 'video') as FileType;
           if (!already_has_filenames) { this.parseFileNames(); }
         }
       }

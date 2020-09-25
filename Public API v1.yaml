@@ -437,11 +437,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties: {}
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/body_15'
+              $ref: '#/components/schemas/DownloadFileRequest'
       responses:
         '200':
           description: 'The file itself is in the response, as well as an options object.'
@@ -474,7 +470,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_17'
+              $ref: '#/components/schemas/DownloadArchiveRequest'
       responses:
         '200':
           description: The archive text file is sent as a response
@@ -495,7 +491,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_14'
+                $ref: '#/components/schemas/UpdaterStatus'
       security:
         - Auth query parameter: []
   /api/updateServer:
@@ -509,7 +505,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_18'
+              $ref: '#/components/schemas/UpdateServerRequest'
       responses:
         '200':
           description: OK
@@ -590,7 +586,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_16'
+                $ref: '#/components/schemas/GenerateNewApiKeyResponse'
       security:
         - Auth query parameter: []
   /api/deleteMp3:
@@ -627,7 +623,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_17'
+                $ref: '#/components/schemas/ConfigResponse'
       security:
         - Auth query parameter: []
   /api/setConfig:
@@ -639,7 +635,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_22'
+              $ref: '#/components/schemas/SetConfigRequest'
       responses:
         '200':
           description: OK
@@ -647,6 +643,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessObject'
+        '404':
+          description: Tried to save invalid config file.
       security:
         - Auth query parameter: []
   /api/downloads:
@@ -937,6 +935,13 @@ components:
       enum:
         - audio
         - video
+    Config:
+      required:
+        - YoutubeDLMaterial
+      type: object
+      properties:
+        YoutubeDLMaterial:
+          type: object
     BaseDownloadRequest:
       required:
         - url
@@ -1304,29 +1309,33 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/FileType'
-    body_15:
+    DownloadFileRequest:
       required:
         - fileNames
         - type
       type: object
       properties:
         fileNames:
-          type: array
-          description: Array of 1 or more files to download
-          items:
-            type: string
+          oneOf:
+            - type: string
+            - type: array
+              description: Array of 1 or more files to download
+              items:
+                type: string
         zip_mode:
           type: boolean
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
         outputName:
           type: string
         fullPathProvided:
+          type: boolean
+        uuid:
           type: string
         subscriptionName:
           type: boolean
           description: Only used for subscriptions
-        subscriptionPlaylist:
+        subPlaylist:
           type: boolean
           description: Only used for subscriptions
     DeleteFileRequest:
@@ -1351,7 +1360,7 @@ components:
           properties:
             archive_dir:
               type: string
-    inline_response_200_14:
+    UpdaterStatus:
       required:
         - details
         - updating
@@ -1361,7 +1370,11 @@ components:
           type: boolean
         details:
           type: string
-    body_18:
+        error:
+          type: boolean
+    UpdateServerRequest:
+      required:
+        - tag
       type: object
       properties:
         tag:
@@ -1387,7 +1400,7 @@ components:
       properties:
         unhashed_pin:
           type: string
-    inline_response_200_16:
+    GenerateNewApiKeyResponse:
       required:
         - new_api_key
       type: object
@@ -1404,23 +1417,23 @@ components:
           type: string
         blacklistMode:
           type: boolean
-    inline_response_200_17:
+    ConfigResponse:
       required:
         - config_file
         - success
       type: object
       properties:
         config_file:
-          type: object
+          $ref: '#/components/schemas/Config'
         success:
           type: boolean
-    body_22:
+    SetConfigRequest:
       required:
         - new_config_file
       type: object
       properties:
         new_config_file:
-          type: object
+          $ref: '#/components/schemas/Config'
     DatabaseFile:
       required:
         - duration
@@ -1621,7 +1634,7 @@ components:
         subscriptions:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_9_subscription'
+            $ref: '#/components/schemas/Subscription'
         created:
           type: number
         role:
@@ -1643,6 +1656,11 @@ components:
         - sharing
         - advanced_download
         - downloads_manager
+    YesNo:
+      type: string
+      enum:
+        - 'yes'
+        - 'no'
     BaseChangePermissionsRequest:
       required:
         - permission
@@ -1652,10 +1670,7 @@ components:
         permission:
           $ref: '#/components/schemas/UserPermission'
         new_value:
-          type: string
-          enum:
-            - 'yes'
-            - 'no'
+          $ref: '#/components/schemas/YesNo'
     ChangeUserPermissionsRequest:
       allOf:
         - $ref: '#/components/schemas/BaseChangePermissionsRequest'

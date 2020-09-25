@@ -3,6 +3,7 @@ import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
+import type { FileType } from '../../../api-types';
 
 @Component({
   selector: 'app-subscription',
@@ -151,7 +152,7 @@ export class SubscriptionComponent implements OnInit {
     }
 
     this.downloading = true;
-    this.postsService.downloadFileFromServer(fileNames, 'video', this.subscription.name, true).subscribe(res => {
+    this.postsService.downloadFileFromServer(fileNames, 'video' as FileType, this.subscription.name, true).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, this.subscription.name + '.zip');

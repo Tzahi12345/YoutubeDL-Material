@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
+import type { FileType } from '../../../api-types';
 
 @Component({
   selector: 'app-recent-videos',
@@ -161,7 +162,7 @@ export class RecentVideosComponent implements OnInit {
         // normal subscriptions
         !new_tab ? this.router.navigate(['/player', {fileNames: file.id,
                                           type: file.isAudio ? 'audio' : 'video', subscriptionName: sub.name,
-                                          subPlaylist: sub.isPlaylist}]) 
+                                          subPlaylist: sub.isPlaylist}])
                  : window.open(`/#/player;fileNames=${file.id};type=${file.isAudio ? 'audio' : 'video'};subscriptionName=${sub.name};subPlaylist=${sub.isPlaylist}`);
       }
     } else {
@@ -186,7 +187,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   downloadSubscriptionFile(file) {
-    const type = file.isAudio ? 'audio' : 'video';
+    const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
     this.postsService.downloadFileFromServer(file.id, type, null, null, sub.name, sub.isPlaylist,
@@ -199,7 +200,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   downloadNormalFile(file) {
-    const type = file.isAudio ? 'audio' : 'video';
+    const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const name = file.id;
     this.downloading_content[type][name] = true;
@@ -276,7 +277,7 @@ export class RecentVideosComponent implements OnInit {
     const result = b.registered - a.registered;
     return result;
   }
-  
+
   durationStringToNumber(dur_str) {
     let num_sum = 0;
     const dur_str_parts = dur_str.split(':');
