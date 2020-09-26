@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import type { UpdaterStatus } from '../../../api-types';
+import { UpdaterStatus } from '../../../api-types';
 
 @Component({
   selector: 'app-update-progress-dialog',

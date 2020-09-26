@@ -20,7 +20,7 @@ import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.com
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
-import type { FileType } from '../../api-types';
+import { FileType } from '../../api-types';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;

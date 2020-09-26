@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
-import type { FileType } from '../../../api-types';
+import { FileType } from '../../../api-types';
 
 @Component({
   selector: 'app-recent-videos',

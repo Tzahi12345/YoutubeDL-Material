@@ -10,7 +10,7 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
-import type {
+import {
     ChangeRolePermissionsRequest,
     ChangeUserPermissionsRequest,
     ConfigResponse,

@@ -3,7 +3,7 @@ import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
-import type { FileType } from '../../../api-types';
+import { FileType } from '../../../api-types';
 
 @Component({
   selector: 'app-subscription',
