@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-unified-file-card',
@@ -32,6 +33,9 @@ export class UnifiedFileCardComponent implements OnInit {
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
   @Output() editPlaylist = new EventEmitter<any>();
+
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   /*
     Planned sizes:
@@ -85,6 +89,15 @@ export class UnifiedFileCardComponent implements OnInit {
       playlist: this.file_obj,
       index: this.index
     });
+  }
+
+  onRightClick(event) {
+    event.preventDefault();
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenu.menuData = { 'item': {id: 1, name: 'hi'} };
+    this.contextMenu.menu.focusFirstItem('mouse');
+    this.contextMenu.openMenu();
   }
 
 }

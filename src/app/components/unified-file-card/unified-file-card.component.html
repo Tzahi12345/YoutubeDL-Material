@@ -1,7 +1,19 @@
-<div (mouseover)="elevated=true" (mouseout)="elevated=false" style="position: relative; width: fit-content;">
+<div (mouseover)="elevated=true" (mouseout)="elevated=false" (contextmenu)="onRightClick($event)" style="position: relative; width: fit-content;">
     <div *ngIf="!loading" class="download-time"><mat-icon class="audio-video-icon">{{(file_obj.type === 'audio' || file_obj.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>&nbsp;&nbsp;{{file_obj.registered | date:'shortDate'}}</div>
     <div *ngIf="loading" class="download-time" style="width: 75%; margin-top: 5px;"><content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" width="250" height="30"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="30" /></content-loader></div>
+    <!-- The context menu trigger must be kept above the "more info" menu -->
+    <div style="visibility: hidden; position: fixed"
+        [style.left]="contextMenuPosition.x"
+        [style.top]="contextMenuPosition.y"
+        [matMenuTriggerFor]="context_menu">
+    </div>
     <button [disabled]="loading" [matMenuTriggerFor]="action_menu" class="menuButton" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+    <mat-menu #context_menu>
+        <ng-container *ngIf="!loading">
+            <button (click)="navigateToFile($event)" mat-menu-item><mat-icon>open_in_browser</mat-icon><ng-container i18n="Open file button">Open file</ng-container></button>
+            <button (click)="navigateToFile({ctrlKey: true})" mat-menu-item><mat-icon>open_in_new</mat-icon><ng-container i18n="Open file in new tab">Open file in new tab</ng-container></button>
+        </ng-container>
+    </mat-menu>
     <mat-menu #action_menu="matMenu">
         <ng-container *ngIf="!is_playlist && !loading">
             <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
