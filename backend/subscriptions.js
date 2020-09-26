@@ -288,9 +288,9 @@ async function getVideosForSub(sub, user_uid = null) {
 
         const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
 
-        let fullOutput = appendedBasePath + '/%(title)s' + ext;
+        let fullOutput = `${appendedBasePath}/%(title)s.%(ext)s`;
         if (sub.custom_output) {
-            fullOutput = appendedBasePath + '/' + sub.custom_output + ext;
+            fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
         }
 
         let downloadConfig = ['-o', fullOutput, '-ciw', '--write-info-json', '--print-json'];
