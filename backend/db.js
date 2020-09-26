@@ -184,7 +184,7 @@ async function importUnregisteredFiles() {
     // run through check list and check each file to see if it's missing from the db
     dirs_to_check.forEach(dir_to_check => {
         // recursively get all files in dir's path
-        const files = utils.getDownloadedFilesByType(dir_to_check.basePath, dir_to_check.type);
+        const files = await utils.getDownloadedFilesByType(dir_to_check.basePath, dir_to_check.type);
 
         files.forEach(file => {
             // check if file exists in db, if not add it

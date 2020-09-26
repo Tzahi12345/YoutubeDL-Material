@@ -205,54 +205,49 @@ async function wait(ms) {
 }
 
 async function checkMigrations() {
-    return new Promise(async resolve => {
-        // 3.5->3.6 migration
-        const files_to_db_migration_complete = true; // migration phased out! previous code: db.get('files_to_db_migration_complete').value();
+    // 3.5->3.6 migration
+    const files_to_db_migration_complete = true; // migration phased out! previous code: db.get('files_to_db_migration_complete').value();
 
-        if (!files_to_db_migration_complete) {
-            logger.info('Beginning migration: 3.5->3.6+')
-            runFilesToDBMigration().then(success => {
-                if (success) { logger.info('3.5->3.6+ migration complete!'); }
-                else { logger.error('Migration failed: 3.5->3.6+'); }
-            });
-        }
+    if (!files_to_db_migration_complete) {
+        logger.info('Beginning migration: 3.5->3.6+')
+        const success = await runFilesToDBMigration()
+        if (success) { logger.info('3.5->3.6+ migration complete!'); }
+        else { logger.error('Migration failed: 3.5->3.6+'); }
+    }
 
-        resolve(true);
-    });
+    return true;
 }
 
 async function runFilesToDBMigration() {
-    return new Promise(async resolve => {
-        try {
-            let mp3s = getMp3s();
-            let mp4s = getMp4s();
+    try {
+        let mp3s = await getMp3s();
+        let mp4s = await getMp4s();
 
-            for (let i = 0; i < mp3s.length; i++) {
-                let file_obj = mp3s[i];
-                const file_already_in_db = db.get('files.audio').find({id: file_obj.id}).value();
-                if (!file_already_in_db) {
-                    logger.verbose(`Migrating file ${file_obj.id}`);
-                    db_api.registerFileDB(file_obj.id + '.mp3', 'audio');
-                }
+        for (let i = 0; i < mp3s.length; i++) {
+            let file_obj = mp3s[i];
+            const file_already_in_db = db.get('files.audio').find({id: file_obj.id}).value();
+            if (!file_already_in_db) {
+                logger.verbose(`Migrating file ${file_obj.id}`);
+                await db_api.registerFileDB(file_obj.id + '.mp3', 'audio');
             }
-
-            for (let i = 0; i < mp4s.length; i++) {
-                let file_obj = mp4s[i];
-                const file_already_in_db = db.get('files.video').find({id: file_obj.id}).value();
-                if (!file_already_in_db) {
-                    logger.verbose(`Migrating file ${file_obj.id}`);
-                    db_api.registerFileDB(file_obj.id + '.mp4', 'video');
-                }
-            }
-
-            // sets migration to complete
-            db.set('files_to_db_migration_complete', true).write();
-            resolve(true);
-        } catch(err) {
-            logger.error(err);
-            resolve(false);
         }
-    });
+
+        for (let i = 0; i < mp4s.length; i++) {
+            let file_obj = mp4s[i];
+            const file_already_in_db = db.get('files.video').find({id: file_obj.id}).value();
+            if (!file_already_in_db) {
+                logger.verbose(`Migrating file ${file_obj.id}`);
+                await db_api.registerFileDB(file_obj.id + '.mp4', 'video');
+            }
+        }
+
+        // sets migration to complete
+        db.set('files_to_db_migration_complete', true).write();
+        return true;
+    } catch(err) {
+        logger.error(err);
+        return false;
+    }
 }
 
 async function startServer() {
@@ -701,17 +696,17 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-function getMp3s() {
+async function getMp3s() {
     let mp3s = [];
-    var files = utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
+    var files = await utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(audioFolderPath.length, file.length);
 
-        var stats = fs.statSync(file);
+        var stats = await fs.stat(file);
 
         var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = utils.getJSONMp3(id, audioFolderPath);
+        var jsonobj = await utils.getJSONMp3(id, audioFolderPath);
         if (!jsonobj) continue;
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
@@ -730,9 +725,9 @@ function getMp3s() {
     return mp3s;
 }
 
-function getMp4s(relative_path = true) {
+async function getMp4s(relative_path = true) {
     let mp4s = [];
-    var files = utils.recFindByExt(videoFolderPath, 'mp4');
+    var files = await utils.recFindByExt(videoFolderPath, 'mp4');
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(videoFolderPath.length, file.length);
@@ -740,7 +735,7 @@ function getMp4s(relative_path = true) {
         var stats = fs.statSync(file);
 
         var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = utils.getJSONMp4(id, videoFolderPath);
+        var jsonobj = await utils.getJSONMp4(id, videoFolderPath);
         if (!jsonobj) continue;
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
@@ -934,7 +929,7 @@ async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
 
         // get ID from JSON
 
-        var jsonobj = utils.getJSONMp3(name, filePath);
+        var jsonobj = await utils.getJSONMp3(name, filePath);
         let id = null;
         if (jsonobj) id = jsonobj.id;
 
@@ -1009,7 +1004,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
 
         // get ID from JSON
 
-        var jsonobj = utils.getJSONMp4(name, filePath);
+        var jsonobj = await utils.getJSONMp4(name, filePath);
         let id = null;
         if (jsonobj) id = jsonobj.id;
 
@@ -1036,22 +1031,6 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
         // TODO: tell user that the file didn't exist
         return true;
     }
-}
-
-// replaces .webm with appropriate extension
-function getTrueFileName(unfixed_path, type) {
-    let fixed_path = unfixed_path;
-
-    const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
-    let unfixed_parts = unfixed_path.split('.');
-    const old_ext = unfixed_parts[unfixed_parts.length-1];
-
-
-    if (old_ext !== new_ext) {
-        unfixed_parts[unfixed_parts.length-1] = new_ext;
-        fixed_path = unfixed_parts.join('.');
-    }
-    return fixed_path;
 }
 
 /**
@@ -2214,7 +2193,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
             let appended_base_path = path.join(base_path, (subscription.isPlaylist ? 'playlists' : 'channels'), subscription.name, '/');
             let files;
             try {
-                files = utils.recFindByExt(appended_base_path, 'mp4');
+                files = await utils.recFindByExt(appended_base_path, 'mp4');
             } catch(e) {
                 files = null;
                 logger.info('Failed to get folder for subscription: ' + subscription.name + ' at path ' + appended_base_path);
