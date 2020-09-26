@@ -940,7 +940,7 @@ async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
 
         // use subscriptions API to remove video from the archive file, and write it to the blacklist
         if (await fs.pathExists(archive_path)) {
-            const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+            const line = id ? await subscriptions_api.removeIDFromArchive(archive_path, id) : null;
             if (blacklistMode && line) await writeToBlacklist('audio', line);
         } else {
             logger.info('Could not find archive file for audio files. Creating...');
@@ -1015,7 +1015,7 @@ async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
 
         // use subscriptions API to remove video from the archive file, and write it to the blacklist
         if (await fs.pathExists(archive_path)) {
-            const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+            const line = id ? await subscriptions_api.removeIDFromArchive(archive_path, id) : null;
             if (blacklistMode && line) await writeToBlacklist('video', line);
         } else {
             logger.info('Could not find archive file for videos. Creating...');
@@ -2429,7 +2429,7 @@ app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, 'audio', blacklistMode);
+        let success = await auth_api.deleteUserFile(req.user.uid, uid, 'audio', blacklistMode);
         res.send(success);
         return;
     }
@@ -2460,7 +2460,7 @@ app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, 'video', blacklistMode);
+        let success = await auth_api.deleteUserFile(req.user.uid, uid, 'video', blacklistMode);
         res.send(success);
         return;
     }
