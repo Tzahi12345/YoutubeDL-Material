@@ -297,7 +297,7 @@ exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false
   if (!file && type) file = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
 
   // prevent unauthorized users from accessing the file info
-  if (requireSharing && !file['sharingEnabled']) file = null;
+  if (file && !file['sharingEnabled'] && requireSharing) file = null;
 
   return file;
 }

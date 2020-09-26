@@ -2530,9 +2530,9 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
         let base_path = fileFolderPath;
         let usersFileFolder = null;
         const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-        if (multiUserMode && req.body.uuid) {
+        if (multiUserMode && (req.body.uuid || req.user.uid)) {
             usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-            base_path = path.join(usersFileFolder, req.body.uuid, type);
+            base_path = path.join(usersFileFolder, req.body.uuid ? req.body.uuid : req.user.uid, type);
         }
         if (!subscriptionName) {
             file = path.join(__dirname, base_path, fileNames + ext);
@@ -2550,7 +2550,7 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
             fileNames[i] = decodeURIComponent(fileNames[i]);
         }
         file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided, req.body.uuid);
-        file = path.join(__dirname, file);
+        if (!path.isAbsolute(file)) file = path.join(__dirname, file);
     }
     res.sendFile(file, function (err) {
         if (err) {

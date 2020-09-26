@@ -215,7 +215,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       // adds user token if in multi-user-mode
       const uuid_str = this.uuid ? `&uuid=${this.uuid}` : '';
       const uid_str = (this.id || !this.db_file) ? '' : `&uid=${this.db_file.uid}`;
-      const type_str = (this.id || !this.db_file) ? '' : `&type=${this.db_file.type}`
+      const type_str = (this.id || !this.db_file || !this.db_file.type) ? '' : `&type=${this.db_file.type}`
       const id_str = this.id ? `&id=${this.id}` : '';
       if (this.postsService.isLoggedIn) {
         fullLocation += (this.subscriptionName ? '&' : '?') + `jwt=${this.postsService.token}`;
