@@ -127,6 +127,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetFileResponse'
+        '401':
+          description: User is not authorized to view the file.
       security:
         - Auth query parameter: []
   /api/enableSharing:
@@ -441,6 +443,8 @@ paths:
       responses:
         '200':
           description: 'The file itself is in the response, as well as an options object.'
+        '401':
+          description: User is not authorized to view the file.
       security:
         - Auth query parameter: []
   /api/deleteFile:
@@ -1254,8 +1258,12 @@ components:
           type: boolean
         uuid:
           type: string
+        uid:
+          type: string
+        id:
+          type: string
         subscriptionName:
-          type: boolean
+          type: string
           description: Only used for subscriptions
         subPlaylist:
           type: boolean

@@ -190,13 +190,15 @@ export class RecentVideosComponent implements OnInit {
     const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.downloadFileFromServer(file.id, type, null, null, sub.name, sub.isPlaylist,
-      this.postsService.user ? this.postsService.user.uid : null, null).subscribe(res => {
-          const blob: Blob = res;
-          saveAs(blob, file.id + ext);
-        }, err => {
-          console.log(err);
-      });
+    this.postsService.downloadFileFromServer(
+      file.id, type,
+      {subscriptionName: sub.name, subPlaylist: sub.isPlaylist, uid: this.postsService.user ? this.postsService.user.uid : null}
+    ).subscribe(res => {
+      const blob: Blob = res;
+      saveAs(blob, file.id + ext);
+    }, err => {
+      console.log(err);
+    });
   }
 
   downloadNormalFile(file) {

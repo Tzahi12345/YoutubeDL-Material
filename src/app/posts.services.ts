@@ -282,8 +282,14 @@ export class PostsService implements CanActivate {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {}, this.httpOptions);
     }
 
-    downloadFileFromServer(fileName: string | string[], type: FileType, outputName: string = null, fullPathProvided: boolean = null, subscriptionName: boolean = null, subPlaylist: boolean = null,
-                            uid = null, uuid: string = null, id = null) {
+    downloadFileFromServer(
+        fileName: string | string[], type: FileType,
+        options: {outputName?: string, fullPathProvided?: boolean, subscriptionName?: string, subPlaylist?: boolean, uid?: string, uuid?: string, id?: string} = {}
+    ) {
+        const {outputName = null, fullPathProvided = null,
+            subscriptionName = null, subPlaylist = null,
+            uid = null, uuid = null, id = null} = options;
+
         const body: DownloadFileRequest = {fileNames: fileName,
             type: type,
             zip_mode: Array.isArray(fileName),
@@ -291,11 +297,11 @@ export class PostsService implements CanActivate {
             fullPathProvided: fullPathProvided,
             subscriptionName: subscriptionName,
             subPlaylist: subPlaylist,
+            uid: uid,
             uuid: uuid,
             id: id,
         };
-        return this.http.post(this.path + 'downloadFile', body,
-                                                          {responseType: 'blob', params: this.httpOptions.params});
+        return this.http.post(this.path + 'downloadFile', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     uploadCookiesFile(fileFormData) {

@@ -152,7 +152,7 @@ export class SubscriptionComponent implements OnInit {
     }
 
     this.downloading = true;
-    this.postsService.downloadFileFromServer(fileNames, 'video' as FileType, this.subscription.name, true).subscribe(res => {
+    this.postsService.downloadFileFromServer(fileNames, 'video' as FileType, {outputName: this.subscription.name, fullPathProvided: true}).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, this.subscription.name + '.zip');

@@ -71,7 +71,7 @@ export class CustomPlaylistsComponent implements OnInit {
   }
 
   downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
-    this.postsService.downloadFileFromServer(fileNames, type, zipName).subscribe(res => {
+    this.postsService.downloadFileFromServer(fileNames, type, {outputName: zipName}).subscribe(res => {
       if (playlistID) { this.downloading_content[type][playlistID] = false };
       const blob: Blob = res;
       saveAs(blob, zipName + '.zip');

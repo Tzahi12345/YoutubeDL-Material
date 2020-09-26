@@ -11,10 +11,12 @@ export interface DownloadFileRequest {
     outputName?: string;
     fullPathProvided?: boolean;
     uuid?: string;
+    uid?: string;
+    id?: string;
     /**
      * Only used for subscriptions
      */
-    subscriptionName?: boolean;
+    subscriptionName?: string;
     /**
      * Only used for subscriptions
      */
