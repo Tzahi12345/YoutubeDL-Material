@@ -286,8 +286,8 @@ export class PostsService implements CanActivate {
         fileName: string | string[], type: FileType,
         options: {outputName?: string, fullPathProvided?: boolean, subscriptionName?: string, subPlaylist?: boolean, uid?: string, uuid?: string, id?: string} = {}
     ) {
-        const {outputName = null, fullPathProvided = null,
-            subscriptionName = null, subPlaylist = null,
+        const {outputName = null, fullPathProvided = false,
+            subscriptionName = null, subPlaylist = false,
             uid = null, uuid = null, id = null} = options;
 
         const body: DownloadFileRequest = {fileNames: fileName,
