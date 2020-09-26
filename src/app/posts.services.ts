@@ -223,7 +223,7 @@ export class PostsService implements CanActivate {
     }
 
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
-                            uid = null, uuid = null) {
+                            uid = null, uuid = null, id = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
                                                             type: type,
                                                             zip_mode: Array.isArray(fileName),
@@ -232,7 +232,8 @@ export class PostsService implements CanActivate {
                                                             subscriptionName: subscriptionName,
                                                             subPlaylist: subPlaylist,
                                                             uuid: uuid,
-                                                            uid: uid
+                                                            uid: uid,
+                                                            id: id
                                                             },
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }

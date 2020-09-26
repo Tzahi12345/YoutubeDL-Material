@@ -283,6 +283,7 @@ exports.getUserVideos = function(user_uid, type) {
 }
 
 exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false) {
+  let file = null;
   if (!type) {
     file = users_db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
     if (!file) {
