@@ -83,7 +83,7 @@ export class CustomPlaylistsComponent implements OnInit {
     const playlist = args.file;
     const index = args.index;
     const playlistID = playlist.id;
-    this.postsService.removePlaylist(playlistID, 'audio').subscribe(res => {
+    this.postsService.removePlaylist(playlistID, playlist.type).subscribe(res => {
       if (res['success']) {
         this.playlists.splice(index, 1);
         this.postsService.openSnackBar('Playlist successfully removed.', '');
