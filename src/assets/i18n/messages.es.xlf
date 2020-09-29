@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd" xmlns:soluling="http://www.soluling.com">
-  <file original="messages.xlf" source-language="en-US" target-language="es" datatype="plaintext">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="es">
     <body>
         <trans-unit id="ccc7e92cbdd35e901acf9ad80941abee07bd8f60">
           <source> No need to include URL, just everything after. </source>
