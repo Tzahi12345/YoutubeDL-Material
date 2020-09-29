@@ -1946,7 +1946,7 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     }
 });
 
-app.post('/api/getAllFiles', optionalJwt, function (req, res) {
+app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
     let files = [];
     let playlists = [];

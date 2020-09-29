@@ -161,25 +161,23 @@ function deleteJSONFile(name, type, customPath = null) {
 
 async function recFindByExt(base,ext,files,result)
 {
-    files = files || fs.readdirSync(base)
+    files = files || (await fs.readdir(base))
     result = result || []
 
-    files.forEach(
-        function (file) {
-            var newbase = path.join(base,file)
-            if ( fs.statSync(newbase).isDirectory() )
+    for (const file in files) {
+        var newbase = path.join(base,file)
+        if ( (await fs.stat(newbase)).isDirectory() )
+        {
+            result = await recFindByExt(newbase,ext,await fs.readdir(newbase),result)
+        }
+        else
+        {
+            if ( file.substr(-1*(ext.length+1)) == '.' + ext )
             {
-                result = await recFindByExt(newbase,ext,fs.readdirSync(newbase),result)
-            }
-            else
-            {
-                if ( file.substr(-1*(ext.length+1)) == '.' + ext )
-                {
-                    result.push(newbase)
-                }
+                result.push(newbase)
             }
         }
-    )
+    }
     return result
 }
 
