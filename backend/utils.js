@@ -164,7 +164,7 @@ async function recFindByExt(base,ext,files,result)
     files = files || (await fs.readdir(base))
     result = result || []
 
-    for (const file in files) {
+    for (const file of files) {
         var newbase = path.join(base,file)
         if ( (await fs.stat(newbase)).isDirectory() )
         {
