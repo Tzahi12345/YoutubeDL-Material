@@ -4,6 +4,7 @@ const config_api = require('./config');
 
 const is_windows = process.platform === 'win32';
 
+// replaces .webm with appropriate extension
 function getTrueFileName(unfixed_path, type) {
     let fixed_path = unfixed_path;
 
@@ -19,21 +20,21 @@ function getTrueFileName(unfixed_path, type) {
     return fixed_path;
 }
 
-function getDownloadedFilesByType(basePath, type) {
+async function getDownloadedFilesByType(basePath, type) {
     // return empty array if the path doesn't exist
-    if (!fs.existsSync(basePath)) return [];
+    if (!(await fs.pathExists(basePath))) return [];
 
     let files = [];
     const ext = type === 'audio' ? 'mp3' : 'mp4';
-    var located_files = recFindByExt(basePath, ext);
+    var located_files = await recFindByExt(basePath, ext);
     for (let i = 0; i < located_files.length; i++) {
         let file = located_files[i];
         var file_path = file.substring(basePath.includes('\\') ? basePath.length+1 : basePath.length, file.length);
 
-        var stats = fs.statSync(file);
+        var stats = await fs.stat(file);
 
         var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = getJSONByType(type, id, basePath);
+        var jsonobj = await getJSONByType(type, id, basePath);
         if (!jsonobj) continue;
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
@@ -129,7 +130,7 @@ function fixVideoMetadataPerms(name, type, customPath = null) {
                                                    : config_api.getConfigItem('ytdl_video_folder_path');
 
     const ext = type === 'audio' ? '.mp3' : '.mp4';
-    
+
     const files_to_fix = [
         // JSONs
         path.join(customPath, name + '.info.json'),
@@ -158,27 +159,25 @@ function deleteJSONFile(name, type, customPath = null) {
 }
 
 
-function recFindByExt(base,ext,files,result)
+async function recFindByExt(base,ext,files,result)
 {
-    files = files || fs.readdirSync(base)
+    files = files || (await fs.readdir(base))
     result = result || []
 
-    files.forEach(
-        function (file) {
-            var newbase = path.join(base,file)
-            if ( fs.statSync(newbase).isDirectory() )
+    for (const file of files) {
+        var newbase = path.join(base,file)
+        if ( (await fs.stat(newbase)).isDirectory() )
+        {
+            result = await recFindByExt(newbase,ext,await fs.readdir(newbase),result)
+        }
+        else
+        {
+            if ( file.substr(-1*(ext.length+1)) == '.' + ext )
             {
-                result = recFindByExt(newbase,ext,fs.readdirSync(newbase),result)
-            }
-            else
-            {
-                if ( file.substr(-1*(ext.length+1)) == '.' + ext )
-                {
-                    result.push(newbase)
-                }
+                result.push(newbase)
             }
         }
-    )
+    }
     return result
 }
 
