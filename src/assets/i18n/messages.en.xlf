@@ -470,6 +470,34 @@
         </context-group>
         <note priority="1" from="description">Modify playlist dialog title</note>
       </trans-unit>
+      <trans-unit id="511b600ae4cf037e4eb3b7a58410842cd5727490" datatype="html">
+        <source>Add more content</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/modify-playlist/modify-playlist.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">Add more content</note>
+      </trans-unit>
+      <trans-unit id="52c9a103b812f258bcddc3d90a6e3f46871d25fe" datatype="html">
+        <source>Save</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/modify-playlist/modify-playlist.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/settings/settings.component.html</context>
+          <context context-type="linenumber">359</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/modify-users/modify-users.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+        <note priority="1" from="description">Save</note>
+      </trans-unit>
       <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1" datatype="html">
         <source>ID:</source>
         <context-group purpose="location">
@@ -570,8 +598,8 @@
         </context-group>
         <note priority="1" from="description">Drag and Drop</note>
       </trans-unit>
-      <trans-unit id="85e0725c870b28458fd3bbba905397d890f00a69" datatype="html">
-        <source>NOTE: Uploading new cookies will overrride your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
+      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html">
+        <source>NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1030,13 +1058,13 @@
         </context-group>
         <note priority="1" from="description">Custom downloader select label</note>
       </trans-unit>
-      <trans-unit id="00e274c496b094a019f0679c3fab3945793f3335" datatype="html">
-        <source>Select a logger level</source>
+      <trans-unit id="0c43af932e6a4ee85500e28f01b3538b4eb27bc4" datatype="html">
+        <source>Log Level</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">256</context>
         </context-group>
-        <note priority="1" from="description">Logger level select label</note>
+        <note priority="1" from="description">Log Level label</note>
       </trans-unit>
       <trans-unit id="db6c192032f4cab809aad35215f0aa4765761897" datatype="html">
         <source>Login expiration</source>
@@ -1165,22 +1193,6 @@
           <context context-type="linenumber">346</context>
         </context-group>
         <note priority="1" from="description">Logs settings label</note>
-      </trans-unit>
-      <trans-unit id="52c9a103b812f258bcddc3d90a6e3f46871d25fe" datatype="html">
-        <source>Save</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/settings/settings.component.html</context>
-          <context context-type="linenumber">359</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
-          <context context-type="linenumber">58</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/components/modify-users/modify-users.component.html</context>
-          <context context-type="linenumber">58</context>
-        </context-group>
-        <note priority="1" from="description">Settings save button</note>
       </trans-unit>
       <trans-unit id="fe8fd36dbf5deee1d56564965787a782a66eba44" datatype="html">
         <source>{VAR_SELECT, select, true {Close} false {Cancel} other {otha} }</source>

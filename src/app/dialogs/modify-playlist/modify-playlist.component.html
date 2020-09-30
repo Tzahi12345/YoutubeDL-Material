@@ -14,7 +14,7 @@
     </mat-button-toggle-group>
 
     <div class="add-content-button">
-        <button [disabled]="available_files.length === 0" mat-stroked-button [matMenuTriggerFor]="menu">Add more content</button>
+        <button [disabled]="available_files.length === 0" mat-stroked-button [matMenuTriggerFor]="menu"><ng-container i18n="Add more content">Add more content</ng-container></button>
     </div>
     <mat-menu #menu="matMenu">
         <button *ngFor="let file of available_files" (click)="addContent(file)" mat-menu-item>{{file}}</button>
@@ -24,5 +24,5 @@
 
 <mat-dialog-actions>
     <!-- Save -->
-    <button [disabled]="!playlistChanged()" (click)="updatePlaylist()" [disabled]="playlistChanged()" mat-raised-button color="accent">Save</button>
+    <button [disabled]="!playlistChanged()" (click)="updatePlaylist()" [disabled]="playlistChanged()" mat-raised-button color="accent"><ng-container i18n="Save">Save</ng-container></button>
 </mat-dialog-actions>
