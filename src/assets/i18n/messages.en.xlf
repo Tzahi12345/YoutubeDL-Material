@@ -1382,14 +1382,6 @@
         </context-group>
         <note priority="1" from="description">Navigation menu Downloads Page title</note>
       </trans-unit>
-      <trans-unit id="12afb8468d97aaebcc66bc05657d3ff8b4c98ca9" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{subscription.name}}"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/app.component.html</context>
-          <context context-type="linenumber">49</context>
-        </context-group>
-        <note priority="1" from="description">Navigation menu Downloads Page title</note>
-      </trans-unit>
       <trans-unit id="a249a5ae13e0835383885aaf697d2890cc3e53e9" datatype="html">
         <source>Share playlist</source>
         <context-group purpose="location">
