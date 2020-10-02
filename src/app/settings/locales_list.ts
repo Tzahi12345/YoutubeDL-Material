@@ -190,7 +190,7 @@ export const isoLangs = {
    },
    'fr': {
        'name': 'French',
-       'nativeName': 'français, langue française'
+       'nativeName': 'français'
    },
    'ff': {
        'name': 'Fula; Fulah; Pulaar; Pular',

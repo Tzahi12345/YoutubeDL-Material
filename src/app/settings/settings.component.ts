@@ -17,7 +17,7 @@ import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialo
 })
 export class SettingsComponent implements OnInit {
   all_locales = isoLangs;
-  supported_locales = ['en', 'es', 'de'];
+  supported_locales = ['en', 'es', 'de', 'fr', 'zh', 'nb'];
   initialLocale = localStorage.getItem('locale');
 
   initial_config = null;

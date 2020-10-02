@@ -111,6 +111,7 @@ If you're interested in translating the app into a new language, check out the [
 Official translators:
 * Spanish - tzahi12345
 * German - UnlimitedCookies
+* Chinese - TyRoyal
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
