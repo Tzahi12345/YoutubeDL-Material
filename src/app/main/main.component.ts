@@ -20,6 +20,7 @@ import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.com
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
+import { FileType } from '../../api-types';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
@@ -33,7 +34,7 @@ export interface Download {
   percent_complete: number;
   downloading: boolean;
   is_playlist: boolean;
-  error: boolean | string;
+  error?: boolean | string;
   fileNames?: string[];
   complete?: boolean;
   timestamp_start?: number;
@@ -63,7 +64,7 @@ export class MainComponent implements OnInit {
   youtubeUsername = null;
   youtubePassword = null;
   urlError = false;
-  path = '';
+  path: string | string[] = '';
   url = '';
   exists = '';
   percentDownloaded: number;
@@ -453,7 +454,7 @@ export class MainComponent implements OnInit {
   }
 
   public removePlaylistMp3(playlistID, index) {
-    this.postsService.removePlaylist(playlistID, 'audio').subscribe(res => {
+    this.postsService.removePlaylist(playlistID, 'audio' as FileType).subscribe(res => {
       if (res['success']) {
         this.playlists.audio.splice(index, 1);
         this.openSnackBar('Playlist successfully removed.', '');
@@ -472,7 +473,7 @@ export class MainComponent implements OnInit {
   }
 
   public removePlaylistMp4(playlistID, index) {
-    this.postsService.removePlaylist(playlistID, 'video').subscribe(res => {
+    this.postsService.removePlaylist(playlistID, 'video' as FileType).subscribe(res => {
       if (res['success']) {
         this.playlists.video.splice(index, 1);
         this.openSnackBar('Playlist successfully removed.', '');
@@ -739,7 +740,7 @@ export class MainComponent implements OnInit {
 
   downloadAudioFile(name) {
     this.downloading_content['audio'][name] = true;
-    this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
+    this.postsService.downloadFileFromServer(name, 'audio' as FileType).subscribe(res => {
       this.downloading_content['audio'][name] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(name) + '.mp3');
@@ -756,7 +757,7 @@ export class MainComponent implements OnInit {
 
   downloadVideoFile(name) {
     this.downloading_content['video'][name] = true;
-    this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
+    this.postsService.downloadFileFromServer(name, 'video' as FileType).subscribe(res => {
       this.downloading_content['video'][name] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(name) + '.mp4');
@@ -772,7 +773,7 @@ export class MainComponent implements OnInit {
   }
 
   downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
-    this.postsService.downloadFileFromServer(fileNames, type, zipName).subscribe(res => {
+    this.postsService.downloadFileFromServer(fileNames, type, {outputName: zipName}).subscribe(res => {
       if (playlistID) { this.downloading_content[type][playlistID] = false };
       const blob: Blob = res;
       saveAs(blob, zipName + '.zip');

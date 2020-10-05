@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
+import { FileType } from '../../api-types';
 
 export interface IMedia {
   title: string;
@@ -34,7 +35,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // params
   fileNames: string[];
-  type: string;
+  type: FileType;
   id = null; // used for playlists (not subscription)
   uid = null; // used for non-subscription files (audio, video, playlist)
   subscriptionName = null;
@@ -73,7 +74,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.innerWidth = window.innerWidth;
 
-    this.type = this.route.snapshot.paramMap.get('type');
+    this.type = this.route.snapshot.paramMap.get('type') as FileType;
     this.id = this.route.snapshot.paramMap.get('id');
     this.uid = this.route.snapshot.paramMap.get('uid');
     this.subscriptionName = this.route.snapshot.paramMap.get('subscriptionName');
@@ -159,7 +160,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.id) {
           // regular video/audio file (not playlist)
           this.fileNames = [this.db_file['id']];
-          this.type = this.db_file['isAudio'] ? 'audio' : 'video';
+          this.type = (this.db_file['isAudio'] ? 'audio' : 'video') as FileType;
           if (!already_has_filenames) { this.parseFileNames(); }
         }
       }
@@ -317,8 +318,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const zipName = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
     this.downloading = true;
-    this.postsService.downloadFileFromServer(fileNames, this.type, zipName, null, null, null, null,
-                                            !this.uuid ? this.postsService.user.uid : this.uuid, this.id).subscribe(res => {
+    this.postsService.downloadFileFromServer(
+      fileNames, this.type,
+      {outputName: zipName, uuid: !this.uuid ? this.postsService.user.uid : this.uuid, id: this.id}
+    ).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, zipName + '.zip');
@@ -332,8 +335,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
     const filename = this.playlist[0].title;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(filename, this.type, null, null, this.subscriptionName, this.subPlaylist,
-                                            this.is_shared ? this.db_file['uid'] : null, this.uuid).subscribe(res => {
+    this.postsService.downloadFileFromServer(
+      filename, this.type,
+      {subscriptionName: this.subscriptionName, subPlaylist: this.subPlaylist, uid: this.is_shared ? this.db_file['uid'] : null, uuid: this.uuid}
+    ).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);
@@ -360,7 +365,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         // Eventually do additional checks on name
         if (name) {
           const fileNames = this.getFileNames();
-          this.postsService.createPlaylist(name, fileNames, this.type, null).subscribe(res => {
+          this.postsService.createPlaylist(name, fileNames, this.type as FileType, null).subscribe(res => {
             if (res['success']) {
               dialogRef.close();
               const new_playlist = res['new_playlist'];
@@ -401,7 +406,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   updatePlaylist() {
     const fileNames = this.getFileNames();
     this.playlist_updating = true;
-    this.postsService.updatePlaylistFiles(this.id, fileNames, this.type).subscribe(res => {
+    this.postsService.updatePlaylistFiles(this.id, fileNames, this.type as FileType).subscribe(res => {
     this.playlist_updating = false;
       if (res['success']) {
         const fileNamesEncoded = fileNames.join('|nvr|');
