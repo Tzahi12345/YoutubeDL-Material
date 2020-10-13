@@ -1936,11 +1936,13 @@ app.get('/api/getMp3s', optionalJwt, function(req, res) {
 
     mp3s = JSON.parse(JSON.stringify(mp3s));
 
-    // add thumbnails if present
-    mp3s.forEach(mp3 => {
-        if (mp3['thumbnailPath'] && fs.existsSync(mp3['thumbnailPath']))
-            mp3['thumbnailBlob'] = fs.readFileSync(mp3['thumbnailPath']);
-    });
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        // add thumbnails if present
+        mp3s.forEach(mp3 => {
+            if (mp3['thumbnailPath'] && fs.existsSync(mp3['thumbnailPath']))
+                mp3['thumbnailBlob'] = fs.readFileSync(mp3['thumbnailPath']);
+        });
+    }
 
     res.send({
         mp3s: mp3s,
@@ -1963,11 +1965,13 @@ app.get('/api/getMp4s', optionalJwt, function(req, res) {
 
     mp4s = JSON.parse(JSON.stringify(mp4s));
 
-    // add thumbnails if present
-    mp4s.forEach(mp4 => {
-        if (mp4['thumbnailPath'] && fs.existsSync(mp4['thumbnailPath']))
-            mp4['thumbnailBlob'] = fs.readFileSync(mp4['thumbnailPath']);
-    });
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        // add thumbnails if present
+        mp4s.forEach(mp4 => {
+            if (mp4['thumbnailPath'] && fs.existsSync(mp4['thumbnailPath']))
+                mp4['thumbnailBlob'] = fs.readFileSync(mp4['thumbnailPath']);
+        });
+    }
 
     res.send({
         mp4s: mp4s,
@@ -2055,12 +2059,14 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
 
     files = JSON.parse(JSON.stringify(files));
 
-    // add thumbnails if present
-    files.forEach(file => {
-        if (file['thumbnailPath'] && fs.existsSync(file['thumbnailPath']))
-            file['thumbnailBlob'] = fs.readFileSync(file['thumbnailPath']);
-    });
-
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        // add thumbnails if present
+        files.forEach(file => {
+            if (file['thumbnailPath'] && fs.existsSync(file['thumbnailPath']))
+                file['thumbnailBlob'] = fs.readFileSync(file['thumbnailPath']);
+        });
+    }
+    
     res.send({
         files: files,
         playlists: playlists
@@ -2166,7 +2172,8 @@ app.post('/api/createCategory', optionalJwt, async (req, res) => {
     const new_category = {
         name: name,
         uid: uuid(),
-        rules: []
+        rules: [],
+        custom_putput: ''
     };
 
     db.get('categories').push(new_category).write();
