@@ -1,11 +1,13 @@
-<h4 mat-dialog-title>Editing category {{category['name']}}</h4>
+<h4 mat-dialog-title><ng-container i18n="Editing category dialog title">Editing category</ng-container>&nbsp;{{category['name']}}</h4>
 
-<mat-dialog-content>
-    <mat-form-field>
-        <input matInput placeholder="Name" i18n-placeholder="Name" [(ngModel)]="category['name']">
+<mat-dialog-content style="max-height: 50vh">
+    <mat-form-field style="width: 250px; margin-bottom: 5px;">
+        <input matInput placeholder="Name" i18n-placeholder="Name" [(ngModel)]="category['name']" required>
     </mat-form-field>
 
-    <h6 i18n="Rules">Rules</h6>
+    <mat-divider></mat-divider>
+
+    <h6 style="margin-top: 20px;" i18n="Rules">Rules</h6>
 
     <mat-list>
         <mat-list-item *ngFor="let rule of category['rules']; let i = index">
@@ -34,7 +36,18 @@
         </mat-list-item>
     </mat-list>
 
-    <button mat-icon-button (click)="addNewRule()" matTooltip="Add new rule" i18n-matTooltip="Add new rule tooltip"><mat-icon>add</mat-icon></button>
+    <button style="margin-bottom: 8px;" mat-icon-button (click)="addNewRule()" matTooltip="Add new rule" i18n-matTooltip="Add new rule tooltip"><mat-icon>add</mat-icon></button>
+
+    <mat-divider></mat-divider>
+
+    <mat-form-field style="width: 250px; margin-top: 10px;">
+        <input matInput [(ngModel)]="category['custom_output']" placeholder="Custom file output" i18n-placeholder="Category custom file output placeholder">
+        <mat-hint>
+            <a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+            <ng-container i18n="Custom output template documentation link">Documentation</ng-container></a>.
+            <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
+        </mat-hint>
+    </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions>
