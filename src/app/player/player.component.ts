@@ -124,6 +124,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.getFile();
     } else if (this.id) {
       this.getPlaylistFiles();
+    } else if (this.subscriptionName) {
+      this.getSubscription();
     }
 
     if (this.url) {
@@ -139,7 +141,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentItem = this.playlist[0];
       this.currentIndex = 0;
       this.show_player = true;
-    } else if (this.subscriptionName || this.fileNames) {
+    } else if (this.fileNames && !this.subscriptionName) {
       this.show_player = true;
       this.parseFileNames();
     }
@@ -168,6 +170,25 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if (!already_has_filenames) {
         this.openSnackBar('Error: Sharing has been disabled for this video!', 'Dismiss');
       }
+    });
+  }
+
+  getSubscription() {
+    this.postsService.getSubscription(null, this.subscriptionName).subscribe(res => {
+      const subscription = res['subscription'];
+      if (this.fileNames) {
+        subscription.videos.forEach(video => {
+          if (video['id'] === this.fileNames[0]) {
+            this.db_file = video;
+            this.show_player = true;
+            this.parseFileNames();
+          }
+        });
+      } else {
+        console.log('no file name specified');
+      }
+    }, err => {
+      this.openSnackBar(`Failed to find subscription ${this.subscriptionName}`, 'Dismiss');
     });
   }
 
@@ -202,23 +223,26 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       const fileName = this.fileNames[i];
       let baseLocation = null;
       let fullLocation = null;
-      if (!this.subscriptionName) {
-        baseLocation = this.type + '/';
-        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName);
-      } else {
-        // default to video but include subscription name param
-        baseLocation = this.type === 'audio' ? 'audio/' : 'video/';
-        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
-                        '&subPlaylist=' + this.subPlaylist;
-      }
 
       // adds user token if in multi-user-mode
       const uuid_str = this.uuid ? `&uuid=${this.uuid}` : '';
       const uid_str = (this.id || !this.db_file) ? '' : `&uid=${this.db_file.uid}`;
-      const type_str = (this.id || !this.db_file) ? '' : `&type=${this.db_file.type}`
+      const type_str = (this.type || !this.db_file) ? `&type=${this.type}` : `&type=${this.db_file.type}`
       const id_str = this.id ? `&id=${this.id}` : '';
+      const file_path_str = (!this.db_file) ? '' : `&file_path=${encodeURIComponent(this.db_file.path)}`;
+
+      if (!this.subscriptionName) {
+        baseLocation = 'stream/';
+        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + `?test=test${type_str}${file_path_str}`;
+      } else {
+        // default to video but include subscription name param
+        baseLocation = 'stream/';
+        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
+                        '&subPlaylist=' + this.subPlaylist + `${file_path_str}${type_str}`;
+      }
+
       if (this.postsService.isLoggedIn) {
-        fullLocation += (this.subscriptionName ? '&' : '?') + `jwt=${this.postsService.token}`;
+        fullLocation += (this.subscriptionName ? '&' : '&') + `jwt=${this.postsService.token}`;
         if (this.is_shared) { fullLocation += `${uuid_str}${uid_str}${type_str}${id_str}`; }
       } else if (this.is_shared) {
         fullLocation += (this.subscriptionName ? '&' : '?') + `test=test${uuid_str}${uid_str}${type_str}${id_str}`;
