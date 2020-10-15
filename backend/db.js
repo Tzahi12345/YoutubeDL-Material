@@ -15,10 +15,10 @@ function initialize(input_db, input_users_db, input_logger) {
     setLogger(input_logger);
 }
 
-function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
+function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null) {
     let db_path = null;
     const file_id = file_path.substring(0, file_path.length-4);
-    const file_object = generateFileObject(file_id, type, multiUserMode && multiUserMode.file_path, sub);
+    const file_object = generateFileObject(file_id, type, customPath || multiUserMode && multiUserMode.file_path, sub);
     if (!file_object) {
         logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
         return false;
@@ -27,7 +27,7 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null) {
     utils.fixVideoMetadataPerms(file_id, type, multiUserMode && multiUserMode.file_path);
 
     // add thumbnail path
-    file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, multiUserMode && multiUserMode.file_path);
+    file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, customPath || multiUserMode && multiUserMode.file_path);
 
     if (!sub) {
         if (multiUserMode) {
