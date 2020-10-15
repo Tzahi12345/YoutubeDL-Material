@@ -50,7 +50,8 @@ export class CustomPlaylistsComponent implements OnInit {
     });
   }
 
-  goToPlaylist(playlist) {
+  goToPlaylist(event_info) {
+    const playlist = event_info.file;
     const playlistID = playlist.id;
     const type = playlist.type;
 
