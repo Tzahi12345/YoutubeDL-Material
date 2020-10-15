@@ -304,8 +304,11 @@ export class PostsService implements CanActivate {
     }
 
     createCategory(name) {
-        console.log(name);
         return this.http.post(this.path + 'createCategory', {name: name}, this.httpOptions);
+    }
+
+    deleteCategory(category_uid) {
+        return this.http.post(this.path + 'deleteCategory', {category_uid: category_uid}, this.httpOptions);
     }
 
     updateCategory(category) {
@@ -340,8 +343,8 @@ export class PostsService implements CanActivate {
                                                                     file_uid: file_uid}, this.httpOptions)
     }
 
-    getSubscription(id) {
-        return this.http.post(this.path + 'getSubscription', {id: id}, this.httpOptions);
+    getSubscription(id, name = null) {
+        return this.http.post(this.path + 'getSubscription', {id: id, name: name}, this.httpOptions);
     }
 
     getAllSubscriptions() {
