@@ -15,12 +15,14 @@ export class ConfirmDialogComponent implements OnInit {
 
   doneEmitter: EventEmitter<any> = null;
   onlyEmitOnDone = false;
-  
+
+  warnSubmitColor = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmDialogComponent>) {
     if (this.data.dialogTitle) { this.dialogTitle = this.data.dialogTitle };
     if (this.data.dialogText) { this.dialogText = this.data.dialogText };
     if (this.data.submitText) { this.submitText = this.data.submitText };
+    if (this.data.warnSubmitColor) { this.warnSubmitColor = this.data.warnSubmitColor };
 
     // checks if emitter exists, if so don't autoclose as it should be handled by caller
     if (this.data.doneEmitter) {

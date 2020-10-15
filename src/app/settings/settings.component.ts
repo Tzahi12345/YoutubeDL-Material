@@ -82,7 +82,11 @@ export class SettingsComponent implements OnInit {
 
   dropCategory(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.postsService.categories, event.previousIndex, event.currentIndex);
-    this.postsService.updateCategories(this.postsService.categories);
+    this.postsService.updateCategories(this.postsService.categories).subscribe(res => {
+
+    }, err => {
+      this.postsService.openSnackBar('Failed to update categories!');
+    });
   }
 
   openAddCategoryDialog() {
@@ -108,6 +112,29 @@ export class SettingsComponent implements OnInit {
             const new_category = res['new_category'];
             this.openEditCategoryDialog(new_category);
           }
+        });
+      }
+    });
+  }
+
+  deleteCategory(category) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: 'Delete category',
+        dialogText: `Would you like to delete ${category['name']}?`,
+        submitText: 'Delete',
+        warnSubmitColor: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.postsService.deleteCategory(category['uid']).subscribe(res => {
+          if (res['success']) {
+            this.postsService.openSnackBar(`Successfully deleted ${category['name']}!`);
+            this.postsService.reloadCategories();
+          }
+        }, err => {
+          this.postsService.openSnackBar(`Failed to delete ${category['name']}!`);
         });
       }
     });
@@ -206,7 +233,8 @@ export class SettingsComponent implements OnInit {
         dialogTitle: 'Kill downloads',
         dialogText: 'Are you sure you want to kill all downloads? Any subscription and non-subscription downloads will end immediately, though this operation may take a minute or so to complete.',
         submitText: 'Kill all downloads',
-        doneEmitter: done
+        doneEmitter: done,
+        warnSubmitColor: true
       }
     });
     done.subscribe(confirmed => {

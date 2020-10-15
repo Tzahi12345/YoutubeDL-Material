@@ -61,7 +61,8 @@ export class LogsViewerComponent implements OnInit {
       data: {
         dialogTitle: 'Clear logs',
         dialogText: 'Would you like to clear your logs? This will delete all your current logs, permanently.',
-        submitText: 'Clear'
+        submitText: 'Clear',
+        warnSubmitColor: true
       }
     });
     dialogRef.afterClosed().subscribe(confirmed => {
