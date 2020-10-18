@@ -199,12 +199,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'setConfig', {new_config_file: config}, this.httpOptions);
     }
 
-    deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
-        if (isAudio) {
-            return this.http.post(this.path + 'deleteMp3', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
-        } else {
-            return this.http.post(this.path + 'deleteMp4', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
-        }
+    deleteFile(uid: string, type: string, blacklistMode = false) {
+        return this.http.post(this.path + 'deleteFile', {uid: uid, type: type, blacklistMode: blacklistMode}, this.httpOptions);
     }
 
     getMp3s() {

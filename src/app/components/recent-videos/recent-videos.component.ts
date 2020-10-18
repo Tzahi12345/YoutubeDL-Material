@@ -210,7 +210,7 @@ export class RecentVideosComponent implements OnInit {
 
       if (!this.postsService.config.Extra.file_manager_enabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, false).subscribe(delRes => {
+        this.postsService.deleteFile(name, type).subscribe(delRes => {
           // reload mp4s
           this.getAllFiles();
         });
@@ -233,7 +233,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   deleteNormalFile(file, index, blacklistMode = false) {
-    this.postsService.deleteFile(file.uid, file.isAudio, blacklistMode).subscribe(result => {
+    this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
         this.files.splice(index, 1);

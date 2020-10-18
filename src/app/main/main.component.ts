@@ -740,7 +740,7 @@ export class MainComponent implements OnInit {
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, true).subscribe(delRes => {
+        this.postsService.deleteFile(name, 'video').subscribe(delRes => {
           // reload mp3s
           this.getMp3s();
         });
@@ -757,7 +757,7 @@ export class MainComponent implements OnInit {
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, false).subscribe(delRes => {
+        this.postsService.deleteFile(name, 'audio').subscribe(delRes => {
           // reload mp4s
           this.getMp4s();
         });

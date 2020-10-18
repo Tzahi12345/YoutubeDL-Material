@@ -2523,56 +2523,25 @@ app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
     })
 });
 
-// deletes mp3 file
-app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
-    // var name = req.body.name;
+// deletes non-subscription files
+app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var uid = req.body.uid;
+    var type = req.body.type;
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, 'audio', blacklistMode);
+        let success = auth_api.deleteUserFile(req.user.uid, uid, type, blacklistMode);
         res.send(success);
         return;
     }
 
-    var audio_obj = db.get('files.audio').find({uid: uid}).value();
-    var name = audio_obj.id;
-    var fullpath = audioFolderPath + name + ".mp3";
+    var file_obj = db.get(`files.${type}`).find({uid: uid}).value();
+    var name = file_obj.id;
+    var fullpath = file_obj ? file_obj.path : null;
     var wasDeleted = false;
     if (fs.existsSync(fullpath))
     {
-        deleteAudioFile(name, null, blacklistMode);
-        db.get('files.audio').remove({uid: uid}).write();
-        wasDeleted = true;
-        res.send(wasDeleted);
-    } else if (audio_obj) {
-        db.get('files.audio').remove({uid: uid}).write();
-        wasDeleted = true;
-        res.send(wasDeleted);
-    } else {
-        wasDeleted = false;
-        res.send(wasDeleted);
-    }
-});
-
-// deletes mp4 file
-app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
-    var uid = req.body.uid;
-    var blacklistMode = req.body.blacklistMode;
-
-    if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, 'video', blacklistMode);
-        res.send(success);
-        return;
-    }
-
-    var video_obj = db.get('files.video').find({uid: uid}).value();
-    var name = video_obj.id;
-    var fullpath = videoFolderPath + name + ".mp4";
-    var wasDeleted = false;
-    if (fs.existsSync(fullpath))
-    {
-        wasDeleted = await deleteVideoFile(name, null, blacklistMode);
+        wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
         db.get('files.video').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
@@ -2636,17 +2605,6 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
           }
         }
     });
-});
-
-app.post('/api/deleteFile', async (req, res) => {
-    let fileName = req.body.fileName;
-    let type = req.body.type;
-    if (type === 'audio') {
-        deleteAudioFile(fileName);
-    } else if (type === 'video') {
-        deleteVideoFile(fileName);
-    }
-    res.send({});
 });
 
 app.post('/api/downloadArchive', async (req, res) => {
