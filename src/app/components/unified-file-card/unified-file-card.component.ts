@@ -3,6 +3,20 @@ import { MatDialog } from '@angular/material/dialog';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { registerLocaleData } from '@angular/common';
+import localeGB from '@angular/common/locales/en-GB';
+import localeFR from '@angular/common/locales/fr';
+import localeES from '@angular/common/locales/es';
+import localeDE from '@angular/common/locales/de';
+import localeZH from '@angular/common/locales/zh';
+import localeNB from '@angular/common/locales/nb';
+
+registerLocaleData(localeGB);
+registerLocaleData(localeFR);
+registerLocaleData(localeES);
+registerLocaleData(localeDE);
+registerLocaleData(localeZH);
+registerLocaleData(localeNB);
 
 @Component({
   selector: 'app-unified-file-card',
@@ -29,10 +43,12 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() use_youtubedl_archive = false;
   @Input() is_playlist = false;
   @Input() index: number;
+  @Input() locale = null;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
   @Output() editPlaylist = new EventEmitter<any>();
+  
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
