@@ -46,7 +46,7 @@
                     <a *ngIf="postsService.config && enableDownloadsManager && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('downloads_manager')))" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/downloads'><ng-container i18n="Navigation menu Downloads Page title">Downloads</ng-container></a>
                     <ng-container *ngIf="postsService.config && allowSubscriptions && postsService.subscriptions && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('subscriptions')))">
                         <mat-divider></mat-divider>
-                        <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatar [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatar><ng-container i18n="Navigation menu Downloads Page title">{{subscription.name}}</ng-container></a>
+                        <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatar [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatar>{{subscription.name}}</a>
                     </ng-container>
                 </mat-nav-list>
             </mat-sidenav>

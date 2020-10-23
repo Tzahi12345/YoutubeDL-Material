@@ -1,6 +1,6 @@
-var async = require('async');
 const { uuid } = require('uuidv4');
 var fs = require('fs-extra');
+var { promisify } = require('util');
 var auth_api = require('./authentication/auth');
 var winston = require('winston');
 var path = require('path');
@@ -18,7 +18,6 @@ var utils = require('./utils')
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
 var ProgressBar = require('progress');
-var md5 = require('md5');
 const NodeID3 = require('node-id3')
 const downloader = require('youtube-dl/lib/downloader')
 const fetch = require('node-fetch');
@@ -194,55 +193,60 @@ app.use(auth_api.passport.initialize());
 
 // actual functions
 
-async function checkMigrations() {
-    return new Promise(async resolve => {
-        // 3.5->3.6 migration
-        const files_to_db_migration_complete = true; // migration phased out! previous code: db.get('files_to_db_migration_complete').value();
-
-        if (!files_to_db_migration_complete) {
-            logger.info('Beginning migration: 3.5->3.6+')
-            runFilesToDBMigration().then(success => {
-                if (success) { logger.info('3.5->3.6+ migration complete!'); }
-                else { logger.error('Migration failed: 3.5->3.6+'); }
-            });
-        }
-
-        resolve(true);
+/**
+ * setTimeout, but its a promise.
+ * @param {number} ms
+ */
+async function wait(ms) {
+    await new Promise(resolve => {
+        setTimeout(resolve, ms);
     });
 }
 
+async function checkMigrations() {
+    // 3.5->3.6 migration
+    const files_to_db_migration_complete = true; // migration phased out! previous code: db.get('files_to_db_migration_complete').value();
+
+    if (!files_to_db_migration_complete) {
+        logger.info('Beginning migration: 3.5->3.6+')
+        const success = await runFilesToDBMigration()
+        if (success) { logger.info('3.5->3.6+ migration complete!'); }
+        else { logger.error('Migration failed: 3.5->3.6+'); }
+    }
+
+    return true;
+}
+
 async function runFilesToDBMigration() {
-    return new Promise(async resolve => {
-        try {
-            let mp3s = getMp3s();
-            let mp4s = getMp4s();
+    try {
+        let mp3s = await getMp3s();
+        let mp4s = await getMp4s();
 
-            for (let i = 0; i < mp3s.length; i++) {
-                let file_obj = mp3s[i];
-                const file_already_in_db = db.get('files.audio').find({id: file_obj.id}).value();
-                if (!file_already_in_db) {
-                    logger.verbose(`Migrating file ${file_obj.id}`);
-                    db_api.registerFileDB(file_obj.id + '.mp3', 'audio');
-                }
+        for (let i = 0; i < mp3s.length; i++) {
+            let file_obj = mp3s[i];
+            const file_already_in_db = db.get('files.audio').find({id: file_obj.id}).value();
+            if (!file_already_in_db) {
+                logger.verbose(`Migrating file ${file_obj.id}`);
+                await db_api.registerFileDB(file_obj.id + '.mp3', 'audio');
             }
-
-            for (let i = 0; i < mp4s.length; i++) {
-                let file_obj = mp4s[i];
-                const file_already_in_db = db.get('files.video').find({id: file_obj.id}).value();
-                if (!file_already_in_db) {
-                    logger.verbose(`Migrating file ${file_obj.id}`);
-                    db_api.registerFileDB(file_obj.id + '.mp4', 'video');
-                }
-            }
-
-            // sets migration to complete
-            db.set('files_to_db_migration_complete', true).write();
-            resolve(true);
-        } catch(err) {
-            logger.error(err);
-            resolve(false);
         }
-    });
+
+        for (let i = 0; i < mp4s.length; i++) {
+            let file_obj = mp4s[i];
+            const file_already_in_db = db.get('files.video').find({id: file_obj.id}).value();
+            if (!file_already_in_db) {
+                logger.verbose(`Migrating file ${file_obj.id}`);
+                await db_api.registerFileDB(file_obj.id + '.mp4', 'video');
+            }
+        }
+
+        // sets migration to complete
+        db.set('files_to_db_migration_complete', true).write();
+        return true;
+    } catch(err) {
+        logger.error(err);
+        return false;
+    }
 }
 
 async function startServer() {
@@ -417,20 +421,20 @@ async function downloadReleaseZip(tag) {
 }
 
 async function installDependencies() {
-    return new Promise(resolve => {
-        var child_process = require('child_process');
-        child_process.execSync('npm install',{stdio:[0,1,2]});
-        resolve(true);
-    });
+    var child_process = require('child_process');
+    var exec = promisify(child_process.exec);
 
+    await exec('npm install',{stdio:[0,1,2]});
+    return true;
 }
 
 async function backupServerLite() {
-    return new Promise(async resolve => {
-        fs.ensureDirSync(path.join(__dirname, 'appdata', 'backups'));
-        let output_path = path.join('appdata', 'backups', `backup-${Date.now()}.zip`);
-        logger.info(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
-        let output = fs.createWriteStream(path.join(__dirname, output_path));
+    await fs.ensureDir(path.join(__dirname, 'appdata', 'backups'));
+    let output_path = path.join('appdata', 'backups', `backup-${Date.now()}.zip`);
+    logger.info(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
+    let output = fs.createWriteStream(path.join(__dirname, output_path));
+
+    await new Promise(resolve => {
         var archive = archiver('zip', {
             gzip: true,
             zlib: { level: 9 } // Sets the compression level.
@@ -454,87 +458,80 @@ async function backupServerLite() {
             ignore: files_to_ignore
         });
 
-        await archive.finalize();
-
-        // wait a tiny bit for the zip to reload in fs
-        setTimeout(function() {
-            resolve(true);
-        }, 100);
+        resolve(archive.finalize());
     });
+
+    // wait a tiny bit for the zip to reload in fs
+    await wait(100);
+    return true;
 }
 
 async function isNewVersionAvailable() {
-    return new Promise(async resolve => {
-        // gets tag of the latest version of youtubedl-material, compare to current version
-        const latest_tag = await getLatestVersion();
-        const current_tag = CONSTS['CURRENT_VERSION'];
-        if (latest_tag > current_tag) {
-            resolve(true);
-        } else {
-            resolve(false);
-        }
-    });
+    // gets tag of the latest version of youtubedl-material, compare to current version
+    const latest_tag = await getLatestVersion();
+    const current_tag = CONSTS['CURRENT_VERSION'];
+    if (latest_tag > current_tag) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 async function getLatestVersion() {
-    return new Promise(resolve => {
-        fetch('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest', {method: 'Get'})
-        .then(async res => res.json())
-        .then(async (json) => {
-            if (json['message']) {
-                // means there's an error in getting latest version
-                logger.error(`ERROR: Received the following message from GitHub's API:`);
-                logger.error(json['message']);
-                if (json['documentation_url']) logger.error(`Associated URL: ${json['documentation_url']}`)
-            }
-            resolve(json['tag_name']);
-            return;
-        });
-    });
+    const res = await fetch('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest', {method: 'Get'});
+    const json = await res.json();
+
+    if (json['message']) {
+        // means there's an error in getting latest version
+        logger.error(`ERROR: Received the following message from GitHub's API:`);
+        logger.error(json['message']);
+        if (json['documentation_url']) logger.error(`Associated URL: ${json['documentation_url']}`)
+    }
+    return json['tag_name'];
 }
 
 async function killAllDownloads() {
-    return new Promise(resolve => {
-        ps.lookup({
-            command: 'youtube-dl',
-            }, function(err, resultList ) {
-            if (err) {
-                // failed to get list of processes
-                logger.error('Failed to get a list of running youtube-dl processes.');
-                logger.error(err);
-                resolve({
-                    details: err,
-                    success: false
-                });
-            }
-            
-            // processes that contain the string 'youtube-dl' in the name will be looped
-            resultList.forEach(function( process ){
-                if (process) {
-                    ps.kill(process.pid, 'SIGKILL', function( err ) {
-                        if (err) {
-                            // failed to kill, process may have ended on its own
-                            logger.warn(`Failed to kill process with PID ${process.pid}`);
-                            logger.warn(err);
-                        }
-                        else {
-                            logger.verbose(`Process ${process.pid} has been killed!`);
-                        }
-                    });
+    const lookupAsync = promisify(ps.lookup);
+
+    try {
+        await lookupAsync({
+            command: 'youtube-dl'
+        });
+    } catch (err) {
+        // failed to get list of processes
+        logger.error('Failed to get a list of running youtube-dl processes.');
+        logger.error(err);
+        return {
+            details: err,
+            success: false
+        };
+    }
+
+    // processes that contain the string 'youtube-dl' in the name will be looped
+    resultList.forEach(function( process ){
+        if (process) {
+            ps.kill(process.pid, 'SIGKILL', function( err ) {
+                if (err) {
+                    // failed to kill, process may have ended on its own
+                    logger.warn(`Failed to kill process with PID ${process.pid}`);
+                    logger.warn(err);
+                }
+                else {
+                    logger.verbose(`Process ${process.pid} has been killed!`);
                 }
             });
-            resolve({
-                success: true
-            });
-        });
+        }
     });
+
+    return {
+        success: true
+    };
 }
 
 async function setPortItemFromENV() {
-    return new Promise(resolve => {
-        config_api.setConfigItem('ytdl_port', backendPort.toString());
-        setTimeout(() => resolve(true), 100);
-    });
+    config_api.setConfigItem('ytdl_port', backendPort.toString());
+    await wait(100);
+    return true;
 }
 
 async function setAndLoadConfig() {
@@ -543,51 +540,45 @@ async function setAndLoadConfig() {
 }
 
 async function setConfigFromEnv() {
-    return new Promise(resolve => {
-        let config_items = getEnvConfigItems();
-        let success = config_api.setConfigItems(config_items);
-        if (success) {
-            logger.info('Config items set using ENV variables.');
-            setTimeout(() => resolve(true), 100);
-        } else {
-            logger.error('ERROR: Failed to set config items using ENV variables.');
-            resolve(false);
-        }
-    });
+    let config_items = getEnvConfigItems();
+    let success = config_api.setConfigItems(config_items);
+    if (success) {
+        logger.info('Config items set using ENV variables.');
+        await wait(100);
+        return true;
+    } else {
+        logger.error('ERROR: Failed to set config items using ENV variables.');
+        return false;
+    }
 }
 
 async function loadConfig() {
-    return new Promise(async resolve => {
-        loadConfigValues();
+    loadConfigValues();
 
-        // creates archive path if missing
-        if (!fs.existsSync(archivePath)){
-            fs.mkdirSync(archivePath);
-        }
+    // creates archive path if missing
+    await fs.ensureDir(archivePath);
 
-        // get subscriptions
-        if (allowSubscriptions) {
-            // runs initially, then runs every ${subscriptionCheckInterval} seconds
+    // get subscriptions
+    if (allowSubscriptions) {
+        // runs initially, then runs every ${subscriptionCheckInterval} seconds
+        watchSubscriptions();
+        setInterval(() => {
             watchSubscriptions();
-            setInterval(() => {
-                watchSubscriptions();
-            }, subscriptionsCheckInterval * 1000);
-        }
+        }, subscriptionsCheckInterval * 1000);
+    }
 
-        db_api.importUnregisteredFiles();
+    db_api.importUnregisteredFiles();
 
-        // check migrations
-        await checkMigrations();
+    // check migrations
+    await checkMigrations();
 
-        // load in previous downloads
-        downloads = db.get('downloads').value();
+    // load in previous downloads
+    downloads = db.get('downloads').value();
 
-        // start the server here
-        startServer();
+    // start the server here
+    startServer();
 
-        resolve(true);
-    });
-
+    return true;
 }
 
 function loadConfigValues() {
@@ -704,17 +695,17 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-function getMp3s() {
+async function getMp3s() {
     let mp3s = [];
-    var files = utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
+    var files = await utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(audioFolderPath.length, file.length);
 
-        var stats = fs.statSync(file);
+        var stats = await fs.stat(file);
 
         var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = utils.getJSONMp3(id, audioFolderPath);
+        var jsonobj = await utils.getJSONMp3(id, audioFolderPath);
         if (!jsonobj) continue;
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
@@ -733,9 +724,9 @@ function getMp3s() {
     return mp3s;
 }
 
-function getMp4s(relative_path = true) {
+async function getMp4s(relative_path = true) {
     let mp4s = [];
-    var files = utils.recFindByExt(videoFolderPath, 'mp4');
+    var files = await utils.recFindByExt(videoFolderPath, 'mp4');
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         var file_path = file.substring(videoFolderPath.length, file.length);
@@ -743,7 +734,7 @@ function getMp4s(relative_path = true) {
         var stats = fs.statSync(file);
 
         var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = utils.getJSONMp4(id, videoFolderPath);
+        var jsonobj = await utils.getJSONMp4(id, videoFolderPath);
         if (!jsonobj) continue;
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
@@ -848,260 +839,231 @@ function getVideoFormatID(name)
     }
 }
 
-async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvided = null) {
-    return new Promise(async resolve => {
-        let zipFolderPath = null;
+async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvided = null, user_uid = null) {
+    let zipFolderPath = null;
 
-        if (!fullPathProvided) {
-            zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
-        } else {
-            zipFolderPath = path.join(__dirname, config_api.getConfigItem('ytdl_subscriptions_base_path'));
-        }
+    if (!fullPathProvided) {
+        zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
+        if (user_uid) zipFolderPath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, zipFolderPath);
+    } else {
+        zipFolderPath = path.join(__dirname, config_api.getConfigItem('ytdl_subscriptions_base_path'));
+    }
 
-        let ext = (type === 'audio') ? '.mp3' : '.mp4';
+    let ext = (type === 'audio') ? '.mp3' : '.mp4';
 
-        let output = fs.createWriteStream(path.join(zipFolderPath, outputName + '.zip'));
+    let output = fs.createWriteStream(path.join(zipFolderPath, outputName + '.zip'));
 
-        var archive = archiver('zip', {
-            gzip: true,
-            zlib: { level: 9 } // Sets the compression level.
-        });
-
-        archive.on('error', function(err) {
-            logger.error(err);
-            throw err;
-        });
-
-        // pipe archive data to the output file
-        archive.pipe(output);
-
-        for (let i = 0; i < fileNames.length; i++) {
-            let fileName = fileNames[i];
-            let fileNamePathRemoved = path.parse(fileName).base;
-            let file_path = !fullPathProvided ? zipFolderPath + fileName + ext : fileName;
-            archive.file(file_path, {name: fileNamePathRemoved + ext})
-        }
-
-        await archive.finalize();
-
-        // wait a tiny bit for the zip to reload in fs
-        setTimeout(function() {
-            resolve(path.join(zipFolderPath,outputName + '.zip'));
-        }, 100);
-
+    var archive = archiver('zip', {
+        gzip: true,
+        zlib: { level: 9 } // Sets the compression level.
     });
 
+    archive.on('error', function(err) {
+        logger.error(err);
+        throw err;
+    });
 
+    // pipe archive data to the output file
+    archive.pipe(output);
+
+    for (let i = 0; i < fileNames.length; i++) {
+        let fileName = fileNames[i];
+        let fileNamePathRemoved = path.parse(fileName).base;
+        let file_path = !fullPathProvided ? path.join(zipFolderPath, fileName + ext) : fileName;
+        archive.file(file_path, {name: fileNamePathRemoved + ext})
+    }
+
+    await archive.finalize();
+
+    // wait a tiny bit for the zip to reload in fs
+    await wait(100);
+    return path.join(zipFolderPath,outputName + '.zip');
 }
 
 async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
-    return new Promise(resolve => {
-        let filePath = customPath ? customPath : audioFolderPath;
-        
-        var jsonPath = path.join(filePath,name+'.mp3.info.json');
-        var altJSONPath = path.join(filePath,name+'.info.json');
-        var audioFilePath = path.join(filePath,name+'.mp3');
-        var thumbnailPath = path.join(filePath,name+'.webp');
-        var altThumbnailPath = path.join(filePath,name+'.jpg');
+    let filePath = customPath ? customPath : audioFolderPath;
 
-        jsonPath = path.join(__dirname, jsonPath);
-        altJSONPath = path.join(__dirname, altJSONPath);
-        audioFilePath = path.join(__dirname, audioFilePath);
+    var jsonPath = path.join(filePath,name+'.mp3.info.json');
+    var altJSONPath = path.join(filePath,name+'.info.json');
+    var audioFilePath = path.join(filePath,name+'.mp3');
+    var thumbnailPath = path.join(filePath,name+'.webp');
+    var altThumbnailPath = path.join(filePath,name+'.jpg');
 
-        let jsonExists = fs.existsSync(jsonPath);
-        let thumbnailExists = fs.existsSync(thumbnailPath);
+    jsonPath = path.join(__dirname, jsonPath);
+    altJSONPath = path.join(__dirname, altJSONPath);
+    audioFilePath = path.join(__dirname, audioFilePath);
 
-        if (!jsonExists) {
-            if (fs.existsSync(altJSONPath)) {
-                jsonExists = true;
-                jsonPath = altJSONPath;
-            }
+    let jsonExists = await fs.pathExists(jsonPath);
+    let thumbnailExists = await fs.pathExists(thumbnailPath);
+
+    if (!jsonExists) {
+        if (await fs.pathExists(altJSONPath)) {
+            jsonExists = true;
+            jsonPath = altJSONPath;
         }
+    }
 
-        if (!thumbnailExists) {
-            if (fs.existsSync(altThumbnailPath)) {
-                thumbnailExists = true;
-                thumbnailPath = altThumbnailPath;
-            }
+    if (!thumbnailExists) {
+        if (await fs.pathExists(altThumbnailPath)) {
+            thumbnailExists = true;
+            thumbnailPath = altThumbnailPath;
         }
+    }
 
-        let audioFileExists = fs.existsSync(audioFilePath);
+    let audioFileExists = await fs.pathExists(audioFilePath);
 
-        if (config_api.descriptors[name]) {
-            try {
-                for (let i = 0; i < config_api.descriptors[name].length; i++) {
-                    config_api.descriptors[name][i].destroy();
-                }
-            } catch(e) {
-
+    if (config_api.descriptors[name]) {
+        try {
+            for (let i = 0; i < config_api.descriptors[name].length; i++) {
+                config_api.descriptors[name][i].destroy();
             }
+        } catch(e) {
+
         }
+    }
 
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_path = path.join(archivePath, 'archive_audio.txt');
+    let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+    if (useYoutubeDLArchive) {
+        const archive_path = path.join(archivePath, 'archive_audio.txt');
 
-            // get ID from JSON
+        // get ID from JSON
 
-            var jsonobj = utils.getJSONMp3(name, filePath);
-            let id = null;
-            if (jsonobj) id = jsonobj.id;
+        var jsonobj = await utils.getJSONMp3(name, filePath);
+        let id = null;
+        if (jsonobj) id = jsonobj.id;
 
-            // use subscriptions API to remove video from the archive file, and write it to the blacklist
-            if (fs.existsSync(archive_path)) {
-                const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
-                if (blacklistMode && line) writeToBlacklist('audio', line);
-            } else {
-                logger.info('Could not find archive file for audio files. Creating...');
-                fs.closeSync(fs.openSync(archive_path, 'w'));
-            }
-        }
-
-        if (jsonExists) fs.unlinkSync(jsonPath);
-        if (thumbnailExists) fs.unlinkSync(thumbnailPath);
-        if (audioFileExists) {
-            fs.unlink(audioFilePath, function(err) {
-                if (fs.existsSync(jsonPath) || fs.existsSync(audioFilePath)) {
-                    resolve(false);
-                } else {
-                    resolve(true);
-                }
-            });
+        // use subscriptions API to remove video from the archive file, and write it to the blacklist
+        if (await fs.pathExists(archive_path)) {
+            const line = id ? await subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+            if (blacklistMode && line) await writeToBlacklist('audio', line);
         } else {
-            // TODO: tell user that the file didn't exist
-            resolve(true);
+            logger.info('Could not find archive file for audio files. Creating...');
+            await fs.close(await fs.open(archive_path, 'w'));
         }
+    }
 
-    });
+    if (jsonExists) await fs.unlink(jsonPath);
+    if (thumbnailExists) await fs.unlink(thumbnailPath);
+    if (audioFileExists) {
+        await fs.unlink(audioFilePath);
+        if (await fs.pathExists(jsonPath) || await fs.pathExists(audioFilePath)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        // TODO: tell user that the file didn't exist
+        return true;
+    }
 }
 
 async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
-    return new Promise(resolve => {
-        let filePath = customPath ? customPath : videoFolderPath;
-        var jsonPath = path.join(filePath,name+'.info.json');
+    let filePath = customPath ? customPath : videoFolderPath;
+    var jsonPath = path.join(filePath,name+'.info.json');
 
-        var altJSONPath = path.join(filePath,name+'.mp4.info.json');
-        var videoFilePath = path.join(filePath,name+'.mp4');
-        var thumbnailPath = path.join(filePath,name+'.webp');
-        var altThumbnailPath = path.join(filePath,name+'.jpg');
+    var altJSONPath = path.join(filePath,name+'.mp4.info.json');
+    var videoFilePath = path.join(filePath,name+'.mp4');
+    var thumbnailPath = path.join(filePath,name+'.webp');
+    var altThumbnailPath = path.join(filePath,name+'.jpg');
 
-        jsonPath = path.join(__dirname, jsonPath);
-        videoFilePath = path.join(__dirname, videoFilePath);
+    jsonPath = path.join(__dirname, jsonPath);
+    videoFilePath = path.join(__dirname, videoFilePath);
 
-        let jsonExists = fs.existsSync(jsonPath);
-        let videoFileExists = fs.existsSync(videoFilePath);
-        let thumbnailExists = fs.existsSync(thumbnailPath);
+    let jsonExists = await fs.pathExists(jsonPath);
+    let videoFileExists = await fs.pathExists(videoFilePath);
+    let thumbnailExists = await fs.pathExists(thumbnailPath);
 
-        if (!jsonExists) {
-            if (fs.existsSync(altJSONPath)) {
-                jsonExists = true;
-                jsonPath = altJSONPath;
-            }
+    if (!jsonExists) {
+        if (await fs.pathExists(altJSONPath)) {
+            jsonExists = true;
+            jsonPath = altJSONPath;
         }
-        
-        if (!thumbnailExists) {
-            if (fs.existsSync(altThumbnailPath)) {
-                thumbnailExists = true;
-                thumbnailPath = altThumbnailPath;
-            }
+    }
+
+    if (!thumbnailExists) {
+        if (await fs.pathExists(altThumbnailPath)) {
+            thumbnailExists = true;
+            thumbnailPath = altThumbnailPath;
         }
+    }
 
-        if (config_api.descriptors[name]) {
-            try {
-                for (let i = 0; i < config_api.descriptors[name].length; i++) {
-                    config_api.descriptors[name][i].destroy();
-                }
-            } catch(e) {
-
+    if (config_api.descriptors[name]) {
+        try {
+            for (let i = 0; i < config_api.descriptors[name].length; i++) {
+                config_api.descriptors[name][i].destroy();
             }
+        } catch(e) {
+
         }
+    }
 
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_path = path.join(archivePath, 'archive_video.txt');
+    let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+    if (useYoutubeDLArchive) {
+        const archive_path = path.join(archivePath, 'archive_video.txt');
 
-            // get ID from JSON
+        // get ID from JSON
 
-            var jsonobj = utils.getJSONMp4(name, filePath);
-            let id = null;
-            if (jsonobj) id = jsonobj.id;
+        var jsonobj = await utils.getJSONMp4(name, filePath);
+        let id = null;
+        if (jsonobj) id = jsonobj.id;
 
-            // use subscriptions API to remove video from the archive file, and write it to the blacklist
-            if (fs.existsSync(archive_path)) {
-                const line = id ? subscriptions_api.removeIDFromArchive(archive_path, id) : null;
-                if (blacklistMode && line) writeToBlacklist('video', line);
-            } else {
-                logger.info('Could not find archive file for videos. Creating...');
-                fs.closeSync(fs.openSync(archive_path, 'w'));
-            }
-        }
-
-        if (jsonExists) fs.unlinkSync(jsonPath);
-        if (thumbnailExists) fs.unlinkSync(thumbnailPath);
-        if (videoFileExists) {
-            fs.unlink(videoFilePath, function(err) {
-                if (fs.existsSync(jsonPath) || fs.existsSync(videoFilePath)) {
-                    resolve(false);
-                } else {
-                    resolve(true);
-                }
-            });
+        // use subscriptions API to remove video from the archive file, and write it to the blacklist
+        if (await fs.pathExists(archive_path)) {
+            const line = id ? await subscriptions_api.removeIDFromArchive(archive_path, id) : null;
+            if (blacklistMode && line) await writeToBlacklist('video', line);
         } else {
-            // TODO: tell user that the file didn't exist
-            resolve(true);
+            logger.info('Could not find archive file for videos. Creating...');
+            fs.closeSync(fs.openSync(archive_path, 'w'));
+        }
+    }
+
+    if (jsonExists) await fs.unlink(jsonPath);
+    if (thumbnailExists) await fs.unlink(thumbnailPath);
+    if (videoFileExists) {
+        await fs.unlink(videoFilePath);
+        if (await fs.pathExists(jsonPath) || await fs.pathExists(videoFilePath)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        // TODO: tell user that the file didn't exist
+        return true;
+    }
+}
+
+/**
+ * @param {'audio' | 'video'} type
+ * @param {string[]} fileNames
+ */
+async function getAudioOrVideoInfos(type, fileNames) {
+    let result = await Promise.all(fileNames.map(async fileName => {
+        let fileLocation = videoFolderPath+fileName;
+        if (type === 'audio') {
+            fileLocation += '.mp3.info.json';
+        } else if (type === 'video') {
+            fileLocation += '.info.json';
         }
 
-    });
-}
-
-// replaces .webm with appropriate extension
-function getTrueFileName(unfixed_path, type) {
-    let fixed_path = unfixed_path;
-
-    const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
-    let unfixed_parts = unfixed_path.split('.');
-    const old_ext = unfixed_parts[unfixed_parts.length-1];
-
-
-    if (old_ext !== new_ext) {
-        unfixed_parts[unfixed_parts.length-1] = new_ext;
-        fixed_path = unfixed_parts.join('.');
-    }
-    return fixed_path;
-}
-
-function getAudioInfos(fileNames) {
-    let result = [];
-    for (let i = 0; i < fileNames.length; i++) {
-        let fileName = fileNames[i];
-        let fileLocation = audioFolderPath+fileName+'.mp3.info.json';
-        if (fs.existsSync(fileLocation)) {
-            let data = fs.readFileSync(fileLocation);
+        if (await fs.pathExists(fileLocation)) {
+            let data = await fs.readFile(fileLocation);
             try {
-                result.push(JSON.parse(data));
-            } catch(e) {
-                logger.error(`Could not find info for file ${fileName}.mp3`);
+                return JSON.parse(data);
+            } catch (e) {
+                let suffix;
+                if (type === 'audio') {
+                    suffix += '.mp3';
+                } else if (type === 'video') {
+                    suffix += '.mp4';
+                }
+
+                logger.error(`Could not find info for file ${fileName}${suffix}`);
             }
         }
-    }
-    return result;
-}
+        return null;
+    }));
 
-function getVideoInfos(fileNames) {
-    let result = [];
-    for (let i = 0; i < fileNames.length; i++) {
-        let fileName = fileNames[i];
-        let fileLocation = videoFolderPath+fileName+'.info.json';
-        if (fs.existsSync(fileLocation)) {
-            let data = fs.readFileSync(fileLocation);
-            try {
-                result.push(JSON.parse(data));
-            } catch(e) {
-                logger.error(`Could not find info for file ${fileName}.mp4`);
-            }
-        }
-    }
-    return result;
+    return result.filter(data => data != null);
 }
 
 // downloads
@@ -1414,134 +1376,131 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
 }
 
 async function generateArgs(url, type, options) {
-    return new Promise(async resolve => {
-        var videopath = '%(title)s';
-        var globalArgs = config_api.getConfigItem('ytdl_custom_args');
-        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
-        var is_audio = type === 'audio';
+    var videopath = '%(title)s';
+    var globalArgs = config_api.getConfigItem('ytdl_custom_args');
+    let useCookies = config_api.getConfigItem('ytdl_use_cookies');
+    var is_audio = type === 'audio';
 
-        var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+    var fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
 
-        if (options.customFileFolderPath) fileFolderPath = options.customFileFolderPath;
+    if (options.customFileFolderPath) fileFolderPath = options.customFileFolderPath;
 
-        var customArgs = options.customArgs;
-        var customOutput = options.customOutput;
-        var customQualityConfiguration = options.customQualityConfiguration;
+    var customArgs = options.customArgs;
+    var customOutput = options.customOutput;
+    var customQualityConfiguration = options.customQualityConfiguration;
 
-        // video-specific args
-        var selectedHeight = options.selectedHeight;
+    // video-specific args
+    var selectedHeight = options.selectedHeight;
 
-        // audio-specific args
-        var maxBitrate = options.maxBitrate;
+    // audio-specific args
+    var maxBitrate = options.maxBitrate;
 
-        var youtubeUsername = options.youtubeUsername;
-        var youtubePassword = options.youtubePassword;
+    var youtubeUsername = options.youtubeUsername;
+    var youtubePassword = options.youtubePassword;
 
-        let downloadConfig = null;
-        let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'bestvideo+bestaudio', '--merge-output-format', 'mp4'];
-        const is_youtube = url.includes('youtu');
-        if (!is_audio && !is_youtube) {
-            // tiktok videos fail when using the default format
-            qualityPath = null;
-        } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
-            qualityPath = ['-f', 'bestvideo+bestaudio']
+    let downloadConfig = null;
+    let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'bestvideo+bestaudio', '--merge-output-format', 'mp4'];
+    const is_youtube = url.includes('youtu');
+    if (!is_audio && !is_youtube) {
+        // tiktok videos fail when using the default format
+        qualityPath = null;
+    } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
+        qualityPath = ['-f', 'bestvideo+bestaudio']
+    }
+
+    if (customArgs) {
+        downloadConfig = customArgs.split(',,');
+    } else {
+        if (customQualityConfiguration) {
+            qualityPath = ['-f', customQualityConfiguration];
+        } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
+            qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
+        } else if (maxBitrate && is_audio) {
+            qualityPath = ['--audio-quality', maxBitrate]
         }
 
-        if (customArgs) {
-            downloadConfig = customArgs.split(',,');
+        if (customOutput) {
+            downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
         } else {
-            if (customQualityConfiguration) {
-                qualityPath = ['-f', customQualityConfiguration];
-            } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-                qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
-            } else if (maxBitrate && is_audio) {
-                qualityPath = ['--audio-quality', maxBitrate]
-            }
-
-            if (customOutput) {
-                customOutput = options.noRelativePath ? customOutput : path.join(fileFolderPath, customOutput);
-                downloadConfig = ['-o', `${customOutput}.%(ext)s`, '--write-info-json', '--print-json'];
-            } else {
-                downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
-            }
-
-            if (qualityPath && options.downloading_method === 'exec') downloadConfig.push(...qualityPath);
-
-            if (is_audio && !options.skip_audio_args) {
-                downloadConfig.push('-x');
-                downloadConfig.push('--audio-format', 'mp3');
-            }
-
-            if (youtubeUsername && youtubePassword) {
-                downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
-            }
-
-            if (useCookies) {
-                if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
-                    downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
-                } else {
-                    logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
-                }
-            }
-
-            if (!useDefaultDownloadingAgent && customDownloadingAgent) {
-                downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
-            }
-
-            let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-            if (useYoutubeDLArchive) {
-                const archive_folder = options.user ? path.join(fileFolderPath, 'archives') : archivePath;
-                const archive_path = path.join(archive_folder, `archive_${type}.txt`);
-
-                fs.ensureDirSync(archive_folder);
-
-                // create archive file if it doesn't exist
-                if (!fs.existsSync(archive_path)) {
-                    fs.closeSync(fs.openSync(archive_path, 'w'));
-                }
-
-                let blacklist_path = options.user ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
-                // create blacklist file if it doesn't exist
-                if (!fs.existsSync(blacklist_path)) {
-                    fs.closeSync(fs.openSync(blacklist_path, 'w'));
-                }
-
-                let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
-                fs.ensureFileSync(merged_path);
-                // merges blacklist and regular archive
-                let inputPathList = [archive_path, blacklist_path];
-                let status = await mergeFiles(inputPathList, merged_path);
-
-                options.merged_string = fs.readFileSync(merged_path, "utf8");
-
-                downloadConfig.push('--download-archive', merged_path);
-            }
-
-            if (config_api.getConfigItem('ytdl_include_thumbnail')) {
-                downloadConfig.push('--write-thumbnail');
-            }
-
-            if (globalArgs && globalArgs !== '') {
-                // adds global args
-                if (downloadConfig.indexOf('-o') !== -1 && globalArgs.split(',,').indexOf('-o') !== -1) {
-                    // if global args has an output, replce the original output with that of global args
-                    const original_output_index = downloadConfig.indexOf('-o');
-                    downloadConfig.splice(original_output_index, 2);
-                }
-                downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
-            }
-
+            downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
         }
-        logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
-        resolve(downloadConfig);
-    });
+
+        if (qualityPath && options.downloading_method === 'exec') downloadConfig.push(...qualityPath);
+
+        if (is_audio && !options.skip_audio_args) {
+            downloadConfig.push('-x');
+            downloadConfig.push('--audio-format', 'mp3');
+        }
+
+        if (youtubeUsername && youtubePassword) {
+            downloadConfig.push('--username', youtubeUsername, '--password', youtubePassword);
+        }
+
+        if (useCookies) {
+            if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+                downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
+            } else {
+                logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
+            }
+        }
+
+        if (!useDefaultDownloadingAgent && customDownloadingAgent) {
+            downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
+        }
+
+        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+        if (useYoutubeDLArchive) {
+            const archive_folder = options.user ? path.join(fileFolderPath, 'archives') : archivePath;
+            const archive_path = path.join(archive_folder, `archive_${type}.txt`);
+
+            await fs.ensureDir(archive_folder);
+
+            // create archive file if it doesn't exist
+            if (!(await fs.pathExists(archive_path))) {
+                await fs.close(await fs.open(archive_path, 'w'));
+            }
+
+            let blacklist_path = options.user ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
+            // create blacklist file if it doesn't exist
+            if (!(await fs.pathExists(blacklist_path))) {
+                await fs.close(await fs.open(blacklist_path, 'w'));
+            }
+
+            let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
+            await fs.ensureFile(merged_path);
+            // merges blacklist and regular archive
+            let inputPathList = [archive_path, blacklist_path];
+            let status = await mergeFiles(inputPathList, merged_path);
+
+            options.merged_string = await fs.readFile(merged_path, "utf8");
+
+            downloadConfig.push('--download-archive', merged_path);
+        }
+
+        if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+            downloadConfig.push('--write-thumbnail');
+        }
+
+        if (globalArgs && globalArgs !== '') {
+            // adds global args
+            if (downloadConfig.indexOf('-o') !== -1 && globalArgs.split(',,').indexOf('-o') !== -1) {
+                // if global args has an output, replce the original output with that of global args
+                const original_output_index = downloadConfig.indexOf('-o');
+                downloadConfig.splice(original_output_index, 2);
+            }
+            downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
+        }
+
+    }
+    logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
+    return downloadConfig;
 }
 
 async function getVideoInfoByURL(url, args = [], download = null) {
     return new Promise(resolve => {
         // remove bad args
         const new_args = [...args];
-        
+
         const archiveArgIndex = new_args.indexOf('--download-archive');
         if (archiveArgIndex !== -1) {
             new_args.splice(archiveArgIndex, 2);
@@ -1607,11 +1566,11 @@ async function convertFileToMp3(input_file, output_file) {
     });
 }
 
-function writeToBlacklist(type, line) {
+async function writeToBlacklist(type, line) {
     let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
     // adds newline to the beginning of the line
     line = '\n' + line;
-    fs.appendFileSync(blacklistPath, line);
+    await fs.appendFile(blacklistPath, line);
 }
 
 // download management functions
@@ -1755,21 +1714,6 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
-// https://stackoverflow.com/a/32197381/8088021
-const deleteFolderRecursive = function(folder_to_delete) {
-    if (fs.existsSync(folder_to_delete)) {
-      fs.readdirSync(folder_to_delete).forEach((file, index) => {
-        const curPath = path.join(folder_to_delete, file);
-        if (fs.lstatSync(curPath).isDirectory()) { // recurse
-          deleteFolderRecursive(curPath);
-        } else { // delete file
-          fs.unlinkSync(curPath);
-        }
-      });
-      fs.rmdirSync(folder_to_delete);
-    }
-};
-
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     res.header("Access-Control-Allow-Origin", getOrigin());
@@ -1807,9 +1751,9 @@ const optionalJwt = function (req, res, next) {
         const uuid = using_body ? req.body.uuid : req.query.uuid;
         const uid = using_body ? req.body.uid : req.query.uid;
         const type = using_body ? req.body.type : req.query.type;
-        const file = !req.query.id ? auth_api.getUserVideo(uuid, uid, type, true, !!req.body) : auth_api.getUserPlaylist(uuid, req.query.id, null, true);
-        const is_shared = file ? file['sharingEnabled'] : false;
-        if (is_shared) {
+        const playlist_id = using_body ? req.body.id : req.query.id;
+        const file = !playlist_id ? auth_api.getUserVideo(uuid, uid, type, true, req.body) : auth_api.getUserPlaylist(uuid, playlist_id, null, false);
+        if (file) {
             req.can_watch = true;
             return next();
         } else {
@@ -1891,7 +1835,7 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         ui_uid: req.body.ui_uid,
         user: req.isAuthenticated() ? req.user.uid : null
     }
-    
+
     const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
     if (safeDownloadOverride) logger.verbose('Download is running with the safe download override.');
     const is_playlist = url.includes('playlist');
@@ -1913,8 +1857,21 @@ app.post('/api/killAllDownloads', optionalJwt, async function(req, res) {
     res.send(result_obj);
 });
 
+/**
+ * add thumbnails if present
+ * @param files - List of files with thumbnailPath property.
+ */
+async function addThumbnails(files) {
+    await Promise.all(files.map(async file => {
+        const thumbnailPath = file['thumbnailPath'];
+        if (thumbnailPath && (await fs.pathExists(thumbnailPath))) {
+            file['thumbnailBlob'] = await fs.readFile(thumbnailPath);
+        }
+    }));
+}
+
 // gets all download mp3s
-app.get('/api/getMp3s', optionalJwt, function(req, res) {
+app.get('/api/getMp3s', optionalJwt, async function(req, res) {
     var mp3s = db.get('files.audio').value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
     const is_authenticated = req.isAuthenticated();
@@ -1929,11 +1886,9 @@ app.get('/api/getMp3s', optionalJwt, function(req, res) {
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         // add thumbnails if present
-        mp3s.forEach(mp3 => {
-            if (mp3['thumbnailPath'] && fs.existsSync(mp3['thumbnailPath']))
-                mp3['thumbnailBlob'] = fs.readFileSync(mp3['thumbnailPath']);
-        });
+        await addThumbnails(mp3s);
     }
+
 
     res.send({
         mp3s: mp3s,
@@ -1942,7 +1897,7 @@ app.get('/api/getMp3s', optionalJwt, function(req, res) {
 });
 
 // gets all download mp4s
-app.get('/api/getMp4s', optionalJwt, function(req, res) {
+app.get('/api/getMp4s', optionalJwt, async function(req, res) {
     var mp4s = db.get('files.video').value(); // getMp4s();
     var playlists = db.get('playlists.video').value();
 
@@ -1958,10 +1913,7 @@ app.get('/api/getMp4s', optionalJwt, function(req, res) {
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         // add thumbnails if present
-        mp4s.forEach(mp4 => {
-            if (mp4['thumbnailPath'] && fs.existsSync(mp4['thumbnailPath']))
-                mp4['thumbnailBlob'] = fs.readFileSync(mp4['thumbnailPath']);
-        });
+        await addThumbnails(mp4s);
     }
 
     res.send({
@@ -2008,7 +1960,7 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     }
 });
 
-app.post('/api/getAllFiles', optionalJwt, function (req, res) {
+app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
     let files = [];
     let playlists = [];
@@ -2018,7 +1970,7 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
     let audios = null;
     let audio_playlists = null;
     let video_playlists = null;
-    let subscriptions = subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null);
+    let subscriptions =  config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
 
     // get basic info depending on multi-user mode being enabled
     if (req.isAuthenticated()) {
@@ -2035,7 +1987,7 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
 
     files = videos.concat(audios);
     playlists = video_playlists.concat(audio_playlists);
-    
+
     // loop through subscriptions and add videos
     for (let i = 0; i < subscriptions.length; i++) {
         sub = subscriptions[i];
@@ -2052,12 +2004,9 @@ app.post('/api/getAllFiles', optionalJwt, function (req, res) {
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         // add thumbnails if present
-        files.forEach(file => {
-            if (file['thumbnailPath'] && fs.existsSync(file['thumbnailPath']))
-                file['thumbnailBlob'] = fs.readFileSync(file['thumbnailPath']);
-        });
+        await addThumbnails(files);
     }
-    
+
     res.send({
         files: files,
         playlists: playlists
@@ -2315,7 +2264,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
             let appended_base_path = path.join(base_path, (subscription.isPlaylist ? 'playlists' : 'channels'), subscription.name, '/');
             let files;
             try {
-                files = utils.recFindByExt(appended_base_path, 'mp4');
+                files = await utils.recFindByExt(appended_base_path, 'mp4');
             } catch(e) {
                 files = null;
                 logger.info('Failed to get folder for subscription: ' + subscription.name + ' at path ' + appended_base_path);
@@ -2539,7 +2488,7 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var name = file_obj.id;
     var fullpath = file_obj ? file_obj.path : null;
     var wasDeleted = false;
-    if (fs.existsSync(fullpath))
+    if (await fs.pathExists(fullpath))
     {
         wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
         db.get('files.video').remove({uid: uid}).write();
@@ -2573,9 +2522,9 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
         let base_path = fileFolderPath;
         let usersFileFolder = null;
         const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-        if (multiUserMode && req.body.uuid) {
+        if (multiUserMode && (req.body.uuid || req.user.uid)) {
             usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-            base_path = path.join(usersFileFolder, req.body.uuid, type);
+            base_path = path.join(usersFileFolder, req.body.uuid ? req.body.uuid : req.user.uid, type);
         }
         if (!subscriptionName) {
             file = path.join(__dirname, base_path, fileNames + ext);
@@ -2592,7 +2541,8 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
         for (let i = 0; i < fileNames.length; i++) {
             fileNames[i] = decodeURIComponent(fileNames[i]);
         }
-        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided);
+        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided, req.body.uuid);
+        if (!path.isAbsolute(file)) file = path.join(__dirname, file);
     }
     res.sendFile(file, function (err) {
         if (err) {
@@ -2613,7 +2563,7 @@ app.post('/api/downloadArchive', async (req, res) => {
 
     let full_archive_path = path.join(archive_dir, 'archive.txt');
 
-    if (fs.existsSync(full_archive_path)) {
+    if (await fs.pathExists(full_archive_path)) {
         res.sendFile(full_archive_path);
     } else {
         res.sendStatus(404);
@@ -2625,14 +2575,14 @@ var upload_multer = multer({ dest: __dirname + '/appdata/' });
 app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res) => {
     const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
 
-    if (fs.existsSync(req.file.path)) {
-        fs.renameSync(req.file.path, new_path);
+    if (await fs.pathExists(req.file.path)) {
+        await fs.rename(req.file.path, new_path);
     } else {
         res.sendStatus(500);
         return;
     }
 
-    if (fs.existsSync(new_path)) {
+    if (await fs.pathExists(new_path)) {
         res.send({success: true});
     } else {
         res.sendStatus(500);
@@ -2806,9 +2756,9 @@ app.post('/api/logs', async function(req, res) {
     let logs = null;
     let lines = req.body.lines;
     logs_path = path.join('appdata', 'logs', 'combined.log')
-    if (fs.existsSync(logs_path)) {
+    if (await fs.pathExists(logs_path)) {
         if (lines) logs = await read_last_lines.read(logs_path, lines);
-        else       logs = fs.readFileSync(logs_path, 'utf8');
+        else       logs = await fs.readFile(logs_path, 'utf8');
     }
     else
         logger.error(`Failed to find logs file at the expected location: ${logs_path}`)
@@ -2824,8 +2774,10 @@ app.post('/api/clearAllLogs', async function(req, res) {
     logs_err_path = path.join('appdata', 'logs', 'error.log');
     let success = false;
     try {
-        fs.writeFileSync(logs_path, '');
-        fs.writeFileSync(logs_err_path, '');
+        await Promise.all([
+            fs.writeFile(logs_path, ''),
+            fs.writeFile(logs_err_path, '')
+        ])
         success = true;
     } catch(e) {
         logger.error(e);
@@ -2842,10 +2794,8 @@ app.post('/api/clearAllLogs', async function(req, res) {
     let type = req.body.type;
     let result = null;
     if (!urlMode) {
-        if (type === 'audio') {
-            result = getAudioInfos(fileNames)
-        } else if (type === 'video') {
-            result = getVideoInfos(fileNames);
+        if (type === 'audio' || type === 'video') {
+            result = await getAudioOrVideoInfos(type, fileNames);
         }
     } else {
         result = await getUrlInfos(fileNames);
@@ -2918,7 +2868,7 @@ app.post('/api/deleteUser', optionalJwt, async (req, res) => {
         const user_db_obj = users_db.get('users').find({uid: uid});
         if (user_db_obj.value()) {
             // user exists, let's delete
-            deleteFolderRecursive(user_folder);
+            await fs.remove(user_folder);
             users_db.get('users').remove({uid: uid}).write();
         }
         res.send({success: true});

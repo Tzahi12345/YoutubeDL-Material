@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
+import { isoLangs } from './settings/locales_list';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -54,6 +55,7 @@ export class PostsService implements CanActivate {
     subscriptions = null;
     categories = null;
     sidenav = null;
+    locale = isoLangs['en'];
 
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar) {
@@ -115,6 +117,17 @@ export class PostsService implements CanActivate {
         if (localStorage.getItem('card_size')) {
             this.card_size = localStorage.getItem('card_size');
         }
+
+        // localization
+        const locale = localStorage.getItem('locale');
+        if (!locale) {
+        localStorage.setItem('locale', 'en');
+        }
+
+        if (isoLangs[locale]) {
+            this.locale = isoLangs[locale];
+        }
+
     }
     canActivate(route, state): Promise<boolean> {
         return new Promise(resolve => {
@@ -220,7 +233,7 @@ export class PostsService implements CanActivate {
     }
 
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
-                            uid = null, uuid = null) {
+                            uid = null, uuid = null, id = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,
                                                             type: type,
                                                             zip_mode: Array.isArray(fileName),
@@ -229,7 +242,8 @@ export class PostsService implements CanActivate {
                                                             subscriptionName: subscriptionName,
                                                             subPlaylist: subPlaylist,
                                                             uuid: uuid,
-                                                            uid: uid
+                                                            uid: uid,
+                                                            id: id
                                                             },
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }

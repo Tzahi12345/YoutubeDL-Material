@@ -139,12 +139,12 @@ exports.registerUser = function(req, res) {
 exports.passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'},
-    function(username, password, done) {
+    async function(username, password, done) {
         const user = users_db.get('users').find({name: username}).value();
         if (!user) { logger.error(`User ${username} not found`); return done(null, false); }
         if (user.auth_method && user.auth_method !== 'internal') { return done(null, false); }
         if (user) {
-            return done(null, bcrypt.compareSync(password, user.passhash) ? user : false);
+            return done(null, (await bcrypt.compare(password, user.passhash)) ? user : false);
         }
     }
 ));
@@ -160,7 +160,7 @@ exports.passport.use(new LdapStrategy(getLDAPConfiguration,
     // check if ldap auth is enabled
     const ldap_enabled = config_api.getConfigItem('ytdl_auth_method') === 'ldap';
     if (!ldap_enabled) return done(null, false);
-    
+
     const user_uid = user.uid;
     let db_user = users_db.get('users').find({uid: user_uid}).value();
     if (!db_user) {
@@ -226,15 +226,13 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
 
 // change password
 exports.changeUserPassword = async function(user_uid, new_pass) {
-  return new Promise(resolve => {
-    bcrypt.hash(new_pass, saltRounds)
-    .then(function(hash) {
-      users_db.get('users').find({uid: user_uid}).assign({passhash: hash}).write();
-      resolve(true);
-    }).catch(err => {
-      resolve(false);
-    });
-  });
+  try {
+    const hash = await bcrypt.hash(new_pass, saltRounds);
+    users_db.get('users').find({uid: user_uid}).assign({passhash: hash}).write();
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
 
 // change user permissions
@@ -283,6 +281,7 @@ exports.getUserVideos = function(user_uid, type) {
 }
 
 exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false) {
+  let file = null;
   if (!type) {
     file = users_db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
     if (!file) {
@@ -296,7 +295,7 @@ exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false
   if (!file && type) file = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
 
   // prevent unauthorized users from accessing the file info
-  if (requireSharing && !file['sharingEnabled']) file = null;
+  if (file && !file['sharingEnabled'] && requireSharing) file = null;
 
   return file;
 }
@@ -351,7 +350,7 @@ exports.registerUserFile = function(user_uid, file_object, type) {
       .write();
 }
 
-exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = false) {
+exports.deleteUserFile = async function(user_uid, file_uid, type, blacklistMode = false) {
   let success = false;
   const file_obj = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
   if (file_obj) {
@@ -374,20 +373,20 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
       .remove({
           uid: file_uid
       }).write();
-    if (fs.existsSync(full_path)) {
+    if (await fs.pathExists(full_path)) {
       // remove json and file
       const json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + '.info.json');
       const alternate_json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext + '.info.json');
       let youtube_id = null;
-      if (fs.existsSync(json_path)) {
-        youtube_id = fs.readJSONSync(json_path).id;
-        fs.unlinkSync(json_path);
-      } else if (fs.existsSync(alternate_json_path)) {
-        youtube_id = fs.readJSONSync(alternate_json_path).id;
-        fs.unlinkSync(alternate_json_path);
+      if (await fs.pathExists(json_path)) {
+        youtube_id = await fs.readJSON(json_path).id;
+        await fs.unlink(json_path);
+      } else if (await fs.pathExists(alternate_json_path)) {
+        youtube_id = await fs.readJSON(alternate_json_path).id;
+        await fs.unlink(alternate_json_path);
       }
 
-      fs.unlinkSync(full_path);
+      await fs.unlink(full_path);
 
       // do archive stuff
 
@@ -396,17 +395,17 @@ exports.deleteUserFile = function(user_uid, file_uid, type, blacklistMode = fals
           const archive_path = path.join(usersFileFolder, user_uid, 'archives', `archive_${type}.txt`);
 
           // use subscriptions API to remove video from the archive file, and write it to the blacklist
-          if (fs.existsSync(archive_path)) {
-              const line = youtube_id ? subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
+          if (await fs.pathExists(archive_path)) {
+              const line = youtube_id ? await subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
               if (blacklistMode && line) {
                 let blacklistPath = path.join(usersFileFolder, user_uid, 'archives', `blacklist_${type}.txt`);
                 // adds newline to the beginning of the line
                 line = '\n' + line;
-                fs.appendFileSync(blacklistPath, line);
+                await fs.appendFile(blacklistPath, line);
               }
           } else {
               logger.info(`Could not find archive file for ${type} files. Creating...`);
-              fs.ensureFileSync(archive_path);
+              await fs.ensureFile(archive_path);
           }
       }
     }
@@ -532,7 +531,7 @@ function generateUserObject(userid, username, hash, auth_method = 'internal') {
     role: userid === 'admin' && auth_method === 'internal' ? 'admin' : 'user',
     permissions: [],
     permission_overrides: [],
-    auth_method: auth_method 
+    auth_method: auth_method
   };
   return new_user;
 }

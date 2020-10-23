@@ -341,7 +341,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const zipName = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
     this.downloading = true;
-    this.postsService.downloadFileFromServer(fileNames, this.type, zipName).subscribe(res => {
+    this.postsService.downloadFileFromServer(fileNames, this.type, zipName, null, null, null, null,
+                                            !this.uuid ? this.postsService.user.uid : this.uuid, this.id).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, zipName + '.zip');

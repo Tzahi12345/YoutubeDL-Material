@@ -82,8 +82,9 @@ export class MainComponent implements OnInit {
   useDefaultDownloadingAgent = true;
   customDownloadingAgent = null;
 
-  // formats cache
+  // cache
   cachedAvailableFormats = {};
+  cachedFileManagerEnabled = localStorage.getItem('cached_filemanager_enabled') === 'true';
 
   // youtube api
   youtubeSearchEnabled = false;
@@ -232,7 +233,8 @@ export class MainComponent implements OnInit {
 
   async loadConfig() {
     // loading config
-    this.fileManagerEnabled = this.postsService.config['Extra']['file_manager_enabled'];
+    this.fileManagerEnabled = this.postsService.config['Extra']['file_manager_enabled']
+                              && (!this.postsService.isLoggedIn || this.postsService.permissions.includes('filemanager'));
     this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
     this.allowMultiDownloadMode = this.postsService.config['Extra']['allow_multi_download_mode'];
     this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
@@ -261,6 +263,10 @@ export class MainComponent implements OnInit {
     }
 
     // set final cache items
+
+    localStorage.setItem('cached_filemanager_enabled', this.fileManagerEnabled.toString());
+    this.cachedFileManagerEnabled = this.fileManagerEnabled;
+
     if (this.allowAdvancedDownload) {
       if (localStorage.getItem('customArgsEnabled') !== null) {
         this.customArgsEnabled = localStorage.getItem('customArgsEnabled') === 'true';

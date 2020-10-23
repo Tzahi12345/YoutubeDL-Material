@@ -1,7 +1,22 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { registerLocaleData } from '@angular/common';
+import localeGB from '@angular/common/locales/en-GB';
+import localeFR from '@angular/common/locales/fr';
+import localeES from '@angular/common/locales/es';
+import localeDE from '@angular/common/locales/de';
+import localeZH from '@angular/common/locales/zh';
+import localeNB from '@angular/common/locales/nb';
+
+registerLocaleData(localeGB);
+registerLocaleData(localeFR);
+registerLocaleData(localeES);
+registerLocaleData(localeDE);
+registerLocaleData(localeZH);
+registerLocaleData(localeNB);
 
 @Component({
   selector: 'app-unified-file-card',
@@ -28,10 +43,15 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() use_youtubedl_archive = false;
   @Input() is_playlist = false;
   @Input() index: number;
+  @Input() locale = null;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
   @Output() editPlaylist = new EventEmitter<any>();
+  
+
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   /*
     Planned sizes:
@@ -85,6 +105,15 @@ export class UnifiedFileCardComponent implements OnInit {
       playlist: this.file_obj,
       index: this.index
     });
+  }
+
+  onRightClick(event) {
+    event.preventDefault();
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenu.menuData = { 'item': {id: 1, name: 'hi'} };
+    this.contextMenu.menu.focusFirstItem('mouse');
+    this.contextMenu.openMenu();
   }
 
 }

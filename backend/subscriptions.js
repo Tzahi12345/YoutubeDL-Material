@@ -79,17 +79,18 @@ async function getSubscriptionInfo(sub, user_uid = null) {
     else
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
-    return new Promise(resolve => {
-        // get videos
-        let downloadConfig = ['--dump-json', '--playlist-end', '1'];
-        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
-        if (useCookies) {
-            if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
-                downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
-            } else {
-                logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
-            }
+    // get videos
+    let downloadConfig = ['--dump-json', '--playlist-end', '1'];
+    let useCookies = config_api.getConfigItem('ytdl_use_cookies');
+    if (useCookies) {
+        if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+            downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
+        } else {
+            logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
         }
+    }
+
+    return new Promise(resolve => {
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             if (debugMode) {
                 logger.info('Subscribe: got info for subscription ' + sub.id);
@@ -152,39 +153,36 @@ async function getSubscriptionInfo(sub, user_uid = null) {
 }
 
 async function unsubscribe(sub, deleteMode, user_uid = null) {
-    return new Promise(async resolve => {
-        let basePath = null;
-        if (user_uid)
-            basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
-        else
-            basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-        let result_obj = { success: false, error: '' };
+    let basePath = null;
+    if (user_uid)
+        basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
+    else
+        basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+    let result_obj = { success: false, error: '' };
 
-        let id = sub.id;
-        if (user_uid)
-            users_db.get('users').find({uid: user_uid}).get('subscriptions').remove({id: id}).write();
-        else
-            db.get('subscriptions').remove({id: id}).write();
+    let id = sub.id;
+    if (user_uid)
+        users_db.get('users').find({uid: user_uid}).get('subscriptions').remove({id: id}).write();
+    else
+        db.get('subscriptions').remove({id: id}).write();
 
-        // failed subs have no name, on unsubscribe they shouldn't error
-        if (!sub.name) {
-            return;
-        }
+    // failed subs have no name, on unsubscribe they shouldn't error
+    if (!sub.name) {
+        return;
+    }
 
-        const appendedBasePath = getAppendedBasePath(sub, basePath);
-        if (deleteMode && fs.existsSync(appendedBasePath)) {
-            if (sub.archive && fs.existsSync(sub.archive)) {
-                const archive_file_path = path.join(sub.archive, 'archive.txt');
-                // deletes archive if it exists
-                if (fs.existsSync(archive_file_path)) {
-                    fs.unlinkSync(archive_file_path);
-                }
-                fs.rmdirSync(sub.archive);
+    const appendedBasePath = getAppendedBasePath(sub, basePath);
+    if (deleteMode && (await fs.pathExists(appendedBasePath))) {
+        if (sub.archive && (await fs.pathExists(sub.archive))) {
+            const archive_file_path = path.join(sub.archive, 'archive.txt');
+            // deletes archive if it exists
+            if (await fs.pathExists(archive_file_path)) {
+                await fs.unlink(archive_file_path);
             }
-            deleteFolderRecursive(appendedBasePath);
+            await fs.rmdir(sub.archive);
         }
-    });
-
+        await fs.remove(appendedBasePath);
+    }
 }
 
 async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
@@ -202,155 +200,154 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     const name = file;
     let retrievedID = null;
     sub_db.get('videos').remove({uid: file_uid}).write();
-    return new Promise(resolve => {
-        let filePath = appendedBasePath;
-        const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
-        var jsonPath = path.join(__dirname,filePath,name+'.info.json');
-        var videoFilePath = path.join(__dirname,filePath,name+ext);
-        var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
-        var altImageFilePath = path.join(__dirname,filePath,name+'.jpg');
 
-        jsonExists = fs.existsSync(jsonPath);
-        videoFileExists = fs.existsSync(videoFilePath);
-        imageFileExists = fs.existsSync(imageFilePath);
-        altImageFileExists = fs.existsSync(altImageFilePath);
+    let filePath = appendedBasePath;
+    const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
+    var jsonPath = path.join(__dirname,filePath,name+'.info.json');
+    var videoFilePath = path.join(__dirname,filePath,name+ext);
+    var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
+    var altImageFilePath = path.join(__dirname,filePath,name+'.jpg');
 
-        if (jsonExists) {
-            retrievedID = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))['id'];
-            fs.unlinkSync(jsonPath);
-        }
+    const [jsonExists, videoFileExists, imageFileExists, altImageFileExists] = await Promise.all([
+        fs.pathExists(jsonPath),
+        fs.pathExists(videoFilePath),
+        fs.pathExists(imageFilePath),
+        fs.pathExists(altImageFilePath),
+    ]);
 
-        if (imageFileExists) {
-            fs.unlinkSync(imageFilePath);
-        }
+    if (jsonExists) {
+        retrievedID = JSON.parse(await fs.readFile(jsonPath, 'utf8'))['id'];
+        await fs.unlink(jsonPath);
+    }
 
-        if (altImageFileExists) {
-            fs.unlinkSync(altImageFilePath);
-        }
+    if (imageFileExists) {
+        await fs.unlink(imageFilePath);
+    }
 
-        if (videoFileExists) {
-            fs.unlink(videoFilePath, function(err) {
-                if (fs.existsSync(jsonPath) || fs.existsSync(videoFilePath)) {
-                    resolve(false);
-                } else {
-                    // check if the user wants the video to be redownloaded (deleteForever === false)
-                    if (!deleteForever && useArchive && sub.archive && retrievedID) {
-                        const archive_path = path.join(sub.archive, 'archive.txt')
-                        // if archive exists, remove line with video ID
-                        if (fs.existsSync(archive_path)) {
-                            removeIDFromArchive(archive_path, retrievedID);
-                        }
-                    }
-                    resolve(true);
-                }
-            });
+    if (altImageFileExists) {
+        await fs.unlink(altImageFilePath);
+    }
+
+    if (videoFileExists) {
+        await fs.unlink(videoFilePath);
+        if ((await fs.pathExists(jsonPath)) || (await fs.pathExists(videoFilePath))) {
+            return false;
         } else {
-            // TODO: tell user that the file didn't exist
-            resolve(true);
+            // check if the user wants the video to be redownloaded (deleteForever === false)
+            if (!deleteForever && useArchive && sub.archive && retrievedID) {
+                const archive_path = path.join(sub.archive, 'archive.txt')
+                // if archive exists, remove line with video ID
+                if (await fs.pathExists(archive_path)) {
+                    await removeIDFromArchive(archive_path, retrievedID);
+                }
+            }
+            return true;
         }
-
-    });
+    } else {
+        // TODO: tell user that the file didn't exist
+        return true;
+    }
 }
 
 async function getVideosForSub(sub, user_uid = null) {
-    return new Promise(resolve => {
-        if (!subExists(sub.id, user_uid)) {
-            resolve(false);
-            return;
+    if (!subExists(sub.id, user_uid)) {
+        return false;
+    }
+
+    // get sub_db
+    let sub_db = null;
+    if (user_uid)
+        sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
+    else
+        sub_db = db.get('subscriptions').find({id: sub.id});
+
+    // get basePath
+    let basePath = null;
+    if (user_uid)
+        basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
+    else
+        basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+
+    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+
+    let appendedBasePath = null
+    appendedBasePath = getAppendedBasePath(sub, basePath);
+
+    let multiUserMode = null;
+    if (user_uid) {
+        multiUserMode = {
+            user: user_uid,
+            file_path: appendedBasePath
         }
+    }
 
-        // get sub_db
-        let sub_db = null;
-        if (user_uid)
-            sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
-        else
-            sub_db = db.get('subscriptions').find({id: sub.id});
+    const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
 
-        // get basePath
-        let basePath = null;
-        if (user_uid)
-            basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
-        else
-            basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+    let fullOutput = `${appendedBasePath}/%(title)s.%(ext)s`;
+    if (sub.custom_output) {
+        fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
+    }
 
-        const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+    let downloadConfig = ['-o', fullOutput, '-ciw', '--write-info-json', '--print-json'];
 
-        let appendedBasePath = null
-        appendedBasePath = getAppendedBasePath(sub, basePath);
+    let qualityPath = null;
+    if (sub.type && sub.type === 'audio') {
+        qualityPath = ['-f', 'bestaudio']
+        qualityPath.push('-x');
+        qualityPath.push('--audio-format', 'mp3');
+    } else {
+        qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4']
+    }
 
-        let multiUserMode = null;
-        if (user_uid) {
-            multiUserMode = {
-                user: user_uid,
-                file_path: appendedBasePath
-            }
+    downloadConfig.push(...qualityPath)
+
+    if (sub.custom_args) {
+        customArgsArray = sub.custom_args.split(',,');
+        if (customArgsArray.indexOf('-f') !== -1) {
+            // if custom args has a custom quality, replce the original quality with that of custom args
+            const original_output_index = downloadConfig.indexOf('-f');
+            downloadConfig.splice(original_output_index, 2);
         }
+        downloadConfig.push(...customArgsArray);
+    }
 
-        const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
+    let archive_dir = null;
+    let archive_path = null;
 
-        let fullOutput = appendedBasePath + '/%(title)s' + ext;
-        if (sub.custom_output) {
-            fullOutput = appendedBasePath + '/' + sub.custom_output + ext;
+    if (useArchive) {
+        if (sub.archive) {
+            archive_dir = sub.archive;
+            archive_path = path.join(archive_dir, 'archive.txt')
         }
+        downloadConfig.push('--download-archive', archive_path);
+    }
 
-        let downloadConfig = ['-o', fullOutput, '-ciw', '--write-info-json', '--print-json'];
+    // if streaming only mode, just get the list of videos
+    if (sub.streamingOnly) {
+        downloadConfig = ['-f', 'best', '--dump-json'];
+    }
 
-        let qualityPath = null;
-        if (sub.type && sub.type === 'audio') {
-            qualityPath = ['-f', 'bestaudio']
-            qualityPath.push('-x');
-            qualityPath.push('--audio-format', 'mp3');
+    if (sub.timerange) {
+        downloadConfig.push('--dateafter', sub.timerange);
+    }
+
+    let useCookies = config_api.getConfigItem('ytdl_use_cookies');
+    if (useCookies) {
+        if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+            downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
         } else {
-            qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4']
+            logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
         }
+    }
 
-        downloadConfig.push(...qualityPath)
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        downloadConfig.push('--write-thumbnail');
+    }
 
-        if (sub.custom_args) {
-            customArgsArray = sub.custom_args.split(',,');
-            if (customArgsArray.indexOf('-f') !== -1) {
-                // if custom args has a custom quality, replce the original quality with that of custom args
-                const original_output_index = downloadConfig.indexOf('-f');
-                downloadConfig.splice(original_output_index, 2);
-            }
-            downloadConfig.push(...customArgsArray);
-        }
+    // get videos
+    logger.verbose('Subscription: getting videos for subscription ' + sub.name);
 
-        let archive_dir = null;
-        let archive_path = null;
-
-        if (useArchive) {
-            if (sub.archive) {
-                archive_dir = sub.archive;
-                archive_path = path.join(archive_dir, 'archive.txt')
-            }
-            downloadConfig.push('--download-archive', archive_path);
-        }
-
-        // if streaming only mode, just get the list of videos
-        if (sub.streamingOnly) {
-            downloadConfig = ['-f', 'best', '--dump-json'];
-        }
-
-        if (sub.timerange) {
-            downloadConfig.push('--dateafter', sub.timerange);
-        }
-
-        let useCookies = config_api.getConfigItem('ytdl_use_cookies');
-        if (useCookies) {
-            if (fs.existsSync(path.join(__dirname, 'appdata', 'cookies.txt'))) {
-                downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
-            } else {
-                logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
-            }
-        }
-
-        if (config_api.getConfigItem('ytdl_include_thumbnail')) {
-            downloadConfig.push('--write-thumbnail');
-        }
-
-        // get videos
-        logger.verbose('Subscription: getting videos for subscription ' + sub.name);
+    return new Promise(resolve => {
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
@@ -463,23 +460,8 @@ function getAppendedBasePath(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
-// https://stackoverflow.com/a/32197381/8088021
-const deleteFolderRecursive = function(folder_to_delete) {
-    if (fs.existsSync(folder_to_delete)) {
-      fs.readdirSync(folder_to_delete).forEach((file, index) => {
-        const curPath = path.join(folder_to_delete, file);
-        if (fs.lstatSync(curPath).isDirectory()) { // recurse
-          deleteFolderRecursive(curPath);
-        } else { // delete file
-          fs.unlinkSync(curPath);
-        }
-      });
-      fs.rmdirSync(folder_to_delete);
-    }
-  };
-
-function removeIDFromArchive(archive_path, id) {
-    let data = fs.readFileSync(archive_path, {encoding: 'utf-8'});
+async function removeIDFromArchive(archive_path, id) {
+    let data = await fs.readFile(archive_path, {encoding: 'utf-8'});
     if (!data) {
         logger.error('Archive could not be found.');
         return;
@@ -500,7 +482,7 @@ function removeIDFromArchive(archive_path, id) {
 
     // UPDATE FILE WITH NEW DATA
     const updatedData = dataArray.join('\n');
-    fs.writeFileSync(archive_path, updatedData);
+    await fs.writeFile(archive_path, updatedData);
     if (line) return line;
     if (err) throw err;
 }
