@@ -1,5 +1,5 @@
 <div (mouseover)="elevated=true" (mouseout)="elevated=false" (contextmenu)="onRightClick($event)" style="position: relative; width: fit-content;">
-    <div *ngIf="!loading" class="download-time"><mat-icon class="audio-video-icon">{{(file_obj.type === 'audio' || file_obj.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>&nbsp;&nbsp;{{file_obj.registered | date:'shortDate'}}</div>
+    <div *ngIf="!loading" class="download-time"><mat-icon class="audio-video-icon">{{(file_obj.type === 'audio' || file_obj.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>&nbsp;&nbsp;{{file_obj.registered | date:'shortDate' : undefined : locale.ngID}}</div>
     <div *ngIf="loading" class="download-time" style="width: 75%; margin-top: 5px;"><content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" width="250" height="30"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="30" /></content-loader></div>
     <!-- The context menu trigger must be kept above the "more info" menu -->
     <div style="visibility: hidden; position: fixed"
