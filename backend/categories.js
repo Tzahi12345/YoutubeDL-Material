@@ -101,6 +101,26 @@ function applyCategoryRules(file_json, rules, category_name) {
     return rules_apply;
 }
 
+async function addTagToVideo(tag, video, user_uid) {
+
+}
+
+async function removeTagFromVideo(tag, video, user_uid) {
+    
+}
+
+async function incrementTagCount(tag) {
+    const current_value = db.get(`stats.tags.${tag}`).value();
+    if (!current_value) {
+        db.set(`stats.tags.${tag}`, 1).write();
+    } else {
+        db.update(`stats.tags.${tag}`, n => n + 1).write();
+    }
+}
+
+async function decrementTagCount(tag) {
+    db.update(`stats.tags.${tag}`, n => n - 1).write();
+}
 
 
 module.exports = {
