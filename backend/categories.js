@@ -102,26 +102,20 @@ function applyCategoryRules(file_json, rules, category_name) {
 }
 
 async function addTagToVideo(tag, video, user_uid) {
-
+    // TODO: Implement
 }
 
 async function removeTagFromVideo(tag, video, user_uid) {
-    
+    // TODO: Implement
 }
 
-async function incrementTagCount(tag) {
-    const current_value = db.get(`stats.tags.${tag}`).value();
-    if (!current_value) {
-        db.set(`stats.tags.${tag}`, 1).write();
-    } else {
-        db.update(`stats.tags.${tag}`, n => n + 1).write();
+// adds tag to list of existing tags (used for tag suggestions)
+async function addTagToExistingTags(tag) {
+    const existing_tags = db.get('tags').value();
+    if (!existing_tags.includes(tag)) {
+        db.get('tags').push(tag).write();
     }
 }
-
-async function decrementTagCount(tag) {
-    db.update(`stats.tags.${tag}`, n => n - 1).write();
-}
-
 
 module.exports = {
     initialize: initialize,
