@@ -26,6 +26,7 @@ const shortid = require('shortid')
 const url_api = require('url');
 var config_api = require('./config.js');
 var subscriptions_api = require('./subscriptions')
+var categories_api = require('./categories');
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
@@ -36,7 +37,7 @@ const is_windows = process.platform === 'win32';
 var app = express();
 
 // database setup
-const FileSync = require('lowdb/adapters/FileSync')
+const FileSync = require('lowdb/adapters/FileSync');
 
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
@@ -79,8 +80,7 @@ config_api.initialize(logger);
 auth_api.initialize(users_db, logger);
 db_api.initialize(db, users_db, logger);
 subscriptions_api.initialize(db, users_db, logger, db_api);
-
-// var GithubContent = require('github-content');
+categories_api.initialize(db, users_db, logger, db_api);
 
 // Set some defaults
 db.defaults(
@@ -173,7 +173,6 @@ const subscription_timeouts = {};
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
 let writeConfigMode = process.env.write_ytdl_config;
-var config = null;
 
 // checks if config exists, if not, a config is auto generated
 config_api.configExistsCheck();
@@ -1077,6 +1076,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         var is_audio = type === 'audio';
         var ext = is_audio ? '.mp3' : '.mp4';
         var fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
+        let category = null;
 
         // prepend with user if needed
         let multiUserMode = null;
@@ -1093,7 +1093,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         }
 
         options.downloading_method = 'exec';
-        const downloadConfig = await generateArgs(url, type, options);
+        let downloadConfig = await generateArgs(url, type, options);
 
         // adds download to download helper
         const download_uid = uuid();
@@ -1115,11 +1115,22 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         updateDownloads();
 
         // get video info prior to download
-        const info = await getVideoInfoByURL(url, downloadConfig, download);
+        let info = await getVideoInfoByURL(url, downloadConfig, download);
         if (!info) {
             resolve(false);
             return;
         } else {
+            // check if it fits into a category. If so, then get info again using new downloadConfig
+            category = await categories_api.categorize(info);
+
+            // set custom output if the category has one and re-retrieve info so the download manager has the right file name
+            if (category && category['custom_output']) {
+                options.customOutput = category['custom_output'];
+                options.noRelativePath = true;
+                downloadConfig = await generateArgs(url, type, options);
+                info = await getVideoInfoByURL(url, downloadConfig, download);
+            }
+
             // store info in download for future use
             download['_filename'] = info['_filename'];
             download['filesize'] = utils.getExpectedFileSize(info);
@@ -1161,7 +1172,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     } catch(e) {
                         output_json = null;
                     }
-                    var modified_file_name = output_json ? output_json['title'] : null;
+
                     if (!output_json) {
                         continue;
                     }
@@ -1190,8 +1201,11 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                         if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
                     }
 
+                    const file_path = options.noRelativePath ? path.basename(full_file_path) : full_file_path.substring(fileFolderPath.length, full_file_path.length);
+                    const customPath = options.noRelativePath ? path.dirname(full_file_path).split(path.sep).pop() : null;
+
                     // registers file in DB
-                    file_uid = db_api.registerFileDB(full_file_path.substring(fileFolderPath.length, full_file_path.length), type, multiUserMode);
+                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath);
 
                     if (file_name) file_names.push(file_name);
                 }
@@ -1406,7 +1420,8 @@ async function generateArgs(url, type, options) {
         }
 
         if (customOutput) {
-            downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
+            customOutput = options.noRelativePath ? customOutput : path.join(fileFolderPath, customOutput);
+            downloadConfig = ['-o', `${customOutput}.%(ext)s`, '--write-info-json', '--print-json'];
         } else {
             downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
         }
@@ -1715,13 +1730,9 @@ app.use(function(req, res, next) {
         next();
     } else if (req.query.apiKey === admin_token) {
         next();
-    } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key')) {
-        if (req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
-            next();
-        } else {
-            res.status(401).send('Invalid API key');
-        }
-    } else if (req.path.includes('/api/video/') || req.path.includes('/api/audio/')) {
+    } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
+        next();
+    } else if (req.path.includes('/api/stream/')) {
         next();
     } else {
         logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
@@ -1734,8 +1745,7 @@ app.use(compression());
 const optionalJwt = function (req, res, next) {
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     if (multiUserMode && ((req.body && req.body.uuid) || (req.query && req.query.uuid)) && (req.path.includes('/api/getFile') ||
-                                                                                            req.path.includes('/api/audio') ||
-                                                                                            req.path.includes('/api/video') ||
+                                                                                            req.path.includes('/api/stream') ||
                                                                                             req.path.includes('/api/downloadFile'))) {
         // check if shared video
         const using_body = req.body && req.body.uuid;
@@ -1875,8 +1885,11 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
     mp3s = JSON.parse(JSON.stringify(mp3s));
 
-    // add thumbnails if present
-    await addThumbnails(mp3s);
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        // add thumbnails if present
+        await addThumbnails(mp3s);
+    }
+
 
     res.send({
         mp3s: mp3s,
@@ -1899,8 +1912,10 @@ app.get('/api/getMp4s', optionalJwt, async function(req, res) {
 
     mp4s = JSON.parse(JSON.stringify(mp4s));
 
-    // add thumbnails if present
-    await addThumbnails(mp4s);
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        // add thumbnails if present
+        await addThumbnails(mp4s);
+    }
 
     res.send({
         mp4s: mp4s,
@@ -1988,8 +2003,10 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
 
     files = JSON.parse(JSON.stringify(files));
 
-    // add thumbnails if present
-    await addThumbnails(files);
+    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
+        // add thumbnails if present
+        await addThumbnails(files);
+    }
 
     res.send({
         files: files,
@@ -2084,6 +2101,54 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     });
 });
 
+// categories
+
+app.post('/api/getAllCategories', optionalJwt, async (req, res) => {
+    const categories = db.get('categories').value();
+    res.send({categories: categories});
+});
+
+app.post('/api/createCategory', optionalJwt, async (req, res) => {
+    const name = req.body.name;
+    const new_category = {
+        name: name,
+        uid: uuid(),
+        rules: [],
+        custom_putput: ''
+    };
+
+    db.get('categories').push(new_category).write();
+
+    res.send({
+        new_category: new_category,
+        success: !!new_category
+    });
+});
+
+app.post('/api/deleteCategory', optionalJwt, async (req, res) => {
+    const category_uid = req.body.category_uid;
+
+    db.get('categories').remove({uid: category_uid}).write();
+
+    res.send({
+        success: true
+    });
+});
+
+app.post('/api/updateCategory', optionalJwt, async (req, res) => {
+    const category = req.body.category;
+    db.get('categories').find({uid: category.uid}).assign(category).write();
+    res.send({success: true});
+});
+
+app.post('/api/updateCategories', optionalJwt, async (req, res) => {
+    const categories = req.body.categories;
+    db.get('categories').assign(categories).write();
+    res.send({success: true});
+});
+
+// subscriptions
+
 app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let name = req.body.name;
     let url = req.body.url;
@@ -2168,10 +2233,17 @@ app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
 
 app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.id;
+    let subName = req.body.name; // if included, subID is optional
+
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     // get sub from db
-    let subscription = subscriptions_api.getSubscription(subID, user_uid);
+    let subscription = null;
+    if (subID) {
+        subscription = subscriptions_api.getSubscription(subID, user_uid)
+    } else if (subName) {
+        subscription = subscriptions_api.getSubscriptionByName(subName, user_uid)
+    }
 
     if (!subscription) {
         // failed to get subscription from db, send 400 error
@@ -2401,56 +2473,25 @@ app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
     })
 });
 
-// deletes mp3 file
-app.post('/api/deleteMp3', optionalJwt, async (req, res) => {
-    // var name = req.body.name;
+// deletes non-subscription files
+app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var uid = req.body.uid;
+    var type = req.body.type;
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = await auth_api.deleteUserFile(req.user.uid, uid, 'audio', blacklistMode);
+        let success = auth_api.deleteUserFile(req.user.uid, uid, type, blacklistMode);
         res.send(success);
         return;
     }
 
-    var audio_obj = db.get('files.audio').find({uid: uid}).value();
-    var name = audio_obj.id;
-    var fullpath = audioFolderPath + name + ".mp3";
+    var file_obj = db.get(`files.${type}`).find({uid: uid}).value();
+    var name = file_obj.id;
+    var fullpath = file_obj ? file_obj.path : null;
     var wasDeleted = false;
     if (await fs.pathExists(fullpath))
     {
-        deleteAudioFile(name, null, blacklistMode);
-        db.get('files.audio').remove({uid: uid}).write();
-        wasDeleted = true;
-        res.send(wasDeleted);
-    } else if (audio_obj) {
-        db.get('files.audio').remove({uid: uid}).write();
-        wasDeleted = true;
-        res.send(wasDeleted);
-    } else {
-        wasDeleted = false;
-        res.send(wasDeleted);
-    }
-});
-
-// deletes mp4 file
-app.post('/api/deleteMp4', optionalJwt, async (req, res) => {
-    var uid = req.body.uid;
-    var blacklistMode = req.body.blacklistMode;
-
-    if (req.isAuthenticated()) {
-        let success = await auth_api.deleteUserFile(req.user.uid, uid, 'video', blacklistMode);
-        res.send(success);
-        return;
-    }
-
-    var video_obj = db.get('files.video').find({uid: uid}).value();
-    var name = video_obj.id;
-    var fullpath = videoFolderPath + name + ".mp4";
-    var wasDeleted = false;
-    if (await fs.pathExists(fullpath))
-    {
-        wasDeleted = await deleteVideoFile(name, null, blacklistMode);
+        wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
         db.get('files.video').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
@@ -2515,17 +2556,6 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
           }
         }
     });
-});
-
-app.post('/api/deleteFile', async (req, res) => {
-    let fileName = req.body.fileName;
-    let type = req.body.type;
-    if (type === 'audio') {
-        deleteAudioFile(fileName);
-    } else if (type === 'video') {
-        deleteVideoFile(fileName);
-    }
-    res.send({});
 });
 
 app.post('/api/downloadArchive', async (req, res) => {
@@ -2595,25 +2625,33 @@ app.post('/api/generateNewAPIKey', function (req, res) {
 
 // Streaming API calls
 
-app.get('/api/video/:id', optionalJwt, function(req , res){
+app.get('/api/stream/:id', optionalJwt, (req, res) => {
+    const type = req.query.type;
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+    const mimetype = type === 'audio' ? 'audio/mp3' : 'video/mp4';
     var head;
     let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
-    let file_path = videoFolderPath + id + '.mp4';
-    if (req.isAuthenticated() || req.can_watch) {
+    let file_path = req.query.file_path ? decodeURIComponent(req.query.file_path) : null;
+    if (!file_path && (req.isAuthenticated() || req.can_watch)) {
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         if (optionalParams['subName']) {
             const isPlaylist = optionalParams['subPlaylist'];
-            file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + '.mp4')
+            file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + ext)
         } else {
-            file_path = path.join(usersFileFolder, req.query.uuid ? req.query.uuid : req.user.uid, 'video', id + '.mp4');
+            file_path = path.join(usersFileFolder, req.query.uuid ? req.query.uuid : req.user.uid, type, id + ext);
         }
-    } else if (optionalParams['subName']) {
+    } else if (!file_path && optionalParams['subName']) {
         let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
         const isPlaylist = optionalParams['subPlaylist'];
         basePath += (isPlaylist === 'true' ? 'playlists/' : 'channels/');
-        file_path = basePath + optionalParams['subName'] + '/' + id + '.mp4';
+        file_path = basePath + optionalParams['subName'] + '/' + id + ext;
     }
+
+    if (!file_path) {
+        file_path = path.join(videoFolderPath, id + ext);
+    }
+
     const stat = fs.statSync(file_path)
     const fileSize = stat.size
     const range = req.headers.range
@@ -2636,76 +2674,19 @@ app.get('/api/video/:id', optionalJwt, function(req , res){
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunksize,
-        'Content-Type': 'video/mp4',
+        'Content-Type': mimetype,
         }
         res.writeHead(206, head);
         file.pipe(res);
     } else {
         head = {
         'Content-Length': fileSize,
-        'Content-Type': 'video/mp4',
+        'Content-Type': mimetype,
         }
         res.writeHead(200, head)
         fs.createReadStream(file_path).pipe(res)
     }
 });
-
-app.get('/api/audio/:id', optionalJwt, function(req , res){
-    var head;
-    let id = decodeURIComponent(req.params.id);
-    let file_path = "audio/" + id + '.mp3';
-    let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-    let optionalParams = url_api.parse(req.url,true).query;
-    if (req.isAuthenticated()) {
-        if (optionalParams['subName']) {
-            const isPlaylist = optionalParams['subPlaylist'];
-            file_path = path.join(usersFileFolder, req.user.uid, 'subscriptions', (isPlaylist === 'true' ? 'playlists/' : 'channels/'),optionalParams['subName'], id + '.mp3')
-        } else {
-            let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-            file_path = path.join(usersFileFolder, req.user.uid, 'audio', id + '.mp3');
-        }
-    } else if (optionalParams['subName']) {
-        let basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-        const isPlaylist = optionalParams['subPlaylist'];
-        basePath += (isPlaylist === 'true' ? 'playlists/' : 'channels/');
-        file_path = basePath + optionalParams['subName'] + '/' + id + '.mp3';
-    }
-    file_path = file_path.replace(/\"/g, '\'');
-  const stat = fs.statSync(file_path)
-  const fileSize = stat.size
-  const range = req.headers.range
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-")
-    const start = parseInt(parts[0], 10)
-    const end = parts[1]
-      ? parseInt(parts[1], 10)
-      : fileSize-1
-    const chunksize = (end-start)+1
-    const file = fs.createReadStream(file_path, {start, end});
-    if (config_api.descriptors[id]) config_api.descriptors[id].push(file);
-    else                            config_api.descriptors[id] = [file];
-    file.on('close', function() {
-        let index = config_api.descriptors[id].indexOf(file);
-        config_api.descriptors[id].splice(index, 1);
-        logger.debug('Successfully closed stream and removed file reference.');
-    });
-    head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': 'audio/mp3',
-    }
-    res.writeHead(206, head);
-    file.pipe(res);
-  } else {
-    head = {
-      'Content-Length': fileSize,
-      'Content-Type': 'audio/mp3',
-    }
-    res.writeHead(200, head)
-    fs.createReadStream(file_path).pipe(res)
-  }
-  });
 
   // Downloads management
 

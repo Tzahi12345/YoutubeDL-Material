@@ -53,6 +53,7 @@ export class PostsService implements CanActivate {
     // global vars
     config = null;
     subscriptions = null;
+    categories = null;
     sidenav = null;
     locale = isoLangs['en'];
 
@@ -211,12 +212,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'setConfig', {new_config_file: config}, this.httpOptions);
     }
 
-    deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
-        if (isAudio) {
-            return this.http.post(this.path + 'deleteMp3', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
-        } else {
-            return this.http.post(this.path + 'deleteMp4', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
-        }
+    deleteFile(uid: string, type: string, blacklistMode = false) {
+        return this.http.post(this.path + 'deleteFile', {uid: uid, type: type, blacklistMode: blacklistMode}, this.httpOptions);
     }
 
     getMp3s() {
@@ -310,6 +307,34 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type}, this.httpOptions);
     }
 
+    // categories
+
+    getAllCategories() {
+        return this.http.post(this.path + 'getAllCategories', {}, this.httpOptions);
+    }
+
+    createCategory(name) {
+        return this.http.post(this.path + 'createCategory', {name: name}, this.httpOptions);
+    }
+
+    deleteCategory(category_uid) {
+        return this.http.post(this.path + 'deleteCategory', {category_uid: category_uid}, this.httpOptions);
+    }
+
+    updateCategory(category) {
+        return this.http.post(this.path + 'updateCategory', {category: category}, this.httpOptions);
+    }
+
+    updateCategories(categories) {
+        return this.http.post(this.path + 'updateCategories', {categories: categories}, this.httpOptions);
+    }
+
+    reloadCategories() {
+        this.getAllCategories().subscribe(res => {
+            this.categories = res['categories'];
+        });
+    }
+
     createSubscription(url, name, timerange = null, streamingOnly = false, audioOnly = false, customArgs = null, customFileOutput = null) {
         return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly,
                                 audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput}, this.httpOptions);
@@ -328,8 +353,8 @@ export class PostsService implements CanActivate {
                                                                     file_uid: file_uid}, this.httpOptions)
     }
 
-    getSubscription(id) {
-        return this.http.post(this.path + 'getSubscription', {id: id}, this.httpOptions);
+    getSubscription(id, name = null) {
+        return this.http.post(this.path + 'getSubscription', {id: id, name: name}, this.httpOptions);
     }
 
     getAllSubscriptions() {

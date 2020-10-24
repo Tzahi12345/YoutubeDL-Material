@@ -56,7 +56,7 @@ export class FileCardComponent implements OnInit {
 
   deleteFile(blacklistMode = false) {
     if (!this.playlist) {
-      this.postsService.deleteFile(this.uid, this.isAudio, blacklistMode).subscribe(result => {
+      this.postsService.deleteFile(this.uid, this.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
         if (result) {
           this.openSnackBar('Delete success!', 'OK.');
           this.removeFile.emit(this.name);

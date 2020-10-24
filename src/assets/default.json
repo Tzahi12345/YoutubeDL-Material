@@ -7,9 +7,11 @@
     "Downloader": {
       "path-audio": "audio/",
       "path-video": "video/",
-      "use_youtubedl_archive": true,
+      "use_youtubedl_archive": false,
       "custom_args": "",
-      "safe_download_override": false
+      "safe_download_override": false,
+      "include_thumbnail": false,
+      "include_metadata": true
     },
     "Extra": {
       "title_top": "YoutubeDL-Material",
@@ -33,12 +35,20 @@
     "Subscriptions": {
       "allow_subscriptions": true,
       "subscriptions_base_path": "subscriptions/",
-      "subscriptions_check_interval": "30",
+      "subscriptions_check_interval": "300",
       "subscriptions_use_youtubedl_archive": true
     },
     "Users": {
       "base_path": "users/",
-      "allow_registration": true
+      "allow_registration": true,
+      "auth_method": "internal",
+      "ldap_config": {
+        "url": "ldap://localhost:389",
+        "bindDN": "cn=root",
+        "bindCredentials": "secret",
+        "searchBase": "ou=passport-ldapauth",
+        "searchFilter": "(uid={{username}})"
+      }
     },
     "Advanced": {
       "use_default_downloading_agent": true,
@@ -47,7 +57,7 @@
       "allow_advanced_download": true,
       "jwt_expiration": 86400,
       "logger_level": "debug",
-      "use_cookies": true
+      "use_cookies": false
     }
   }
 }

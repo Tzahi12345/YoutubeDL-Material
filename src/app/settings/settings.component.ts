@@ -9,6 +9,9 @@ import { CURRENT_VERSION } from 'app/consts';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CookiesUploaderDialogComponent } from 'app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
 import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
+import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
+import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/edit-category-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -75,6 +78,74 @@ export class SettingsComponent implements OnInit {
     }, err => {
       console.error('Failed to save config!');
     })
+  }
+
+  dropCategory(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.postsService.categories, event.previousIndex, event.currentIndex);
+    this.postsService.updateCategories(this.postsService.categories).subscribe(res => {
+
+    }, err => {
+      this.postsService.openSnackBar('Failed to update categories!');
+    });
+  }
+
+  openAddCategoryDialog() {
+    const done = new EventEmitter<any>();
+    const dialogRef = this.dialog.open(InputDialogComponent, {
+      width: '300px',
+      data: {
+        inputTitle: 'Name the category',
+        inputPlaceholder: 'Name',
+        submitText: 'Add',
+        doneEmitter: done
+      }
+    });
+
+    done.subscribe(name => {
+
+      // Eventually do additional checks on name
+      if (name) {
+        this.postsService.createCategory(name).subscribe(res => {
+          if (res['success']) {
+            this.postsService.reloadCategories();
+            dialogRef.close();
+            const new_category = res['new_category'];
+            this.openEditCategoryDialog(new_category);
+          }
+        });
+      }
+    });
+  }
+
+  deleteCategory(category) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: 'Delete category',
+        dialogText: `Would you like to delete ${category['name']}?`,
+        submitText: 'Delete',
+        warnSubmitColor: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.postsService.deleteCategory(category['uid']).subscribe(res => {
+          if (res['success']) {
+            this.postsService.openSnackBar(`Successfully deleted ${category['name']}!`);
+            this.postsService.reloadCategories();
+          }
+        }, err => {
+          this.postsService.openSnackBar(`Failed to delete ${category['name']}!`);
+        });
+      }
+    });
+  }
+
+  openEditCategoryDialog(category) {
+    this.dialog.open(EditCategoryDialogComponent, {
+      data: {
+        category: category
+      }
+    });
   }
 
   generateAPIKey() {
@@ -162,7 +233,8 @@ export class SettingsComponent implements OnInit {
         dialogTitle: 'Kill downloads',
         dialogText: 'Are you sure you want to kill all downloads? Any subscription and non-subscription downloads will end immediately, though this operation may take a minute or so to complete.',
         submitText: 'Kill all downloads',
-        doneEmitter: done
+        doneEmitter: done,
+        warnSubmitColor: true
       }
     });
     done.subscribe(confirmed => {

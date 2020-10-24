@@ -116,6 +116,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     if (this.allowSubscriptions) {
       this.postsService.reloadSubscriptions();
     }
+
+    this.postsService.reloadCategories();
   }
 
   // theme stuff
