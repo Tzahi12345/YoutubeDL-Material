@@ -88,6 +88,7 @@ export class EditCategoryDialogComponent implements OnInit {
     this.postsService.updateCategory(this.category).subscribe(res => {
       this.updating = false;
       this.original_category = JSON.parse(JSON.stringify(this.category));
+      this.postsService.reloadCategories();
     }, err => {
       this.updating = false;
       console.error(err);
