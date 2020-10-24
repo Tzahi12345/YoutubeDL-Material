@@ -1420,7 +1420,8 @@ async function generateArgs(url, type, options) {
         }
 
         if (customOutput) {
-            downloadConfig = ['-o', path.join(fileFolderPath, customOutput) + ".%(ext)s", '--write-info-json', '--print-json'];
+            customOutput = options.noRelativePath ? customOutput : path.join(fileFolderPath, customOutput);
+            downloadConfig = ['-o', `${customOutput}.%(ext)s`, '--write-info-json', '--print-json'];
         } else {
             downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
         }
