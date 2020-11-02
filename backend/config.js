@@ -226,6 +226,7 @@ DEFAULT_CONFIG = {
         }
       },
       "Advanced": {
+        "default_downloader": "youtube-dlc",
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",
         "multi_user_mode": false,
