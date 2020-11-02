@@ -1655,6 +1655,13 @@ async function autoUpdateYoutubeDL() {
 
         // got version, now let's check the latest version from the youtube-dl API
         let youtubedl_api_path = using_youtube_dlc ? youtube_dlc_tags_url : youtube_dl_tags_url;
+
+        if (default_downloader === 'youtube-dl') {
+            await downloadLatestYoutubeDLBinary('unknown', 'unknown');
+            resolve(true);
+            return;
+        }
+
         fetch(youtubedl_api_path, {method: 'Get'})
         .then(async res => res.json())
         .then(async (json) => {
@@ -1696,7 +1703,7 @@ async function downloadLatestYoutubeDLBinary(current_version, new_version) {
                 logger.error(err);
                 resolve(false);
             }
-            logger.info(`youtube-dl successfully updated: ${current_version} -> ${new_version}`);
+            logger.info(`youtube-dl successfully updated!`);
             resolve(true);
         });
     });
