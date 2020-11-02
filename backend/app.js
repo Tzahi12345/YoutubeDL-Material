@@ -1595,6 +1595,8 @@ function checkDownloadPercent(download) {
     const filename = path.format(path.parse(download['_filename'].substring(0, download['_filename'].length-4)));
     const resulting_file_size = download['filesize'];
 
+    if (!resulting_file_size) return;
+
     glob(`${filename}*`, (err, files) => {
         let sum_size = 0;
         files.forEach(file => {
