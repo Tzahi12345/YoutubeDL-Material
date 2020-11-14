@@ -30,10 +30,19 @@ Dark mode:
 
 NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker) section for a setup guide.
 
-Make sure you have these dependencies installed on your system: nodejs and youtube-dl. If you don't, run this command:
-
+Debian/Ubuntu:
 ```
-sudo apt-get install nodejs youtube-dl
+sudo apt-get install nodejs youtube-dl ffmpeg
+```
+
+CentOS 7:
+```
+sudo yum install epel-release
+sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+sudo yum install centos-release-scl-rh
+sudo yum install rh-nodejs12
+scl enable rh-nodejs12 bash
+sudo yum install nodejs youtube-dl ffmpeg ffmpeg-devel
 ```
 
 Optional dependencies:
