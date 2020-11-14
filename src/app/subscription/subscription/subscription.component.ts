@@ -164,7 +164,7 @@ export class SubscriptionComponent implements OnInit {
   editSubscription() {
     this.dialog.open(EditSubscriptionDialogComponent, {
       data: {
-        sub: this.subscription
+        sub: this.postsService.getSubscriptionByID(this.subscription.id)
       }
     });
   }

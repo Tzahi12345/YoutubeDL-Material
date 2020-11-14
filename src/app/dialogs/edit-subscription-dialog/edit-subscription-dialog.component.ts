@@ -71,9 +71,10 @@ export class EditSubscriptionDialogComponent implements OnInit {
   }
 
   saveSubscription() {
-    this.postsService.updateSubscription(this.sub).subscribe(res => {
+    this.postsService.updateSubscription(this.new_sub).subscribe(res => {
       this.sub = this.new_sub;
       this.new_sub = JSON.parse(JSON.stringify(this.sub));
+      this.postsService.reloadSubscriptions();
     })
   }
 
