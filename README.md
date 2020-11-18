@@ -87,6 +87,8 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 3. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar.
 4. Make sure you can connect to the specified URL + port, and if so, you are done!
 
+NOTE: It is currently recommended that you use the `nightly` tag on Docker. To do so, simply update the docker-compose.yml `image` field so that it points to `tzahi12345/youtubedl-material:nightly`.
+
 ### Custom UID/GID
 
 By default, the Docker container runs as non-root with UID=1000 and GID=1000. To set this to your own UID/GID, simply update the `environment` section in your `docker-compose.yml` like so:
