@@ -12,6 +12,7 @@ import { v4 as uuid } from 'uuid';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
 import { isoLangs } from './settings/locales_list';
+import { Title } from '@angular/platform-browser';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -58,7 +59,7 @@ export class PostsService implements CanActivate {
     locale = isoLangs['en'];
 
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
-                public snackBar: MatSnackBar) {
+                public snackBar: MatSnackBar, private titleService: Title) {
         console.log('PostsService Initialized...');
         this.path = this.document.location.origin + '/api/';
 
@@ -88,6 +89,7 @@ export class PostsService implements CanActivate {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
+                this.titleService.setTitle(this.config['Extra']['title_top']);
                 if (this.config['Advanced']['multi_user_mode']) {
                     this.checkAdminCreationStatus();
                     // login stuff
