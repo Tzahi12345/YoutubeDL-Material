@@ -1,0 +1,45 @@
+name: continuous integration
+
+on:
+  push:
+    branches: [master, feat/*]
+    tags:
+      - v*
+  pull_request:
+      branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@v1
+      - name: install dependencies
+        run: |
+          npm install
+          cd backend
+          npm install
+          sudo npm install -g @angular/cli
+      - name: build
+        run: ng build --prod
+      - name: prepare artifact upload
+        shell: pwsh
+        run: |
+          New-Item -Name build -ItemType Directory
+          New-Item -Path build -Name youtubedl-material -ItemType Directory
+          Copy-Item -Path ./backend/appdata -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/audio -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/authentication -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/public -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/subscriptions -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/video -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/*.js -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/*.json -Destination ./build/youtubedl-material
+      - name: upload build artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: youtubedl-material
+          path: build
+
