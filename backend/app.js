@@ -1700,6 +1700,7 @@ async function downloadLatestYoutubeDLBinary(current_version, new_version) {
         let binary_path = 'node_modules/youtube-dl/bin';
         downloader(binary_path, function error(err, done) {
             if (err) {
+                logger.error(`youtube-dl failed to update. Restart the server to try again.`);
                 logger.error(err);
                 resolve(false);
             }
@@ -1775,7 +1776,7 @@ app.use(function(req, res, next) {
         next();
     } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
         next();
-    } else if (req.path.includes('/api/stream/')) {
+    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/')) {
         next();
     } else {
         logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
@@ -1930,7 +1931,7 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         // add thumbnails if present
-        await addThumbnails(mp3s);
+        // await addThumbnails(mp3s);
     }
 
 
@@ -1957,7 +1958,7 @@ app.get('/api/getMp4s', optionalJwt, async function(req, res) {
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         // add thumbnails if present
-        await addThumbnails(mp4s);
+        // await addThumbnails(mp4s);
     }
 
     res.send({
@@ -2048,7 +2049,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         // add thumbnails if present
-        await addThumbnails(files);
+        // await addThumbnails(files);
     }
 
     res.send({
@@ -2729,6 +2730,12 @@ app.get('/api/stream/:id', optionalJwt, (req, res) => {
         res.writeHead(200, head)
         fs.createReadStream(file_path).pipe(res)
     }
+});
+
+app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
+    let file_path = decodeURIComponent(req.params.path);
+    if (fs.existsSync(file_path)) path.isAbsolute(file_path) ? res.sendFile(file_path) : res.sendFile(path.join(__dirname, file_path));
+    else res.sendStatus(404);
 });
 
   // Downloads management

@@ -32,7 +32,7 @@
         <div class="row justify-content-center">
             <ng-container *ngIf="normal_files_received">
                 <div *ngFor="let file of filtered_files; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
-                    <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [loading]="false" (deleteFile)="deleteFile($event)"></app-unified-file-card>
+                    <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? '?jwt=' + this.postsService.token : ''"></app-unified-file-card>
                 </div>
             </ng-container>
             <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">

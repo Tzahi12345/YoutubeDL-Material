@@ -44,11 +44,13 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() is_playlist = false;
   @Input() index: number;
   @Input() locale = null;
+  @Input() baseStreamPath = null;
+  @Input() jwtString = null;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
   @Output() editPlaylist = new EventEmitter<any>();
-  
+
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -67,11 +69,12 @@ export class UnifiedFileCardComponent implements OnInit {
       this.file_length = fancyTimeFormat(this.file_obj.duration);
     }
 
-    if (this.file_obj && this.file_obj.thumbnailBlob) {
-      const mime = getMimeByFilename(this.file_obj.thumbnailPath);
+    if (this.file_obj && this.file_obj.thumbnailPath) {
+      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}${this.jwtString}`;
+      /*const mime = getMimeByFilename(this.file_obj.thumbnailPath);
       const blob = new Blob([new Uint8Array(this.file_obj.thumbnailBlob.data)], {type: mime});
       const bloburl = URL.createObjectURL(blob);
-      this.thumbnailBlobURL = this.sanitizer.bypassSecurityTrustUrl(bloburl);
+      this.thumbnailBlobURL = this.sanitizer.bypassSecurityTrustUrl(bloburl);*/
     }
   }
 
