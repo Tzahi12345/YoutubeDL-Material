@@ -39,16 +39,12 @@ export class EditSubscriptionDialogComponent implements OnInit {
 
     if (this.sub.timerange) {
       const timerange_str = this.sub.timerange.split('-')[1];
-      console.log(timerange_str);
       const number = timerange_str.replace(/\D/g,'');
       let units = timerange_str.replace(/[0-9]/g, '');
 
-      console.log(units);
-
-      // // remove plural on units
-      // if (units[units.length-1] === 's') {
-      //   units = units.substring(0, units.length-1);
-      // }
+      if (+number === 1) {
+        units = units.replace('s', '');
+      }
 
       this.timerange_amount = parseInt(number);
       this.timerange_unit = units;
@@ -86,12 +82,16 @@ export class EditSubscriptionDialogComponent implements OnInit {
   }
 
   timerangeChanged(value, select_changed) {
-    console.log(this.timerange_amount);
-    console.log(this.timerange_unit);
+    if (+this.timerange_amount === 1) {
+      this.timerange_unit = this.timerange_unit.replace('s', '');
+    } else {
+      if (!this.timerange_unit.includes('s')) {
+        this.timerange_unit += 's';
+      }
+    }
 
     if (this.timerange_amount && this.timerange_unit && !this.download_all) {
       this.new_sub.timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
-      console.log(this.new_sub.timerange);
     } else {
       this.new_sub.timerange = null;
     }
