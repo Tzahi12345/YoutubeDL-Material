@@ -184,6 +184,7 @@ DEFAULT_CONFIG = {
       "Downloader": {
         "path-audio": "audio/",
         "path-video": "video/",
+        "default_file_output": "",
         "use_youtubedl_archive": false,
         "custom_args": "",
         "safe_download_override": false,

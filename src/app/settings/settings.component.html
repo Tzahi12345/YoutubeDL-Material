@@ -115,9 +115,19 @@
                         </mat-form-field>
                     </div>
 
+                    <div class="col-12 mt-4">
+                        <mat-form-field class="text-field" color="accent">
+                            <input matInput [(ngModel)]="new_config['Downloader']['default_file_output']" matInput placeholder="Default file output" i18n-placeholder="Default file output placeholder">
+                            <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+                                <ng-container i18n="Youtube-dl output template documentation link">Documentation</ng-container></a>.
+                                <ng-container i18n="Custom Output input hint">Path is relative to the above download paths. Don't include extension.</ng-container>
+                            </mat-hint>
+                        </mat-form-field>
+                    </div>
+
                     <div class="col-12 mt-4 mb-5">
                         <mat-form-field class="text-field" style="margin-right: 12px;" color="accent">
-                            <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
+                            <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Global custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                             <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</ng-container></mat-hint>
                             <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                         </mat-form-field>

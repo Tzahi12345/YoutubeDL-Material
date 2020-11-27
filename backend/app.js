@@ -1379,7 +1379,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
 }
 
 async function generateArgs(url, type, options) {
-    var videopath = '%(title)s';
+    var videopath = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
     var globalArgs = config_api.getConfigItem('ytdl_custom_args');
     let useCookies = config_api.getConfigItem('ytdl_use_cookies');
     var is_audio = type === 'audio';
