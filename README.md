@@ -1,10 +1,10 @@
 # YoutubeDL-Material
-[![](https://img.shields.io/docker/pulls/tzahi12345/youtubedl-material.svg)](https://hub.docker.com/r/tzahi12345/youtubedl-material)
-[![](https://img.shields.io/docker/image-size/tzahi12345/youtubedl-material?sort=date)](https://hub.docker.com/r/tzahi12345/youtubedl-material)
-[![](https://img.shields.io/badge/%E2%86%91_Deploy_to-Heroku-7056bf.svg)](https://heroku.com/deploy?template=https://github.com/Tzahi12345/YoutubeDL-Material)
-[![](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
-[![](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
 
+[![Docker pulls badge](https://img.shields.io/docker/pulls/tzahi12345/youtubedl-material.svg)](https://hub.docker.com/r/tzahi12345/youtubedl-material)
+[![Docker image size badge](https://img.shields.io/docker/image-size/tzahi12345/youtubedl-material?sort=date)](https://hub.docker.com/r/tzahi12345/youtubedl-material)
+[![Heroku deploy badge](https://img.shields.io/badge/%E2%86%91_Deploy_to-Heroku-7056bf.svg)](https://heroku.com/deploy?template=https://github.com/Tzahi12345/YoutubeDL-Material)
+[![GitHub issues badge](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
+[![License badge](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
 
 YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 9](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
@@ -31,12 +31,14 @@ Dark mode:
 NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker) section for a setup guide.
 
 Debian/Ubuntu:
-```
+
+```bash
 sudo apt-get install nodejs youtube-dl ffmpeg
 ```
 
 CentOS 7:
-```
+
+```bash
 sudo yum install epel-release
 sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
 sudo yum install centos-release-scl-rh
@@ -46,6 +48,7 @@ sudo yum install nodejs youtube-dl ffmpeg ffmpeg-devel
 ```
 
 Optional dependencies:
+
 * AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
 
 ### Installing
@@ -84,8 +87,8 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 
 1. Run `curl -L https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest/download/docker-compose.yml -o docker-compose.yml` to download the latest Docker Compose, or go to the [releases](https://github.com/Tzahi12345/YoutubeDL-Material/releases/) page to grab the version you'd like.
 2. Run `docker-compose pull`. This will download the official YoutubeDL-Material docker image.
-3. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 8998" or something similar.
-4. Make sure you can connect to the specified URL + port, and if so, you are done!
+3. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 17443" or something similar. This tells you the *container-internal* port of the application. Please check your `docker-compose.yml` file for the *external* port. If you downloaded the file as described above, it defaults to **8998**.
+4. Make sure you can connect to the specified URL + *external* port, and if so, you are done!
 
 NOTE: It is currently recommended that you use the `nightly` tag on Docker. To do so, simply update the docker-compose.yml `image` field so that it points to `tzahi12345/youtubedl-material:nightly`.
 
@@ -93,7 +96,7 @@ NOTE: It is currently recommended that you use the `nightly` tag on Docker. To d
 
 By default, the Docker container runs as non-root with UID=1000 and GID=1000. To set this to your own UID/GID, simply update the `environment` section in your `docker-compose.yml` like so:
 
-```
+```yml
 environment:
     UID: YOUR_UID
     GID: YOUR_GID
@@ -120,6 +123,7 @@ If you're interested in translating the app into a new language, check out the [
 * **Isaac Grynsztein** (me!) - *Initial work*
 
 Official translators:
+
 * Spanish - tzahi12345
 * German - UnlimitedCookies
 * Chinese - TyRoyal
