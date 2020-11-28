@@ -2196,6 +2196,7 @@ app.post('/api/updateCategories', optionalJwt, async (req, res) => {
 app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let name = req.body.name;
     let url = req.body.url;
+    let maxQuality = req.body.maxQuality;
     let timerange = req.body.timerange;
     let streamingOnly = req.body.streamingOnly;
     let audioOnly = req.body.audioOnly;
@@ -2205,6 +2206,7 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
     const new_sub = {
                         name: name,
                         url: url,
+                        maxQuality: maxQuality,
                         id: uuid(),
                         streamingOnly: streamingOnly,
                         user_uid: user_uid,

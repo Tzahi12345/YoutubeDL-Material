@@ -35,6 +35,13 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+            <div class="col-12 mt-2">
+                <mat-form-field>
+                    <mat-select placeholder="Max quality" i18n-placeholder="Max quality placeholder" [disabled]="audioOnlyMode" [(ngModel)]="maxQuality">
+                        <mat-option *ngFor="let available_quality of available_qualities" [value]="available_quality['value']">{{available_quality['label']}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
             <div class="col-12">
                 <div>
                     <mat-checkbox [(ngModel)]="audioOnlyMode"><ng-container i18n="Streaming-only mode">Audio-only mode</ng-container></mat-checkbox>

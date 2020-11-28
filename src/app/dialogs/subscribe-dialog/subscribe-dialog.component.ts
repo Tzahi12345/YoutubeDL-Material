@@ -17,6 +17,8 @@ export class SubscribeDialogComponent implements OnInit {
   url = null;
   name = null;
 
+  maxQuality = 'best';
+
   // state
   subscribing = false;
 
@@ -29,12 +31,43 @@ export class SubscribeDialogComponent implements OnInit {
   customFileOutput = '';
   customArgs = '';
 
+  available_qualities = [
+    {
+      'label': 'Best',
+      'value': 'best'
+    },
+    {
+      'label': '4K',
+      'value': '2160'
+    },
+    {
+      'label': '1440p',
+      'value': '1440'
+    },
+    {
+      'label': '1080p',
+      'value': '1080'
+    },
+    {
+      'label': '720p',
+      'value': '720'
+    },
+    {
+      'label': '480p',
+      'value': '480'
+    },
+    {
+      'label': '360p',
+      'value': '360'
+    }
+  ];
+
   time_units = [
     'day',
     'week',
     'month',
     'year'
-  ]
+  ];
 
   constructor(private postsService: PostsService,
               private snackBar: MatSnackBar,
@@ -57,7 +90,7 @@ export class SubscribeDialogComponent implements OnInit {
       if (!this.download_all) {
         timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
       }
-      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode,
+      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode, this.maxQuality,
                                           this.audioOnlyMode, this.customArgs, this.customFileOutput).subscribe(res => {
         this.subscribing = false;
         if (res['new_sub']) {

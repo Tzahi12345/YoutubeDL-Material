@@ -337,9 +337,11 @@ export class PostsService implements CanActivate {
         });
     }
 
-    createSubscription(url, name, timerange = null, streamingOnly = false, audioOnly = false, customArgs = null, customFileOutput = null) {
-        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, streamingOnly: streamingOnly,
-                                audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput}, this.httpOptions);
+    createSubscription(url, name, timerange = null, streamingOnly = false, maxQuality = 'best', audioOnly = false,
+                       customArgs = null, customFileOutput = null) {
+        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, maxQuality: maxQuality,
+                                streamingOnly: streamingOnly, audioOnly: audioOnly, customArgs: customArgs,
+                                customFileOutput: customFileOutput}, this.httpOptions);
     }
 
     updateSubscription(subscription) {

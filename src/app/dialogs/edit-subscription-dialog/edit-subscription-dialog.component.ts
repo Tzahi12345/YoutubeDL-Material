@@ -22,6 +22,36 @@ export class EditSubscriptionDialogComponent implements OnInit {
   audioOnlyMode = null;
   download_all = null;
 
+  available_qualities = [
+    {
+      'label': 'Best',
+      'value': 'best'
+    },
+    {
+      'label': '4K',
+      'value': '2160'
+    },
+    {
+      'label': '1440p',
+      'value': '1440'
+    },
+    {
+      'label': '1080p',
+      'value': '1080'
+    },
+    {
+      'label': '720p',
+      'value': '720'
+    },
+    {
+      'label': '480p',
+      'value': '480'
+    },
+    {
+      'label': '360p',
+      'value': '360'
+    }
+  ];
 
   time_units = [
     'day',

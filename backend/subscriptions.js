@@ -114,7 +114,11 @@ async function getSubscriptionInfo(sub, user_uid = null) {
                         continue;
                     }
                     if (!sub.name) {
-                        sub.name = sub.isPlaylist ? output_json.playlist_title : output_json.uploader;
+                        if (sub.isPlaylist) {
+                            sub.name = output_json.playlist_title ? output_json.playlist_title : output_json.playlist;
+                        } else {
+                            sub.name = output_json.uploader;
+                        }
                         // if it's now valid, update
                         if (sub.name) {
                             if (user_uid)
@@ -296,7 +300,8 @@ async function getVideosForSub(sub, user_uid = null) {
         qualityPath.push('-x');
         qualityPath.push('--audio-format', 'mp3');
     } else {
-        qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4']
+        if (!sub.maxQuality || sub.maxQuality === 'best') qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'];
+        else qualityPath = ['-f', `bestvideo[height<=${sub.maxQuality}]+bestaudio/best[height<=${sub.maxQuality}]`, '--merge-output-format', 'mp4'];
     }
 
     downloadConfig.push(...qualityPath)
@@ -351,7 +356,7 @@ async function getVideosForSub(sub, user_uid = null) {
         youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
-                logger.error(err.stderr);
+                logger.error(err.stderr ? err.stderr : err.message);
                 if (err.stderr.includes('This video is unavailable')) {
                     logger.info('An error was encountered with at least one video, backup method will be used.')
                     try {
