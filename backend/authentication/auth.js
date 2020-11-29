@@ -89,6 +89,12 @@ exports.registerUser = function(req, res) {
     return;
   }
 
+  if (plaintextPassword === "") {
+    res.sendStatus(400);
+    logger.error(`Registration failed for user ${userid}. A password must be provided.`);
+    return;
+  }
+
   bcrypt.hash(plaintextPassword, saltRounds)
     .then(function(hash) {
       let new_user = generateUserObject(userid, username, hash);
