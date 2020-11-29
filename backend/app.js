@@ -27,6 +27,7 @@ const url_api = require('url');
 var config_api = require('./config.js');
 var subscriptions_api = require('./subscriptions')
 var categories_api = require('./categories');
+var twitch_api = require('./twitch');
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
@@ -38,6 +39,7 @@ var app = express();
 
 // database setup
 const FileSync = require('lowdb/adapters/FileSync');
+const config = require('./config.js');
 
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
@@ -1186,6 +1188,13 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     var full_file_path = filepath_no_extension + ext;
                     var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
 
+                    if (type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
+                        && config.getConfigItem('ytdl_use_twitch_api') && config.getConfigItem('ytdl_twitch_auto_download_chat')) {
+                            let vodId = url.split('twitch.tv/videos/')[1];
+                            vodId = vodId.split('?')[0];
+                            downloadTwitchChatByVODID(vodId, file_name, type, options.user);
+                    }
+
                     // renames file if necessary due to bug
                     if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
                         try {
@@ -1759,6 +1768,42 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
+async function getTwitchChatByFileID(id, type, user_uid, uuid) {
+    let file_path = null;
+
+    if (user_uid) {
+        file_path = path.join('users', user_uid, type, id + '.twitch_chat.json');
+    } else {
+        file_path = path.join(type, id + '.twitch_chat.json');
+    }
+
+    var chat_file = null;
+    if (fs.existsSync(file_path)) {
+        chat_file = fs.readJSONSync(file_path);
+    }
+
+    return chat_file;
+}
+
+async function downloadTwitchChatByVODID(vodId, id, type, user_uid) {
+    const twitch_api_key = config_api.getConfigItem('ytdl_twitch_api_key');
+    const chat = await twitch_api.getCommentsForVOD(twitch_api_key, vodId);
+
+    // save file if needec params are included
+    if (id && type) {
+        let file_path = null;
+        if (user_uid) {
+            file_path = path.join('users', user_uid, type, id + '.twitch_chat.json');
+        } else {
+            file_path = path.join(type, id + '.twitch_chat.json');
+        }
+
+        if (chat) fs.writeJSONSync(file_path, chat);
+    }
+
+    return chat;
+}
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     res.header("Access-Control-Allow-Origin", getOrigin());
@@ -2055,6 +2100,54 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     res.send({
         files: files,
         playlists: playlists
+    });
+});
+
+app.post('/api/getFullTwitchChat', optionalJwt, async (req, res) => {
+    var id = req.body.id;
+    var type = req.body.type;
+    var uuid = req.body.uuid;
+    var user_uid = null;
+
+    if (req.isAuthenticated()) user_uid = req.user.uid;
+
+    const chat_file = await getTwitchChatByFileID(id, type, user_uid, uuid);
+
+    res.send({
+        chat: chat_file
+    });
+});
+
+app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
+    var id = req.body.id;
+    var type = req.body.type;
+    var vodId = req.body.vodId;
+    var uuid = req.body.uuid;
+    var user_uid = null;
+
+    if (req.isAuthenticated()) user_uid = req.user.uid;
+
+    // check if file already exists. if so, send that instead
+    const file_exists_check = await getTwitchChatByFileID(id, type, user_uid, uuid);
+    if (file_exists_check) {
+        res.send({chat: file_exists_check});
+        return;
+    }
+
+    const full_chat = await downloadTwitchChatByVODID(vodId);
+
+    let file_path = null;
+
+    if (user_uid) {
+        file_path = path.join('users', req.user.uid, type, id + '.twitch_chat.json');
+    } else {
+        file_path = path.join(type, id + '.twitch_chat.json');
+    }
+
+    if (full_chat) fs.writeJSONSync(file_path, full_chat);
+
+    res.send({
+        chat: full_chat
     });
 });
 

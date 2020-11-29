@@ -234,6 +234,14 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getAllFiles', {}, this.httpOptions);
     }
 
+    getFullTwitchChat(id, type, uuid = null) {
+        return this.http.post(this.path + 'getFullTwitchChat', {id: id, type: type, uuid: uuid}, this.httpOptions);
+    }
+
+    downloadTwitchChat(id, type, vodId, uuid = null) {
+        return this.http.post(this.path + 'downloadTwitchChatByVODID', {id: id, type: type, vodId: vodId, uuid: uuid}, this.httpOptions);
+    }
+
     downloadFileFromServer(fileName, type, outputName = null, fullPathProvided = null, subscriptionName = null, subPlaylist = null,
                             uid = null, uuid = null, id = null) {
         return this.http.post(this.path + 'downloadFile', {fileNames: fileName,

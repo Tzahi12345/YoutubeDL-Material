@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { VgAPI } from 'ngx-videogular';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
+import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 
 export interface IMedia {
   title: string;
@@ -31,6 +32,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   currentIndex = 0;
   currentItem: IMedia = null;
   api: VgAPI;
+  api_ready = false;
 
   // params
   fileNames: string[];
@@ -64,6 +66,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   save_volume_timer = null;
   original_volume = null;
+
+  @ViewChild('twitchchat') twitchChat: TwitchChatComponent;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -270,6 +274,13 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onPlayerReady(api: VgAPI) {
       this.api = api;
+      this.api_ready = true;
+
+      this.api.subscriptions.seeked.subscribe(data => {
+        if (this.twitchChat) {
+          this.twitchChat.renewChat();
+        }
+      });
 
       // checks if volume has been previously set. if so, use that as default
       if (localStorage.getItem('player_volume')) {

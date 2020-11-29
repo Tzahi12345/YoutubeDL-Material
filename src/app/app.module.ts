@@ -80,6 +80,7 @@ import { RecentVideosComponent } from './components/recent-videos/recent-videos.
 import { EditSubscriptionDialogComponent } from './dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 import { CustomPlaylistsComponent } from './components/custom-playlists/custom-playlists.component';
 import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit-category-dialog.component';
+import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
 
 registerLocaleData(es, 'es');
 
@@ -125,7 +126,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     RecentVideosComponent,
     EditSubscriptionDialogComponent,
     CustomPlaylistsComponent,
-    EditCategoryDialogComponent
+    EditCategoryDialogComponent,
+    TwitchChatComponent
   ],
   imports: [
     CommonModule,
