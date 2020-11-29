@@ -203,7 +203,10 @@ DEFAULT_CONFIG = {
         "use_API_key": false,
         "API_key": "",
         "use_youtube_API": false,
-        "youtube_API_key": ""
+        "youtube_API_key": "",
+        "use_twitch_API": false,
+        "twitch_API_key": "",
+        "twitch_auto_download_chat": false
       },
       "Themes": {
         "default_theme": "default",
