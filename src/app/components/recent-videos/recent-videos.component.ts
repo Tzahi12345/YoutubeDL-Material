@@ -50,6 +50,8 @@ export class RecentVideosComponent implements OnInit {
   };
   filterProperty = this.filterProperties['upload_date'];
 
+  paged_data = null;
+
   constructor(public postsService: PostsService, private router: Router) {
     // get cached file count
     if (localStorage.getItem('cached_file_count')) {
@@ -133,6 +135,8 @@ export class RecentVideosComponent implements OnInit {
       localStorage.setItem('cached_file_count', '' + this.files.length);
 
       this.normal_files_received = true;
+
+      this.paged_data = this.filtered_files.slice(0, 10);
     });
   }
 
@@ -276,13 +280,18 @@ export class RecentVideosComponent implements OnInit {
     const result = b.registered - a.registered;
     return result;
   }
-  
+
   durationStringToNumber(dur_str) {
     let num_sum = 0;
     const dur_str_parts = dur_str.split(':');
-    for (let i = dur_str_parts.length-1; i >= 0; i--) {
-      num_sum += parseInt(dur_str_parts[i])*(60**(dur_str_parts.length-1-i));
+    for (let i = dur_str_parts.length - 1; i >= 0; i--) {
+      num_sum += parseInt(dur_str_parts[i]) * (60 ** (dur_str_parts.length - 1 - i));
     }
     return num_sum;
+  }
+
+  pageChangeEvent(event) {
+    const offset = ((event.pageIndex + 1) - 1) * event.pageSize;
+    this.paged_data = this.filtered_files.slice(offset).slice(0, event.pageSize);
   }
 }
