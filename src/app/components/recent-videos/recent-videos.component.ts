@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-recent-videos',
@@ -50,7 +51,10 @@ export class RecentVideosComponent implements OnInit {
   };
   filterProperty = this.filterProperties['upload_date'];
 
+  pageSize = 10;
   paged_data = null;
+
+  @ViewChild('paginator') paginator: MatPaginator
 
   constructor(public postsService: PostsService, private router: Router) {
     // get cached file count
@@ -94,6 +98,7 @@ export class RecentVideosComponent implements OnInit {
   private filterFiles(value: string) {
     const filterValue = value.toLowerCase();
     this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue));
+    this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex});
   }
 
   filterByProperty(prop) {
@@ -102,6 +107,7 @@ export class RecentVideosComponent implements OnInit {
     } else {
       this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? 1 : -1));
     }
+    if (this.paginator) { this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex}) };
   }
 
   filterOptionChanged(value) {

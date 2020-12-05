@@ -43,8 +43,8 @@
         </div>
     </div>
 
-    <mat-paginator *ngIf="paged_data && paged_data.length > 0" (page)="pageChangeEvent($event)" [length]="100"
-              [pageSize]="10"
+    <mat-paginator #paginator *ngIf="paged_data && paged_data.length > 0" (page)="pageChangeEvent($event)" [length]="100"
+              [pageSize]="pageSize"
               [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
     </mat-paginator>
 </div>
