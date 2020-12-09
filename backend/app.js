@@ -216,6 +216,16 @@ async function checkMigrations() {
         else { logger.error('Migration failed: 3.5->3.6+'); }
     }
 
+    // 4.1->4.2 migration
+    
+    const add_description_migration_complete = false; // db.get('add_description_migration_complete').value();
+    if (!add_description_migration_complete) {
+        logger.info('Beginning migration: 4.1->4.2+')
+        const success = await addMetadataPropertyToDB('description');
+        if (success) { logger.info('4.1->4.2+ migration complete!'); }
+        else { logger.error('Migration failed: 4.1->4.2+'); }
+    }
+
     return true;
 }
 
@@ -244,6 +254,28 @@ async function runFilesToDBMigration() {
 
         // sets migration to complete
         db.set('files_to_db_migration_complete', true).write();
+        return true;
+    } catch(err) {
+        logger.error(err);
+        return false;
+    }
+}
+
+async function addMetadataPropertyToDB(property_key) {
+    try {
+        const dirs_to_check = db_api.getFileDirectoriesAndDBs();
+        for (const dir_to_check of dirs_to_check) {
+            // recursively get all files in dir's path
+            const files = await utils.getDownloadedFilesByType(dir_to_check.basePath, dir_to_check.type, true);
+            for (const file of files) {
+                if (file[property_key]) {
+                    dir_to_check.dbPath.find({id: file.id}).assign({[property_key]: file[property_key]}).write();
+                }
+            }
+        }
+
+        // sets migration to complete
+        db.set('add_description_migration_complete', true).write();
         return true;
     } catch(err) {
         logger.error(err);

@@ -20,7 +20,7 @@ function getTrueFileName(unfixed_path, type) {
     return fixed_path;
 }
 
-async function getDownloadedFilesByType(basePath, type) {
+async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
     // return empty array if the path doesn't exist
     if (!(await fs.pathExists(basePath))) return [];
 
@@ -36,6 +36,11 @@ async function getDownloadedFilesByType(basePath, type) {
         var id = file_path.substring(0, file_path.length-4);
         var jsonobj = await getJSONByType(type, id, basePath);
         if (!jsonobj) continue;
+        if (full_metadata) {
+            jsonobj['id'] = id;
+            files.push(jsonobj);
+            continue;
+        }
         var title = jsonobj.title;
         var url = jsonobj.webpage_url;
         var uploader = jsonobj.uploader;

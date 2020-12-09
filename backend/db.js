@@ -115,7 +115,7 @@ function getAppendedBasePathSub(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
-async function importUnregisteredFiles() {
+function getFileDirectoriesAndDBs() {
     let dirs_to_check = [];
     let subscriptions_to_check = [];
     const subscriptions_base_path = config_api.getConfigItem('ytdl_subscriptions_base_path'); // only for single-user mode
@@ -181,6 +181,12 @@ async function importUnregisteredFiles() {
         });
     }
 
+    return dirs_to_check;
+}
+
+async function importUnregisteredFiles() {
+    const dirs_to_check = getFileDirectoriesAndDBs();
+
     // run through check list and check each file to see if it's missing from the db
     for (const dir_to_check of dirs_to_check) {
         // recursively get all files in dir's path
@@ -203,5 +209,6 @@ module.exports = {
     initialize: initialize,
     registerFileDB: registerFileDB,
     updatePlaylist: updatePlaylist,
+    getFileDirectoriesAndDBs: getFileDirectoriesAndDBs,
     importUnregisteredFiles: importUnregisteredFiles
 }

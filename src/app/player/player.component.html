@@ -8,6 +8,18 @@
                             </video>
                         </vg-player>
                     </div>
+                    <div *ngIf="file_obj" style="height: fit-content; width: 100%; margin-top: 10px;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <ng-container *ngIf="file_obj">{{file_obj['local_play_count'] ? file_obj['local_play_count'] : 0}}&nbsp;<ng-container i18n="View count label">views</ng-container></ng-container>
+                                </div>
+                                <div class="col">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div style="height: fit-content; width: 100%; margin-top: 10px;">
                         <mat-button-toggle-group cdkDropList [cdkDropListSortingDisabled]="!id" (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
                             <mat-button-toggle cdkDrag *ngFor="let playlist_item of playlist; let i = index" [checked]="currentItem.title === playlist_item.title" (click)="onClickPlaylistItem(playlist_item, i)" class="toggle-button" [value]="playlist_item.title">{{playlist_item.label}}</mat-button-toggle>
