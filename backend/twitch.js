@@ -28,7 +28,8 @@ async function getCommentsForVOD(clientID, vodId) {
                             created_at: acctCreated
                         },
                         message: {
-                            body: msg
+                            body: msg,
+                            user_color: user_color
                         }
                     } = c;
 
@@ -49,7 +50,8 @@ async function getCommentsForVOD(clientID, vodId) {
                     timestamp: timestamp,
                     timestamp_str: timestamp_str,
                     name: name,
-                    message: msg
+                    message: msg,
+                    user_color: user_color
                 });
                 // let line = `${timestamp},${msgCreated.format(tsFormat)},${name},${_id},"${msg.replace(/"/g, '""')}",${acctCreated.format(tsFormat)}`;
                 // return line;

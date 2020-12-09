@@ -2037,6 +2037,8 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
         if (!file && type) file = db.get(`files.${type}`).find({uid: uid}).value();
     }
 
+    // check if chat exists for twitch videos
+    if (file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
 
     if (file) {
         res.send({
