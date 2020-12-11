@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CookiesUploaderDialogComponent } from './cookies-uploader-dialog.component';
 
@@ -6,7 +6,7 @@ describe('CookiesUploaderDialogComponent', () => {
   let component: CookiesUploaderDialogComponent;
   let fixture: ComponentFixture<CookiesUploaderDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CookiesUploaderDialogComponent ]
     })

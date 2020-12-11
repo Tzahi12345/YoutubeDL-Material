@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { VgAPI } from 'ngx-videogular';
+import { VgApiService } from '@videogular/ngx-videogular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,7 +31,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   currentIndex = 0;
   currentItem: IMedia = null;
-  api: VgAPI;
+  api: VgApiService;
   api_ready = false;
 
   // params
@@ -272,7 +272,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.original_playlist = JSON.stringify(this.playlist);
   }
 
-  onPlayerReady(api: VgAPI) {
+  onPlayerReady(api: VgApiService) {
       this.api = api;
       this.api_ready = true;
 

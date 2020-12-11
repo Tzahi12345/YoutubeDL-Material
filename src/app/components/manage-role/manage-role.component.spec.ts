@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ManageRoleComponent } from './manage-role.component';
 
@@ -6,7 +6,7 @@ describe('ManageRoleComponent', () => {
   let component: ManageRoleComponent;
   let fixture: ComponentFixture<ManageRoleComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ManageRoleComponent ]
     })
