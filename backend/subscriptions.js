@@ -6,7 +6,8 @@ var path = require('path');
 
 var youtubedl = require('youtube-dl');
 const config_api = require('./config');
-var utils = require('./utils')
+const twitch_api = require('./twitch');
+var utils = require('./utils');
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
@@ -418,6 +419,15 @@ function handleOutputJSON(sub, sub_db, output_json, multiUserMode = null, reset_
         sub_db.get('videos').push(output_json).write();
     } else {
         db_api.registerFileDB(path.basename(output_json['_filename']), sub.type, multiUserMode, sub);
+        const url = output_json['webpage_url'];
+        if (sub.type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
+            && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
+                const file_name = path.basename(output_json['_filename']);
+                const id = file_name.substring(0, file_name.length-4);
+                let vodId = url.split('twitch.tv/videos/')[1];
+                vodId = vodId.split('?')[0];
+                twitch_api.downloadTwitchChatByVODID(vodId, id, sub.type, multiUserMode.user, sub);
+        }
     }
 }
 

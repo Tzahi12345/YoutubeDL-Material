@@ -39,6 +39,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   type: string;
   id = null; // used for playlists (not subscription)
   uid = null; // used for non-subscription files (audio, video, playlist)
+  subscription = null;
   subscriptionName = null;
   subPlaylist = null;
   uuid = null; // used for sharing in multi-user mode, uuid is the user that downloaded the video
@@ -180,6 +181,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   getSubscription() {
     this.postsService.getSubscription(null, this.subscriptionName).subscribe(res => {
       const subscription = res['subscription'];
+      this.subscription = subscription;
       if (this.fileNames) {
         subscription.videos.forEach(video => {
           if (video['id'] === this.fileNames[0]) {
@@ -275,12 +277,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   onPlayerReady(api: VgApiService) {
       this.api = api;
       this.api_ready = true;
-
-      this.api.subscriptions.seeked.subscribe(data => {
-        if (this.twitchChat) {
-          this.twitchChat.renewChat();
-        }
-      });
 
       // checks if volume has been previously set. if so, use that as default
       if (localStorage.getItem('player_volume')) {
