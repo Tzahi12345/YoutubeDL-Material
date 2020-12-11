@@ -59,7 +59,8 @@ export class RecentVideosComponent implements OnInit {
   constructor(public postsService: PostsService, private router: Router) {
     // get cached file count
     if (localStorage.getItem('cached_file_count')) {
-      this.cached_file_count = +localStorage.getItem('cached_file_count');
+      this.cached_file_count = +localStorage.getItem('cached_file_count') <= 10 ? +localStorage.getItem('cached_file_count') : 10;
+      
       this.loading_files = Array(this.cached_file_count).fill(0);
     }
   }
