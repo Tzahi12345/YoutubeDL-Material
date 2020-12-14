@@ -13,7 +13,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
 var unzipper = require('unzipper');
-var db_api = require('./db')
+var db_api = require('./db');
 var utils = require('./utils')
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
@@ -87,14 +87,8 @@ categories_api.initialize(db, users_db, logger, db_api);
 // Set some defaults
 db.defaults(
     {
-        playlists: {
-            audio: [],
-            video: []
-        },
-        files: {
-            audio: [],
-            video: []
-        },
+        playlists: [],
+        files: [],
         configWriteFlag: false,
         downloads: {},
         subscriptions: [],
@@ -218,10 +212,12 @@ async function checkMigrations() {
 
     // 4.1->4.2 migration
     
-    const add_description_migration_complete = false; // db.get('add_description_migration_complete').value();
+    const add_description_migration_complete = db.get('add_description_migration_complete').value();
     if (!add_description_migration_complete) {
         logger.info('Beginning migration: 4.1->4.2+')
-        const success = await addMetadataPropertyToDB('description');
+        let success = await simplifyDBFileStructure();
+        success = success && await addMetadataPropertyToDB('view_count');
+        success = success && await addMetadataPropertyToDB('description');
         if (success) { logger.info('4.1->4.2+ migration complete!'); }
         else { logger.error('Migration failed: 4.1->4.2+'); }
     }
@@ -229,6 +225,7 @@ async function checkMigrations() {
     return true;
 }
 
+/*
 async function runFilesToDBMigration() {
     try {
         let mp3s = await getMp3s();
@@ -259,6 +256,37 @@ async function runFilesToDBMigration() {
         logger.error(err);
         return false;
     }
+}
+*/
+
+async function simplifyDBFileStructure() {
+    let users = users_db.get('users').value();
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        if (user['files']['video'] !== undefined && user['files']['audio'] !== undefined) {
+            const user_files = user['files']['video'].concat(user['files']['audio']);
+            const user_db_path = users_db.get('users').find({uid: user['uid']});
+            user_db_path.assign({files: user_files}).write();
+        }
+        if (user['playlists']['video'] !== undefined && user['playlists']['audio'] !== undefined) {
+            const user_playlists = user['playlists']['video'].concat(user['playlists']['audio']);
+            const user_db_path = users_db.get('users').find({uid: user['uid']});
+            user_db_path.assign({playlists: user_playlists}).write();
+        }
+    }
+
+    if (db.get('files.video').value() !== undefined && db.get('files.audio').value() !== undefined) {
+        const files = db.get('files.video').value().concat(db.get('files.audio'));
+        db.assign({files: files}).write();
+    }
+
+    if (db.get('playlists.video').value() !== undefined && db.get('playlists.audio').value() !== undefined) {
+        const playlists = db.get('playlists.video').value().concat(db.get('playlists.audio'));
+        db.assign({playlists: playlists}).write();
+    }
+    
+
+    return true;
 }
 
 async function addMetadataPropertyToDB(property_key) {
@@ -592,6 +620,9 @@ async function loadConfig() {
     // creates archive path if missing
     await fs.ensureDir(archivePath);
 
+    // check migrations
+    await checkMigrations();
+
     // now this is done here due to youtube-dl's repo takedown
     await startYoutubeDL();
 
@@ -605,9 +636,6 @@ async function loadConfig() {
     }
 
     db_api.importUnregisteredFiles();
-
-    // check migrations
-    await checkMigrations();
 
     // load in previous downloads
     downloads = db.get('downloads').value();
@@ -1994,7 +2022,7 @@ async function addThumbnails(files) {
 
 // gets all download mp3s
 app.get('/api/getMp3s', optionalJwt, async function(req, res) {
-    var mp3s = db.get('files.audio').value(); // getMp3s();
+    var mp3s = db.get('files').chain().find({isAudio: true}).value(); // getMp3s();
     var playlists = db.get('playlists.audio').value();
     const is_authenticated = req.isAuthenticated();
     if (is_authenticated) {
@@ -2020,8 +2048,8 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
 // gets all download mp4s
 app.get('/api/getMp4s', optionalJwt, async function(req, res) {
-    var mp4s = db.get('files.video').value(); // getMp4s();
-    var playlists = db.get('playlists.video').value();
+    var mp4s = db.get('files').chain().find({isAudio: false}).value(); // getMp4s();
+    var playlists = db.get('playlists').value();
 
     const is_authenticated = req.isAuthenticated();
     if (is_authenticated) {
@@ -2052,21 +2080,11 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     var file = null;
 
     if (req.isAuthenticated()) {
-        file = auth_api.getUserVideo(req.user.uid, uid, type);
+        file = auth_api.getUserVideo(req.user.uid, uid);
     } else if (uuid) {
-        file = auth_api.getUserVideo(uuid, uid, type, true);
+        file = auth_api.getUserVideo(uuid, uid, true);
     } else {
-        if (!type) {
-            file = db.get('files.audio').find({uid: uid}).value();
-            if (!file) {
-                file = db.get('files.video').find({uid: uid}).value();
-                if (file) type = 'video';
-            } else {
-                type = 'audio';
-            }
-        }
-
-        if (!file && type) file = db.get(`files.${type}`).find({uid: uid}).value();
+        file = db.get('files').find({uid: uid}).value();
     }
 
     // check if chat exists for twitch videos
@@ -2086,31 +2104,19 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
 
 app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
-    let files = [];
-    let playlists = [];
-    let subscription_files = [];
+    let files = null;
+    let playlists = null;
 
-    let videos = null;
-    let audios = null;
-    let audio_playlists = null;
-    let video_playlists = null;
     let subscriptions =  config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
 
     // get basic info depending on multi-user mode being enabled
     if (req.isAuthenticated()) {
-        videos = auth_api.getUserVideos(req.user.uid, 'video');
-        audios = auth_api.getUserVideos(req.user.uid, 'audio');
-        audio_playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
-        video_playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
+        files = auth_api.getUserVideos(req.user.uid);
+        playlists = auth_api.getUserPlaylists(req.user.uid);
     } else {
-        videos = db.get('files.audio').value();
-        audios = db.get('files.video').value();
-        audio_playlists = db.get('playlists.audio').value();
-        video_playlists = db.get('playlists.video').value();
+        files = db.get('files').value();
+        playlists = db.get('playlists').value();
     }
-
-    files = videos.concat(audios);
-    playlists = video_playlists.concat(audio_playlists);
 
     // loop through subscriptions and add videos
     for (let i = 0; i < subscriptions.length; i++) {
@@ -2187,14 +2193,13 @@ app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
 
 // video sharing
 app.post('/api/enableSharing', optionalJwt, function(req, res) {
-    var type = req.body.type;
     var uid = req.body.uid;
     var is_playlist = req.body.is_playlist;
     let success = false;
     // multi-user mode
     if (req.isAuthenticated()) {
         // if multi user mode, use this method instead
-        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, true);
+        success = auth_api.changeSharingMode(req.user.uid, uid, is_playlist, true);
         res.send({success: success});
         return;
     }
@@ -2203,12 +2208,12 @@ app.post('/api/enableSharing', optionalJwt, function(req, res) {
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
-            db.get(`files.${type}`)
+            db.get(`files`)
                 .find({uid: uid})
                 .assign({sharingEnabled: true})
                 .write();
         } else if (is_playlist) {
-            db.get(`playlists.${type}`)
+            db.get(`playlists`)
                 .find({id: uid})
                 .assign({sharingEnabled: true})
                 .write();
@@ -2237,7 +2242,7 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     // multi-user mode
     if (req.isAuthenticated()) {
         // if multi user mode, use this method instead
-        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, false);
+        success = auth_api.changeSharingMode(req.user.uid, uid, is_playlist, false);
         res.send({success: success});
         return;
     }
@@ -2246,12 +2251,12 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
-            db.get(`files.${type}`)
+            db.get(`files`)
                 .find({uid: uid})
                 .assign({sharingEnabled: false})
                 .write();
         } else if (is_playlist) {
-                db.get(`playlists.${type}`)
+                db.get(`playlists`)
                 .find({id: uid})
                 .assign({sharingEnabled: false})
                 .write();
@@ -2544,7 +2549,7 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     if (req.isAuthenticated()) {
         auth_api.addPlaylist(req.user.uid, new_playlist, type);
     } else {
-        db.get(`playlists.${type}`)
+        db.get(`playlists`)
             .push(new_playlist)
             .write();
     }
@@ -2558,26 +2563,15 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
-    let type = req.body.type;
     let uuid = req.body.uuid;
 
     let playlist = null;
 
     if (req.isAuthenticated()) {
-        playlist = auth_api.getUserPlaylist(uuid ? uuid : req.user.uid, playlistID, type);
+        playlist = auth_api.getUserPlaylist(uuid ? uuid : req.user.uid, playlistID);
         type = playlist.type;
     } else {
-        if (!type) {
-            playlist = db.get('playlists.audio').find({id: playlistID}).value();
-            if (!playlist) {
-                playlist = db.get('playlists.video').find({id: playlistID}).value();
-                if (playlist) type = 'video';
-            } else {
-                type = 'audio';
-            }
-        }
-
-        if (!playlist) playlist = db.get(`playlists.${type}`).find({id: playlistID}).value();
+        playlist = db.get(`playlists`).find({id: playlistID}).value();
     }
 
     res.send({
@@ -2590,14 +2584,13 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
 app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let fileNames = req.body.fileNames;
-    let type = req.body.type;
 
     let success = false;
     try {
         if (req.isAuthenticated()) {
-            auth_api.updatePlaylistFiles(req.user.uid, playlistID, fileNames, type);
+            auth_api.updatePlaylistFiles(req.user.uid, playlistID, fileNames);
         } else {
-            db.get(`playlists.${type}`)
+            db.get(`playlists`)
                 .find({id: playlistID})
                 .assign({fileNames: fileNames})
                 .write();
@@ -2623,15 +2616,14 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
-    let type = req.body.type;
 
     let success = null;
     try {
         if (req.isAuthenticated()) {
-            auth_api.removePlaylist(req.user.uid, playlistID, type);
+            auth_api.removePlaylist(req.user.uid, playlistID);
         } else {
             // removes playlist from playlists
-            db.get(`playlists.${type}`)
+            db.get(`playlists`)
                 .remove({id: playlistID})
                 .write();
         }
@@ -2653,23 +2645,23 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, type, blacklistMode);
+        let success = auth_api.deleteUserFile(req.user.uid, uid, blacklistMode);
         res.send(success);
         return;
     }
 
-    var file_obj = db.get(`files.${type}`).find({uid: uid}).value();
+    var file_obj = db.get(`files`).find({uid: uid}).value();
     var name = file_obj.id;
     var fullpath = file_obj ? file_obj.path : null;
     var wasDeleted = false;
     if (await fs.pathExists(fullpath))
     {
         wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
-        db.get('files.video').remove({uid: uid}).write();
+        db.get('files').remove({uid: uid}).write();
         // wasDeleted = true;
         res.send(wasDeleted);
     } else if (video_obj) {
-        db.get('files.video').remove({uid: uid}).write();
+        db.get('files').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
     } else {

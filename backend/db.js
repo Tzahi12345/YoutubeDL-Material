@@ -32,9 +32,9 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null, custo
     if (!sub) {
         if (multiUserMode) {
             const user_uid = multiUserMode.user;
-            db_path = users_db.get('users').find({uid: user_uid}).get(`files.${type}`);
+            db_path = users_db.get('users').find({uid: user_uid}).get(`files`);
         } else {
-            db_path = db.get(`files.${type}`)
+            db_path = db.get(`files`);
         }
     } else {
         if (multiUserMode) {
@@ -94,18 +94,18 @@ function generateFileObject(id, type, customPath = null, sub = null) {
     var thumbnail = jsonobj.thumbnail;
     var duration = jsonobj.duration;
     var isaudio = type === 'audio';
-    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
+    var description = jsonobj.description;
+    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date, description);
     return file_obj;
 }
 
 function updatePlaylist(playlist, user_uid) {
     let playlistID = playlist.id;
-    let type = playlist.type;
     let db_loc = null;
     if (user_uid) {
-        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID});
+        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID});
     } else {
-        db_loc = db.get(`playlists.${type}`).find({id: playlistID});
+        db_loc = db.get(`playlists`).find({id: playlistID});
     }
     db_loc.assign(playlist).write();
     return true;
@@ -132,14 +132,14 @@ function getFileDirectoriesAndDBs() {
             // add user's audio dir to check list
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'audio'),
-                dbPath: users_db.get('users').find({uid: user.uid}).get('files.audio'),
+                dbPath: users_db.get('users').find({uid: user.uid}).get('files'),
                 type: 'audio'
             });
 
             // add user's video dir to check list
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'video'),
-                dbPath: users_db.get('users').find({uid: user.uid}).get('files.video'),
+                dbPath: users_db.get('users').find({uid: user.uid}).get('files'),
                 type: 'video'
             });
         }
@@ -153,14 +153,14 @@ function getFileDirectoriesAndDBs() {
         // add audio dir to check list
         dirs_to_check.push({
             basePath: audioFolderPath,
-            dbPath: db.get('files.audio'),
+            dbPath: db.get('files'),
             type: 'audio'
         });
 
         // add video dir to check list
         dirs_to_check.push({
             basePath: videoFolderPath,
-            dbPath: db.get('files.video'),
+            dbPath: db.get('files'),
             type: 'video'
         });
     }

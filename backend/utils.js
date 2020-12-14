@@ -189,7 +189,7 @@ async function recFindByExt(base,ext,files,result)
 
 // objects
 
-function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date) {
+function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description) {
     this.id = id;
     this.title = title;
     this.thumbnailURL = thumbnailURL;
@@ -200,6 +200,7 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
     this.size = size;
     this.path = path;
     this.upload_date = upload_date;
+    this.description = description;
 }
 
 module.exports = {

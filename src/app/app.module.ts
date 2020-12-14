@@ -81,6 +81,7 @@ import { EditSubscriptionDialogComponent } from './dialogs/edit-subscription-dia
 import { CustomPlaylistsComponent } from './components/custom-playlists/custom-playlists.component';
 import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit-category-dialog.component';
 import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
+import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
 
 registerLocaleData(es, 'es');
 
@@ -107,6 +108,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     VideoInfoDialogComponent,
     ArgModifierDialogComponent,
     HighlightPipe,
+    LinkifyPipe,
     UpdaterComponent,
     UpdateProgressDialogComponent,
     ShareMediaDialogComponent,
@@ -127,7 +129,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     EditSubscriptionDialogComponent,
     CustomPlaylistsComponent,
     EditCategoryDialogComponent,
-    TwitchChatComponent
+    TwitchChatComponent,
+    SeeMoreComponent
   ],
   imports: [
     CommonModule,
@@ -188,7 +191,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     PostsService
   ],
   exports: [
-    HighlightPipe
+    HighlightPipe,
+    LinkifyPipe
   ],
   bootstrap: [AppComponent]
 })
