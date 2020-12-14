@@ -41,7 +41,7 @@
                     </div>
                     <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [opened]="db_file && db_file['chat_exists'] && postsService['config']['API']['use_twitch_API']">
                         <ng-container *ngIf="api_ready && db_file && db_file.url.includes('twitch.tv/videos/')">
-                            <app-twitch-chat #twitchchat [db_file]="db_file" [current_timestamp]="api.currentTime"></app-twitch-chat>
+                            <app-twitch-chat #twitchchat [db_file]="db_file" [current_timestamp]="api.currentTime" [sub]="subscription"></app-twitch-chat>
                         </ng-container>
                     </mat-drawer>
 

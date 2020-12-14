@@ -1,5 +1,8 @@
 var moment = require('moment');
 var Axios = require('axios');
+var fs = require('fs-extra')
+var path = require('path');
+const config_api = require('./config');
 
 async function getCommentsForVOD(clientID, vodId) {
     let url = `https://api.twitch.tv/v5/videos/${vodId}/comments?content_offset_seconds=0`,
@@ -68,6 +71,58 @@ async function getCommentsForVOD(clientID, vodId) {
     return comments;
 }
 
+async function getTwitchChatByFileID(id, type, user_uid, uuid, sub) {
+    let file_path = null;
+
+    if (user_uid) {
+        if (sub) {
+            file_path = path.join('users', user_uid, 'subscriptions', sub.isPlaylist ? 'playlists' : 'channels', sub.name, id + '.twitch_chat.json');
+        } else {
+            file_path = path.join('users', user_uid, type, id + '.twitch_chat.json');
+        }
+    } else {
+        if (sub) {
+            file_path = path.join('subscriptions', sub.isPlaylist ? 'playlists' : 'channels', sub.name, id + '.twitch_chat.json');
+        } else {
+            file_path = path.join(type, id + '.twitch_chat.json');
+        }
+    }
+
+    var chat_file = null;
+    if (fs.existsSync(file_path)) {
+        chat_file = fs.readJSONSync(file_path);
+    }
+
+    return chat_file;
+}
+
+async function downloadTwitchChatByVODID(vodId, id, type, user_uid, sub) {
+    const twitch_api_key = config_api.getConfigItem('ytdl_twitch_api_key');
+    const chat = await getCommentsForVOD(twitch_api_key, vodId);
+
+    // save file if needed params are included
+    let file_path = null;
+    if (user_uid) {
+        if (sub) {
+            file_path = path.join('users', user_uid, 'subscriptions', sub.isPlaylist ? 'playlists' : 'channels', sub.name, id + '.twitch_chat.json');
+        } else {
+            file_path = path.join('users', user_uid, type, id + '.twitch_chat.json');
+        }
+    } else {
+        if (sub) {
+            file_path = path.join('subscriptions', sub.isPlaylist ? 'playlists' : 'channels', sub.name, id + '.twitch_chat.json');
+        } else {
+            file_path = path.join(type, id + '.twitch_chat.json');
+        }
+    }
+
+    if (chat) fs.writeJSONSync(file_path, chat);
+
+    return chat;
+}
+
 module.exports = {
-    getCommentsForVOD: getCommentsForVOD
+    getCommentsForVOD: getCommentsForVOD,
+    getTwitchChatByFileID: getTwitchChatByFileID,
+    downloadTwitchChatByVODID: downloadTwitchChatByVODID
 }

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SubscriptionInfoDialogComponent } from './subscription-info-dialog.component';
 
@@ -6,7 +6,7 @@ describe('SubscriptionInfoDialogComponent', () => {
   let component: SubscriptionInfoDialogComponent;
   let fixture: ComponentFixture<SubscriptionInfoDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SubscriptionInfoDialogComponent ]
     })

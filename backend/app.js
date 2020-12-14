@@ -1252,7 +1252,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                         && config.getConfigItem('ytdl_use_twitch_api') && config.getConfigItem('ytdl_twitch_auto_download_chat')) {
                             let vodId = url.split('twitch.tv/videos/')[1];
                             vodId = vodId.split('?')[0];
-                            downloadTwitchChatByVODID(vodId, file_name, type, options.user);
+                            twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, options.user);
                     }
 
                     // renames file if necessary due to bug
@@ -1828,42 +1828,6 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
-async function getTwitchChatByFileID(id, type, user_uid, uuid) {
-    let file_path = null;
-
-    if (user_uid) {
-        file_path = path.join('users', user_uid, type, id + '.twitch_chat.json');
-    } else {
-        file_path = path.join(type, id + '.twitch_chat.json');
-    }
-
-    var chat_file = null;
-    if (fs.existsSync(file_path)) {
-        chat_file = fs.readJSONSync(file_path);
-    }
-
-    return chat_file;
-}
-
-async function downloadTwitchChatByVODID(vodId, id, type, user_uid) {
-    const twitch_api_key = config_api.getConfigItem('ytdl_twitch_api_key');
-    const chat = await twitch_api.getCommentsForVOD(twitch_api_key, vodId);
-
-    // save file if needec params are included
-    if (id && type) {
-        let file_path = null;
-        if (user_uid) {
-            file_path = path.join('users', user_uid, type, id + '.twitch_chat.json');
-        } else {
-            file_path = path.join(type, id + '.twitch_chat.json');
-        }
-
-        if (chat) fs.writeJSONSync(file_path, chat);
-    }
-
-    return chat;
-}
-
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     res.header("Access-Control-Allow-Origin", getOrigin());
@@ -2088,7 +2052,7 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     }
 
     // check if chat exists for twitch videos
-    if (file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
+    if (file && file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
 
     if (file) {
         res.send({
@@ -2147,11 +2111,12 @@ app.post('/api/getFullTwitchChat', optionalJwt, async (req, res) => {
     var id = req.body.id;
     var type = req.body.type;
     var uuid = req.body.uuid;
+    var sub = req.body.sub;
     var user_uid = null;
 
     if (req.isAuthenticated()) user_uid = req.user.uid;
 
-    const chat_file = await getTwitchChatByFileID(id, type, user_uid, uuid);
+    const chat_file = await twitch_api.getTwitchChatByFileID(id, type, user_uid, uuid, sub);
 
     res.send({
         chat: chat_file
@@ -2163,28 +2128,19 @@ app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
     var type = req.body.type;
     var vodId = req.body.vodId;
     var uuid = req.body.uuid;
+    var sub = req.body.sub;
     var user_uid = null;
 
     if (req.isAuthenticated()) user_uid = req.user.uid;
 
     // check if file already exists. if so, send that instead
-    const file_exists_check = await getTwitchChatByFileID(id, type, user_uid, uuid);
+    const file_exists_check = await twitch_api.getTwitchChatByFileID(id, type, user_uid, uuid, sub);
     if (file_exists_check) {
         res.send({chat: file_exists_check});
         return;
     }
 
-    const full_chat = await downloadTwitchChatByVODID(vodId);
-
-    let file_path = null;
-
-    if (user_uid) {
-        file_path = path.join('users', req.user.uid, type, id + '.twitch_chat.json');
-    } else {
-        file_path = path.join(type, id + '.twitch_chat.json');
-    }
-
-    if (full_chat) fs.writeJSONSync(file_path, full_chat);
+    const full_chat = await twitch_api.downloadTwitchChatByVODID(vodId, id, type, user_uid, sub);
 
     res.send({
         chat: full_chat
@@ -2472,8 +2428,14 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
                 var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
                 parsed_files.push(file_obj);
             }
+        } else {
+            // loop through files for extra processing
+            for (let i = 0; i < parsed_files.length; i++) {
+                const file = parsed_files[i];
+                // check if chat exists for twitch videos
+                if (file && file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
+            }
         }
-
 
         res.send({
             subscription: subscription,

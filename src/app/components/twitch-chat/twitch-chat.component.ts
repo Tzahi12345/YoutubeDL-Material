@@ -21,9 +21,11 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
   scrollContainer = null;
 
   @Input() db_file = null;
+  @Input() sub = null;
   @Input() current_timestamp = null;
 
   @ViewChild('scrollContainer') scrollRef: ElementRef;
+  @ViewChildren('chat') chat: QueryList<any>;
 
   constructor(private postsService: PostsService) { }
 
@@ -35,22 +37,31 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
   }
 
   private isUserNearBottom(): boolean {
-    const threshold = 300;
+    const threshold = 150;
     const position = this.scrollContainer.scrollTop + this.scrollContainer.offsetHeight;
     const height = this.scrollContainer.scrollHeight;
     return position > height - threshold;
   }
 
-  scrollToBottom = () => {
-    this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
+  scrollToBottom = (force_scroll) => {
+    if (force_scroll || this.isUserNearBottom()) {
+      this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
+    }
   }
 
   addNewChatMessages() {
+    const next_chat_index = this.getIndexOfNextChat();
     if (!this.scrollContainer) {
       this.scrollContainer = this.scrollRef.nativeElement;
     }
     if (this.current_chat_index === null) {
-      this.current_chat_index = this.getIndexOfNextChat();
+      this.current_chat_index = next_chat_index;
+    }
+
+    if (Math.abs(next_chat_index - this.current_chat_index) > 25) {
+      this.visible_chat = [];
+      this.current_chat_index = next_chat_index - 25;
+      setTimeout(() => this.scrollToBottom(true), 100);
     }
 
     const latest_chat_timestamp = this.visible_chat.length ? this.visible_chat[this.visible_chat.length - 1]['timestamp'] : 0;
@@ -59,9 +70,6 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
       if (this.full_chat[i]['timestamp'] >= latest_chat_timestamp && this.full_chat[i]['timestamp'] <= this.current_timestamp) {
         this.visible_chat.push(this.full_chat[i]);
         this.current_chat_index = i;
-        if (this.isUserNearBottom()) {
-          this.scrollToBottom();
-        }
       } else if (this.full_chat[i]['timestamp'] > this.current_timestamp) {
         break;
       }
@@ -74,17 +82,12 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
   }
 
   getFullChat() {
-    this.postsService.getFullTwitchChat(this.db_file.id, this.db_file.isAudio ? 'audio' : 'video', null).subscribe(res => {
+    this.postsService.getFullTwitchChat(this.db_file.id, this.db_file.isAudio ? 'audio' : 'video', null, this.sub).subscribe(res => {
       this.chat_response_received = true;
       if (res['chat']) {
         this.initializeChatCheck(res['chat']);
       }
     });
-  }
-
-  renewChat() {
-    this.visible_chat = [];
-    this.current_chat_index = this.getIndexOfNextChat();
   }
 
   downloadTwitchChat() {
@@ -94,7 +97,7 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
     if (!vodId) {
       this.postsService.openSnackBar('VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"');
     }
-    this.postsService.downloadTwitchChat(this.db_file.id, this.db_file.isAudio ? 'audio' : 'video', vodId, null).subscribe(res => {
+    this.postsService.downloadTwitchChat(this.db_file.id, this.db_file.isAudio ? 'audio' : 'video', vodId, null, this.sub).subscribe(res => {
       if (res['chat']) {
         this.initializeChatCheck(res['chat']);
       } else {
