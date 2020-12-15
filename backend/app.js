@@ -2233,6 +2233,27 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     });
 });
 
+app.post('/api/incrementViewCount', optionalJwt, async (req, res) => {
+    let file_uid = req.body.file_uid;
+    let sub_id = req.body.sub_id;
+    let uuid = req.body.uuid;
+
+    if (!uuid && req.isAuthenticated()) {
+        uuid = req.user.uid;
+    }
+
+    const file_obj = await db_api.getVideo(file_uid, uuid, sub_id);
+
+    const current_view_count = file_obj && file_obj['local_view_count'] ? file_obj['local_view_count'] : 0;
+    const new_view_count = current_view_count + 1;
+
+    await db_api.setVideoProperty(file_uid, {local_view_count: new_view_count}, uuid, sub_id);
+
+    res.send({
+        success: true
+    });
+});
+
 // categories
 
 app.post('/api/getAllCategories', optionalJwt, async (req, res) => {
@@ -2759,7 +2780,7 @@ app.get('/api/stream/:id', optionalJwt, (req, res) => {
     var head;
     let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
-    let file_path = req.query.file_path ? decodeURIComponent(req.query.file_path) : null;
+    let file_path = req.query.file_path ? decodeURIComponent(req.query.file_path.split('?')[0]) : null;
     if (!file_path && (req.isAuthenticated() || req.can_watch)) {
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         if (optionalParams['subName']) {

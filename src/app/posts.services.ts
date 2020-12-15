@@ -286,6 +286,10 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'enableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
     }
 
+    incrementViewCount(file_uid, sub_id, uuid) {
+        return this.http.post(this.path + 'incrementViewCount', {file_uid: file_uid, sub_id: sub_id, uuid: uuid}, this.httpOptions);
+    }
+
     disableSharing(uid, type, is_playlist) {
         return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
     }

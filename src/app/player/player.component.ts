@@ -160,6 +160,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.openSnackBar('Failed to get file information from the server.', 'Dismiss');
         return;
       }
+      this.postsService.incrementViewCount(this.db_file['uid'], null, this.uuid).subscribe(res => {}, err => {
+        console.error('Failed to increment view count');
+        console.error(err);
+      });
       this.sharingEnabled = this.db_file.sharingEnabled;
       if (!this.fileNames) {
         // means it's a shared video
@@ -186,6 +190,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         subscription.videos.forEach(video => {
           if (video['id'] === this.fileNames[0]) {
             this.db_file = video;
+            this.postsService.incrementViewCount(this.db_file['uid'], this.subscription['id'], this.uuid).subscribe(res => {}, err => {
+              console.error('Failed to increment view count');
+              console.error(err);
+            });
             this.show_player = true;
             this.parseFileNames();
           }

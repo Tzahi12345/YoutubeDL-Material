@@ -205,10 +205,28 @@ async function importUnregisteredFiles() {
 
 }
 
+async function getVideo(file_uid, uuid, sub_id) {
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
+    return sub_db_path.find({uid: file_uid}).value();
+}
+
+async function setVideoProperty(file_uid, assignment_obj, uuid, sub_id) {
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
+    const file_db_path = sub_db_path.find({uid: file_uid});
+    if (!(file_db_path.value())) {
+        logger.error(`Failed to find file with uid ${file_uid}`);
+    }
+    sub_db_path.find({uid: file_uid}).assign(assignment_obj).write();
+}
+
 module.exports = {
     initialize: initialize,
     registerFileDB: registerFileDB,
     updatePlaylist: updatePlaylist,
     getFileDirectoriesAndDBs: getFileDirectoriesAndDBs,
-    importUnregisteredFiles: importUnregisteredFiles
+    importUnregisteredFiles: importUnregisteredFiles,
+    getVideo: getVideo,
+    setVideoProperty: setVideoProperty
 }

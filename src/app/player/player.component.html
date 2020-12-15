@@ -12,7 +12,7 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-2 col-lg-1">
-                                    <ng-container *ngIf="db_file">{{db_file['local_view_count'] ? db_file['local_view_count'] : 0}}&nbsp;<ng-container i18n="View count label">views</ng-container></ng-container>
+                                    <ng-container *ngIf="db_file">{{db_file['local_view_count'] ? db_file['local_view_count']+1 : 1}}&nbsp;<ng-container i18n="View count label">views</ng-container></ng-container>
                                 </div>
                                 <div style="white-space: pre-line;" class="col-9 col-lg-10">
                                     <ng-container *ngIf="db_file && db_file['description']">
