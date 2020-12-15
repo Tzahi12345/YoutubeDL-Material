@@ -1,19 +1,11 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import {PostsService} from '../posts.services';
 import {FileCardComponent} from '../file-card/file-card.component';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import {FormControl, Validators} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/mapTo';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/observable/fromEvent'
-import 'rxjs/add/operator/filter'
-import 'rxjs/add/operator/debounceTime'
-import 'rxjs/add/operator/do'
-import 'rxjs/add/operator/switch'
 import { YoutubeSearchService, Result } from '../youtube-search.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';

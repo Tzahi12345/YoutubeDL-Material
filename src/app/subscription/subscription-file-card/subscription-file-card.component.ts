@@ -15,9 +15,6 @@ export class SubscriptionFileCardComponent implements OnInit {
   image_errored = false;
   image_loaded = false;
 
-  scrollSubject;
-  scrollAndLoad;
-
   formattedDuration = null;
 
   @Input() file;
@@ -27,13 +24,7 @@ export class SubscriptionFileCardComponent implements OnInit {
   @Output() goToFileEmit = new EventEmitter<any>();
   @Output() reloadSubscription = new EventEmitter<boolean>();
 
-  constructor(private snackBar: MatSnackBar, private postsService: PostsService, private dialog: MatDialog) {
-    this.scrollSubject = new Subject();
-    this.scrollAndLoad = Observable.merge(
-      Observable.fromEvent(window, 'scroll'),
-      this.scrollSubject
-    );
-  }
+  constructor(private snackBar: MatSnackBar, private postsService: PostsService, private dialog: MatDialog) {}
 
   ngOnInit() {
     if (this.file.duration) {
@@ -43,10 +34,6 @@ export class SubscriptionFileCardComponent implements OnInit {
 
   onImgError(event) {
     this.image_errored = true;
-  }
-
-  onHoverResponse() {
-    this.scrollSubject.next();
   }
 
   imageLoaded(loaded) {
