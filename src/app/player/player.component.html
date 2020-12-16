@@ -14,7 +14,7 @@
                                 <div class="col-2 col-lg-1">
                                     <ng-container *ngIf="db_file">{{db_file['local_view_count'] ? db_file['local_view_count']+1 : 1}}&nbsp;<ng-container i18n="View count label">views</ng-container></ng-container>
                                 </div>
-                                <div style="white-space: pre-line;" class="col-9 col-lg-10">
+                                <div style="white-space: pre-line;" class="col-8 col-lg-9">
                                     <ng-container *ngIf="db_file && db_file['description']">
                                         <p>
                                             <app-see-more [text]="db_file['description']"></app-see-more>
@@ -26,10 +26,17 @@
                                         </p>
                                     </ng-container>
                                 </div>
-                                <div class="col-1">
-                                    <div *ngIf="db_file && db_file.url.includes('twitch.tv/videos/') && postsService['config']['API']['use_twitch_API']">
-                                        <button (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
-                                    </div>
+                                <div class="col-2">
+                                    <ng-container *ngIf="playlist.length > 1">
+                                        <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
+                                        <button *ngIf="!id" color="accent" (click)="namePlaylistDialog()" mat-icon-button><mat-icon>favorite</mat-icon></button>
+                                        <button *ngIf="!is_shared && id && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
+                                    </ng-container>
+                                    <ng-container *ngIf="playlist.length === 1">
+                                        <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
+                                        <button *ngIf="!is_shared && uid && uid !== 'false' && type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
+                                    </ng-container>
+                                    <button *ngIf="db_file && db_file.url.includes('twitch.tv/videos/') && postsService['config']['API']['use_twitch_API']" (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
                                 </div>
                             </div>
                         </div>
@@ -51,16 +58,6 @@
                         </div>
                         <button color="primary" [disabled]="playlist_updating" (click)="updatePlaylist()" mat-raised-button><ng-container i18n="Playlist save changes button">Save changes</ng-container>&nbsp;<mat-icon>update</mat-icon></button>
                         
-                    </div>
-                
-                    <div *ngIf="playlist.length > 1">
-                        <button class="save-button" color="primary" (click)="downloadContent()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
-                        <button *ngIf="!id" color="accent" class="favorite-button" color="primary" (click)="namePlaylistDialog()" mat-fab><mat-icon class="save-icon">favorite</mat-icon></button>
-                        <button *ngIf="!is_shared && id && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" class="share-button" color="primary" (click)="openShareDialog()" mat-fab><mat-icon class="save-icon">share</mat-icon></button>
-                    </div>
-                    <div *ngIf="playlist.length === 1">
-                        <button class="save-button" color="primary" (click)="downloadFile()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
-                        <button *ngIf="!is_shared && uid && uid !== 'false' && type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" class="share-button" color="primary" (click)="openShareDialog()" mat-fab><mat-icon class="save-icon">share</mat-icon></button>
                     </div>
                 </mat-drawer-container>
             </div>
