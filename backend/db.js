@@ -95,7 +95,7 @@ function generateFileObject(id, type, customPath = null, sub = null) {
     var duration = jsonobj.duration;
     var isaudio = type === 'audio';
     var description = jsonobj.description;
-    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date, description);
+    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date, description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
     return file_obj;
 }
 

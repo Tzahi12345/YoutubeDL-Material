@@ -218,6 +218,8 @@ async function checkMigrations() {
         let success = await simplifyDBFileStructure();
         success = success && await addMetadataPropertyToDB('view_count');
         success = success && await addMetadataPropertyToDB('description');
+        success = success && await addMetadataPropertyToDB('height');
+        success = success && await addMetadataPropertyToDB('abr');
         if (success) { logger.info('4.1->4.2+ migration complete!'); }
         else { logger.error('Migration failed: 4.1->4.2+'); }
     }
@@ -225,7 +227,6 @@ async function checkMigrations() {
     return true;
 }
 
-/*
 async function runFilesToDBMigration() {
     try {
         let mp3s = await getMp3s();
@@ -257,7 +258,6 @@ async function runFilesToDBMigration() {
         return false;
     }
 }
-*/
 
 async function simplifyDBFileStructure() {
     let users = users_db.get('users').value();
@@ -758,64 +758,6 @@ function getEnvConfigItems() {
 // gets value of a config item and stores it in an object
 function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
-}
-
-async function getMp3s() {
-    let mp3s = [];
-    var files = await utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(audioFolderPath.length, file.length);
-
-        var stats = await fs.stat(file);
-
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = await utils.getJSONMp3(id, audioFolderPath);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
-
-        var size = stats.size;
-
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-        var isaudio = true;
-        var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp3s.push(file_obj);
-    }
-    return mp3s;
-}
-
-async function getMp4s(relative_path = true) {
-    let mp4s = [];
-    var files = await utils.recFindByExt(videoFolderPath, 'mp4');
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(videoFolderPath.length, file.length);
-
-        var stats = fs.statSync(file);
-
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = await utils.getJSONMp4(id, videoFolderPath);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-
-        var size = stats.size;
-
-        var isaudio = false;
-        var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp4s.push(file_obj);
-    }
-    return mp4s;
 }
 
 function getThumbnailMp3(name)
@@ -2446,7 +2388,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
                 var size = stats.size;
 
                 var isaudio = false;
-                var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+                var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date, jsonobj.description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
                 parsed_files.push(file_obj);
             }
         } else {
@@ -2468,7 +2410,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
         if (subscription.videos) {
             for (let i = 0; i < subscription.videos.length; i++) {
                 const video = subscription.videos[i];
-                parsed_files.push(new utils.File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date));
+                parsed_files.push(new utils.File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date, video.view_count, video.height, video.abr));
             }
         }
         res.send({

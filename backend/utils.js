@@ -41,18 +41,12 @@ async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
             files.push(jsonobj);
             continue;
         }
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
         var upload_date = jsonobj.upload_date;
         upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-
-        var size = stats.size;
 
         var isaudio = type === 'audio';
-        var file_obj = new File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+        var file_obj = new File(id, jsonobj.title, jsonobj.thumbnail, isaudio, jsonobj.duration, jsonobj.webpage_url, jsonobj.uploader,
+                                stats.size, file, upload_date, jsonobj.description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
         files.push(file_obj);
     }
     return files;
@@ -189,7 +183,7 @@ async function recFindByExt(base,ext,files,result)
 
 // objects
 
-function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description) {
+function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
     this.id = id;
     this.title = title;
     this.thumbnailURL = thumbnailURL;
@@ -201,6 +195,9 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
     this.path = path;
     this.upload_date = upload_date;
     this.description = description;
+    this.view_count = view_count;
+    this.height = height;
+    this.abr = abr;
 }
 
 module.exports = {
