@@ -32,7 +32,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { FileCardComponent } from './file-card/file-card.component';
 import { RouterModule } from '@angular/router';
@@ -85,6 +85,7 @@ import { CustomPlaylistsComponent } from './components/custom-playlists/custom-p
 import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit-category-dialog.component';
 import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
 import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
+import { H401Interceptor } from './http.interceptor';
 
 registerLocaleData(es, 'es');
 
@@ -191,7 +192,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SettingsComponent
   ],
   providers: [
-    PostsService
+    PostsService,
+    { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true }
   ],
   exports: [
     HighlightPipe,
