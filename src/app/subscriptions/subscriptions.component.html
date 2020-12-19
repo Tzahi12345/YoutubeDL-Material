@@ -9,7 +9,7 @@
 <mat-nav-list class="sub-nav-list">
     <mat-list-item *ngFor="let sub of channel_subscriptions">
         <a class="a-list-item" matLine (click)="goToSubscription(sub)" href="javascript:void(0)">
-            <strong *ngIf="sub.name">{{ sub.name }}</strong>
+            <strong *ngIf="sub.name">{{ sub.name }}&nbsp;<ng-container *ngIf="sub.paused" i18n="Paused suffix">(Paused)</ng-container></strong>
             <div *ngIf="!sub.name">
                 <ng-container i18n="Subscription playlist not available text">Name not available. Channel retrieval in progress.</ng-container>
             </div>
@@ -28,7 +28,7 @@
 <mat-nav-list class="sub-nav-list">
     <mat-list-item *ngFor="let sub of playlist_subscriptions">
         <a class="a-list-item" matLine (click)="goToSubscription(sub)" href="javascript:void(0)">
-            <strong>{{ sub.name }}</strong>
+            <strong>{{ sub.name }}&nbsp;<ng-container *ngIf="sub.paused" i18n="Paused suffix">(Paused)</ng-container></strong>
             <div class="content-loading-div" *ngIf="!sub.name">
                 <ng-container i18n="Subscription playlist not available text">Name not available. Playlist retrieval in progress.</ng-container>
             </div>

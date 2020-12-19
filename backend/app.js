@@ -701,12 +701,14 @@ async function watchSubscriptions() {
 
     if (!subscriptions) return;
 
-    let subscriptions_amount = subscriptions.length;
+    const valid_subscriptions = subscriptions.filter(sub => !sub.paused);
+
+    let subscriptions_amount = valid_subscriptions.length;
     let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);
 
     let current_delay = 0;
-    for (let i = 0; i < subscriptions.length; i++) {
-        let sub = subscriptions[i];
+    for (let i = 0; i < valid_subscriptions.length; i++) {
+        let sub = valid_subscriptions[i];
 
         // don't check the sub if the last check for the same subscription has not completed
         if (subscription_timeouts[sub.id]) {

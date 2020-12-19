@@ -1,8 +1,11 @@
-<h4 mat-dialog-title i18n="Edit subscription dialog title prefix">Editing</h4>&nbsp;{{sub.name}}
+<h4 mat-dialog-title><ng-container i18n="Edit subscription dialog title prefix">Editing</ng-container>&nbsp;{{sub.name}}&nbsp;<ng-container *ngIf="sub.paused" i18n="Paused suffix">(Paused)</ng-container></h4>
 
 <mat-dialog-content>
     <div class="container-fluid">
         <div class="row">
+            <div class="col-12 mt-3">
+                <mat-checkbox [(ngModel)]="new_sub.paused"><ng-container i18n="Paused subscription setting">Paused</ng-container></mat-checkbox>
+            </div>
             <div class="col-12 mt-3">
                 <mat-checkbox (change)="downloadAllToggled()" [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
             </div>
@@ -31,7 +34,7 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-12">
+            <div class="col-12 mt-1">
                 <div>
                     <mat-checkbox [disabled]="new_sub.type === 'audio'" [(ngModel)]="new_sub.streamingOnly"><ng-container i18n="Streaming-only mode">Streaming-only mode</ng-container></mat-checkbox>
                 </div>
