@@ -250,6 +250,7 @@ export class RecentVideosComponent implements OnInit {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
         this.files.splice(file.index, 1);
+        for (let i = 0; i < this.files.length; i++) { this.files[i].index = i }
         this.filterByProperty(this.filterProperty['property']);
       } else {
         this.postsService.openSnackBar('Delete failed!', 'OK.');
