@@ -98,7 +98,7 @@ export class RecentVideosComponent implements OnInit {
 
   private filterFiles(value: string) {
     const filterValue = value.toLowerCase();
-    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue));
+    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue) || option.category?.toLowerCase().includes(filterValue));
     this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex});
   }
 
