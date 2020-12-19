@@ -53,11 +53,14 @@
                             <mat-hint><ng-container i18n="Subscriptions base path setting input hint">Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-5 mb-3">
+                    <div class="col-12 mt-4">
                         <mat-form-field class="text-field" color="accent">
                             <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_check_interval']" matInput placeholder="Check interval" i18n-placeholder="Check interval input setting placeholder">
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
                         </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-2 mb-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['redownload_fresh_uploads']" matTooltip="Sometimes new videos are downloaded before being fully processed. This setting will mean new videos will be checked for a higher quality version the following day." i18n-matTooltip="Redownload fresh uploads tooltip"><ng-container i18n="Redownload fresh uploads">Redownload fresh uploads</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>

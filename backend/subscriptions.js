@@ -333,9 +333,13 @@ async function getVideosForSub(sub, user_uid = null) {
 
                     const reset_videos = i === 0;
                     handleOutputJSON(sub, sub_db, output_json, multiUserMode, reset_videos);
+                }
+
+                if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
                     await setFreshUploads(sub, user_uid);
                     checkVideosForFreshUploads(sub, user_uid);
                 }
+
                 resolve(true);
             }
         });
@@ -403,7 +407,7 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         downloadConfig = ['-f', 'best', '--dump-json'];
     }
 
-    if (sub.timerange) {
+    if (sub.timerange && !redownload) {
         downloadConfig.push('--dateafter', sub.timerange);
     }
 
@@ -515,14 +519,13 @@ async function checkVideosForFreshUploads(sub, user_uid) {
 
 async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
     const new_path = file_obj['path'].substring(0, file_obj['path'].length - 4);
-    const downloadConfig = generateArgsForSubscription(sub, user_uid, true, new_path);
+    const downloadConfig = await generateArgsForSubscription(sub, user_uid, true, new_path);
     logger.verbose(`Checking if a better version of the fresh upload ${file_obj['id']} exists.`);
     // simulate a download to verify that a better version exists
     youtubedl.getInfo(file_obj['url'], downloadConfig, (err, output) => {
         if (err) {
             // video is not available anymore for whatever reason
         } else if (output) {
-            console.log(output);
             const metric_to_compare = sub.type === 'audio' ? 'abr' : 'height';
             if (output[metric_to_compare] > file_obj[metric_to_compare]) {
                 // download new video as the simulated one is better
