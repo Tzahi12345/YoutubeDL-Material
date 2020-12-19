@@ -127,9 +127,11 @@ export class RecentVideosComponent implements OnInit {
     this.normal_files_received = false;
     this.postsService.getAllFiles().subscribe(res => {
       this.files = res['files'];
-      this.files.forEach(file => {
+      for (let i = 0; i < this.files.length; i++) {
+        const file = this.files[i];
         file.duration = typeof file.duration !== 'string' ? file.duration : this.durationStringToNumber(file.duration);
-      });
+        file.index = i;
+      }
       this.files.sort(this.sortFiles);
       if (this.search_mode) {
         this.filterFiles(this.search_text);
@@ -247,7 +249,8 @@ export class RecentVideosComponent implements OnInit {
     this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
-        this.files.splice(index, 1);
+        this.files.splice(file.index, 1);
+        this.filterByProperty(this.filterProperty['property']);
       } else {
         this.postsService.openSnackBar('Delete failed!', 'OK.');
       }

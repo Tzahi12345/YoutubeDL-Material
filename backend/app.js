@@ -2570,7 +2570,7 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, blacklistMode);
+        let success = await auth_api.deleteUserFile(req.user.uid, uid, blacklistMode);
         res.send(success);
         return;
     }
@@ -2583,7 +2583,7 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     {
         wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
         db.get('files').remove({uid: uid}).write();
-        // wasDeleted = true;
+        wasDeleted = true;
         res.send(wasDeleted);
     } else if (video_obj) {
         db.get('files').remove({uid: uid}).write();
