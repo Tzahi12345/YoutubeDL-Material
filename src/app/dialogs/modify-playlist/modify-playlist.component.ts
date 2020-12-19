@@ -15,6 +15,7 @@ export class ModifyPlaylistComponent implements OnInit {
   available_files = [];
   all_files = [];
   playlist_updated = false;
+  reverse_order = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private postsService: PostsService,
@@ -26,6 +27,8 @@ export class ModifyPlaylistComponent implements OnInit {
       this.original_playlist = JSON.parse(JSON.stringify(this.data.playlist));
       this.getFiles();
     }
+
+    this.reverse_order = localStorage.getItem('default_playlist_order_reversed') === 'true';
   }
 
   getFiles() {
@@ -72,11 +75,23 @@ export class ModifyPlaylistComponent implements OnInit {
   }
 
   removeContent(index) {
+    if (this.reverse_order) {
+      index = this.playlist.fileNames.length - 1 - index;
+    }
     this.playlist.fileNames.splice(index, 1);
     this.processFiles();
   }
 
+  togglePlaylistOrder() {
+    this.reverse_order = !this.reverse_order;
+    localStorage.setItem('default_playlist_order_reversed', '' + this.reverse_order);
+  }
+
   drop(event: CdkDragDrop<string[]>) {
+    if (this.reverse_order) {
+      event.previousIndex = this.playlist.fileNames.length - 1 - event.previousIndex;
+      event.currentIndex = this.playlist.fileNames.length - 1 - event.currentIndex;
+    }
     moveItemInArray(this.playlist.fileNames, event.previousIndex, event.currentIndex);
   }
 
