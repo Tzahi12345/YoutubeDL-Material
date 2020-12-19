@@ -1509,6 +1509,10 @@ async function generateArgs(url, type, options) {
         }
 
     }
+
+    // filter out incompatible args
+    downloadConfig = filterArgs(downloadConfig, is_audio);
+
     logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
     return downloadConfig;
 }
@@ -1537,6 +1541,13 @@ async function getVideoInfoByURL(url, args = [], download = null) {
             }
         });
     });
+}
+
+function filterArgs(args, isAudio) {
+    const video_only_args = ['--add-metadata', '--embed-subs', '--xattrs'];
+    const audio_only_args = ['-x', '--extract-audio', '--embed-thumbnail'];
+    const args_to_remove = isAudio ? video_only_args : audio_only_args;
+    return args.filter(x => !args_to_remove.includes(x));
 }
 
 // currently only works for single urls
