@@ -255,16 +255,19 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
 }
 
 async function getVideosForSub(sub, user_uid = null) {
-    if (!subExists(sub.id, user_uid)) {
-        return false;
-    }
-
     // get sub_db
     let sub_db = null;
     if (user_uid)
         sub_db = users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id});
     else
         sub_db = db.get('subscriptions').find({id: sub.id});
+
+    const latest_sub_obj = sub_db.value();
+    if (!latest_sub_obj || latest_sub_obj['downloading']) {
+        return false;
+    }
+
+    updateSubscriptionProperty(sub, {downloading: true}, user_uid);
 
     // get basePath
     let basePath = null;
@@ -290,6 +293,7 @@ async function getVideosForSub(sub, user_uid = null) {
 
     return new Promise(resolve => {
         youtubedl.exec(sub.url, downloadConfig, {}, async function(err, output) {
+            updateSubscriptionProperty(sub, {downloading: false}, user_uid);
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
                 logger.error(err.stderr ? err.stderr : err.message);
@@ -319,6 +323,7 @@ async function getVideosForSub(sub, user_uid = null) {
                 if (output.length === 0 || (output.length === 1 && output[0] === '')) {
                     logger.verbose('No additional videos to download for ' + sub.name);
                     resolve(true);
+                    return;
                 }
                 for (let i = 0; i < output.length; i++) {
                     let output_json = null;
@@ -345,6 +350,7 @@ async function getVideosForSub(sub, user_uid = null) {
         });
     }, err => {
         logger.error(err);
+        updateSubscriptionProperty(sub, {downloading: false}, user_uid);
     });
 }
 
@@ -460,11 +466,26 @@ function handleOutputJSON(sub, sub_db, output_json, multiUserMode = null, reset_
     }
 }
 
-function getAllSubscriptions(user_uid = null) {
+function getSubscriptions(user_uid = null) {
     if (user_uid)
         return users_db.get('users').find({uid: user_uid}).get('subscriptions').value();
     else
         return db.get('subscriptions').value();
+}
+
+function getAllSubscriptions() {
+    let subscriptions = null;
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+    if (multiUserMode) {
+        subscriptions = [];
+        let users = users_db.get('users').value();
+        for (let i = 0; i < users.length; i++) {
+            if (users[i]['subscriptions']) subscriptions = subscriptions.concat(users[i]['subscriptions']);
+        }
+    } else {
+        subscriptions = subscriptions_api.getSubscriptions();
+    }
+    return subscriptions;
 }
 
 function getSubscription(subID, user_uid = null) {
@@ -486,6 +507,21 @@ function updateSubscription(sub, user_uid = null) {
         users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id}).assign(sub).write();
     } else {
         db.get('subscriptions').find({id: sub.id}).assign(sub).write();
+    }
+    return true;
+}
+
+function updateSubscriptionPropertyMultiple(subs, assignment_obj) {
+    subs.forEach(sub => {
+        updateSubscriptionProperty(sub, assignment_obj, sub.user_uid);
+    });
+}
+
+function updateSubscriptionProperty(sub, assignment_obj, user_uid = null) {
+    if (user_uid) {
+        users_db.get('users').find({uid: user_uid}).get('subscriptions').find({id: sub.id}).assign(assignment_obj).write();
+    } else {
+        db.get('subscriptions').find({id: sub.id}).assign(assignment_obj).write();
     }
     return true;
 }
@@ -580,6 +616,7 @@ async function removeIDFromArchive(archive_path, id) {
 module.exports = {
     getSubscription        : getSubscription,
     getSubscriptionByName  : getSubscriptionByName,
+    getSubscriptions       : getSubscriptions,
     getAllSubscriptions    : getAllSubscriptions,
     updateSubscription     : updateSubscription,
     subscribe              : subscribe,
@@ -588,5 +625,6 @@ module.exports = {
     getVideosForSub        : getVideosForSub,
     removeIDFromArchive    : removeIDFromArchive,
     setLogger              : setLogger,
-    initialize             : initialize
+    initialize             : initialize,
+    updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple
 }

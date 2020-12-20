@@ -628,6 +628,9 @@ async function loadConfig() {
 
     // get subscriptions
     if (allowSubscriptions) {
+        // set downloading to false
+        let subscriptions = subscriptions_api.getAllSubscriptions();
+        subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
         watchSubscriptions();
         setInterval(() => {
@@ -686,18 +689,7 @@ function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
 }
 
 async function watchSubscriptions() {
-    let subscriptions = null;
-
-    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-    if (multiUserMode) {
-        subscriptions = [];
-        let users = users_db.get('users').value();
-        for (let i = 0; i < users.length; i++) {
-            if (users[i]['subscriptions']) subscriptions = subscriptions.concat(users[i]['subscriptions']);
-        }
-    } else {
-        subscriptions = subscriptions_api.getAllSubscriptions();
-    }
+    let subscriptions = subscriptions_api.getAllSubscriptions();
 
     if (!subscriptions) return;
 
@@ -707,6 +699,8 @@ async function watchSubscriptions() {
     let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);
 
     let current_delay = 0;
+
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     for (let i = 0; i < valid_subscriptions.length; i++) {
         let sub = valid_subscriptions[i];
 
@@ -2026,7 +2020,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     let files = null;
     let playlists = null;
 
-    let subscriptions =  config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
+    let subscriptions = config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
 
     // get basic info depending on multi-user mode being enabled
     if (req.isAuthenticated()) {
@@ -2456,11 +2450,11 @@ app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
     });
 });
 
-app.post('/api/getAllSubscriptions', optionalJwt, async (req, res) => {
+app.post('/api/getSubscriptions', optionalJwt, async (req, res) => {
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     // get subs from api
-    let subscriptions = subscriptions_api.getAllSubscriptions(user_uid);
+    let subscriptions = subscriptions_api.getSubscriptions(user_uid);
 
     res.send({
         subscriptions: subscriptions

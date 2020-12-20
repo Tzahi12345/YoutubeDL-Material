@@ -4,6 +4,7 @@
         <h2 style="text-align: center;" *ngIf="subscription">
             {{subscription.name}}&nbsp;<ng-container *ngIf="subscription.paused" i18n="Paused suffix">(Paused)</ng-container>
         </h2>
+        <mat-progress-bar style="width: 80%; margin: 0 auto; margin-top: 15px;" *ngIf="subscription && subscription.downloading" mode="indeterminate"></mat-progress-bar>
     </div>
     <mat-divider style="width: 80%; margin: 0 auto"></mat-divider>
     <br/>

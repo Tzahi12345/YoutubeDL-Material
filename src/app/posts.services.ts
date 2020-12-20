@@ -374,7 +374,7 @@ export class PostsService implements CanActivate {
     }
 
     getAllSubscriptions() {
-        return this.http.post(this.path + 'getAllSubscriptions', {}, this.httpOptions);
+        return this.http.post(this.path + 'getSubscriptions', {}, this.httpOptions);
     }
 
     // current downloads
