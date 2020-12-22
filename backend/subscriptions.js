@@ -483,7 +483,7 @@ function getAllSubscriptions() {
             if (users[i]['subscriptions']) subscriptions = subscriptions.concat(users[i]['subscriptions']);
         }
     } else {
-        subscriptions = subscriptions_api.getSubscriptions();
+        subscriptions = getSubscriptions();
     }
     return subscriptions;
 }

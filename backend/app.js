@@ -212,8 +212,8 @@ async function checkMigrations() {
 
     // 4.1->4.2 migration
     
-    const add_description_migration_complete = db.get('add_description_migration_complete').value();
-    if (!add_description_migration_complete) {
+    const simplified_db_migration_complete = db.get('simplified_db_migration_complete').value();
+    if (!simplified_db_migration_complete) {
         logger.info('Beginning migration: 4.1->4.2+')
         let success = await simplifyDBFileStructure();
         success = success && await addMetadataPropertyToDB('view_count');
@@ -276,12 +276,12 @@ async function simplifyDBFileStructure() {
     }
 
     if (db.get('files.video').value() !== undefined && db.get('files.audio').value() !== undefined) {
-        const files = db.get('files.video').value().concat(db.get('files.audio'));
+        const files = db.get('files.video').value().concat(db.get('files.audio').value());
         db.assign({files: files}).write();
     }
 
     if (db.get('playlists.video').value() !== undefined && db.get('playlists.audio').value() !== undefined) {
-        const playlists = db.get('playlists.video').value().concat(db.get('playlists.audio'));
+        const playlists = db.get('playlists.video').value().concat(db.get('playlists.audio').value());
         db.assign({playlists: playlists}).write();
     }
     
@@ -303,7 +303,7 @@ async function addMetadataPropertyToDB(property_key) {
         }
 
         // sets migration to complete
-        db.set('add_description_migration_complete', true).write();
+        db.set('simplified_db_migration_complete', true).write();
         return true;
     } catch(err) {
         logger.error(err);
@@ -1935,8 +1935,8 @@ async function addThumbnails(files) {
 
 // gets all download mp3s
 app.get('/api/getMp3s', optionalJwt, async function(req, res) {
-    var mp3s = db.get('files').chain().find({isAudio: true}).value(); // getMp3s();
-    var playlists = db.get('playlists.audio').value();
+    var mp3s = db.get('files').value().filter(file => file.isAudio === true);
+    var playlists = db.get('playlists').value();
     const is_authenticated = req.isAuthenticated();
     if (is_authenticated) {
         // get user audio files/playlists
@@ -1947,12 +1947,6 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
     mp3s = JSON.parse(JSON.stringify(mp3s));
 
-    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
-        // add thumbnails if present
-        // await addThumbnails(mp3s);
-    }
-
-
     res.send({
         mp3s: mp3s,
         playlists: playlists
@@ -1961,7 +1955,7 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
 // gets all download mp4s
 app.get('/api/getMp4s', optionalJwt, async function(req, res) {
-    var mp4s = db.get('files').chain().find({isAudio: false}).value(); // getMp4s();
+    var mp4s = db.get('files').value().filter(file => file.isAudio === false);
     var playlists = db.get('playlists').value();
 
     const is_authenticated = req.isAuthenticated();
@@ -1973,11 +1967,6 @@ app.get('/api/getMp4s', optionalJwt, async function(req, res) {
     }
 
     mp4s = JSON.parse(JSON.stringify(mp4s));
-
-    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
-        // add thumbnails if present
-        // await addThumbnails(mp4s);
-    }
 
     res.send({
         mp4s: mp4s,
@@ -2501,14 +2490,13 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
 
     if (req.isAuthenticated()) {
         playlist = auth_api.getUserPlaylist(uuid ? uuid : req.user.uid, playlistID);
-        type = playlist.type;
     } else {
         playlist = db.get(`playlists`).find({id: playlistID}).value();
     }
 
     res.send({
         playlist: playlist,
-        type: type,
+        type: playlist && playlist.type,
         success: !!playlist
     });
 });
@@ -2746,7 +2734,7 @@ app.get('/api/stream/:id', optionalJwt, (req, res) => {
     }
 
     if (!file_path) {
-        file_path = path.join(videoFolderPath, id + ext);
+        file_path = path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
     }
 
     const stat = fs.statSync(file_path)
