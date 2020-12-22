@@ -8,7 +8,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
 import { YoutubeSearchService, Result } from '../youtube-search.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Platform } from '@angular/cdk/platform';
 import { v4 as uuid } from 'uuid';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
@@ -244,13 +243,6 @@ export class MainComponent implements OnInit {
     this.useDefaultDownloadingAgent = this.postsService.config['Advanced']['use_default_downloading_agent'];
     this.customDownloadingAgent = this.postsService.config['Advanced']['custom_downloading_agent'];
 
-
-
-    if (this.fileManagerEnabled) {
-      this.getMp3s();
-      this.getMp4s();
-    }
-
     if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
       this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
       this.attachToInput();
@@ -335,61 +327,6 @@ export class MainComponent implements OnInit {
     this.setCols();
   }
 
-  // file manager stuff
-
-  getMp3s() {
-    this.postsService.getMp3s().subscribe(result => {
-      const mp3s = result['mp3s'];
-      const playlists = result['playlists'];
-      // if they are different
-      if (JSON.stringify(this.mp3s) !== JSON.stringify(mp3s)) { this.mp3s = mp3s };
-      this.playlists.audio = playlists;
-
-      // get thumbnail url by using first video. this is a temporary hack
-      for (let i = 0; i < this.playlists.audio.length; i++) {
-        const playlist = this.playlists.audio[i];
-        let videoToExtractThumbnail = null;
-        for (let j = 0; j < this.mp3s.length; j++) {
-          if (this.mp3s[j].id === playlist.fileNames[0]) {
-            // found the corresponding file
-            videoToExtractThumbnail = this.mp3s[j];
-          }
-        }
-
-        if (videoToExtractThumbnail) { this.playlist_thumbnails[playlist.id] = videoToExtractThumbnail.thumbnailURL; }
-      }
-    }, error => {
-      console.log(error);
-    });
-  }
-
-  getMp4s() {
-    this.postsService.getMp4s().subscribe(result => {
-      const mp4s = result['mp4s'];
-      const playlists = result['playlists'];
-      // if they are different
-      if (JSON.stringify(this.mp4s) !== JSON.stringify(mp4s)) { this.mp4s = mp4s };
-      this.playlists.video = playlists;
-
-      // get thumbnail url by using first video. this is a temporary hack
-      for (let i = 0; i < this.playlists.video.length; i++) {
-        const playlist = this.playlists.video[i];
-        let videoToExtractThumbnail = null;
-        for (let j = 0; j < this.mp4s.length; j++) {
-          if (this.mp4s[j].id === playlist.fileNames[0]) {
-            // found the corresponding file
-            videoToExtractThumbnail = this.mp4s[j];
-          }
-        }
-
-        if (videoToExtractThumbnail) { this.playlist_thumbnails[playlist.id] = videoToExtractThumbnail.thumbnailURL; }
-      }
-    },
-    error => {
-      console.log(error);
-    });
-  }
-
   public setCols() {
     if (window.innerWidth <= 350) {
       this.files_cols = 1;
@@ -437,44 +374,6 @@ export class MainComponent implements OnInit {
     return null;
   }
 
-  public removeFromMp3(name: string) {
-    for (let i = 0; i < this.mp3s.length; i++) {
-      if (this.mp3s[i].id === name || this.mp3s[i].id + '.mp3' === name) {
-        this.mp3s.splice(i, 1);
-      }
-    }
-    this.getMp3s();
-  }
-
-  public removePlaylistMp3(playlistID, index) {
-    this.postsService.removePlaylist(playlistID, 'audio').subscribe(res => {
-      if (res['success']) {
-        this.playlists.audio.splice(index, 1);
-        this.openSnackBar('Playlist successfully removed.', '');
-      }
-      this.getMp3s();
-    });
-  }
-
-  public removeFromMp4(name: string) {
-    for (let i = 0; i < this.mp4s.length; i++) {
-      if (this.mp4s[i].id === name || this.mp4s[i].id + '.mp4' === name) {
-        this.mp4s.splice(i, 1);
-      }
-    }
-    this.getMp4s();
-  }
-
-  public removePlaylistMp4(playlistID, index) {
-    this.postsService.removePlaylist(playlistID, 'video').subscribe(res => {
-      if (res['success']) {
-        this.playlists.video.splice(index, 1);
-        this.openSnackBar('Playlist successfully removed.', '');
-      }
-      this.getMp4s();
-    });
-  }
-
   // download helpers
 
   downloadHelperMp3(name, uid, is_playlist = false, forceView = false, new_download = null, navigate_mode = false) {
@@ -504,16 +403,6 @@ export class MainComponent implements OnInit {
 
     // remove download from current downloads
     this.removeDownloadFromCurrentDownloads(new_download);
-
-    // reloads mp3s
-    if (this.fileManagerEnabled) {
-      this.getMp3s();
-      setTimeout(() => {
-        this.audioFileCards.forEach(filecard => {
-          filecard.onHoverResponse();
-        });
-      }, 200);
-    }
   }
 
   downloadHelperMp4(name, uid, is_playlist = false, forceView = false, new_download = null, navigate_mode = false) {
@@ -543,16 +432,6 @@ export class MainComponent implements OnInit {
 
     // remove download from current downloads
     this.removeDownloadFromCurrentDownloads(new_download);
-
-    // reloads mp4s
-    if (this.fileManagerEnabled) {
-      this.getMp4s();
-      setTimeout(() => {
-        this.videoFileCards.forEach(filecard => {
-          filecard.onHoverResponse();
-        });
-      }, 200);
-    }
   }
 
   // download click handler
@@ -745,8 +624,6 @@ export class MainComponent implements OnInit {
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
         this.postsService.deleteFile(name, 'video').subscribe(delRes => {
-          // reload mp3s
-          this.getMp3s();
         });
       }
     });
@@ -762,8 +639,6 @@ export class MainComponent implements OnInit {
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
         this.postsService.deleteFile(name, 'audio').subscribe(delRes => {
-          // reload mp4s
-          this.getMp4s();
         });
       }
     });
@@ -1108,25 +983,6 @@ export class MainComponent implements OnInit {
     } else if (type === 'video') {
       videoFilesOpened = false;
     }
-  }
-
-  // creating a playlist
-  openCreatePlaylistDialog(type) {
-    const dialogRef = this.dialog.open(CreatePlaylistComponent, {
-      data: {
-        filesToSelectFrom: (type === 'audio') ? this.mp3s : this.mp4s,
-        type: type
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (type === 'audio') { this.getMp3s() };
-        if (type === 'video') { this.getMp4s() };
-        this.openSnackBar('Successfully created playlist!', '');
-      } else if (result === false) {
-        this.openSnackBar('ERROR: failed to create playlist!', '');
-      }
-    });
   }
 
   // modify custom args
