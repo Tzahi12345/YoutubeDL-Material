@@ -281,9 +281,9 @@ exports.adminExists = function() {
 
 // video stuff
 
-exports.getUserVideos = function(user_uid) {
+exports.getUserVideos = function(user_uid, type) {
     const user = users_db.get('users').find({uid: user_uid}).value();
-    return user['files'];
+    return type ? user['files'].filter(file => file.isAudio = (type === 'audio')) : user['files'];
 }
 
 exports.getUserVideo = function(user_uid, file_uid, requireSharing = false) {
