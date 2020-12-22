@@ -56,7 +56,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
         if (init) {
           this.getConfig();
           this.getSubscription();
-          this.sub_interval = setInterval(() => this.getSubscription(), 1000);
+          this.sub_interval = setInterval(() => this.getSubscription(true), 1000);
         }
       });
     }
@@ -79,8 +79,14 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     this.router.navigate(['/subscriptions']);
   }
 
-  getSubscription() {
+  getSubscription(low_cost = false) {
     this.postsService.getSubscription(this.id).subscribe(res => {
+      if (low_cost && res['subscription'].videos.length === this.subscription?.videos.length) {
+        if (res['subscription']['downloading'] !== this.subscription['downloading']) {
+          this.subscription['downloading'] = res['subscription']['downloading'];
+        }
+        return;
+      }
       this.subscription = res['subscription'];
       this.files = res['files'];
       if (this.search_mode) {
