@@ -15,15 +15,16 @@ var JwtStrategy = require('passport-jwt').Strategy,
 
 // other required vars
 let logger = null;
-var users_db = null;
+let db =  null;
+let users_db = null;
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function(input_users_db, input_logger) {
+exports.initialize = function(input_db, input_users_db, input_logger) {
   setLogger(input_logger)
-  setDB(input_users_db);
+  setDB(input_db, input_users_db);
 
   /*************************
    * Authentication module
@@ -61,7 +62,8 @@ function setLogger(input_logger) {
   logger = input_logger;
 }
 
-function setDB(input_users_db) {
+function setDB(input_db, input_users_db) {
+  db = input_db;
   users_db = input_users_db;
 }
 
@@ -310,9 +312,39 @@ exports.removePlaylist = function(user_uid, playlistID) {
   return true;
 }
 
-exports.getUserPlaylists = function(user_uid) {
+exports.getUserPlaylists = function(user_uid, user_files = null) {
   const user = users_db.get('users').find({uid: user_uid}).value();
-  return user['playlists'];
+  const playlists = JSON.parse(JSON.stringify(user['playlists']));
+  const categories = db.get('categories').value();
+  if (categories && user_files) {
+      categories.forEach(category => {
+          const audio_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && file.isAudio);
+          const video_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && !file.isAudio);
+          if (audio_files && audio_files.length > 0) {
+              playlists.push({
+                  name: category['name'],
+                  thumbnailURL: audio_files[0].thumbnailURL,
+                  thumbnailPath: audio_files[0].thumbnailPath,
+                  fileNames: audio_files.map(file => file.id),
+                  type: 'audio',
+                  uid: user_uid,
+                  auto: true
+              });
+          }
+          if (video_files && video_files.length > 0) {
+              playlists.push({
+                  name: category['name'],
+                  thumbnailURL: video_files[0].thumbnailURL,
+                  thumbnailPath: video_files[0].thumbnailPath,
+                  fileNames: video_files.map(file => file.id),
+                  type: 'video',
+                  uid: user_uid,
+                  auto: true
+              });
+          }
+      });
+  }
+  return playlists;
 }
 
 exports.getUserPlaylist = function(user_uid, playlistID, requireSharing = false) {

@@ -27,7 +27,7 @@
     </div>
     <div class="info-item">
         <div class="info-item-label"><strong><ng-container i18n="Category property">Category:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value"><ng-container *ngIf="file.category"><mat-chip-list><mat-chip>{{file.category}}</mat-chip></mat-chip-list></ng-container><ng-container *ngIf="!file.category">N/A</ng-container></div>
+        <div class="info-item-value"><ng-container *ngIf="file.category"><mat-chip-list><mat-chip>{{file.category.name}}</mat-chip></mat-chip-list></ng-container><ng-container *ngIf="!file.category">N/A</ng-container></div>
     </div>
 </mat-dialog-content>
 

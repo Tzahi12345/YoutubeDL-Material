@@ -207,6 +207,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getPlaylistFiles() {
+    if (this.route.snapshot.paramMap.get('auto') === 'true') {
+      this.show_player = true;
+      return;
+    }
     this.postsService.getPlaylist(this.id, null, this.uuid).subscribe(res => {
       if (res['playlist']) {
         this.db_playlist = res['playlist'];

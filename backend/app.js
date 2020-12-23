@@ -79,7 +79,7 @@ const logger = winston.createLogger({
 });
 
 config_api.initialize(logger);
-auth_api.initialize(users_db, logger);
+auth_api.initialize(db, users_db, logger);
 db_api.initialize(db, users_db, logger);
 subscriptions_api.initialize(db, users_db, logger, db_api);
 categories_api.initialize(db, users_db, logger, db_api);
@@ -1215,7 +1215,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     const customPath = options.noRelativePath ? path.dirname(full_file_path).split(path.sep).pop() : null;
 
                     // registers file in DB
-                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath);
+                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath, category);
 
                     if (file_name) file_names.push(file_name);
                 }
@@ -2014,10 +2014,37 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // get basic info depending on multi-user mode being enabled
     if (req.isAuthenticated()) {
         files = auth_api.getUserVideos(req.user.uid);
-        playlists = auth_api.getUserPlaylists(req.user.uid);
+        playlists = auth_api.getUserPlaylists(req.user.uid, files);
     } else {
         files = db.get('files').value();
-        playlists = db.get('playlists').value();
+        playlists = JSON.parse(JSON.stringify(db.get('playlists').value()));
+        const categories = db.get('categories').value();
+        if (categories) {
+            categories.forEach(category => {
+                const audio_files = files && files.filter(file => file.category && file.category.uid === category.uid && file.isAudio);
+                const video_files = files && files.filter(file => file.category && file.category.uid === category.uid && !file.isAudio);
+                if (audio_files && audio_files.length > 0) {
+                    playlists.push({
+                        name: category['name'],
+                        thumbnailURL: audio_files[0].thumbnailURL,
+                        thumbnailPath: audio_files[0].thumbnailPath,
+                        fileNames: audio_files.map(file => file.id),
+                        type: 'audio',
+                        auto: true
+                    });
+                }
+                if (video_files && video_files.length > 0) {
+                    playlists.push({
+                        name: category['name'],
+                        thumbnailURL: video_files[0].thumbnailURL,
+                        thumbnailPath: video_files[0].thumbnailPath,
+                        fileNames: video_files.map(file => file.id),
+                        type: 'video',
+                        auto: true
+                    });
+                }
+            });
+        }
     }
 
     // loop through subscriptions and add videos

@@ -111,6 +111,11 @@
   top: 1px;
   left: 5px;
   z-index: 99999;
+  width: calc(100% - 8px);
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
 }
 
 .audio-video-icon {

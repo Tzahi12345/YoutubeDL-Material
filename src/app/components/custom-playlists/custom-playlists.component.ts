@@ -62,7 +62,7 @@ export class CustomPlaylistsComponent implements OnInit {
       } else {
         localStorage.setItem('player_navigator', this.router.url);
         const fileNames = playlist.fileNames;
-        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID, uid: playlistID}]);
+        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID, uid: playlistID, auto: playlist.auto}]);
       }
     } else {
       // playlist not found
