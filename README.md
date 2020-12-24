@@ -16,15 +16,11 @@ Check out the prerequisites, and go to the installation section. Easy as pie!
 
 Here's an image of what it'll look like once you're done:
 
-![frontpage](https://i.imgur.com/w8iofbb.png)
-
-With optional file management enabled (default):
-
-![frontpage_with_files](https://i.imgur.com/FTATqBM.png)
+<img src="https://i.imgur.com/C6vFGbL.png" width="800">
 
 Dark mode:
 
-![dark_mode](https://i.imgur.com/r5ZtBqd.png)
+<img src="https://i.imgur.com/vOtvH5w.png" width="800">
 
 ### Prerequisites
 
