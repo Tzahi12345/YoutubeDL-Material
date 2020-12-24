@@ -1119,10 +1119,10 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
 
         // get video info prior to download
         let info = await getVideoInfoByURL(url, downloadConfig, download);
-        if (!info) {
+        if (!info && url.includes('youtu')) {
             resolve(false);
             return;
-        } else {
+        } else if (info) {
             // check if it fits into a category. If so, then get info again using new downloadConfig
             category = await categories_api.categorize(info);
 
