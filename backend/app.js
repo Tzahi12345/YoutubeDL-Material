@@ -260,6 +260,13 @@ async function runFilesToDBMigration() {
 }
 
 async function simplifyDBFileStructure() {
+    // back up db files
+    const old_db_file = fs.readJSONSync('./appdata/db.json');
+    const old_users_db_file = fs.readJSONSync('./appdata/users.json');
+    fs.writeJSONSync('appdata/db.old.json', old_db_file);
+    fs.writeJSONSync('appdata/users.old.json', old_users_db_file);
+
+    // simplify
     let users = users_db.get('users').value();
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
