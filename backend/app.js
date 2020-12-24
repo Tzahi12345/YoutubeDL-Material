@@ -13,7 +13,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var archiver = require('archiver');
 var unzipper = require('unzipper');
-var db_api = require('./db')
+var db_api = require('./db');
 var utils = require('./utils')
 var mergeFiles = require('merge-files');
 const low = require('lowdb')
@@ -79,7 +79,7 @@ const logger = winston.createLogger({
 });
 
 config_api.initialize(logger);
-auth_api.initialize(users_db, logger);
+auth_api.initialize(db, users_db, logger);
 db_api.initialize(db, users_db, logger);
 subscriptions_api.initialize(db, users_db, logger, db_api);
 categories_api.initialize(db, users_db, logger, db_api);
@@ -87,14 +87,8 @@ categories_api.initialize(db, users_db, logger, db_api);
 // Set some defaults
 db.defaults(
     {
-        playlists: {
-            audio: [],
-            video: []
-        },
-        files: {
-            audio: [],
-            video: []
-        },
+        playlists: [],
+        files: [],
         configWriteFlag: false,
         downloads: {},
         subscriptions: [],
@@ -216,6 +210,20 @@ async function checkMigrations() {
         else { logger.error('Migration failed: 3.5->3.6+'); }
     }
 
+    // 4.1->4.2 migration
+    
+    const simplified_db_migration_complete = db.get('simplified_db_migration_complete').value();
+    if (!simplified_db_migration_complete) {
+        logger.info('Beginning migration: 4.1->4.2+')
+        let success = await simplifyDBFileStructure();
+        success = success && await addMetadataPropertyToDB('view_count');
+        success = success && await addMetadataPropertyToDB('description');
+        success = success && await addMetadataPropertyToDB('height');
+        success = success && await addMetadataPropertyToDB('abr');
+        if (success) { logger.info('4.1->4.2+ migration complete!'); }
+        else { logger.error('Migration failed: 4.1->4.2+'); }
+    }
+
     return true;
 }
 
@@ -244,6 +252,65 @@ async function runFilesToDBMigration() {
 
         // sets migration to complete
         db.set('files_to_db_migration_complete', true).write();
+        return true;
+    } catch(err) {
+        logger.error(err);
+        return false;
+    }
+}
+
+async function simplifyDBFileStructure() {
+    // back up db files
+    const old_db_file = fs.readJSONSync('./appdata/db.json');
+    const old_users_db_file = fs.readJSONSync('./appdata/users.json');
+    fs.writeJSONSync('appdata/db.old.json', old_db_file);
+    fs.writeJSONSync('appdata/users.old.json', old_users_db_file);
+
+    // simplify
+    let users = users_db.get('users').value();
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        if (user['files']['video'] !== undefined && user['files']['audio'] !== undefined) {
+            const user_files = user['files']['video'].concat(user['files']['audio']);
+            const user_db_path = users_db.get('users').find({uid: user['uid']});
+            user_db_path.assign({files: user_files}).write();
+        }
+        if (user['playlists']['video'] !== undefined && user['playlists']['audio'] !== undefined) {
+            const user_playlists = user['playlists']['video'].concat(user['playlists']['audio']);
+            const user_db_path = users_db.get('users').find({uid: user['uid']});
+            user_db_path.assign({playlists: user_playlists}).write();
+        }
+    }
+
+    if (db.get('files.video').value() !== undefined && db.get('files.audio').value() !== undefined) {
+        const files = db.get('files.video').value().concat(db.get('files.audio').value());
+        db.assign({files: files}).write();
+    }
+
+    if (db.get('playlists.video').value() !== undefined && db.get('playlists.audio').value() !== undefined) {
+        const playlists = db.get('playlists.video').value().concat(db.get('playlists.audio').value());
+        db.assign({playlists: playlists}).write();
+    }
+    
+
+    return true;
+}
+
+async function addMetadataPropertyToDB(property_key) {
+    try {
+        const dirs_to_check = db_api.getFileDirectoriesAndDBs();
+        for (const dir_to_check of dirs_to_check) {
+            // recursively get all files in dir's path
+            const files = await utils.getDownloadedFilesByType(dir_to_check.basePath, dir_to_check.type, true);
+            for (const file of files) {
+                if (file[property_key]) {
+                    dir_to_check.dbPath.find({id: file.id}).assign({[property_key]: file[property_key]}).write();
+                }
+            }
+        }
+
+        // sets migration to complete
+        db.set('simplified_db_migration_complete', true).write();
         return true;
     } catch(err) {
         logger.error(err);
@@ -560,11 +627,17 @@ async function loadConfig() {
     // creates archive path if missing
     await fs.ensureDir(archivePath);
 
+    // check migrations
+    await checkMigrations();
+
     // now this is done here due to youtube-dl's repo takedown
     await startYoutubeDL();
 
     // get subscriptions
     if (allowSubscriptions) {
+        // set downloading to false
+        let subscriptions = subscriptions_api.getAllSubscriptions();
+        subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
         watchSubscriptions();
         setInterval(() => {
@@ -573,9 +646,6 @@ async function loadConfig() {
     }
 
     db_api.importUnregisteredFiles();
-
-    // check migrations
-    await checkMigrations();
 
     // load in previous downloads
     downloads = db.get('downloads').value();
@@ -626,27 +696,20 @@ function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
 }
 
 async function watchSubscriptions() {
-    let subscriptions = null;
-
-    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-    if (multiUserMode) {
-        subscriptions = [];
-        let users = users_db.get('users').value();
-        for (let i = 0; i < users.length; i++) {
-            if (users[i]['subscriptions']) subscriptions = subscriptions.concat(users[i]['subscriptions']);
-        }
-    } else {
-        subscriptions = subscriptions_api.getAllSubscriptions();
-    }
+    let subscriptions = subscriptions_api.getAllSubscriptions();
 
     if (!subscriptions) return;
 
-    let subscriptions_amount = subscriptions.length;
+    const valid_subscriptions = subscriptions.filter(sub => !sub.paused);
+
+    let subscriptions_amount = valid_subscriptions.length;
     let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);
 
     let current_delay = 0;
-    for (let i = 0; i < subscriptions.length; i++) {
-        let sub = subscriptions[i];
+
+    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
+    for (let i = 0; i < valid_subscriptions.length; i++) {
+        let sub = valid_subscriptions[i];
 
         // don't check the sub if the last check for the same subscription has not completed
         if (subscription_timeouts[sub.id]) {
@@ -698,64 +761,6 @@ function getEnvConfigItems() {
 // gets value of a config item and stores it in an object
 function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
-}
-
-async function getMp3s() {
-    let mp3s = [];
-    var files = await utils.recFindByExt(audioFolderPath, 'mp3'); // fs.readdirSync(audioFolderPath);
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(audioFolderPath.length, file.length);
-
-        var stats = await fs.stat(file);
-
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = await utils.getJSONMp3(id, audioFolderPath);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
-
-        var size = stats.size;
-
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-        var isaudio = true;
-        var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp3s.push(file_obj);
-    }
-    return mp3s;
-}
-
-async function getMp4s(relative_path = true) {
-    let mp4s = [];
-    var files = await utils.recFindByExt(videoFolderPath, 'mp4');
-    for (let i = 0; i < files.length; i++) {
-        let file = files[i];
-        var file_path = file.substring(videoFolderPath.length, file.length);
-
-        var stats = fs.statSync(file);
-
-        var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = await utils.getJSONMp4(id, videoFolderPath);
-        if (!jsonobj) continue;
-        var title = jsonobj.title;
-        var url = jsonobj.webpage_url;
-        var uploader = jsonobj.uploader;
-        var upload_date = jsonobj.upload_date;
-        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
-        var thumbnail = jsonobj.thumbnail;
-        var duration = jsonobj.duration;
-
-        var size = stats.size;
-
-        var isaudio = false;
-        var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
-        mp4s.push(file_obj);
-    }
-    return mp4s;
 }
 
 function getThumbnailMp3(name)
@@ -1121,10 +1126,10 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
 
         // get video info prior to download
         let info = await getVideoInfoByURL(url, downloadConfig, download);
-        if (!info) {
+        if (!info && url.includes('youtu')) {
             resolve(false);
             return;
-        } else {
+        } else if (info) {
             // check if it fits into a category. If so, then get info again using new downloadConfig
             category = await categories_api.categorize(info);
 
@@ -1217,7 +1222,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     const customPath = options.noRelativePath ? path.dirname(full_file_path).split(path.sep).pop() : null;
 
                     // registers file in DB
-                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath);
+                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath, category);
 
                     if (file_name) file_names.push(file_name);
                 }
@@ -1937,8 +1942,8 @@ async function addThumbnails(files) {
 
 // gets all download mp3s
 app.get('/api/getMp3s', optionalJwt, async function(req, res) {
-    var mp3s = db.get('files.audio').value(); // getMp3s();
-    var playlists = db.get('playlists.audio').value();
+    var mp3s = db.get('files').value().filter(file => file.isAudio === true);
+    var playlists = db.get('playlists').value();
     const is_authenticated = req.isAuthenticated();
     if (is_authenticated) {
         // get user audio files/playlists
@@ -1949,12 +1954,6 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
     mp3s = JSON.parse(JSON.stringify(mp3s));
 
-    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
-        // add thumbnails if present
-        // await addThumbnails(mp3s);
-    }
-
-
     res.send({
         mp3s: mp3s,
         playlists: playlists
@@ -1963,8 +1962,8 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
 
 // gets all download mp4s
 app.get('/api/getMp4s', optionalJwt, async function(req, res) {
-    var mp4s = db.get('files.video').value(); // getMp4s();
-    var playlists = db.get('playlists.video').value();
+    var mp4s = db.get('files').value().filter(file => file.isAudio === false);
+    var playlists = db.get('playlists').value();
 
     const is_authenticated = req.isAuthenticated();
     if (is_authenticated) {
@@ -1975,11 +1974,6 @@ app.get('/api/getMp4s', optionalJwt, async function(req, res) {
     }
 
     mp4s = JSON.parse(JSON.stringify(mp4s));
-
-    if (config_api.getConfigItem('ytdl_include_thumbnail')) {
-        // add thumbnails if present
-        // await addThumbnails(mp4s);
-    }
 
     res.send({
         mp4s: mp4s,
@@ -1995,21 +1989,11 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
     var file = null;
 
     if (req.isAuthenticated()) {
-        file = auth_api.getUserVideo(req.user.uid, uid, type);
+        file = auth_api.getUserVideo(req.user.uid, uid);
     } else if (uuid) {
-        file = auth_api.getUserVideo(uuid, uid, type, true);
+        file = auth_api.getUserVideo(uuid, uid, true);
     } else {
-        if (!type) {
-            file = db.get('files.audio').find({uid: uid}).value();
-            if (!file) {
-                file = db.get('files.video').find({uid: uid}).value();
-                if (file) type = 'video';
-            } else {
-                type = 'audio';
-            }
-        }
-
-        if (!file && type) file = db.get(`files.${type}`).find({uid: uid}).value();
+        file = db.get('files').find({uid: uid}).value();
     }
 
     // check if chat exists for twitch videos
@@ -2029,31 +2013,46 @@ app.post('/api/getFile', optionalJwt, function (req, res) {
 
 app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
-    let files = [];
-    let playlists = [];
-    let subscription_files = [];
+    let files = null;
+    let playlists = null;
 
-    let videos = null;
-    let audios = null;
-    let audio_playlists = null;
-    let video_playlists = null;
-    let subscriptions =  config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getAllSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
+    let subscriptions = config_api.getConfigItem('ytdl_allow_subscriptions') ? (subscriptions_api.getSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
 
     // get basic info depending on multi-user mode being enabled
     if (req.isAuthenticated()) {
-        videos = auth_api.getUserVideos(req.user.uid, 'video');
-        audios = auth_api.getUserVideos(req.user.uid, 'audio');
-        audio_playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
-        video_playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
+        files = auth_api.getUserVideos(req.user.uid);
+        playlists = auth_api.getUserPlaylists(req.user.uid, files);
     } else {
-        videos = db.get('files.audio').value();
-        audios = db.get('files.video').value();
-        audio_playlists = db.get('playlists.audio').value();
-        video_playlists = db.get('playlists.video').value();
+        files = db.get('files').value();
+        playlists = JSON.parse(JSON.stringify(db.get('playlists').value()));
+        const categories = db.get('categories').value();
+        if (categories) {
+            categories.forEach(category => {
+                const audio_files = files && files.filter(file => file.category && file.category.uid === category.uid && file.isAudio);
+                const video_files = files && files.filter(file => file.category && file.category.uid === category.uid && !file.isAudio);
+                if (audio_files && audio_files.length > 0) {
+                    playlists.push({
+                        name: category['name'],
+                        thumbnailURL: audio_files[0].thumbnailURL,
+                        thumbnailPath: audio_files[0].thumbnailPath,
+                        fileNames: audio_files.map(file => file.id),
+                        type: 'audio',
+                        auto: true
+                    });
+                }
+                if (video_files && video_files.length > 0) {
+                    playlists.push({
+                        name: category['name'],
+                        thumbnailURL: video_files[0].thumbnailURL,
+                        thumbnailPath: video_files[0].thumbnailPath,
+                        fileNames: video_files.map(file => file.id),
+                        type: 'video',
+                        auto: true
+                    });
+                }
+            });
+        }
     }
-
-    files = videos.concat(audios);
-    playlists = video_playlists.concat(audio_playlists);
 
     // loop through subscriptions and add videos
     for (let i = 0; i < subscriptions.length; i++) {
@@ -2122,14 +2121,13 @@ app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
 
 // video sharing
 app.post('/api/enableSharing', optionalJwt, function(req, res) {
-    var type = req.body.type;
     var uid = req.body.uid;
     var is_playlist = req.body.is_playlist;
     let success = false;
     // multi-user mode
     if (req.isAuthenticated()) {
         // if multi user mode, use this method instead
-        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, true);
+        success = auth_api.changeSharingMode(req.user.uid, uid, is_playlist, true);
         res.send({success: success});
         return;
     }
@@ -2138,12 +2136,12 @@ app.post('/api/enableSharing', optionalJwt, function(req, res) {
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
-            db.get(`files.${type}`)
+            db.get(`files`)
                 .find({uid: uid})
                 .assign({sharingEnabled: true})
                 .write();
         } else if (is_playlist) {
-            db.get(`playlists.${type}`)
+            db.get(`playlists`)
                 .find({id: uid})
                 .assign({sharingEnabled: true})
                 .write();
@@ -2172,7 +2170,7 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     // multi-user mode
     if (req.isAuthenticated()) {
         // if multi user mode, use this method instead
-        success = auth_api.changeSharingMode(req.user.uid, uid, type, is_playlist, false);
+        success = auth_api.changeSharingMode(req.user.uid, uid, is_playlist, false);
         res.send({success: success});
         return;
     }
@@ -2181,12 +2179,12 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
     try {
         success = true;
         if (!is_playlist && type !== 'subscription') {
-            db.get(`files.${type}`)
+            db.get(`files`)
                 .find({uid: uid})
                 .assign({sharingEnabled: false})
                 .write();
         } else if (is_playlist) {
-                db.get(`playlists.${type}`)
+                db.get(`playlists`)
                 .find({id: uid})
                 .assign({sharingEnabled: false})
                 .write();
@@ -2204,6 +2202,27 @@ app.post('/api/disableSharing', optionalJwt, function(req, res) {
 
     res.send({
         success: success
+    });
+});
+
+app.post('/api/incrementViewCount', optionalJwt, async (req, res) => {
+    let file_uid = req.body.file_uid;
+    let sub_id = req.body.sub_id;
+    let uuid = req.body.uuid;
+
+    if (!uuid && req.isAuthenticated()) {
+        uuid = req.user.uid;
+    }
+
+    const file_obj = await db_api.getVideo(file_uid, uuid, sub_id);
+
+    const current_view_count = file_obj && file_obj['local_view_count'] ? file_obj['local_view_count'] : 0;
+    const new_view_count = current_view_count + 1;
+
+    await db_api.setVideoProperty(file_uid, {local_view_count: new_view_count}, uuid, sub_id);
+
+    res.send({
+        success: true
     });
 });
 
@@ -2399,7 +2418,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
                 var size = stats.size;
 
                 var isaudio = false;
-                var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date);
+                var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file, upload_date, jsonobj.description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
                 parsed_files.push(file_obj);
             }
         } else {
@@ -2421,7 +2440,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
         if (subscription.videos) {
             for (let i = 0; i < subscription.videos.length; i++) {
                 const video = subscription.videos[i];
-                parsed_files.push(new utils.File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date));
+                parsed_files.push(new utils.File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date, video.view_count, video.height, video.abr));
             }
         }
         res.send({
@@ -2454,11 +2473,11 @@ app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
     });
 });
 
-app.post('/api/getAllSubscriptions', optionalJwt, async (req, res) => {
+app.post('/api/getSubscriptions', optionalJwt, async (req, res) => {
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     // get subs from api
-    let subscriptions = subscriptions_api.getAllSubscriptions(user_uid);
+    let subscriptions = subscriptions_api.getSubscriptions(user_uid);
 
     res.send({
         subscriptions: subscriptions
@@ -2485,7 +2504,7 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     if (req.isAuthenticated()) {
         auth_api.addPlaylist(req.user.uid, new_playlist, type);
     } else {
-        db.get(`playlists.${type}`)
+        db.get(`playlists`)
             .push(new_playlist)
             .write();
     }
@@ -2499,31 +2518,19 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
-    let type = req.body.type;
     let uuid = req.body.uuid;
 
     let playlist = null;
 
     if (req.isAuthenticated()) {
-        playlist = auth_api.getUserPlaylist(uuid ? uuid : req.user.uid, playlistID, type);
-        type = playlist.type;
+        playlist = auth_api.getUserPlaylist(uuid ? uuid : req.user.uid, playlistID);
     } else {
-        if (!type) {
-            playlist = db.get('playlists.audio').find({id: playlistID}).value();
-            if (!playlist) {
-                playlist = db.get('playlists.video').find({id: playlistID}).value();
-                if (playlist) type = 'video';
-            } else {
-                type = 'audio';
-            }
-        }
-
-        if (!playlist) playlist = db.get(`playlists.${type}`).find({id: playlistID}).value();
+        playlist = db.get(`playlists`).find({id: playlistID}).value();
     }
 
     res.send({
         playlist: playlist,
-        type: type,
+        type: playlist && playlist.type,
         success: !!playlist
     });
 });
@@ -2531,14 +2538,13 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
 app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
     let fileNames = req.body.fileNames;
-    let type = req.body.type;
 
     let success = false;
     try {
         if (req.isAuthenticated()) {
-            auth_api.updatePlaylistFiles(req.user.uid, playlistID, fileNames, type);
+            auth_api.updatePlaylistFiles(req.user.uid, playlistID, fileNames);
         } else {
-            db.get(`playlists.${type}`)
+            db.get(`playlists`)
                 .find({id: playlistID})
                 .assign({fileNames: fileNames})
                 .write();
@@ -2564,15 +2570,14 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlistID;
-    let type = req.body.type;
 
     let success = null;
     try {
         if (req.isAuthenticated()) {
-            auth_api.removePlaylist(req.user.uid, playlistID, type);
+            auth_api.removePlaylist(req.user.uid, playlistID);
         } else {
             // removes playlist from playlists
-            db.get(`playlists.${type}`)
+            db.get(`playlists`)
                 .remove({id: playlistID})
                 .write();
         }
@@ -2594,23 +2599,23 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
-        let success = auth_api.deleteUserFile(req.user.uid, uid, type, blacklistMode);
+        let success = await auth_api.deleteUserFile(req.user.uid, uid, blacklistMode);
         res.send(success);
         return;
     }
 
-    var file_obj = db.get(`files.${type}`).find({uid: uid}).value();
+    var file_obj = db.get(`files`).find({uid: uid}).value();
     var name = file_obj.id;
     var fullpath = file_obj ? file_obj.path : null;
     var wasDeleted = false;
     if (await fs.pathExists(fullpath))
     {
         wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
-        db.get('files.video').remove({uid: uid}).write();
-        // wasDeleted = true;
+        db.get('files').remove({uid: uid}).write();
+        wasDeleted = true;
         res.send(wasDeleted);
     } else if (video_obj) {
-        db.get('files.video').remove({uid: uid}).write();
+        db.get('files').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
     } else {
@@ -2746,7 +2751,7 @@ app.get('/api/stream/:id', optionalJwt, (req, res) => {
     var head;
     let optionalParams = url_api.parse(req.url,true).query;
     let id = decodeURIComponent(req.params.id);
-    let file_path = req.query.file_path ? decodeURIComponent(req.query.file_path) : null;
+    let file_path = req.query.file_path ? decodeURIComponent(req.query.file_path.split('?')[0]) : null;
     if (!file_path && (req.isAuthenticated() || req.can_watch)) {
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         if (optionalParams['subName']) {
@@ -2763,7 +2768,7 @@ app.get('/api/stream/:id', optionalJwt, (req, res) => {
     }
 
     if (!file_path) {
-        file_path = path.join(videoFolderPath, id + ext);
+        file_path = path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
     }
 
     const stat = fs.statSync(file_path)

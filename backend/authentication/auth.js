@@ -15,15 +15,16 @@ var JwtStrategy = require('passport-jwt').Strategy,
 
 // other required vars
 let logger = null;
-var users_db = null;
+let db =  null;
+let users_db = null;
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function(input_users_db, input_logger) {
+exports.initialize = function(input_db, input_users_db, input_logger) {
   setLogger(input_logger)
-  setDB(input_users_db);
+  setDB(input_db, input_users_db);
 
   /*************************
    * Authentication module
@@ -61,7 +62,8 @@ function setLogger(input_logger) {
   logger = input_logger;
 }
 
-function setDB(input_users_db) {
+function setDB(input_db, input_users_db) {
+  db = input_db;
   users_db = input_users_db;
 }
 
@@ -283,22 +285,11 @@ exports.adminExists = function() {
 
 exports.getUserVideos = function(user_uid, type) {
     const user = users_db.get('users').find({uid: user_uid}).value();
-    return user['files'][type];
+    return type ? user['files'].filter(file => file.isAudio = (type === 'audio')) : user['files'];
 }
 
-exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false) {
-  let file = null;
-  if (!type) {
-    file = users_db.get('users').find({uid: user_uid}).get(`files.audio`).find({uid: file_uid}).value();
-    if (!file) {
-        file = users_db.get('users').find({uid: user_uid}).get(`files.video`).find({uid: file_uid}).value();
-        if (file) type = 'video';
-    } else {
-        type = 'audio';
-    }
-  }
-
-  if (!file && type) file = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+exports.getUserVideo = function(user_uid, file_uid, requireSharing = false) {
+  let file = users_db.get('users').find({uid: user_uid}).get(`files`).find({uid: file_uid}).value();
 
   // prevent unauthorized users from accessing the file info
   if (file && !file['sharingEnabled'] && requireSharing) file = null;
@@ -306,38 +297,58 @@ exports.getUserVideo = function(user_uid, file_uid, type, requireSharing = false
   return file;
 }
 
-exports.addPlaylist = function(user_uid, new_playlist, type) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).push(new_playlist).write();
+exports.addPlaylist = function(user_uid, new_playlist) {
+  users_db.get('users').find({uid: user_uid}).get(`playlists`).push(new_playlist).write();
   return true;
 }
 
-exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames, type) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).assign({fileNames: new_filenames});
+exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames) {
+  users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).assign({fileNames: new_filenames});
   return true;
 }
 
-exports.removePlaylist = function(user_uid, playlistID, type) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).remove({id: playlistID}).write();
+exports.removePlaylist = function(user_uid, playlistID) {
+  users_db.get('users').find({uid: user_uid}).get(`playlists`).remove({id: playlistID}).write();
   return true;
 }
 
-exports.getUserPlaylists = function(user_uid, type) {
+exports.getUserPlaylists = function(user_uid, user_files = null) {
   const user = users_db.get('users').find({uid: user_uid}).value();
-  return user['playlists'][type];
+  const playlists = JSON.parse(JSON.stringify(user['playlists']));
+  const categories = db.get('categories').value();
+  if (categories && user_files) {
+      categories.forEach(category => {
+          const audio_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && file.isAudio);
+          const video_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && !file.isAudio);
+          if (audio_files && audio_files.length > 0) {
+              playlists.push({
+                  name: category['name'],
+                  thumbnailURL: audio_files[0].thumbnailURL,
+                  thumbnailPath: audio_files[0].thumbnailPath,
+                  fileNames: audio_files.map(file => file.id),
+                  type: 'audio',
+                  uid: user_uid,
+                  auto: true
+              });
+          }
+          if (video_files && video_files.length > 0) {
+              playlists.push({
+                  name: category['name'],
+                  thumbnailURL: video_files[0].thumbnailURL,
+                  thumbnailPath: video_files[0].thumbnailPath,
+                  fileNames: video_files.map(file => file.id),
+                  type: 'video',
+                  uid: user_uid,
+                  auto: true
+              });
+          }
+      });
+  }
+  return playlists;
 }
 
-exports.getUserPlaylist = function(user_uid, playlistID, type, requireSharing = false) {
-  let playlist = null;
-  if (!type) {
-    playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.audio`).find({id: playlistID}).value();
-    if (!playlist) {
-      playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.video`).find({id: playlistID}).value();
-      if (playlist) type = 'video';
-    } else {
-        type = 'audio';
-    }
-  }
-  if (!playlist) playlist = users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID}).value();
+exports.getUserPlaylist = function(user_uid, playlistID, requireSharing = false) {
+  let playlist = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).value();
 
   // prevent unauthorized users from accessing the file info
   if (requireSharing && !playlist['sharingEnabled']) playlist = null;
@@ -345,21 +356,22 @@ exports.getUserPlaylist = function(user_uid, playlistID, type, requireSharing = 
   return playlist;
 }
 
-exports.registerUserFile = function(user_uid, file_object, type) {
-  users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
+exports.registerUserFile = function(user_uid, file_object) {
+  users_db.get('users').find({uid: user_uid}).get(`files`)
     .remove({
         path: file_object['path']
     }).write();
 
-  users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
+  users_db.get('users').find({uid: user_uid}).get(`files`)
       .push(file_object)
       .write();
 }
 
-exports.deleteUserFile = async function(user_uid, file_uid, type, blacklistMode = false) {
+exports.deleteUserFile = async function(user_uid, file_uid, blacklistMode = false) {
   let success = false;
-  const file_obj = users_db.get('users').find({uid: user_uid}).get(`files.${type}`).find({uid: file_uid}).value();
+  const file_obj = users_db.get('users').find({uid: user_uid}).get(`files`).find({uid: file_uid}).value();
   if (file_obj) {
+    const type = file_obj.isAudio ? 'audio' : 'video';
     const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
     const ext = type === 'audio' ? '.mp3' : '.mp4';
 
@@ -375,7 +387,7 @@ exports.deleteUserFile = async function(user_uid, file_uid, type, blacklistMode 
     }
 
     const full_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext);
-    users_db.get('users').find({uid: user_uid}).get(`files.${type}`)
+    users_db.get('users').find({uid: user_uid}).get(`files`)
       .remove({
           uid: file_uid
       }).write();
@@ -424,11 +436,11 @@ exports.deleteUserFile = async function(user_uid, file_uid, type, blacklistMode 
   return success;
 }
 
-exports.changeSharingMode = function(user_uid, file_uid, type, is_playlist, enabled) {
+exports.changeSharingMode = function(user_uid, file_uid, is_playlist, enabled) {
   let success = false;
   const user_db_obj = users_db.get('users').find({uid: user_uid});
   if (user_db_obj.value()) {
-    const file_db_obj = is_playlist ? user_db_obj.get(`playlists.${type}`).find({id: file_uid}) : user_db_obj.get(`files.${type}`).find({uid: file_uid});
+    const file_db_obj = is_playlist ? user_db_obj.get(`playlists`).find({id: file_uid}) : user_db_obj.get(`files`).find({uid: file_uid});
     if (file_db_obj.value()) {
       success = true;
       file_db_obj.assign({sharingEnabled: enabled}).write();

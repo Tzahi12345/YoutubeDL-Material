@@ -61,8 +61,12 @@ export class EditSubscriptionDialogComponent implements OnInit {
   ];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialog, private postsService: PostsService) {
-    this.sub = this.data.sub;
+    this.sub = JSON.parse(JSON.stringify(this.data.sub));
     this.new_sub = JSON.parse(JSON.stringify(this.sub));
+
+    // ignore videos to keep requests small
+    delete this.sub['videos'];
+    delete this.new_sub['videos'];
 
     this.audioOnlyMode = this.sub.type === 'audio';
     this.download_all = !this.sub.timerange;

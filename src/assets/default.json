@@ -26,7 +26,9 @@
       "use_API_key": false,
       "API_key": "",
       "use_youtube_API": false,
-      "youtube_API_key": ""
+      "youtube_API_key": "",
+      "use_twitch_API": false,
+      "twitch_API_key": ""
     },
     "Themes": {
       "default_theme": "default",
@@ -57,7 +59,8 @@
       "allow_advanced_download": true,
       "jwt_expiration": 86400,
       "logger_level": "debug",
-      "use_cookies": false
+      "use_cookies": false,
+      "default_downloader": "youtube-dlc"
     }
   }
 }

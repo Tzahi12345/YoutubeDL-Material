@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   constructor(private postsService: PostsService, private snackBar: MatSnackBar, private router: Router) { }
 
   ngOnInit(): void {
-    if (this.postsService.isLoggedIn) {
+    if (this.postsService.isLoggedIn && localStorage.getItem('jwt_token') !== 'null') {
       this.router.navigate(['/home']);
     }
     this.postsService.service_initialized.subscribe(init => {

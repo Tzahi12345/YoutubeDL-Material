@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,7 +9,7 @@ import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-d
   templateUrl: './subscription.component.html',
   styleUrls: ['./subscription.component.scss']
 })
-export class SubscriptionComponent implements OnInit {
+export class SubscriptionComponent implements OnInit, OnDestroy {
 
   id = null;
   subscription = null;
@@ -44,22 +44,11 @@ export class SubscriptionComponent implements OnInit {
   };
   filterProperty = this.filterProperties['upload_date'];
   downloading = false;
-
-  initialized = false;
+  sub_interval = null;
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.id = params.get('id');
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.initialized = true;
-          this.getConfig();
-          this.getSubscription();
-        }
-      });
-    });
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
@@ -67,6 +56,7 @@ export class SubscriptionComponent implements OnInit {
         if (init) {
           this.getConfig();
           this.getSubscription();
+          this.sub_interval = setInterval(() => this.getSubscription(true), 1000);
         }
       });
     }
@@ -78,12 +68,25 @@ export class SubscriptionComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    // prevents subscription getter from running in the background
+    if (this.sub_interval) {
+      clearInterval(this.sub_interval);
+    }
+  }
+
   goBack() {
     this.router.navigate(['/subscriptions']);
   }
 
-  getSubscription() {
+  getSubscription(low_cost = false) {
     this.postsService.getSubscription(this.id).subscribe(res => {
+      if (low_cost && res['subscription'].videos.length === this.subscription?.videos.length) {
+        if (res['subscription']['downloading'] !== this.subscription['downloading']) {
+          this.subscription['downloading'] = res['subscription']['downloading'];
+        }
+        return;
+      }
       this.subscription = res['subscription'];
       this.files = res['files'];
       if (this.search_mode) {

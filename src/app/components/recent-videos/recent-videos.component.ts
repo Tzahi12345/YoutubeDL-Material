@@ -98,7 +98,7 @@ export class RecentVideosComponent implements OnInit {
 
   private filterFiles(value: string) {
     const filterValue = value.toLowerCase();
-    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue));
+    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue) || option.category?.name?.toLowerCase().includes(filterValue));
     this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex});
   }
 
@@ -127,9 +127,11 @@ export class RecentVideosComponent implements OnInit {
     this.normal_files_received = false;
     this.postsService.getAllFiles().subscribe(res => {
       this.files = res['files'];
-      this.files.forEach(file => {
+      for (let i = 0; i < this.files.length; i++) {
+        const file = this.files[i];
         file.duration = typeof file.duration !== 'string' ? file.duration : this.durationStringToNumber(file.duration);
-      });
+        file.index = i;
+      }
       this.files.sort(this.sortFiles);
       if (this.search_mode) {
         this.filterFiles(this.search_text);
@@ -247,7 +249,9 @@ export class RecentVideosComponent implements OnInit {
     this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
-        this.files.splice(index, 1);
+        this.files.splice(file.index, 1);
+        for (let i = 0; i < this.files.length; i++) { this.files[i].index = i }
+        this.filterByProperty(this.filterProperty['property']);
       } else {
         this.postsService.openSnackBar('Delete failed!', 'OK.');
       }

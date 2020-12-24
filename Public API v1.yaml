@@ -261,12 +261,12 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_10'
       security:
         - Auth query parameter: []
-  /api/getAllSubscriptions:
+  /api/getSubscriptions:
     post:
       tags:
         - subscriptions
       summary: Get all subscriptions
-      operationId: post-api-getAllSubscriptions
+      operationId: post-api-getSubscriptions
       requestBody:
         content:
           application/json:

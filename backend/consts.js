@@ -126,6 +126,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_subscriptions_check_interval',
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
     },
+    'ytdl_subscriptions_redownload_fresh_uploads': {
+        'key': 'ytdl_subscriptions_redownload_fresh_uploads',
+        'path': 'YoutubeDLMaterial.Subscriptions.redownload_fresh_uploads'
+    },
 
     // Users
     'ytdl_users_base_path': {
@@ -192,5 +196,5 @@ AVAILABLE_PERMISSIONS = [
 module.exports = {
     CONFIG_ITEMS: CONFIG_ITEMS,
     AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
-    CURRENT_VERSION: 'v4.1'
+    CURRENT_VERSION: 'v4.2'
 }

@@ -15,7 +15,7 @@ function initialize(input_db, input_users_db, input_logger) {
     setLogger(input_logger);
 }
 
-function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null) {
+function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null, category = null) {
     let db_path = null;
     const file_id = file_path.substring(0, file_path.length-4);
     const file_object = generateFileObject(file_id, type, customPath || multiUserMode && multiUserMode.file_path, sub);
@@ -29,12 +29,15 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null, custo
     // add thumbnail path
     file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, customPath || multiUserMode && multiUserMode.file_path);
 
+    // if category exists, only include essential info
+    if (category) file_object['category'] = {name: category['name'], uid: category['uid']};
+
     if (!sub) {
         if (multiUserMode) {
             const user_uid = multiUserMode.user;
-            db_path = users_db.get('users').find({uid: user_uid}).get(`files.${type}`);
+            db_path = users_db.get('users').find({uid: user_uid}).get(`files`);
         } else {
-            db_path = db.get(`files.${type}`)
+            db_path = db.get(`files`);
         }
     } else {
         if (multiUserMode) {
@@ -94,18 +97,18 @@ function generateFileObject(id, type, customPath = null, sub = null) {
     var thumbnail = jsonobj.thumbnail;
     var duration = jsonobj.duration;
     var isaudio = type === 'audio';
-    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date);
+    var description = jsonobj.description;
+    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date, description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
     return file_obj;
 }
 
 function updatePlaylist(playlist, user_uid) {
     let playlistID = playlist.id;
-    let type = playlist.type;
     let db_loc = null;
     if (user_uid) {
-        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists.${type}`).find({id: playlistID});
+        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID});
     } else {
-        db_loc = db.get(`playlists.${type}`).find({id: playlistID});
+        db_loc = db.get(`playlists`).find({id: playlistID});
     }
     db_loc.assign(playlist).write();
     return true;
@@ -115,7 +118,7 @@ function getAppendedBasePathSub(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
-async function importUnregisteredFiles() {
+function getFileDirectoriesAndDBs() {
     let dirs_to_check = [];
     let subscriptions_to_check = [];
     const subscriptions_base_path = config_api.getConfigItem('ytdl_subscriptions_base_path'); // only for single-user mode
@@ -132,14 +135,14 @@ async function importUnregisteredFiles() {
             // add user's audio dir to check list
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'audio'),
-                dbPath: users_db.get('users').find({uid: user.uid}).get('files.audio'),
+                dbPath: users_db.get('users').find({uid: user.uid}).get('files'),
                 type: 'audio'
             });
 
             // add user's video dir to check list
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'video'),
-                dbPath: users_db.get('users').find({uid: user.uid}).get('files.video'),
+                dbPath: users_db.get('users').find({uid: user.uid}).get('files'),
                 type: 'video'
             });
         }
@@ -153,14 +156,14 @@ async function importUnregisteredFiles() {
         // add audio dir to check list
         dirs_to_check.push({
             basePath: audioFolderPath,
-            dbPath: db.get('files.audio'),
+            dbPath: db.get('files'),
             type: 'audio'
         });
 
         // add video dir to check list
         dirs_to_check.push({
             basePath: videoFolderPath,
-            dbPath: db.get('files.video'),
+            dbPath: db.get('files'),
             type: 'video'
         });
     }
@@ -181,6 +184,12 @@ async function importUnregisteredFiles() {
         });
     }
 
+    return dirs_to_check;
+}
+
+async function importUnregisteredFiles() {
+    const dirs_to_check = getFileDirectoriesAndDBs();
+
     // run through check list and check each file to see if it's missing from the db
     for (const dir_to_check of dirs_to_check) {
         // recursively get all files in dir's path
@@ -199,9 +208,28 @@ async function importUnregisteredFiles() {
 
 }
 
+async function getVideo(file_uid, uuid, sub_id) {
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
+    return sub_db_path.find({uid: file_uid}).value();
+}
+
+async function setVideoProperty(file_uid, assignment_obj, uuid, sub_id) {
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
+    const file_db_path = sub_db_path.find({uid: file_uid});
+    if (!(file_db_path.value())) {
+        logger.error(`Failed to find file with uid ${file_uid}`);
+    }
+    sub_db_path.find({uid: file_uid}).assign(assignment_obj).write();
+}
+
 module.exports = {
     initialize: initialize,
     registerFileDB: registerFileDB,
     updatePlaylist: updatePlaylist,
-    importUnregisteredFiles: importUnregisteredFiles
+    getFileDirectoriesAndDBs: getFileDirectoriesAndDBs,
+    importUnregisteredFiles: importUnregisteredFiles,
+    getVideo: getVideo,
+    setVideoProperty: setVideoProperty
 }

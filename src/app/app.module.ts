@@ -32,7 +32,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { FileCardComponent } from './file-card/file-card.component';
 import { RouterModule } from '@angular/router';
@@ -84,6 +84,8 @@ import { EditSubscriptionDialogComponent } from './dialogs/edit-subscription-dia
 import { CustomPlaylistsComponent } from './components/custom-playlists/custom-playlists.component';
 import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit-category-dialog.component';
 import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
+import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
+import { H401Interceptor } from './http.interceptor';
 
 registerLocaleData(es, 'es');
 
@@ -110,6 +112,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     VideoInfoDialogComponent,
     ArgModifierDialogComponent,
     HighlightPipe,
+    LinkifyPipe,
     UpdaterComponent,
     UpdateProgressDialogComponent,
     ShareMediaDialogComponent,
@@ -130,7 +133,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     EditSubscriptionDialogComponent,
     CustomPlaylistsComponent,
     EditCategoryDialogComponent,
-    TwitchChatComponent
+    TwitchChatComponent,
+    SeeMoreComponent
   ],
   imports: [
     CommonModule,
@@ -188,10 +192,12 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SettingsComponent
   ],
   providers: [
-    PostsService
+    PostsService,
+    { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true }
   ],
   exports: [
-    HighlightPipe
+    HighlightPipe,
+    LinkifyPipe
   ],
   bootstrap: [AppComponent]
 })
