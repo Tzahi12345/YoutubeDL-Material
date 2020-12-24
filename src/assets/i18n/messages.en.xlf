@@ -342,7 +342,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">29</context>
         </context-group>
         <note priority="1" from="description">Videos title</note>
       </trans-unit>
@@ -882,7 +882,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <note priority="1" from="description">Files search placeholder</note>
       </trans-unit>
@@ -950,7 +950,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <note priority="1" from="description">Playlist edit button</note>
       </trans-unit>
@@ -966,11 +966,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <note priority="1" from="description">Delete playlist</note>
       </trans-unit>
@@ -982,7 +982,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">24</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
@@ -1006,7 +1006,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">34</context>
         </context-group>
         <note priority="1" from="description">Delete and blacklist video button</note>
       </trans-unit>
@@ -2186,11 +2186,19 @@
         </context-group>
         <note priority="1" from="description">Clear logs button</note>
       </trans-unit>
+      <trans-unit id="24dc3ecf7ec2c2144910c4f3d38343828be03a4c" datatype="html">
+        <source>Auto-generated</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">Auto-generated label</note>
+      </trans-unit>
       <trans-unit id="ccf5ea825526ac490974336cb5c24352886abc07" datatype="html">
         <source>Open file</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">18</context>
         </context-group>
         <note priority="1" from="description">Open file button</note>
       </trans-unit>
@@ -2198,7 +2206,7 @@
         <source>Open file in new tab</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">Open file in new tab</note>
       </trans-unit>
@@ -2206,7 +2214,7 @@
         <source>Go to subscription</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Go to subscription menu item</note>
       </trans-unit>
@@ -2214,7 +2222,7 @@
         <source>Delete and redownload</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">28</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
@@ -2226,7 +2234,7 @@
         <source>Delete forever</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">26</context>
+          <context context-type="linenumber">31</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
