@@ -75,7 +75,7 @@ jobs:
       - name: prepare release asset
         shell: pwsh
         run: Compress-Archive -Path ${{runner.temp}}/youtubedl-material -DestinationPath youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
-      - name: upload build asset
+      - name: upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
