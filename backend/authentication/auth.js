@@ -536,14 +536,8 @@ function generateUserObject(userid, username, hash, auth_method = 'internal') {
     name: username,
     uid: userid,
     passhash: auth_method === 'internal' ? hash : null,
-    files: {
-      audio: [],
-      video: []
-    },
-    playlists: {
-      audio: [],
-      video: []
-    },
+    files: [],
+    playlists: [],
     subscriptions: [],
     created: Date.now(),
     role: userid === 'admin' && auth_method === 'internal' ? 'admin' : 'user',
