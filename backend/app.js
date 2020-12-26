@@ -1124,6 +1124,8 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         const download = downloads[session][download_uid];
         updateDownloads();
 
+        let download_checker = null;
+
         // get video info prior to download
         let info = await getVideoInfoByURL(url, downloadConfig, download);
         if (!info && url.includes('youtu')) {
@@ -1144,13 +1146,12 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             // store info in download for future use
             download['_filename'] = info['_filename'];
             download['filesize'] = utils.getExpectedFileSize(info);
+            download_checker = setInterval(() => checkDownloadPercent(download), 1000);
         }
-
-        const download_checker = setInterval(() => checkDownloadPercent(download), 1000);
 
         // download file
         youtubedl.exec(url, downloadConfig, {}, function(err, output) {
-            clearInterval(download_checker); // stops the download checker from running as the download finished (or errored)
+            if (download_checker) clearInterval(download_checker); // stops the download checker from running as the download finished (or errored)
 
             download['downloading'] = false;
             download['timestamp_end'] = Date.now();
