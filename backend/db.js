@@ -17,7 +17,7 @@ function initialize(input_db, input_users_db, input_logger) {
 
 function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null, category = null) {
     let db_path = null;
-    const file_id = file_path.substring(0, file_path.length-4);
+    const file_id = utils.removeFileExtension(file_path);
     const file_object = generateFileObject(file_id, type, customPath || multiUserMode && multiUserMode.file_path, sub);
     if (!file_object) {
         logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);

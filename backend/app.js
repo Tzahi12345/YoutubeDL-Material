@@ -1188,7 +1188,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     }
 
                     // get filepath with no extension
-                    const filepath_no_extension = removeFileExtension(output_json['_filename']);
+                    const filepath_no_extension = utils.removeFileExtension(output_json['_filename']);
 
                     var full_file_path = filepath_no_extension + ext;
                     var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
@@ -1310,7 +1310,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
         video.on('info', function(info) {
             video_info = info;
             file_size = video_info.size;
-            const json_path = removeFileExtension(video_info._filename) + '.info.json';
+            const json_path = utils.removeFileExtension(video_info._filename) + '.info.json';
             fs.ensureFileSync(json_path);
             fs.writeJSONSync(json_path, video_info);
             video.pipe(fs.createWriteStream(video_info._filename, { flags: 'w' }))
@@ -1336,14 +1336,14 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
             let difference = (new_date - date)/1000;
             logger.debug(`Video download delay: ${difference} seconds.`);
             download['timestamp_end'] = Date.now();
-            download['fileNames'] = [removeFileExtension(video_info._filename) + ext];
+            download['fileNames'] = [utils.removeFileExtension(video_info._filename) + ext];
             download['complete'] = true;
             updateDownloads();
 
             // audio-only cleanup
             if (is_audio) {
                 // filename fix
-                video_info['_filename'] = removeFileExtension(video_info['_filename']) + '.mp3';
+                video_info['_filename'] = utils.removeFileExtension(video_info['_filename']) + '.mp3';
 
                 // ID3 tagging
                 let tags = {
@@ -1353,8 +1353,8 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
                 let success = NodeID3.write(tags, video_info._filename);
                 if (!success) logger.error('Failed to apply ID3 tag to audio file ' + video_info._filename);
 
-                const possible_webm_path = removeFileExtension(video_info['_filename']) + '.webm';
-                const possible_mp4_path = removeFileExtension(video_info['_filename']) + '.mp4';
+                const possible_webm_path = utils.removeFileExtension(video_info['_filename']) + '.webm';
+                const possible_mp4_path = utils.removeFileExtension(video_info['_filename']) + '.mp4';
                 // check if audio file is webm
                 if (fs.existsSync(possible_webm_path)) await convertFileToMp3(possible_webm_path, video_info['_filename']);
                 else if (fs.existsSync(possible_mp4_path)) await convertFileToMp3(possible_mp4_path, video_info['_filename']);
@@ -1371,7 +1371,7 @@ async function downloadFileByURL_normal(url, type, options, sessionID = null) {
                 fs.appendFileSync(archive_path, diff);
             }
 
-            videopathEncoded = encodeURIComponent(removeFileExtension(base_file_name));
+            videopathEncoded = encodeURIComponent(utils.removeFileExtension(base_file_name));
 
             resolve({
                 [is_audio ? 'audiopathEncoded' : 'videopathEncoded']: videopathEncoded,
@@ -1776,12 +1776,6 @@ async function checkExistsWithTimeout(filePath, timeout) {
             }
         });
     });
-}
-
-function removeFileExtension(filename) {
-    const filename_parts = filename.split('.');
-    filename_parts.splice(filename_parts.length - 1)
-    return filename_parts.join('.');
 }
 
 app.use(function(req, res, next) {

@@ -181,6 +181,12 @@ async function recFindByExt(base,ext,files,result)
     return result
 }
 
+function removeFileExtension(filename) {
+    const filename_parts = filename.split('.');
+    filename_parts.splice(filename_parts.length - 1);
+    return filename_parts.join('.');
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -210,5 +216,6 @@ module.exports = {
     deleteJSONFile: deleteJSONFile,
     getDownloadedFilesByType: getDownloadedFilesByType,
     recFindByExt: recFindByExt,
+    removeFileExtension: removeFileExtension,
     File: File
 }
