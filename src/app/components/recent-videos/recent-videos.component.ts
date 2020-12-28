@@ -127,12 +127,12 @@ export class RecentVideosComponent implements OnInit {
     this.normal_files_received = false;
     this.postsService.getAllFiles().subscribe(res => {
       this.files = res['files'];
+      this.files.sort(this.sortFiles);
       for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i];
         file.duration = typeof file.duration !== 'string' ? file.duration : this.durationStringToNumber(file.duration);
         file.index = i;
       }
-      this.files.sort(this.sortFiles);
       if (this.search_mode) {
         this.filterFiles(this.search_text);
       } else {
