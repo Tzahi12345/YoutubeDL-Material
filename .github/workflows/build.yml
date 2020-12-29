@@ -69,17 +69,20 @@ jobs:
         with:
           name: youtubedl-material
           path: ${{runner.temp}}/youtubedl-material
+      - name: extract tag name
+        id: tag_name
+        run: echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/}
       - name: prepare release asset
         shell: pwsh
-        run: Compress-Archive -Path ${{runner.temp}}/youtubedl-material -DestinationPath youtubedl-material-${{ github.ref }}.zip
-      - name: upload build asset
+        run: Compress-Archive -Path ${{runner.temp}}/youtubedl-material -DestinationPath youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
+      - name: upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./youtubedl-material-${{ github.ref }}.zip
-          asset_name: youtubedl-material-${{ github.ref }}.zip
+          asset_path: ./youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
+          asset_name: youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
           asset_content_type: application/zip
       - name: upload docker-compose asset
         uses: actions/upload-release-asset@v1
