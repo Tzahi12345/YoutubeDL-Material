@@ -1,1 +1,3 @@
-This chart was created by Kompose
+The official YoutubeDL-Material chart
+
+Repo: https://github.com/Tzahi12345/YoutubeDL-Material
