@@ -38,31 +38,31 @@ spec:
         resources: {}
         volumeMounts:
         - mountPath: /app/appdata
-          name: ytdl-material-claim0
+          name: ytdl-material-claim-appdata
         - mountPath: /app/audio
-          name: ytdl-material-claim1
+          name: ytdl-material-claim-audio
         - mountPath: /app/video
-          name: ytdl-material-claim2
+          name: ytdl-material-claim-video
         - mountPath: /app/subscriptions
-          name: ytdl-material-claim3
+          name: ytdl-material-claim-subscriptions
         - mountPath: /app/users
-          name: ytdl-material-claim4
+          name: ytdl-material-claim-users
       restartPolicy: Always
       serviceAccountName: ""
       volumes:
-      - name: ytdl-material-claim0
+      - name: ytdl-material-claim-appdata
         persistentVolumeClaim:
-          claimName: ytdl-material-claim0
-      - name: ytdl-material-claim1
+          claimName: ytdl-material-claim-appdata
+      - name: ytdl-material-claim-audio
         persistentVolumeClaim:
-          claimName: ytdl-material-claim1
-      - name: ytdl-material-claim2
+          claimName: ytdl-material-claim-audio
+      - name: ytdl-material-claim-video
         persistentVolumeClaim:
-          claimName: ytdl-material-claim2
-      - name: ytdl-material-claim3
+          claimName: ytdl-material-claim-video
+      - name: ytdl-material-claim-subscriptions
         persistentVolumeClaim:
-          claimName: ytdl-material-claim3
-      - name: ytdl-material-claim4
+          claimName: ytdl-material-claim-subscriptions
+      - name: ytdl-material-claim-users
         persistentVolumeClaim:
-          claimName: ytdl-material-claim4
+          claimName: ytdl-material-claim-users
 status: {}

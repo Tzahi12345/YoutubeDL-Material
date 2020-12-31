@@ -2,13 +2,13 @@ apiVersion: v1
 entries:
   youtubedl-material:
   - apiVersion: v1
-    created: "2020-12-31T02:01:33.5676295-05:00"
+    created: "2020-12-31T05:32:00.6730825-05:00"
     description: A generated Helm Chart for youtubedl-material from Skippbox Kompose
-    digest: 347e1de3e09409c5c1ca6383e34dd41a832585bfca300e488de382aab2c26cf8
+    digest: b53abe88813192efa68dde62dbe3271f60972233b0f605987200b24d050219f2
     keywords:
     - youtubedl-material
     name: youtubedl-material
     urls:
     - youtubedl-material-0.0.1.tgz
     version: 0.0.1
-generated: "2020-12-31T02:01:33.5666042-05:00"
+generated: "2020-12-31T05:32:00.667049-05:00"
