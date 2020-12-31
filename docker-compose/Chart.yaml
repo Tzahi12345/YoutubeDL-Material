@@ -1,5 +1,5 @@
 name: youtubedl-material
-description: A generated Helm Chart for youtubedl-material from Skippbox Kompose
+description: A Material Design frontend for youtube-dl
 version: 0.0.1
 apiVersion: v1
 keywords:

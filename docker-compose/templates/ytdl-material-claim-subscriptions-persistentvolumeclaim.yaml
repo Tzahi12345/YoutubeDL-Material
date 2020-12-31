@@ -3,8 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: ytdl-material-claim-subscription
-  name: ytdl-material-subscription
+    io.kompose.service: ytdl-material-claim-subscriptions
+  name: ytdl-material-subscriptions
 spec:
   accessModes:
   - ReadWriteOnce
