@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   youtubedl-material:
   - apiVersion: v1
-    created: "2020-12-31T15:22:31.8456098-05:00"
+    created: "2020-12-31T15:31:43.4246679-05:00"
     description: A Material Design frontend for youtube-dl
-    digest: 2cbf64b27dd86d945ce3a0ae58b904c3b6a1858552f9fdbf1e213ea73afbcf18
+    digest: a2721c05b79a25a01749ecd1412497eae2af8fe5b9a927490141d604796dc8c2
     home: https://github.com/Tzahi12345/YoutubeDL-Material/
     icon: https://i.imgur.com/IKOlr0N.png
     keywords:
@@ -19,4 +19,4 @@ entries:
     urls:
     - youtubedl-material-0.0.1.tgz
     version: 0.0.1
-generated: "2020-12-31T15:22:31.8445778-05:00"
+generated: "2020-12-31T15:31:43.4236681-05:00"
