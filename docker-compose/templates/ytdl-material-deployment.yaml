@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   annotations:
     kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file .\docker-compose.yml
-      convert --volumes hostPath -c
+      convert -c
     kompose.version: 1.21.0 (992df58d8)
   creationTimestamp: null
   labels:
@@ -20,7 +20,7 @@ spec:
     metadata:
       annotations:
         kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file
-          .\docker-compose.yml convert --volumes hostPath -c
+          .\docker-compose.yml convert -c
         kompose.version: 1.21.0 (992df58d8)
       creationTimestamp: null
       labels:
@@ -38,31 +38,31 @@ spec:
         resources: {}
         volumeMounts:
         - mountPath: /app/appdata
-          name: ytdl-material-hostpath0
+          name: ytdl-material-claim0
         - mountPath: /app/audio
-          name: ytdl-material-hostpath1
+          name: ytdl-material-claim1
         - mountPath: /app/video
-          name: ytdl-material-hostpath2
+          name: ytdl-material-claim2
         - mountPath: /app/subscriptions
-          name: ytdl-material-hostpath3
+          name: ytdl-material-claim3
         - mountPath: /app/users
-          name: ytdl-material-hostpath4
+          name: ytdl-material-claim4
       restartPolicy: Always
       serviceAccountName: ""
       volumes:
-      - hostPath:
-          path: C:\Users\tzahi\Documents\YoutubeDL-Material\appdata
-        name: ytdl-material-hostpath0
-      - hostPath:
-          path: C:\Users\tzahi\Documents\YoutubeDL-Material\audio
-        name: ytdl-material-hostpath1
-      - hostPath:
-          path: C:\Users\tzahi\Documents\YoutubeDL-Material\video
-        name: ytdl-material-hostpath2
-      - hostPath:
-          path: C:\Users\tzahi\Documents\YoutubeDL-Material\subscriptions
-        name: ytdl-material-hostpath3
-      - hostPath:
-          path: C:\Users\tzahi\Documents\YoutubeDL-Material\users
-        name: ytdl-material-hostpath4
+      - name: ytdl-material-claim0
+        persistentVolumeClaim:
+          claimName: ytdl-material-claim0
+      - name: ytdl-material-claim1
+        persistentVolumeClaim:
+          claimName: ytdl-material-claim1
+      - name: ytdl-material-claim2
+        persistentVolumeClaim:
+          claimName: ytdl-material-claim2
+      - name: ytdl-material-claim3
+        persistentVolumeClaim:
+          claimName: ytdl-material-claim3
+      - name: ytdl-material-claim4
+        persistentVolumeClaim:
+          claimName: ytdl-material-claim4
 status: {}

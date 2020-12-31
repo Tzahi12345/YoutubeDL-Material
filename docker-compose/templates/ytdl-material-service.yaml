@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations:
     kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file .\docker-compose.yml
-      convert --volumes hostPath -c
+      convert -c
     kompose.version: 1.21.0 (992df58d8)
   creationTimestamp: null
   labels:
