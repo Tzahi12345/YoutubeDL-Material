@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file .\docker-compose.yml
+      convert --volumes hostPath -c
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ytdl-material
+  name: ytdl-material
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ytdl-material
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file
+          .\docker-compose.yml convert --volumes hostPath -c
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ytdl-material
+    spec:
+      containers:
+      - env:
+        - name: ALLOW_CONFIG_MUTATIONS
+          value: "true"
+        image: tzahi12345/youtubedl-material:latest
+        imagePullPolicy: ""
+        name: ytdl-material
+        ports:
+        - containerPort: 17442
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/appdata
+          name: ytdl-material-hostpath0
+        - mountPath: /app/audio
+          name: ytdl-material-hostpath1
+        - mountPath: /app/video
+          name: ytdl-material-hostpath2
+        - mountPath: /app/subscriptions
+          name: ytdl-material-hostpath3
+        - mountPath: /app/users
+          name: ytdl-material-hostpath4
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - hostPath:
+          path: C:\Users\tzahi\Documents\YoutubeDL-Material\appdata
+        name: ytdl-material-hostpath0
+      - hostPath:
+          path: C:\Users\tzahi\Documents\YoutubeDL-Material\audio
+        name: ytdl-material-hostpath1
+      - hostPath:
+          path: C:\Users\tzahi\Documents\YoutubeDL-Material\video
+        name: ytdl-material-hostpath2
+      - hostPath:
+          path: C:\Users\tzahi\Documents\YoutubeDL-Material\subscriptions
+        name: ytdl-material-hostpath3
+      - hostPath:
+          path: C:\Users\tzahi\Documents\YoutubeDL-Material\users
+        name: ytdl-material-hostpath4
+status: {}
