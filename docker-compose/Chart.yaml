@@ -5,4 +5,13 @@ apiVersion: v1
 keywords:
   - youtubedl-material
 sources:
-home:
+home: https://github.com/Tzahi12345/YoutubeDL-Material/
+sources:
+- https://github.com/Tzahi12345/YoutubeDL-Material/
+keywords:
+- youtubedl-material
+- youtube-dl
+maintainers:
+- name: tzahi12345
+  email: IsaacMGrynsztein@gmail.com
+icon: https://i.imgur.com/IKOlr0N.png
