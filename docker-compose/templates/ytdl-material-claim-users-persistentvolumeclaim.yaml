@@ -10,5 +10,5 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: {{ default "50Gi" .Values.usersClaimSize }}
 status: {}

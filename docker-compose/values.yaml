@@ -9,3 +9,9 @@ ingress:
     - host: ytdl-material.local
       paths: []
   tls: []
+
+appdataClaimSize: 1Gi
+audioClaimSize: 50Gi
+videoClaimSize: 50Gi
+subscriptionsClaimSize: 50Gi
+usersClaimSize: 50Gi
