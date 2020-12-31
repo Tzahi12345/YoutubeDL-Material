@@ -34,7 +34,8 @@ spec:
         imagePullPolicy: ""
         name: ytdl-material
         ports:
-        - containerPort: http
+        - containerPort: 17442
+          name: http
         resources: {}
         volumeMounts:
         - mountPath: /app/appdata

@@ -10,11 +10,13 @@ metadata:
     io.kompose.service: ytdl-material
   name: ytdl-material
 spec:
+  type: {{ .Values.service.type }}
   ports:
-  - name: "8998"
-    port: 8998
-    targetPort: 17442
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
   selector:
-    io.kompose.service: ytdl-material
+    {{- include "youtubedl-material.selectorLabels" . | nindent 4 }}
 status:
   loadBalancer: {}
