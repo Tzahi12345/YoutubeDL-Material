@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     io.kompose.service: ytdl-material-claim-subscriptions
-  name: ytdl-material-subscriptions
+  name: ytdl-material-claim-subscriptions
 spec:
   accessModes:
   - ReadWriteOnce
