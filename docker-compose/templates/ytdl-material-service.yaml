@@ -17,6 +17,6 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "youtubedl-material.selectorLabels" . | nindent 4 }}
+    io.kompose.service: ytdl-material
 status:
   loadBalancer: {}
