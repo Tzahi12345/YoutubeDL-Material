@@ -1,8 +1,8 @@
-name: .\docker-compose
-description: A generated Helm Chart for .\docker-compose from Skippbox Kompose
+name: youtubedl-material
+description: A generated Helm Chart for youtubedl-material from Skippbox Kompose
 version: 0.0.1
 apiVersion: v1
 keywords:
-  - .\docker-compose
+  - youtubedl-material
 sources:
 home:
