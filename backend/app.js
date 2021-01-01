@@ -1215,7 +1215,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                             title: output_json['title'],
                             artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
                         }
-                        let success = NodeID3.write(tags, output_json['_filename']);
+                        let success = NodeID3.write(tags, utils.removeFileExtension(output_json['_filename']) + '.mp3');
                         if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
                     }
 
@@ -1535,6 +1535,9 @@ async function getVideoInfoByURL(url, args = [], download = null) {
                 resolve(output);
             } else {
                 logger.error(`Error while retrieving info on video with URL ${url} with the following message: ${err}`);
+                if (err.stderr) {
+                    logger.error(`${err.stderr}`)
+                }
                 if (download) {
                     download['error'] = `Failed pre-check for video info: ${err}`;
                     updateDownloads();
@@ -1562,7 +1565,7 @@ async function getUrlInfos(urls) {
             let difference = (new_date - startDate)/1000;
             logger.debug(`URL info retrieval delay: ${difference} seconds.`);
             if (err) {
-                logger.error('Error during parsing:' + err);
+                logger.error(`Error during parsing: ${err}`);
                 resolve(null);
             }
             let try_putput = null;
