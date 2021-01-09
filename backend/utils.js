@@ -105,20 +105,26 @@ function getDownloadedThumbnail(name, type, customPath = null) {
         return null;
 }
 
-function getExpectedFileSize(info_json) {
-    if (info_json['filesize']) {
-        return info_json['filesize'];
-    }
+function getExpectedFileSize(input_info_jsons) {
+    // treat single videos as arrays to have the file sizes checked/added to. makes the code cleaner
+    const info_jsons = Array.isArray(input_info_jsons) ? input_info_jsons : [input_info_jsons];
 
-    const formats = info_json['format_id'].split('+');
     let expected_filesize = 0;
-    formats.forEach(format_id => {
-        if (!info_json.formats) return expected_filesize;
-        info_json.formats.forEach(available_format => {
-            if (available_format.format_id === format_id && available_format.filesize) {
-                expected_filesize += available_format.filesize;
-            }
+    info_jsons.forEach(info_json => {
+        if (info_json['filesize']) {
+            expected_filesize += info_json['filesize'];
+            return;
+        }
+        const formats = info_json['format_id'].split('+');
+        let individual_expected_filesize = 0;
+        formats.forEach(format_id => {
+            info_json.formats.forEach(available_format => {
+                if (available_format.format_id === format_id && available_format.filesize) {
+                    individual_expected_filesize += available_format.filesize;
+                }
+            });
         });
+        expected_filesize += individual_expected_filesize;
     });
 
     return expected_filesize;

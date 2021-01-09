@@ -1144,7 +1144,12 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             }
 
             // store info in download for future use
-            download['_filename'] = info['_filename'];
+            if (Array.isArray(info)) {
+                download['fileNames'] = [];
+                for (let info_obj of info) download['fileNames'].push(info_obj['_filename']);
+            } else {
+                download['_filename'] = info['_filename'];
+            }
             download['filesize'] = utils.getExpectedFileSize(info);
             download_checker = setInterval(() => checkDownloadPercent(download), 1000);
         }
@@ -1621,13 +1626,15 @@ function checkDownloadPercent(download) {
     be divided by the "total expected bytes."
     */
     const file_id = download['file_id'];
-    const filename = path.format(path.parse(download['_filename'].substring(0, download['_filename'].length-4)));
+    // assume it's a playlist for logic reasons
+    const fileNames = Array.isArray(download['fileNames']) ? download['fileNames'] 
+                                                        : [path.format(path.parse(utils.removeFileExtension(download['_filename'])))];
     const resulting_file_size = download['filesize'];
 
     if (!resulting_file_size) return;
 
-    glob(`${filename}*`, (err, files) => {
-        let sum_size = 0;
+    let sum_size = 0;
+    glob(`{${fileNames.join(',')}, }*`, (err, files) => {
         files.forEach(file => {
             try {
                 const file_stats = fs.statSync(file);
