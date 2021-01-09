@@ -1954,7 +1954,7 @@ app.get('/api/getMp3s', optionalJwt, async function(req, res) {
         // get user audio files/playlists
         auth_api.passport.authenticate('jwt')
         mp3s = auth_api.getUserVideos(req.user.uid, 'audio');
-        playlists = auth_api.getUserPlaylists(req.user.uid, 'audio');
+        playlists = auth_api.getUserPlaylists(req.user.uid);
     }
 
     mp3s = JSON.parse(JSON.stringify(mp3s));
@@ -1975,7 +1975,7 @@ app.get('/api/getMp4s', optionalJwt, async function(req, res) {
         // get user videos/playlists
         auth_api.passport.authenticate('jwt')
         mp4s = auth_api.getUserVideos(req.user.uid, 'video');
-        playlists = auth_api.getUserPlaylists(req.user.uid, 'video');
+        playlists = auth_api.getUserPlaylists(req.user.uid);
     }
 
     mp4s = JSON.parse(JSON.stringify(mp4s));
