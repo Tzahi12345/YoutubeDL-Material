@@ -2615,7 +2615,7 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     var wasDeleted = false;
     if (await fs.pathExists(fullpath))
     {
-        wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.basename(fullpath), blacklistMode) : await deleteVideoFile(name, path.basename(fullpath), blacklistMode);
+        wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.dirname(fullpath), blacklistMode) : await deleteVideoFile(name, path.dirname(fullpath), blacklistMode);
         db.get('files').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
