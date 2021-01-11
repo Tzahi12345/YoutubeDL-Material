@@ -2619,7 +2619,7 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
         db.get('files').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
-    } else if (video_obj) {
+    } else if (file_obj) {
         db.get('files').remove({uid: uid}).write();
         wasDeleted = true;
         res.send(wasDeleted);
