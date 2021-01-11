@@ -211,7 +211,7 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     var jsonPath = path.join(__dirname,filePath,name+'.info.json');
     var videoFilePath = path.join(__dirname,filePath,name+ext);
     var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
-    var altImageFilePath = path.join(__dirname,filePath,name+'.jpg');
+    var altImageFilePath = path.join(__dirname,filePath,name+'.webp');
 
     const [jsonExists, videoFileExists, imageFileExists, altImageFileExists] = await Promise.all([
         fs.pathExists(jsonPath),
