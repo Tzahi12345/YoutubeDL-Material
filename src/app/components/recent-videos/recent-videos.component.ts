@@ -131,7 +131,6 @@ export class RecentVideosComponent implements OnInit {
       for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i];
         file.duration = typeof file.duration !== 'string' ? file.duration : this.durationStringToNumber(file.duration);
-        file.index = i;
       }
       if (this.search_mode) {
         this.filterFiles(this.search_text);
@@ -239,22 +238,17 @@ export class RecentVideosComponent implements OnInit {
     const blacklistMode = args.blacklistMode;
 
     if (file.sub_id) {
-      this.deleteSubscriptionFile(file, index, blacklistMode);
+      this.deleteSubscriptionFile(file, blacklistMode);
     } else {
-      this.deleteNormalFile(file, index, blacklistMode);
+      this.deleteNormalFile(file, blacklistMode);
     }
   }
 
-  deleteNormalFile(file, index, blacklistMode = false) {
+  deleteNormalFile(file, blacklistMode = false) {
     this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
-        this.files.splice(file.index, 1);
-        for (let i = 0; i < this.files.length; i++) { this.files[i].index = i }
-        if (this.search_mode) {
-          this.filterFiles(this.search_text);
-        }
-        this.filterByProperty(this.filterProperty['property']);
+        this.removeFileCard(file);
       } else {
         this.postsService.openSnackBar('Delete failed!', 'OK.');
       }
@@ -263,28 +257,38 @@ export class RecentVideosComponent implements OnInit {
     });
   }
 
-  deleteSubscriptionFile(file, index, blacklistMode = false) {
+  deleteSubscriptionFile(file, blacklistMode = false) {
     if (blacklistMode) {
-      this.deleteForever(file, index);
+      this.deleteForever(file);
     } else {
-      this.deleteAndRedownload(file, index);
+      this.deleteAndRedownload(file);
     }
   }
 
-  deleteAndRedownload(file, index) {
+  deleteAndRedownload(file) {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
     this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(res => {
       this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
-      this.files.splice(index, 1);
+      this.removeFileCard(file);
     });
   }
 
-  deleteForever(file, index) {
+  deleteForever(file) {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
     this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(res => {
       this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
-      this.files.splice(index, 1);
+      this.removeFileCard(file);
     });
+  }
+
+  removeFileCard(file_to_remove) {
+    console.log(file_to_remove.uid);
+    const index = this.files.map(e => e.uid).indexOf(file_to_remove.uid);
+    this.files.splice(index, 1);
+    if (this.search_mode) {
+      this.filterFiles(this.search_text);
+    }
+    this.filterByProperty(this.filterProperty['property']);
   }
 
   // sorting and filtering
