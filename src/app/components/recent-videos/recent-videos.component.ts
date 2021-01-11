@@ -282,7 +282,6 @@ export class RecentVideosComponent implements OnInit {
   }
 
   removeFileCard(file_to_remove) {
-    console.log(file_to_remove.uid);
     const index = this.files.map(e => e.uid).indexOf(file_to_remove.uid);
     this.files.splice(index, 1);
     if (this.search_mode) {
