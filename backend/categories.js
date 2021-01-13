@@ -45,8 +45,10 @@ async function categorize(file_jsons) {
         return null;
     }
 
-    file_jsons.forEach(file_json => {
-        categories.forEach(category => {
+    for (let i = 0; i < file_jsons.length; i++) {
+        const file_json = file_jsons[i];
+        for (let j = 0; j < categories.length; j++) {
+            const category = categories[i];
             const rules = category['rules'];
     
             // if rules for current category apply, then that is the selected category
@@ -55,8 +57,8 @@ async function categorize(file_jsons) {
                 logger.verbose(`Selected category ${category['name']} for ${file_json['webpage_url']}`);
                 return selected_category;
             }
-        });
-    });
+        }
+    }
     
     return selected_category;
 }
