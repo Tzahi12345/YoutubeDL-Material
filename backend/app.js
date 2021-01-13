@@ -2244,7 +2244,7 @@ app.post('/api/createCategory', optionalJwt, async (req, res) => {
         name: name,
         uid: uuid(),
         rules: [],
-        custom_putput: ''
+        custom_output: ''
     };
 
     db.get('categories').push(new_category).write();
