@@ -1133,7 +1133,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
             return;
         } else if (info) {
             // check if it fits into a category. If so, then get info again using new downloadConfig
-            if (!Array.isArray(info)) category = await categories_api.categorize(info);
+            if (!Array.isArray(info) || config_api.getConfigItem('ytdl_allow_playlist_categorization')) category = await categories_api.categorize(info);
 
             // set custom output if the category has one and re-retrieve info so the download manager has the right file name
             if (category && category['custom_output']) {
@@ -2244,7 +2244,7 @@ app.post('/api/createCategory', optionalJwt, async (req, res) => {
         name: name,
         uid: uuid(),
         rules: [],
-        custom_putput: ''
+        custom_output: ''
     };
 
     db.get('categories').push(new_category).write();

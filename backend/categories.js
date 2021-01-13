@@ -33,27 +33,33 @@ Rules:
 
 */
 
-async function categorize(file_json) {
+async function categorize(file_jsons) {
+    // to make the logic easier, let's assume the file metadata is an array
+    if (!Array.isArray(file_jsons)) file_jsons = [file_jsons];
+
     let selected_category = null;
     const categories = getCategories();
     if (!categories) {
         logger.warn('Categories could not be found. Initializing categories...');
         db.assign({categories: []}).write();
         return null;
-        return;
     }
 
-    for (let i = 0; i < categories.length; i++) {
-        const category = categories[i];
-        const rules = category['rules'];
-
-        // if rules for current category apply, then that is the selected category
-        if (applyCategoryRules(file_json, rules, category['name'])) {
-            selected_category = category;
-            logger.verbose(`Selected category ${category['name']} for ${file_json['webpage_url']}`);
-            return selected_category;
+    for (let i = 0; i < file_jsons.length; i++) {
+        const file_json = file_jsons[i];
+        for (let j = 0; j < categories.length; j++) {
+            const category = categories[i];
+            const rules = category['rules'];
+    
+            // if rules for current category apply, then that is the selected category
+            if (applyCategoryRules(file_json, rules, category['name'])) {
+                selected_category = category;
+                logger.verbose(`Selected category ${category['name']} for ${file_json['webpage_url']}`);
+                return selected_category;
+            }
         }
     }
+    
     return selected_category;
 }
 

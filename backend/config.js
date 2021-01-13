@@ -197,7 +197,8 @@ DEFAULT_CONFIG = {
         "allow_quality_select": true,
         "download_only_mode": false,
         "allow_multi_download_mode": true,
-        "enable_downloads_manager": true
+        "enable_downloads_manager": true,
+        "allow_playlist_categorization": true
       },
       "API": {
         "use_API_key": false,
