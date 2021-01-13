@@ -68,6 +68,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_enable_downloads_manager',
         'path': 'YoutubeDLMaterial.Extra.enable_downloads_manager'
     },
+    'ytdl_allow_playlist_categorization': {
+        'key': 'ytdl_allow_playlist_categorization',
+        'path': 'YoutubeDLMaterial.Extra.allow_playlist_categorization'
+    },
 
     // API
     'ytdl_use_api_key': {

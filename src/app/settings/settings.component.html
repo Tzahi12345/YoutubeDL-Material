@@ -140,7 +140,7 @@
             <mat-divider></mat-divider>
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
-                    <div class="col-12 mt-3 mb-2">
+                    <div class="col-12 mt-3">
                         <h6 i18n="Categories">Categories</h6>
                         <div cdkDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
                             <div class="category-box" *ngFor="let category of postsService.categories" cdkDrag>
@@ -153,6 +153,9 @@
                             </div>
                         </div>
                         <button style="margin-top: 10px;" mat-mini-fab (click)="openAddCategoryDialog()"><mat-icon>add</mat-icon></button>
+                    </div>
+                    <div class="col-12 mt-2 mb-2">
+                        <mat-checkbox [(ngModel)]="new_config['Extra']['allow_playlist_categorization']" matTooltip="With this setting enabled, if a single video matches a category, the entire playlist will receive that category." i18n-matTooltip="Allow playlist categorization setting tooltip"><ng-container i18n="Allow playlist categorization setting label">Allow playlist categorization</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>
