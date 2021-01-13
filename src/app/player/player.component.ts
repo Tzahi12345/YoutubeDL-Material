@@ -8,6 +8,7 @@ import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
+import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
 export interface IMedia {
   title: string;
@@ -477,6 +478,15 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.getPlaylistFiles();
       }
     });
+  }
+  
+  openFileInfoDialog() {
+    this.dialog.open(VideoInfoDialogComponent, {
+      data: {
+        file: this.db_file,
+      },
+      minWidth: '50vw'
+    })
   }
 
   // snackbar helper
