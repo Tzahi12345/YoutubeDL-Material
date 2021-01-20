@@ -357,10 +357,12 @@ export class PostsService implements CanActivate {
     }
 
     updateSubscription(subscription) {
+        delete subscription['videos'];
         return this.http.post(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
     }
 
     unsubscribe(sub, deleteMode = false) {
+        delete sub['videos'];
         return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode}, this.httpOptions)
     }
 
