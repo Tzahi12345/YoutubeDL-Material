@@ -1659,11 +1659,24 @@ async function startYoutubeDL() {
 
 // auto updates the underlying youtube-dl binary, not YoutubeDL-Material
 async function autoUpdateYoutubeDL() {
+    const download_sources = {
+        'youtube-dl': {
+            'tags_url': 'https://api.github.com/repos/ytdl-org/youtube-dl/tags',
+            'func': downloadLatestYoutubeDLBinary
+        },
+        'youtube-dlc': {
+            'tags_url': 'https://api.github.com/repos/blackjack4494/yt-dlc/tags',
+            'func': downloadLatestYoutubeDLCBinary
+        },
+        'yt-dlp': {
+            'tags_url': 'https://api.github.com/repos/pukkandan/yt-dlp/tags',
+            'func': downloadLatestYoutubeDLPBinary
+        }
+    }
     return new Promise(async resolve => {
         const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
         const using_youtube_dlc = default_downloader === 'youtube-dlc';
-        const youtube_dl_tags_url = 'https://api.github.com/repos/ytdl-org/youtube-dl/tags'
-        const youtube_dlc_tags_url = 'https://api.github.com/repos/blackjack4494/yt-dlc/tags'
+        const tags_url = download_sources[default_downloader]['tags_url'];
         // get current version
         let current_app_details_path = 'node_modules/youtube-dl/bin/details';
         let current_app_details_exists = fs.existsSync(current_app_details_path);
@@ -1674,6 +1687,7 @@ async function autoUpdateYoutubeDL() {
         }
         let current_app_details = JSON.parse(fs.readFileSync(current_app_details_path));
         let current_version = current_app_details['version'];
+        let current_downloader = current_app_details['downloader'];
         let stored_binary_path = current_app_details['path'];
         if (!stored_binary_path || typeof stored_binary_path !== 'string') {
             // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${current_app_details_path}, attempting to guess actual path...`);
@@ -1690,15 +1704,9 @@ async function autoUpdateYoutubeDL() {
         }
 
         // got version, now let's check the latest version from the youtube-dl API
-        let youtubedl_api_path = using_youtube_dlc ? youtube_dlc_tags_url : youtube_dl_tags_url;
 
-        if (default_downloader === 'youtube-dl') {
-            await downloadLatestYoutubeDLBinary('unknown', 'unknown');
-            resolve(true);
-            return;
-        }
 
-        fetch(youtubedl_api_path, {method: 'Get'})
+        fetch(tags_url, {method: 'Get'})
         .then(async res => res.json())
         .then(async (json) => {
             // check if the versions are different
@@ -1708,16 +1716,16 @@ async function autoUpdateYoutubeDL() {
                 return false;
             }
             const latest_update_version = json[0]['name'];
-            if (current_version !== latest_update_version) {
-                // versions different, download new update
+            if (current_version !== latest_update_version || default_downloader !== current_downloader) {
+                // versions different or different downloader is being used, download new update
                 logger.info(`Found new update for ${default_downloader}. Updating binary...`);
                 try {
                     await checkExistsWithTimeout(stored_binary_path, 10000);
                 } catch(e) {
                     logger.error(`Failed to update ${default_downloader} - ${e}`);
                 }
-                if (using_youtube_dlc) await downloadLatestYoutubeDLCBinary(latest_update_version);
-                else await downloadLatestYoutubeDLBinary(current_version, latest_update_version);
+                
+                await download_sources[default_downloader]['func'](latest_update_version);
 
                 resolve(true);
             } else {
@@ -1731,7 +1739,7 @@ async function autoUpdateYoutubeDL() {
     });
 }
 
-async function downloadLatestYoutubeDLBinary(current_version, new_version) {
+async function downloadLatestYoutubeDLBinary() {
     return new Promise(resolve => {
         let binary_path = 'node_modules/youtube-dl/bin';
         downloader(binary_path, function error(err, done) {
@@ -1741,6 +1749,7 @@ async function downloadLatestYoutubeDLBinary(current_version, new_version) {
                 resolve(false);
             }
             logger.info(`youtube-dl successfully updated!`);
+            updateDetailsJSON(null, 'youtube-dl');
             resolve(true);
         });
     });
@@ -1754,10 +1763,25 @@ async function downloadLatestYoutubeDLCBinary(new_version) {
 
     await fetchFile(download_url, output_path, `youtube-dlc ${new_version}`);
 
-    const details_path = 'node_modules/youtube-dl/bin/details';
-    const details_json = fs.readJSONSync('node_modules/youtube-dl/bin/details');
-    details_json['version'] = new_version;
+    updateDetailsJSON(new_version, 'youtube-dlc');
+}
 
+async function downloadLatestYoutubeDLPBinary(new_version) {
+    const file_ext = is_windows ? '.exe' : '';
+
+    const download_url = `https://github.com/pukkandan/yt-dlp/releases/latest/download/youtube-dlc${file_ext}`;
+    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
+
+    await fetchFile(download_url, output_path, `yt-dlp ${new_version}`);
+
+    updateDetailsJSON(new_version, 'yt-dlp');
+}
+
+function updateDetailsJSON(new_version, downloader) {
+    const details_path = 'node_modules/youtube-dl/bin/details';
+    const details_json = fs.readJSONSync(details_path);
+    if (new_version) details_json['version'] = new_version;
+    details_json['downloader'] = downloader;
     fs.writeJSONSync(details_path, details_json);
 }
 
