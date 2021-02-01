@@ -159,7 +159,7 @@ export const isoLangs = {
    },
    'nl': {
        'name': 'Dutch',
-       'nativeName': 'Nederlands, Vlaams'
+       'nativeName': 'Nederlands'
    },
    'en': {
        'name': 'English',
