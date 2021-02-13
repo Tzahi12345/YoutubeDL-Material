@@ -853,7 +853,7 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
     let zipFolderPath = null;
 
     if (!fullPathProvided) {
-        zipFolderPath = path.join(__dirname, (type === 'audio') ? audioFolderPath : videoFolderPath);
+        zipFolderPath = (type === 'audio') ? audioFolderPath : videoFolderPath
         if (user_uid) zipFolderPath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, zipFolderPath);
     } else {
         zipFolderPath = path.join(__dirname, config_api.getConfigItem('ytdl_subscriptions_base_path'));
@@ -1155,7 +1155,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         }
 
         // download file
-        youtubedl.exec(url, downloadConfig, {}, function(err, output) {
+        youtubedl.exec(url, downloadConfig, {}, async function(err, output) {
             if (download_checker) clearInterval(download_checker); // stops the download checker from running as the download finished (or errored)
 
             download['downloading'] = false;
@@ -1227,8 +1227,12 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     const file_path = options.noRelativePath ? path.basename(full_file_path) : full_file_path.substring(fileFolderPath.length, full_file_path.length);
                     const customPath = options.noRelativePath ? path.dirname(full_file_path).split(path.sep).pop() : null;
 
+                    if (options.cropFileSettings) {
+                        await cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
+                    }
+
                     // registers file in DB
-                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath, category);
+                    file_uid = db_api.registerFileDB(file_path, type, multiUserMode, null, customPath, category, options.cropFileSettings);
 
                     if (file_name) file_names.push(file_name);
                 }
@@ -1587,6 +1591,8 @@ async function getUrlInfos(urls) {
     });
 }
 
+// ffmpeg helper functions
+
 async function convertFileToMp3(input_file, output_file) {
     logger.verbose(`Converting ${input_file} to ${output_file}...`);
     return new Promise(resolve => {
@@ -1603,6 +1609,33 @@ async function convertFileToMp3(input_file, output_file) {
         }).save(output_file);
     });
 }
+
+async function cropFile(file_path, start, end, ext) {
+    return new Promise(resolve => {
+        const temp_file_path = `${file_path}.cropped${ext}`;
+        let base_ffmpeg_call = ffmpeg(file_path);
+        if (start) {
+            base_ffmpeg_call = base_ffmpeg_call.seekOutput(start);
+        }
+        if (end) {
+            base_ffmpeg_call = base_ffmpeg_call.duration(end - start);
+        }
+        base_ffmpeg_call
+            .on('end', () => {
+                logger.verbose(`Cropping for '${file_path}' complete.`);
+                fs.unlinkSync(file_path);
+                fs.moveSync(temp_file_path, file_path);
+                resolve(true);
+            })
+            .on('error', (err, test, test2) => {
+                logger.error(`Failed to crop ${file_path}.`);
+                logger.error(err);
+                resolve(false);
+            }).save(temp_file_path);
+    });    
+}
+
+// archive helper functions
 
 async function writeToBlacklist(type, line) {
     let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
@@ -1908,7 +1941,8 @@ app.post('/api/tomp4', optionalJwt, async function(req, res) {
         youtubeUsername: req.body.youtubeUsername,
         youtubePassword: req.body.youtubePassword,
         ui_uid: req.body.ui_uid,
-        user: req.isAuthenticated() ? req.user.uid : null
+        user: req.isAuthenticated() ? req.user.uid : null,
+        cropFileSettings: req.body.cropFileSettings
     }
 
     const safeDownloadOverride = config_api.getConfigItem('ytdl_safe_download_override') || config_api.globalArgsRequiresSafeDownload();
@@ -2666,7 +2700,7 @@ app.post('/api/downloadFile', optionalJwt, async (req, res) => {
         for (let i = 0; i < fileNames.length; i++) {
             fileNames[i] = decodeURIComponent(fileNames[i]);
         }
-        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided, req.body.uuid);
+        file = await createPlaylistZipFile(fileNames, type, outputName, fullPathProvided, req.body.uuid || req.user.uid);
         if (!path.isAbsolute(file)) file = path.join(__dirname, file);
     }
     res.sendFile(file, function (err) {

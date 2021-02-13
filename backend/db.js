@@ -15,7 +15,7 @@ function initialize(input_db, input_users_db, input_logger) {
     setLogger(input_logger);
 }
 
-function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null, category = null) {
+function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null, category = null, cropFileSettings = null) {
     let db_path = null;
     const file_id = utils.removeFileExtension(file_path);
     const file_object = generateFileObject(file_id, type, customPath || multiUserMode && multiUserMode.file_path, sub);
@@ -31,6 +31,11 @@ function registerFileDB(file_path, type, multiUserMode = null, sub = null, custo
 
     // if category exists, only include essential info
     if (category) file_object['category'] = {name: category['name'], uid: category['uid']};
+
+    // modify duration
+    if (cropFileSettings) {
+        file_object['duration'] = (cropFileSettings.cropFileEnd || file_object.duration) - cropFileSettings.cropFileStart;
+    }
 
     if (!sub) {
         if (multiUserMode) {

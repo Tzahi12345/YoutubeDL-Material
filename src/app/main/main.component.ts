@@ -54,6 +54,9 @@ export class MainComponent implements OnInit {
   youtubeAuthEnabled = false;
   youtubeUsername = null;
   youtubePassword = null;
+  cropFile = false;
+  cropFileStart = null;
+  cropFileEnd = null;
   urlError = false;
   path = '';
   url = '';
@@ -521,8 +524,17 @@ export class MainComponent implements OnInit {
 
         const customQualityConfiguration = this.getSelectedVideoFormat();
 
+        let cropFileSettings = null;
+
+        if (this.cropFile) {
+          cropFileSettings = {
+            cropFileStart: this.cropFileStart,
+            cropFileEnd: this.cropFileEnd
+          }
+        }
+
         this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid).subscribe(posts => {
+          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid, cropFileSettings).subscribe(posts => {
           // update download object
           new_download.downloading = false;
           new_download.percent_complete = 100;
