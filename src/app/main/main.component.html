@@ -152,13 +152,11 @@
                         </mat-checkbox>
                         <mat-form-field color="accent" class="advanced-input">
                             <input [(ngModel)]="cropFileStart" type="number" [ngModelOptions]="{standalone: true}" [disabled]="!cropFile" matInput placeholder="Crop from (seconds)" i18n-placeholder="Crom from placeholder">
-                            <span matSuffix i18n="Crop units">Seconds</span>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-sm-6 mt-3">
                         <mat-form-field style="margin-top: 31px;" color="accent" class="advanced-input">
                             <input [(ngModel)]="cropFileEnd" type="number" [ngModelOptions]="{standalone: true}" [disabled]="!cropFile" matInput placeholder="Crop to (seconds)" i18n-placeholder="Crop to placeholder">
-                            <span matSuffix i18n="Crop units">Seconds</span>
                         </mat-form-field>
                     </div>
                 </div>
