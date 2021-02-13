@@ -8,7 +8,7 @@
                             </video>
                         </vg-player>
                     </div>
-                    <div *ngIf="db_file" style="height: fit-content; width: 100%; margin-top: 10px;">
+                    <div style="height: fit-content; width: 100%; margin-top: 10px;">
                         <div class="container">
                             <div class="row">
                                 <div class="col-2 col-lg-1">
@@ -29,7 +29,7 @@
                                 <div class="col-2">
                                     <ng-container *ngIf="playlist.length > 1">
                                         <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
-                                        <button *ngIf="!id" color="accent" (click)="namePlaylistDialog()" mat-icon-button><mat-icon>favorite</mat-icon></button>
+                                        <button *ngIf="!id" (click)="namePlaylistDialog()" mat-icon-button><mat-icon>favorite</mat-icon></button>
                                         <button *ngIf="!is_shared && id && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                     </ng-container>
                                     <ng-container *ngIf="playlist.length === 1">
