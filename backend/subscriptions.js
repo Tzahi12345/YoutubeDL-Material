@@ -92,7 +92,7 @@ async function getSubscriptionInfo(sub, user_uid = null) {
     }
 
     return new Promise(resolve => {
-        youtubedl.exec(sub.url, downloadConfig, {}, function(err, output) {
+        youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, function(err, output) {
             if (debugMode) {
                 logger.info('Subscribe: got info for subscription ' + sub.id);
             }
@@ -292,7 +292,7 @@ async function getVideosForSub(sub, user_uid = null) {
     logger.verbose('Subscription: getting videos for subscription ' + sub.name);
 
     return new Promise(resolve => {
-        youtubedl.exec(sub.url, downloadConfig, {}, async function(err, output) {
+        youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, async function(err, output) {
             updateSubscriptionProperty(sub, {downloading: false}, user_uid);
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
@@ -565,7 +565,7 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
             const metric_to_compare = sub.type === 'audio' ? 'abr' : 'height';
             if (output[metric_to_compare] > file_obj[metric_to_compare]) {
                 // download new video as the simulated one is better
-                youtubedl.exec(file_obj['url'], downloadConfig, async (err, output) => {
+                youtubedl.exec(file_obj['url'], downloadConfig, {maxBuffer: Infinity}, async (err, output) => {
                     if (err) {
                         logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
                     } else if (output) {
