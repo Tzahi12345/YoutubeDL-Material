@@ -1681,9 +1681,8 @@ async function autoUpdateYoutubeDL() {
         let current_app_details_path = 'node_modules/youtube-dl/bin/details';
         let current_app_details_exists = fs.existsSync(current_app_details_path);
         if (!current_app_details_exists) {
-            logger.error(`Failed to get youtube-dl binary details at location '${current_app_details_path}'. Cancelling update check.`);
-            resolve(false);
-            return;
+            logger.warn(`Failed to get youtube-dl binary details at location '${current_app_details_path}'. Generating file...`);
+            fs.writeJSONSync('node_modules/youtube-dl/bin/details', {"version":"2020.00.00", "downloader": default_downloader});
         }
         let current_app_details = JSON.parse(fs.readFileSync(current_app_details_path));
         let current_version = current_app_details['version'];
@@ -1739,20 +1738,15 @@ async function autoUpdateYoutubeDL() {
     });
 }
 
-async function downloadLatestYoutubeDLBinary() {
-    return new Promise(resolve => {
-        let binary_path = 'node_modules/youtube-dl/bin';
-        downloader(binary_path, function error(err, done) {
-            if (err) {
-                logger.error(`youtube-dl failed to update. Restart the server to try again.`);
-                logger.error(err);
-                resolve(false);
-            }
-            logger.info(`youtube-dl successfully updated!`);
-            updateDetailsJSON(null, 'youtube-dl');
-            resolve(true);
-        });
-    });
+async function downloadLatestYoutubeDLBinary(new_version) {
+    const file_ext = is_windows ? '.exe' : '';
+
+    const download_url = `https://github.com/ytdl-org/youtube-dl/releases/latest/download/youtube-dl${file_ext}`;
+    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
+
+    await fetchFile(download_url, output_path, `youtube-dl ${new_version}`);
+
+    updateDetailsJSON(new_version, 'youtube-dl');
 }
 
 async function downloadLatestYoutubeDLCBinary(new_version) {
