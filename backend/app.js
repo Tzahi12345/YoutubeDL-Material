@@ -1155,7 +1155,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         }
 
         // download file
-        youtubedl.exec(url, downloadConfig, {}, async function(err, output) {
+        youtubedl.exec(url, downloadConfig, {maxBuffer: Infinity}, async function(err, output) {
             if (download_checker) clearInterval(download_checker); // stops the download checker from running as the download finished (or errored)
 
             download['downloading'] = false;
@@ -1569,7 +1569,7 @@ async function getUrlInfos(urls) {
     let startDate = Date.now();
     let result = [];
     return new Promise(resolve => {
-        youtubedl.exec(urls.join(' '), ['--dump-json'], {}, (err, output) => {
+        youtubedl.exec(urls.join(' '), ['--dump-json'], {maxBuffer: Infinity}, (err, output) => {
             let new_date = Date.now();
             let difference = (new_date - startDate)/1000;
             logger.debug(`URL info retrieval delay: ${difference} seconds.`);
