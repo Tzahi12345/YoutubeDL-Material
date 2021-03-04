@@ -366,11 +366,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     let appendedBasePath = getAppendedBasePath(sub, basePath);
 
-    let fullOutput = `${appendedBasePath}/%(title)s.%(ext)s`;
+    let fullOutput = `'${appendedBasePath}/%(title)s.%(ext)s'`;
     if (desired_path) {
-        fullOutput = `${desired_path}.%(ext)s`;
+        fullOutput = `'${desired_path}.%(ext)s'`;
     } else if (sub.custom_output) {
-        fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
+        fullOutput = `'${appendedBasePath}/${sub.custom_output}.%(ext)s'`;
     }
 
     let downloadConfig = ['-o', fullOutput, !redownload ? '-ciw' : '-ci', '--write-info-json', '--print-json'];
@@ -381,8 +381,8 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         qualityPath.push('-x');
         qualityPath.push('--audio-format', 'mp3');
     } else {
-        if (!sub.maxQuality || sub.maxQuality === 'best') qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'];
-        else qualityPath = ['-f', `bestvideo[height<=${sub.maxQuality}]+bestaudio/best[height<=${sub.maxQuality}]`, '--merge-output-format', 'mp4'];
+        if (!sub.maxQuality || sub.maxQuality === 'best') qualityPath = ['-f', '\'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4\''];
+        else qualityPath = ['-f', `'bestvideo[height<=${sub.maxQuality}]+bestaudio/best[height<=${sub.maxQuality}]'`, '--merge-output-format', 'mp4'];
     }
 
     downloadConfig.push(...qualityPath)
