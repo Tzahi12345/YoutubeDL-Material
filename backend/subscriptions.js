@@ -381,8 +381,8 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         qualityPath.push('-x');
         qualityPath.push('--audio-format', 'mp3');
     } else {
-        if (!sub.maxQuality || sub.maxQuality === 'best') qualityPath = ['-f', '\'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4\''];
-        else qualityPath = ['-f', `'bestvideo[height<=${sub.maxQuality}]+bestaudio/best[height<=${sub.maxQuality}]'`, '--merge-output-format', 'mp4'];
+        if (!sub.maxQuality || sub.maxQuality === 'best') qualityPath = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'];
+        else qualityPath = ['-f', `bestvideo[height<=${sub.maxQuality}]+bestaudio/best[height<=${sub.maxQuality}]`, '--merge-output-format', 'mp4'];
     }
 
     downloadConfig.push(...qualityPath)
