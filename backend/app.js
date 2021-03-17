@@ -1669,7 +1669,7 @@ async function autoUpdateYoutubeDL() {
             'func': downloadLatestYoutubeDLCBinary
         },
         'yt-dlp': {
-            'tags_url': 'https://api.github.com/repos/pukkandan/yt-dlp/tags',
+            'tags_url': 'https://api.github.com/repos/yt-dlp/yt-dlp/tags',
             'func': downloadLatestYoutubeDLPBinary
         }
     }
@@ -1763,7 +1763,7 @@ async function downloadLatestYoutubeDLCBinary(new_version) {
 async function downloadLatestYoutubeDLPBinary(new_version) {
     const file_ext = is_windows ? '.exe' : '';
 
-    const download_url = `https://github.com/pukkandan/yt-dlp/releases/latest/download/youtube-dlc${file_ext}`;
+    const download_url = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp${file_ext}`;
     const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
 
     await fetchFile(download_url, output_path, `yt-dlp ${new_version}`);
