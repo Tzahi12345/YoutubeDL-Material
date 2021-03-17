@@ -277,6 +277,7 @@ async function getVideosForSub(sub, user_uid = null) {
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
     let appendedBasePath = getAppendedBasePath(sub, basePath);
+    fs.ensureDirSync(appendedBasePath);
 
     let multiUserMode = null;
     if (user_uid) {
@@ -292,8 +293,17 @@ async function getVideosForSub(sub, user_uid = null) {
     logger.verbose('Subscription: getting videos for subscription ' + sub.name);
 
     return new Promise(resolve => {
+        const preimported_file_paths = [];
+        const PREIMPORT_INTERVAL = 5000;
+        const preregister_check = setInterval(() => {
+            if (sub.streamingOnly) return;
+            db_api.preimportUnregisteredSubscriptionFile(sub, appendedBasePath);
+        }, PREIMPORT_INTERVAL);
         youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, async function(err, output) {
+            // cleanup
             updateSubscriptionProperty(sub, {downloading: false}, user_uid);
+            clearInterval(preregister_check);
+
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
                 logger.error(err.stderr ? err.stderr : err.message);
@@ -337,7 +347,7 @@ async function getVideosForSub(sub, user_uid = null) {
                     }
 
                     const reset_videos = i === 0;
-                    handleOutputJSON(sub, sub_db, output_json, multiUserMode, reset_videos);
+                    handleOutputJSON(sub, sub_db, output_json, multiUserMode, preimported_file_paths, reset_videos);
                 }
 
                 if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
@@ -351,6 +361,7 @@ async function getVideosForSub(sub, user_uid = null) {
     }, err => {
         logger.error(err);
         updateSubscriptionProperty(sub, {downloading: false}, user_uid);
+        clearInterval(preregister_check);
     });
 }
 
