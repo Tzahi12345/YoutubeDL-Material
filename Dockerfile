@@ -40,4 +40,4 @@ COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "node", "app.js" ]
+CMD [ "npm", "start" ]

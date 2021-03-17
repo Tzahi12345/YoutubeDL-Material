@@ -199,6 +199,10 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'killAllDownloads', {}, this.httpOptions);
     }
 
+    restartServer() {
+        return this.http.post(this.path + 'restartServer', {}, this.httpOptions);
+    }
+
     loadNavItems() {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');

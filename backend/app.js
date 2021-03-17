@@ -142,14 +142,16 @@ var timestamp_server_start = Date.now();
 if (debugMode) logger.info('YTDL-Material in debug mode!');
 
 // check if just updated
-const just_restarted = fs.existsSync('restart.json');
-if (just_restarted) {
+const just_updated = fs.existsSync('restart_update.json');
+if (just_updated) {
     updaterStatus = {
         updating: false,
         details: 'Update complete! You are now on ' + CONSTS['CURRENT_VERSION']
     }
-    fs.unlinkSync('restart.json');
+    fs.unlinkSync('restart_update.json');
 }
+
+if (fs.existsSync('restart_general.json')) fs.unlinkSync('restart_general.json');
 
 // updates & starts youtubedl (commented out b/c of repo takedown)
 // startYoutubeDL();
@@ -332,7 +334,7 @@ async function startServer() {
     });
 }
 
-async function restartServer() {
+async function restartServer(is_update = false) {
     const restartProcess = () => {
         spawn('node', ['app.js'], {
           detached: true,
@@ -340,10 +342,11 @@ async function restartServer() {
         }).unref()
         process.exit()
     }
-    logger.info('Update complete! Restarting server...');
+    
+    logger.info(`${is_update ? 'Update complete! ' : ''}Restarting server...`);
 
     // the following line restarts the server through nodemon
-    fs.writeFileSync('restart.json', 'internal use only');
+    fs.writeFileSync(`restart${is_update ? '_update' : '_general'}.json`, 'internal use only');
 }
 
 async function updateServer(tag) {
@@ -386,7 +389,7 @@ async function updateServer(tag) {
             updating: true,
             'details': 'Update complete! Restarting server...'
         }
-        restartServer();
+        restartServer(true);
     }, err => {
         updaterStatus = {
             updating: false,
@@ -1898,7 +1901,11 @@ app.post('/api/setConfig', optionalJwt, function(req, res) {
         logger.error('Tried to save invalid config file!')
         res.sendStatus(400);
     }
+});
 
+app.post('/api/restartServer', optionalJwt, (req, res) => {
+    restartServer();
+    res.send({success: true});
 });
 
 app.post('/api/tomp3', optionalJwt, async function(req, res) {

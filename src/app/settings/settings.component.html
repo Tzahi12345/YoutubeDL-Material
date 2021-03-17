@@ -353,6 +353,14 @@
             <div *ngIf="new_config" class="container-fluid mt-1">
                 <app-updater></app-updater>
             </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container">
+                <div class="row">
+                    <div class="col-12 mt-4">
+                        <button (click)="restartServer()" mat-stroked-button color="warn"><ng-container i18n="Restart server button">Restart server</ng-container></button>
+                    </div>
+                </div>
+            </div>
         </ng-template>
     </mat-tab>
     <mat-tab *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode" label="Users" i18n-label="Users settings label">

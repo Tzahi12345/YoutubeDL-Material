@@ -14,7 +14,8 @@
       "public/*"
     ],
     "watch": [
-      "restart.json"
+      "restart_update.json",
+      "restart_general.json"
     ]
   },
   "repository": {

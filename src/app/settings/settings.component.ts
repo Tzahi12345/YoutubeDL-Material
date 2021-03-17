@@ -255,6 +255,14 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  restartServer() {
+    this.postsService.restartServer().subscribe(res => {
+      this.postsService.openSnackBar('Restarting!');
+    }, err => {
+      this.postsService.openSnackBar('Failed to restart the server.');
+    });
+  }
+
   // snackbar helper
   public openSnackBar(message: string, action: string = '') {
     this.snackBar.open(message, action, {

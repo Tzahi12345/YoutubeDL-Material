@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CMD="node app.js"
+CMD="npm start"
 
 # if the first arg starts with "-" pass it to program
 if [ "${1#-}" != "$1" ]; then
