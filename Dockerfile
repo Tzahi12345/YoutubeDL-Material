@@ -21,6 +21,8 @@ ENV UID=1000 \
   GID=1000 \
   USER=youtube
 
+ENV NO_UPDATE_NOTIFIER=true
+
 RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
 RUN apk add --no-cache \
