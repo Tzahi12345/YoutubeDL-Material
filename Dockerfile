@@ -3,7 +3,7 @@ FROM alpine:3.12 as frontend
 RUN apk add --no-cache \
   npm
 
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli nodemon
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
@@ -42,4 +42,4 @@ COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "npm", "start" ]
+CMD [ "nodemon", "app.js" ]
