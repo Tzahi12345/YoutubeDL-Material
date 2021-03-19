@@ -3,7 +3,7 @@ FROM alpine:3.12 as frontend
 RUN apk add --no-cache \
   npm
 
-RUN npm install -g @angular/cli nodemon
+RUN npm install -g @angular/cli
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
