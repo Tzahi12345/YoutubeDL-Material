@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CMD="nodemon app.js"
+CMD="forever app.js"
 
 # if the first arg starts with "-" pass it to program
 if [ "${1#-}" != "$1" ]; then

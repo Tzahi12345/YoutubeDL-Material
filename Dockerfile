@@ -35,6 +35,7 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
+RUN npm install forever -g
 RUN npm install && chown -R $UID:$GID ./
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
@@ -42,4 +43,4 @@ COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "nodemon", "app.js" ]
+CMD [ "forever", "app.js" ]

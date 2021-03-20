@@ -4,7 +4,6 @@
   "description": "backend for YoutubeDL-Material",
   "main": "index.js",
   "scripts": {
-    "preinstall": "npm i nodemon -g",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
   },

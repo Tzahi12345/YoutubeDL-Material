@@ -335,18 +335,11 @@ async function startServer() {
 }
 
 async function restartServer(is_update = false) {
-    const restartProcess = () => {
-        spawn('node', ['app.js'], {
-          detached: true,
-          stdio: 'inherit'
-        }).unref()
-        process.exit()
-    }
-    
     logger.info(`${is_update ? 'Update complete! ' : ''}Restarting server...`);
 
     // the following line restarts the server through nodemon
     fs.writeFileSync(`restart${is_update ? '_update' : '_general'}.json`, 'internal use only');
+    process.exit(1);
 }
 
 async function updateServer(tag) {
