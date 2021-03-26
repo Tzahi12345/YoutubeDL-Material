@@ -1,4 +1,4 @@
-{{- if and .Values.persistence.appData.enabled (not .Values.persistence.appData.existingClaim) }}
+{{- if and .Values.persistence.appdata.enabled (not .Values.persistence.appdata.existingClaim) }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -7,15 +7,15 @@ metadata:
     {{- include "youtubedl-material.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistence.appData.accessMode | quote }}
+    - {{ .Values.persistence.appdata.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.persistence.appData.size | quote }}
-  {{- if .Values.persistence.appData.storageClass }}
-  {{- if (eq "-" .Values.persistence.appData.storageClass) }}
+      storage: {{ .Values.persistence.appdata.size | quote }}
+  {{- if .Values.persistence.appdata.storageClass }}
+  {{- if (eq "-" .Values.persistence.appdata.storageClass) }}
   storageClassName: ""
   {{- else }}
-  storageClassName: "{{ .Values.persistence.appData.storageClass }}"
+  storageClassName: "{{ .Values.persistence.appdata.storageClass }}"
   {{- end }}
   {{- end }}
   {{- end -}}

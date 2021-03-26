@@ -66,7 +66,7 @@ resources: {}
   #   memory: 128Mi
 
 persistence:
-  appData:
+  appdata:
     enabled: true
     ## If defined, storageClassName: <storageClass>
     ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -78,6 +78,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
+    # subPath: some-subpath
     accessMode: ReadWriteOnce
     size: 1Gi
   audio:
@@ -93,6 +94,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
+    # subPath: some-subpath
     accessMode: ReadWriteOnce
     size: 50Gi
   video:
@@ -108,6 +110,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
+    # subPath: some-subpath
     accessMode: ReadWriteOnce
     size: 50Gi
   subscriptions:
@@ -123,6 +126,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
+    # subPath: some-subpath
     accessMode: ReadWriteOnce
     size: 50Gi
   users:
@@ -138,6 +142,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
+    # subPath: some-subpath
     accessMode: ReadWriteOnce
     size: 50Gi
 
