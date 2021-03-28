@@ -36,6 +36,7 @@
     "file-saver": "^2.0.2",
     "filesize": "^6.1.0",
     "fingerprintjs2": "^2.1.0",
+    "material-icons": "^0.5.4",
     "nan": "^2.14.1",
     "ng-lazyload-image": "^7.0.1",
     "ngx-avatar": "^4.0.0",
