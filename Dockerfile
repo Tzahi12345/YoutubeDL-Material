@@ -22,6 +22,7 @@ ENV UID=1000 \
   USER=youtube
 
 ENV NO_UPDATE_NOTIFIER=true
+ENV FOREVER_ROOT=/app/.forever
 
 RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
