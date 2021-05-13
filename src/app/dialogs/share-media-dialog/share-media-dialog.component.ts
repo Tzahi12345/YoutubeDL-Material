@@ -33,7 +33,7 @@ export class ShareMediaDialogComponent implements OnInit {
       this.is_playlist = this.data.is_playlist;
       this.current_timestamp = (this.data.current_timestamp / 1000).toFixed(2);
 
-      const arg = (this.is_playlist ? ';id=' : ';uid=');
+      const arg = (this.is_playlist ? ';playlist_id=' : ';uid=');
       this.default_share_url = window.location.href.split(';')[0] + arg + this.uid;
       if (this.uuid) {
         this.default_share_url += ';uuid=' + this.uuid;

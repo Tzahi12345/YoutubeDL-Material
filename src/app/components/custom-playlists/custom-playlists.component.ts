@@ -57,12 +57,11 @@ export class CustomPlaylistsComponent implements OnInit {
 
     if (playlist) {
       if (this.postsService.config['Extra']['download_only_mode']) {
-        this.downloading_content[type][playlistID] = true;
-        this.downloadPlaylist(playlist.fileNames, type, playlist.name, playlistID);
+        this.downloadPlaylist(playlist.id, playlist.name);
       } else {
         localStorage.setItem('player_navigator', this.router.url);
         const fileNames = playlist.fileNames;
-        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID, uid: playlistID, auto: playlist.auto}]);
+        this.router.navigate(['/player', {playlist_id: playlistID, auto: playlist.auto}]);
       }
     } else {
       // playlist not found
@@ -70,11 +69,12 @@ export class CustomPlaylistsComponent implements OnInit {
     }
   }
 
-  downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
-    this.postsService.downloadFileFromServer(fileNames, type, zipName).subscribe(res => {
-      if (playlistID) { this.downloading_content[type][playlistID] = false };
-      const blob: Blob = res;
-      saveAs(blob, zipName + '.zip');
+  downloadPlaylist(playlist_id, playlist_name) {
+    this.downloading_content[playlist_id] = true;
+    this.postsService.downloadPlaylistFromServer(playlist_id).subscribe(res => {
+      this.downloading_content[playlist_id] = false;
+      const blob: any = res;
+      saveAs(blob, playlist_name + '.zip');
     });
 
   }

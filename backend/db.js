@@ -10,12 +10,12 @@ var users_db = null;
 function setDB(input_db, input_users_db) { db = input_db; users_db = input_users_db }
 function setLogger(input_logger) { logger = input_logger; }
 
-function initialize(input_db, input_users_db, input_logger) {
+exports.initialize = (input_db, input_users_db, input_logger) => {
     setDB(input_db, input_users_db);
     setLogger(input_logger);
 }
 
-function registerFileDB(file_path, type, multiUserMode = null, sub = null, customPath = null, category = null, cropFileSettings = null) {
+exports.registerFileDB = (file_path, type, multiUserMode = null, sub = null, customPath = null, category = null, cropFileSettings = null) => {
     let db_path = null;
     const file_id = utils.removeFileExtension(file_path);
     const file_object = generateFileObject(file_id, type, customPath || multiUserMode && multiUserMode.file_path, sub);
@@ -107,23 +107,11 @@ function generateFileObject(id, type, customPath = null, sub = null) {
     return file_obj;
 }
 
-function updatePlaylist(playlist, user_uid) {
-    let playlistID = playlist.id;
-    let db_loc = null;
-    if (user_uid) {
-        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID});
-    } else {
-        db_loc = db.get(`playlists`).find({id: playlistID});
-    }
-    db_loc.assign(playlist).write();
-    return true;
-}
-
 function getAppendedBasePathSub(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
-function getFileDirectoriesAndDBs() {
+exports.getFileDirectoriesAndDBs = () => {
     let dirs_to_check = [];
     let subscriptions_to_check = [];
     const subscriptions_base_path = config_api.getConfigItem('ytdl_subscriptions_base_path'); // only for single-user mode
@@ -192,8 +180,8 @@ function getFileDirectoriesAndDBs() {
     return dirs_to_check;
 }
 
-async function importUnregisteredFiles() {
-    const dirs_to_check = getFileDirectoriesAndDBs();
+exports.importUnregisteredFiles = async () => {
+    const dirs_to_check = exports.getFileDirectoriesAndDBs();
 
     // run through check list and check each file to see if it's missing from the db
     for (const dir_to_check of dirs_to_check) {
@@ -213,7 +201,7 @@ async function importUnregisteredFiles() {
 
 }
 
-async function preimportUnregisteredSubscriptionFile(sub, appendedBasePath) {
+exports.preimportUnregisteredSubscriptionFile = async (sub, appendedBasePath) => {
     const preimported_file_paths = [];
 
     let dbPath = null;
@@ -236,13 +224,60 @@ async function preimportUnregisteredSubscriptionFile(sub, appendedBasePath) {
     return preimported_file_paths;
 }
 
-async function getVideo(file_uid, uuid, sub_id) {
+exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = false) => {
+    let playlist = null
+    if (user_uid) {
+        playlist = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlist_id}).value();
+
+        // prevent unauthorized users from accessing the file info
+        if (require_sharing && !playlist['sharingEnabled']) return null;
+    } else {
+        playlist = db.get(`playlists`).find({id: playlist_id}).value();
+    }
+
+    // converts playlists to new UID-based schema
+    if (playlist && playlist['fileNames'] && !playlist['uids']) {
+        playlist['uids'] = [];
+        logger.verbose(`Converting playlist ${playlist['name']} to new UID-based schema.`);
+        for (let i = 0; i < playlist['fileNames'].length; i++) {
+            const fileName = playlist['fileNames'][i];
+            const uid = exports.getVideoUIDByID(fileName, user_uid);
+            if (uid) playlist['uids'].push(uid);
+            else logger.warn(`Failed to convert file with name ${fileName} to its UID while converting playlist ${playlist['name']} to the new UID-based schema. The original file is likely missing/deleted and it will be skipped.`);
+        }
+        delete playlist['fileNames'];
+        exports.updatePlaylist(playlist, user_uid);
+    }
+
+    return playlist;
+}
+
+exports.updatePlaylist = (playlist, user_uid = null) => {
+    let playlistID = playlist.id;
+    let db_loc = null;
+    if (user_uid) {
+        db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID});
+    } else {
+        db_loc = db.get(`playlists`).find({id: playlistID});
+    }
+    db_loc.assign(playlist).write();
+    return true;
+}
+
+// Video ID is basically just the file name without the base path and file extension - this method helps us get away from that
+exports.getVideoUIDByID = (file_id, uuid = null) => {
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    const file_obj = base_db_path.get('files').find({id: file_id}).value();
+    return file_obj ? file_obj['uid'] : null;
+}
+
+exports.getVideo = async (file_uid, uuid, sub_id) => {
     const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
     const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
     return sub_db_path.find({uid: file_uid}).value();
 }
 
-async function setVideoProperty(file_uid, assignment_obj, uuid, sub_id) {
+exports.setVideoProperty = async (file_uid, assignment_obj, uuid, sub_id) => {
     const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
     const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
     const file_db_path = sub_db_path.find({uid: file_uid});
@@ -250,15 +285,4 @@ async function setVideoProperty(file_uid, assignment_obj, uuid, sub_id) {
         logger.error(`Failed to find file with uid ${file_uid}`);
     }
     sub_db_path.find({uid: file_uid}).assign(assignment_obj).write();
-}
-
-module.exports = {
-    initialize: initialize,
-    registerFileDB: registerFileDB,
-    updatePlaylist: updatePlaylist,
-    getFileDirectoriesAndDBs: getFileDirectoriesAndDBs,
-    importUnregisteredFiles: importUnregisteredFiles,
-    preimportUnregisteredSubscriptionFile: preimportUnregisteredSubscriptionFile,
-    getVideo: getVideo,
-    setVideoProperty: setVideoProperty
 }

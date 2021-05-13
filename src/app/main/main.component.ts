@@ -355,7 +355,7 @@ export class MainComponent implements OnInit {
     if (playlist) {
       if (this.downloadOnlyMode) {
         this.downloading_content[type][playlistID] = true;
-        this.downloadPlaylist(playlist.fileNames, type, playlist.name, playlistID);
+        this.downloadPlaylist(playlist);
       } else {
         localStorage.setItem('player_navigator', this.router.url);
         const fileNames = playlist.fileNames;
@@ -626,41 +626,41 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadAudioFile(name) {
-    this.downloading_content['audio'][name] = true;
-    this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
-      this.downloading_content['audio'][name] = false;
+  downloadAudioFile(file) {
+    this.downloading_content['audio'][file.id] = true;
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
+      this.downloading_content['audio'][file.id] = false;
       const blob: Blob = res;
-      saveAs(blob, decodeURIComponent(name) + '.mp3');
+      saveAs(blob, decodeURIComponent(file.id) + '.mp3');
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, 'video').subscribe(delRes => {
+        this.postsService.deleteFile(file.uid).subscribe(delRes => {
         });
       }
     });
   }
 
-  downloadVideoFile(name) {
-    this.downloading_content['video'][name] = true;
-    this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
-      this.downloading_content['video'][name] = false;
+  downloadVideoFile(file) {
+    this.downloading_content['video'][file.id] = true;
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
+      this.downloading_content['video'][file.id] = false;
       const blob: Blob = res;
-      saveAs(blob, decodeURIComponent(name) + '.mp4');
+      saveAs(blob, decodeURIComponent(file.id) + '.mp4');
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, 'audio').subscribe(delRes => {
+        this.postsService.deleteFile(file.uid).subscribe(delRes => {
         });
       }
     });
   }
 
-  downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
-    this.postsService.downloadFileFromServer(fileNames, type, zipName).subscribe(res => {
-      if (playlistID) { this.downloading_content[type][playlistID] = false };
+  downloadPlaylist(playlist) {
+    this.postsService.downloadFileFromServer(playlist.id, null, true).subscribe(res => {
+      if (playlist.id) { this.downloading_content[playlist.type][playlist.id] = false };
       const blob: Blob = res;
-      saveAs(blob, zipName + '.zip');
+      saveAs(blob, playlist.name + '.zip');
     });
 
   }
