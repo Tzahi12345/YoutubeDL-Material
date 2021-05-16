@@ -888,18 +888,22 @@ async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvid
     return path.join(zipFolderPath,outputName + '.zip');
 }
 
-async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
-    let filePath = customPath ? customPath : audioFolderPath;
+// TODO: add to db_api and support multi-user mode
+async function deleteFile(uid, uuid = null, blacklistMode = false) {
+    const file_obj = await db_api.getVideo(uid, uuid);
+    const type = file_obj.isAudio ? 'audio' : 'video';
+    const folderPath = path.dirname(file_obj.path);
+    const ext = type === 'audio' ? 'mp3' : 'mp4';
+    const name = file_obj.id;
+    const filePathNoExtension = utils.removeFileExtension(file_obj.path);
 
-    var jsonPath = path.join(filePath,name+'.mp3.info.json');
-    var altJSONPath = path.join(filePath,name+'.info.json');
-    var audioFilePath = path.join(filePath,name+'.mp3');
-    var thumbnailPath = path.join(filePath,name+'.webp');
-    var altThumbnailPath = path.join(filePath,name+'.jpg');
+    var jsonPath = `${file_obj.path}.info.json`;
+    var altJSONPath = `${filePathNoExtension}.info.json`;
+    var thumbnailPath = `${filePathNoExtension}.webp`;
+    var altThumbnailPath = `${filePathNoExtension}.jpg`;
 
     jsonPath = path.join(__dirname, jsonPath);
     altJSONPath = path.join(__dirname, altJSONPath);
-    audioFilePath = path.join(__dirname, audioFilePath);
 
     let jsonExists = await fs.pathExists(jsonPath);
     let thumbnailExists = await fs.pathExists(thumbnailPath);
@@ -918,7 +922,7 @@ async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
         }
     }
 
-    let audioFileExists = await fs.pathExists(audioFilePath);
+    let fileExists = await fs.pathExists(file_obj.path);
 
     if (config_api.descriptors[name]) {
         try {
@@ -932,18 +936,18 @@ async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
 
     let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
-        const archive_path = path.join(archivePath, 'archive_audio.txt');
+        const archive_path = path.join(archivePath, `archive_${type}.txt`);
 
         // get ID from JSON
 
-        var jsonobj = await utils.getJSONMp3(name, filePath);
+        var jsonobj = await (type === 'audio' ? utils.getJSONMp3(name, folderPath) : utils.getJSONMp4(name, folderPath));
         let id = null;
         if (jsonobj) id = jsonobj.id;
 
         // use subscriptions API to remove video from the archive file, and write it to the blacklist
         if (await fs.pathExists(archive_path)) {
             const line = id ? await subscriptions_api.removeIDFromArchive(archive_path, id) : null;
-            if (blacklistMode && line) await writeToBlacklist('audio', line);
+            if (blacklistMode && line) await writeToBlacklist(type, line);
         } else {
             logger.info('Could not find archive file for audio files. Creating...');
             await fs.close(await fs.open(archive_path, 'w'));
@@ -952,84 +956,9 @@ async function deleteAudioFile(name, customPath = null, blacklistMode = false) {
 
     if (jsonExists) await fs.unlink(jsonPath);
     if (thumbnailExists) await fs.unlink(thumbnailPath);
-    if (audioFileExists) {
-        await fs.unlink(audioFilePath);
-        if (await fs.pathExists(jsonPath) || await fs.pathExists(audioFilePath)) {
-            return false;
-        } else {
-            return true;
-        }
-    } else {
-        // TODO: tell user that the file didn't exist
-        return true;
-    }
-}
-
-async function deleteVideoFile(name, customPath = null, blacklistMode = false) {
-    let filePath = customPath ? customPath : videoFolderPath;
-    var jsonPath = path.join(filePath,name+'.info.json');
-
-    var altJSONPath = path.join(filePath,name+'.mp4.info.json');
-    var videoFilePath = path.join(filePath,name+'.mp4');
-    var thumbnailPath = path.join(filePath,name+'.webp');
-    var altThumbnailPath = path.join(filePath,name+'.jpg');
-
-    jsonPath = path.join(__dirname, jsonPath);
-    videoFilePath = path.join(__dirname, videoFilePath);
-
-    let jsonExists = await fs.pathExists(jsonPath);
-    let videoFileExists = await fs.pathExists(videoFilePath);
-    let thumbnailExists = await fs.pathExists(thumbnailPath);
-
-    if (!jsonExists) {
-        if (await fs.pathExists(altJSONPath)) {
-            jsonExists = true;
-            jsonPath = altJSONPath;
-        }
-    }
-
-    if (!thumbnailExists) {
-        if (await fs.pathExists(altThumbnailPath)) {
-            thumbnailExists = true;
-            thumbnailPath = altThumbnailPath;
-        }
-    }
-
-    if (config_api.descriptors[name]) {
-        try {
-            for (let i = 0; i < config_api.descriptors[name].length; i++) {
-                config_api.descriptors[name][i].destroy();
-            }
-        } catch(e) {
-
-        }
-    }
-
-    let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-    if (useYoutubeDLArchive) {
-        const archive_path = path.join(archivePath, 'archive_video.txt');
-
-        // get ID from JSON
-
-        var jsonobj = await utils.getJSONMp4(name, filePath);
-        let id = null;
-        if (jsonobj) id = jsonobj.id;
-
-        // use subscriptions API to remove video from the archive file, and write it to the blacklist
-        if (await fs.pathExists(archive_path)) {
-            const line = id ? await subscriptions_api.removeIDFromArchive(archive_path, id) : null;
-            if (blacklistMode && line) await writeToBlacklist('video', line);
-        } else {
-            logger.info('Could not find archive file for videos. Creating...');
-            fs.closeSync(fs.openSync(archive_path, 'w'));
-        }
-    }
-
-    if (jsonExists) await fs.unlink(jsonPath);
-    if (thumbnailExists) await fs.unlink(thumbnailPath);
-    if (videoFileExists) {
-        await fs.unlink(videoFilePath);
-        if (await fs.pathExists(jsonPath) || await fs.pathExists(videoFilePath)) {
+    if (fileExists) {
+        await fs.unlink(file_obj.path);
+        if (await fs.pathExists(jsonPath) || await fs.pathExists(file_obj.path)) {
             return false;
         } else {
             return true;
@@ -1638,6 +1567,8 @@ async function cropFile(file_path, start, end, ext) {
 async function writeToBlacklist(type, line) {
     let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
     // adds newline to the beginning of the line
+    line.replace('\n', '');
+    line.replace('\r', '');
     line = '\n' + line;
     await fs.appendFile(blacklistPath, line);
 }
@@ -2668,9 +2599,8 @@ app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
 
 // deletes non-subscription files
 app.post('/api/deleteFile', optionalJwt, async (req, res) => {
-    var uid = req.body.uid;
-    var type = req.body.type;
-    var blacklistMode = req.body.blacklistMode;
+    const uid = req.body.uid;
+    const blacklistMode = req.body.blacklistMode;
 
     if (req.isAuthenticated()) {
         let success = await auth_api.deleteUserFile(req.user.uid, uid, blacklistMode);
@@ -2678,24 +2608,10 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
         return;
     }
 
-    var file_obj = db.get(`files`).find({uid: uid}).value();
-    var name = file_obj.id;
-    var fullpath = file_obj ? file_obj.path : null;
-    var wasDeleted = false;
-    if (await fs.pathExists(fullpath))
-    {
-        wasDeleted = type === 'audio' ? await deleteAudioFile(name, path.dirname(fullpath), blacklistMode) : await deleteVideoFile(name, path.dirname(fullpath), blacklistMode);
-        db.get('files').remove({uid: uid}).write();
-        wasDeleted = true;
-        res.send(wasDeleted);
-    } else if (file_obj) {
-        db.get('files').remove({uid: uid}).write();
-        wasDeleted = true;
-        res.send(wasDeleted);
-    } else {
-        wasDeleted = false;
-        res.send(wasDeleted);
-    }
+    let wasDeleted = false;
+    wasDeleted = await deleteFile(uid, null, blacklistMode);
+    db.get('files').remove({uid: uid}).write();
+    res.send(wasDeleted);
 });
 
 app.post('/api/downloadFile', optionalJwt, async (req, res) => {
@@ -2805,6 +2721,8 @@ app.post('/api/generateNewAPIKey', function (req, res) {
 
 app.get('/api/stream', optionalJwt, async (req, res) => {
     const type = req.query.type;
+    const uuid = req.query.uuid ? req.query.uuid : (req.user ? req.user.uid : null);
+    const sub_id = req.query.sub_id;
     const ext = type === 'audio' ? '.mp3' : '.mp4';
     const mimetype = type === 'audio' ? 'audio/mp3' : 'video/mp4';
     var head;
@@ -2815,7 +2733,7 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
 
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     if (!multiUserMode || req.isAuthenticated() || req.can_watch) {
-        const file_obj = await db_api.getVideo(uid, req.query.uuid ? req.query.uuid : (req.user ? req.user.uid : null), req.query.sub_id);
+        const file_obj = await db_api.getVideo(uid, uuid, sub_id);
         if (file_obj) file_path = file_obj['path'];
         else file_path = null;
     }

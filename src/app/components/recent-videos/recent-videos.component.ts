@@ -244,7 +244,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   deleteNormalFile(file, blacklistMode = false) {
-    this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
+    this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
         this.removeFileCard(file);
