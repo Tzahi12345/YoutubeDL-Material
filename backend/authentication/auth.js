@@ -144,16 +144,18 @@ exports.registerUser = function(req, res) {
  ************************************************/
 
 
+exports.login = async (username, password) => {
+  const user = users_db.get('users').find({name: username}).value();
+  if (!user) { logger.error(`User ${username} not found`); false }
+  if (user.auth_method && user.auth_method !== 'internal') { return false }
+  return await bcrypt.compare(password, user.passhash) ? user : false;
+}
+
 exports.passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'},
     async function(username, password, done) {
-        const user = users_db.get('users').find({name: username}).value();
-        if (!user) { logger.error(`User ${username} not found`); return done(null, false); }
-        if (user.auth_method && user.auth_method !== 'internal') { return done(null, false); }
-        if (user) {
-            return done(null, (await bcrypt.compare(password, user.passhash)) ? user : false);
-        }
+      return done(null, await exports.login(username, password));
     }
 ));
 
