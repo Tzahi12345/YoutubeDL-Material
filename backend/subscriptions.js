@@ -377,11 +377,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     let appendedBasePath = getAppendedBasePath(sub, basePath);
 
-    let fullOutput = `${appendedBasePath}/%(title)s.%(ext)s`;
+    let fullOutput = `'${appendedBasePath}/%(title)s.%(ext)s'`;
     if (desired_path) {
-        fullOutput = `${desired_path}.%(ext)s`;
+        fullOutput = `'${desired_path}.%(ext)s'`;
     } else if (sub.custom_output) {
-        fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
+        fullOutput = `'${appendedBasePath}/${sub.custom_output}.%(ext)s'`;
     }
 
     let downloadConfig = ['-o', fullOutput, !redownload ? '-ciw' : '-ci', '--write-info-json', '--print-json'];
