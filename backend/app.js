@@ -193,16 +193,6 @@ app.use(auth_api.passport.initialize());
 
 // actual functions
 
-/**
- * setTimeout, but its a promise.
- * @param {number} ms
- */
-async function wait(ms) {
-    await new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-}
-
 async function checkMigrations() {
     // 3.5->3.6 migration
     const files_to_db_migration_complete = true; // migration phased out! previous code: db.get('files_to_db_migration_complete').value();
@@ -529,7 +519,7 @@ async function backupServerLite() {
     });
 
     // wait a tiny bit for the zip to reload in fs
-    await wait(100);
+    await utils.wait(100);
     return true;
 }
 
@@ -597,7 +587,7 @@ async function killAllDownloads() {
 
 async function setPortItemFromENV() {
     config_api.setConfigItem('ytdl_port', backendPort.toString());
-    await wait(100);
+    await utils.wait(100);
     return true;
 }
 
@@ -611,7 +601,7 @@ async function setConfigFromEnv() {
     let success = config_api.setConfigItems(config_items);
     if (success) {
         logger.info('Config items set using ENV variables.');
-        await wait(100);
+        await utils.wait(100);
         return true;
     } else {
         logger.error('ERROR: Failed to set config items using ENV variables.');
@@ -845,47 +835,6 @@ function getVideoFormatID(name)
         var format = obj.format.substring(0,3);
         return format;
     }
-}
-
-async function createPlaylistZipFile(fileNames, type, outputName, fullPathProvided = null, user_uid = null) {
-    let zipFolderPath = null;
-
-    if (!fullPathProvided) {
-        zipFolderPath = (type === 'audio') ? audioFolderPath : videoFolderPath
-        if (user_uid) zipFolderPath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, zipFolderPath);
-    } else {
-        zipFolderPath = path.join(__dirname, config_api.getConfigItem('ytdl_subscriptions_base_path'));
-    }
-
-    let ext = (type === 'audio') ? '.mp3' : '.mp4';
-
-    let output = fs.createWriteStream(path.join(zipFolderPath, outputName + '.zip'));
-
-    var archive = archiver('zip', {
-        gzip: true,
-        zlib: { level: 9 } // Sets the compression level.
-    });
-
-    archive.on('error', function(err) {
-        logger.error(err);
-        throw err;
-    });
-
-    // pipe archive data to the output file
-    archive.pipe(output);
-
-    for (let i = 0; i < fileNames.length; i++) {
-        let fileName = fileNames[i];
-        let fileNamePathRemoved = path.parse(fileName).base;
-        let file_path = !fullPathProvided ? path.join(zipFolderPath, fileName + ext) : fileName;
-        archive.file(file_path, {name: fileNamePathRemoved + ext})
-    }
-
-    await archive.finalize();
-
-    // wait a tiny bit for the zip to reload in fs
-    await wait(100);
-    return path.join(zipFolderPath,outputName + '.zip');
 }
 
 // TODO: add to db_api and support multi-user mode
@@ -2523,18 +2472,19 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let include_file_metadata = req.body.include_file_metadata;
 
     const playlist = await db_api.getPlaylist(playlist_id, uuid);
+    const file_objs = [];
 
     if (playlist && include_file_metadata) {
-        playlist['file_objs'] = [];
         for (let i = 0; i < playlist['uids'].length; i++) {
             const uid = playlist['uids'][i];
             const file_obj = await db_api.getVideo(uid, uuid);
-            playlist['file_objs'].push(file_obj);
+            file_objs.push(file_obj);
         }
     }
 
     res.send({
         playlist: playlist,
+        file_objs: file_objs,
         type: playlist && playlist.type,
         success: !!playlist
     });
@@ -2616,32 +2566,47 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
 
 app.post('/api/downloadFile', optionalJwt, async (req, res) => {
     let uid = req.body.uid;
-    let is_playlist = req.body.is_playlist;
     let uuid = req.body.uuid;
+    let playlist_id = req.body.playlist_id;
+    let sub_id = req.body.sub_id;
 
     let file_path_to_download = null;
 
     if (!uuid && req.user) uuid = req.user.uid;
-    if (is_playlist) {
+
+    let zip_file_generated = false;
+    if (playlist_id) {
+        zip_file_generated = true;
         const playlist_files_to_download = [];
-        const playlist = db_api.getPlaylist(uid, uuid);
+        const playlist = await db_api.getPlaylist(playlist_id, uuid);
         for (let i = 0; i < playlist['uids'].length; i++) {
-            const uid = playlist['uids'][i];
-            const file_obj = await db_api.getVideo(uid, uuid);
-            playlist_files_to_download.push(file_obj.path);
+            const playlist_file_uid = playlist['uids'][i];
+            const file_obj = await db_api.getVideo(playlist_file_uid, uuid);
+            playlist_files_to_download.push(file_obj);
         }
 
         // generate zip
-        file_path_to_download = await createPlaylistZipFile(playlist_files_to_download, playlist.type, playlist.name);
+        file_path_to_download = await utils.createContainerZipFile(playlist, playlist_files_to_download);
+    } else if (sub_id && !uid) {
+        zip_file_generated = true;
+        const sub_files_to_download = [];
+        const sub = subscriptions_api.getSubscription(sub_id, uuid);
+        for (let i = 0; i < sub['videos'].length; i++) {
+            const sub_file = sub['videos'][i];
+            sub_files_to_download.push(sub_file);
+        }
+
+        // generate zip
+        file_path_to_download = await utils.createContainerZipFile(sub, sub_files_to_download);
     } else {
-        const file_obj = await db_api.getVideo(uid, uuid)
+        const file_obj = await db_api.getVideo(uid, uuid, sub_id)
         file_path_to_download = file_obj.path;
     }
     if (!path.isAbsolute(file_path_to_download)) file_path_to_download = path.join(__dirname, file_path_to_download);
     res.sendFile(file_path_to_download, function (err) {
         if (err) {
           logger.error(err);
-        } else if (is_playlist) {
+        } else if (zip_file_generated) {
           try {
             // delete generated zip file
             fs.unlinkSync(file_path_to_download);

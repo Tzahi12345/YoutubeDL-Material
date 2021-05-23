@@ -1,6 +1,7 @@
-var fs = require('fs-extra')
-var path = require('path')
+const fs = require('fs-extra')
+const path = require('path')
 const config_api = require('./config');
+const archiver = require('archiver');
 
 const is_windows = process.platform === 'win32';
 
@@ -50,6 +51,43 @@ async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
         files.push(file_obj);
     }
     return files;
+}
+
+async function createContainerZipFile(container_obj, container_file_objs) {
+    const container_files_to_download = [];
+    for (let i = 0; i < container_file_objs.length; i++) {
+        const container_file_obj = container_file_objs[i];
+        container_files_to_download.push(container_file_obj.path);
+    }
+    return await createZipFile(path.join('appdata', container_obj.name + '.zip'), container_files_to_download);
+}
+
+async function createZipFile(zip_file_path, file_paths) {
+    let output = fs.createWriteStream(zip_file_path);
+
+    var archive = archiver('zip', {
+        gzip: true,
+        zlib: { level: 9 } // Sets the compression level.
+    });
+
+    archive.on('error', function(err) {
+        logger.error(err);
+        throw err;
+    });
+
+    // pipe archive data to the output file
+    archive.pipe(output);
+
+    for (let file_path of file_paths) {
+        const file_name = path.parse(file_path).base;
+        archive.file(file_path, {name: file_name})
+    }
+
+    await archive.finalize();
+
+    // wait a tiny bit for the zip to reload in fs
+    await wait(100);
+    return zip_file_path;
 }
 
 function getJSONMp4(name, customPath, openReadPerms = false) {
@@ -193,6 +231,16 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
+/**
+ * setTimeout, but its a promise.
+ * @param {number} ms
+ */
+ async function wait(ms) {
+    await new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -221,7 +269,9 @@ module.exports = {
     fixVideoMetadataPerms: fixVideoMetadataPerms,
     deleteJSONFile: deleteJSONFile,
     getDownloadedFilesByType: getDownloadedFilesByType,
+    createContainerZipFile: createContainerZipFile,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
+    wait: wait,
     File: File
 }

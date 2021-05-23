@@ -84,7 +84,7 @@ export class FileCardComponent implements OnInit {
   editPlaylistDialog() {
     const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
       data: {
-        playlist: this.playlist,
+        playlist_id: this.playlist.id,
         width: '65vw'
       }
     });

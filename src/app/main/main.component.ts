@@ -657,7 +657,7 @@ export class MainComponent implements OnInit {
   }
 
   downloadPlaylist(playlist) {
-    this.postsService.downloadFileFromServer(playlist.id, null, true).subscribe(res => {
+    this.postsService.downloadPlaylistFromServer(playlist.id).subscribe(res => {
       if (playlist.id) { this.downloading_content[playlist.type][playlist.id] = false };
       const blob: Blob = res;
       saveAs(blob, playlist.name + '.zip');

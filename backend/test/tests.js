@@ -35,13 +35,19 @@ const logger = winston.createLogger({
 
 var auth_api = require('../authentication/auth');
 var db_api = require('../db');
+const utils = require('../utils');
+const subscriptions_api = require('../subscriptions');
+const fs = require('fs-extra');
 
 db_api.initialize(db, users_db, logger);
 auth_api.initialize(db, users_db, logger);
+subscriptions_api.initialize(db, users_db, logger, db_api);
 
 describe('Multi User', async function() {
     let user = null;
     const user_to_test = 'admin';
+    const sub_to_test = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
+    const playlist_to_test = 'ysabVZz4x';
     before(async function() {
         user = await auth_api.login('admin', 'pass');
         console.log('hi')
@@ -68,6 +74,36 @@ describe('Multi User', async function() {
             await db_api.setVideoProperty(video_to_test, {sharingEnabled: true}, user_to_test);
             const video_obj = auth_api.getUserVideo('admin', video_to_test, true);
             assert(video_obj);
+        });
+    });
+    describe('Zip generators', function() {
+        it('Playlist zip generator', async function() {
+            const playlist = await db_api.getPlaylist(playlist_to_test, user_to_test);
+            assert(playlist);
+            const playlist_files_to_download = [];
+            for (let i = 0; i < playlist['uids'].length; i++) {
+                const uid = playlist['uids'][i];
+                const playlist_file = await db_api.getVideo(uid, user_to_test);
+                playlist_files_to_download.push(playlist_file);
+            }
+            const zip_path = await utils.createContainerZipFile(playlist, playlist_files_to_download);
+            const zip_exists = fs.pathExistsSync(zip_path);
+            assert(zip_exists);
+            if (zip_exists) fs.unlinkSync(zip_path);
+        });
+
+        it('Subscription zip generator', async function() {
+            const sub = subscriptions_api.getSubscription(sub_to_test, user_to_test);
+            assert(sub);
+            const sub_files_to_download = [];
+            for (let i = 0; i < sub['videos'].length; i++) {
+                const sub_file = sub['videos'][i];
+                sub_files_to_download.push(sub_file);
+            }
+            const zip_path = await utils.createContainerZipFile(sub, sub_files_to_download);
+            const zip_exists = fs.pathExistsSync(zip_path);
+            assert(zip_exists);
+            if (zip_exists) fs.unlinkSync(zip_path);
         });
     });
     // describe('Video player - subscription', function() {

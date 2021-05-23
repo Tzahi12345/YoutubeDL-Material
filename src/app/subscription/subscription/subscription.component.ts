@@ -153,15 +153,14 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     }
 
     this.downloading = true;
-    // TODO: add download subscription route
-    /*this.postsService.downloadFileFromServer(fileNames, 'video', this.subscription.name, true).subscribe(res => {
+    this.postsService.downloadSubFromServer(this.subscription.id).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, this.subscription.name + '.zip');
     }, err => {
       console.log(err);
       this.downloading = false;
-    });*/
+    });
   }
 
   editSubscription() {

@@ -247,17 +247,29 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'downloadTwitchChatByVODID', {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub}, this.httpOptions);
     }
 
-    downloadFileFromServer(uid, uuid = null, is_playlist = false) {
+    downloadFileFromServer(uid, uuid = null, sub_id = null) {
         return this.http.post(this.path + 'downloadFile', {
                                                             uid: uid,
                                                             uuid: uuid,
-                                                            is_playlist: is_playlist
+                                                            sub_id: sub_id
                                                             },
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }
 
     downloadPlaylistFromServer(playlist_id, uuid = null) {
-        return this.http.post(this.path + 'downloadPlaylist', {playlist_id: playlist_id, uuid: uuid});
+        return this.http.post(this.path + 'downloadFile', {
+                                                            uuid: uuid,
+                                                            playlist_id: playlist_id
+                                                            },
+                                                          {responseType: 'blob', params: this.httpOptions.params});
+    }
+
+    downloadSubFromServer(sub_id, uuid = null) {
+        return this.http.post(this.path + 'downloadFile', {
+                                                            uuid: uuid,
+                                                            sub_id: sub_id
+                                                            },
+                                                          {responseType: 'blob', params: this.httpOptions.params});
     }
 
     checkConcurrentStream(uid) {

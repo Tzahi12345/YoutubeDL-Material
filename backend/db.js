@@ -245,7 +245,6 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
             if (uid) playlist['uids'].push(uid);
             else logger.warn(`Failed to convert file with name ${fileName} to its UID while converting playlist ${playlist['name']} to the new UID-based schema. The original file is likely missing/deleted and it will be skipped.`);
         }
-        delete playlist['fileNames'];
         exports.updatePlaylist(playlist, user_uid);
     }
 

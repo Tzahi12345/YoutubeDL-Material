@@ -187,6 +187,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.postsService.getPlaylist(this.playlist_id, this.uuid, true).subscribe(res => {
       if (res['playlist']) {
         this.db_playlist = res['playlist'];
+        this.db_playlist['file_objs'] = res['file_objs'];
         this.uids = this.db_playlist.uids;
         this.type = res['type'];
         this.show_player = true;
@@ -316,7 +317,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const zipName = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
     this.downloading = true;
-    this.postsService.downloadFileFromServer(this.playlist_id, this.uuid, true).subscribe(res => {
+    this.postsService.downloadPlaylistFromServer(this.playlist_id, this.uuid).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, zipName + '.zip');
@@ -330,7 +331,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
     const filename = this.playlist[0].title;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(this.uid, this.uuid, false).subscribe(res => {
+    this.postsService.downloadFileFromServer(this.uid, this.uuid, this.sub_id).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);
