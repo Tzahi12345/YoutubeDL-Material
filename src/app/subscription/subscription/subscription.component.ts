@@ -103,15 +103,14 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
   }
 
   goToFile(emit_obj) {
-    const name = emit_obj['name'];
+    const uid = emit_obj['uid'];
     const url = emit_obj['url'];
     localStorage.setItem('player_navigator', this.router.url);
     if (this.subscription.streamingOnly) {
-      this.router.navigate(['/player', {name: name, url: url}]);
+      this.router.navigate(['/player', {uid: uid, url: url}]);
     } else {
-      this.router.navigate(['/player', {fileNames: name,
-        type: this.subscription.type ? this.subscription.type : 'video', subscriptionName: this.subscription.name,
-        subPlaylist: this.subscription.isPlaylist}]);
+      this.router.navigate(['/player', {uid: uid,
+        sub_id: this.subscription.id}]);
     }
   }
 
@@ -154,7 +153,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     }
 
     this.downloading = true;
-    this.postsService.downloadFileFromServer(fileNames, 'video', this.subscription.name, true).subscribe(res => {
+    this.postsService.downloadSubFromServer(this.subscription.id).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, this.subscription.name + '.zip');

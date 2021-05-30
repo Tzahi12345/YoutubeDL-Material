@@ -243,7 +243,7 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
                 const archive_path = path.join(sub.archive, 'archive.txt')
                 // if archive exists, remove line with video ID
                 if (await fs.pathExists(archive_path)) {
-                    await removeIDFromArchive(archive_path, retrievedID);
+                    utils.removeIDFromArchive(archive_path, retrievedID);
                 }
             }
             return true;
@@ -597,33 +597,6 @@ function getAppendedBasePath(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
-async function removeIDFromArchive(archive_path, id) {
-    let data = await fs.readFile(archive_path, {encoding: 'utf-8'});
-    if (!data) {
-        logger.error('Archive could not be found.');
-        return;
-    }
-
-    let dataArray = data.split('\n'); // convert file data in an array
-    const searchKeyword = id; // we are looking for a line, contains, key word id in the file
-    let lastIndex = -1; // let say, we have not found the keyword
-
-    for (let index=0; index<dataArray.length; index++) {
-        if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
-            lastIndex = index; // found a line includes a id keyword
-            break;
-        }
-    }
-
-    const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
-
-    // UPDATE FILE WITH NEW DATA
-    const updatedData = dataArray.join('\n');
-    await fs.writeFile(archive_path, updatedData);
-    if (line) return line;
-    if (err) throw err;
-}
-
 module.exports = {
     getSubscription        : getSubscription,
     getSubscriptionByName  : getSubscriptionByName,
@@ -634,7 +607,6 @@ module.exports = {
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
-    removeIDFromArchive    : removeIDFromArchive,
     setLogger              : setLogger,
     initialize             : initialize,
     updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple

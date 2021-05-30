@@ -56,7 +56,7 @@ export class FileCardComponent implements OnInit {
 
   deleteFile(blacklistMode = false) {
     if (!this.playlist) {
-      this.postsService.deleteFile(this.uid, this.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
+      this.postsService.deleteFile(this.uid, blacklistMode).subscribe(result => {
         if (result) {
           this.openSnackBar('Delete success!', 'OK.');
           this.removeFile.emit(this.name);
@@ -84,7 +84,7 @@ export class FileCardComponent implements OnInit {
   editPlaylistDialog() {
     const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
       data: {
-        playlist: this.playlist,
+        playlist_id: this.playlist.id,
         width: '65vw'
       }
     });

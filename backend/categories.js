@@ -1,4 +1,5 @@
 const config_api = require('./config');
+const utils = require('./utils');
 
 var logger = null;
 var db = null;
@@ -68,6 +69,24 @@ function getCategories() {
     return categories ? categories : null;
 }
 
+function getCategoriesAsPlaylists(files = null) {
+    const categories_as_playlists = [];
+    const available_categories = getCategories();
+    if (available_categories && files) {
+        for (category of available_categories) {
+            const files_that_match = utils.addUIDsToCategory(category, files);
+            if (files_that_match && files_that_match.length > 0) {
+                category['thumbnailURL'] = files_that_match[0].thumbnailURL;
+                category['thumbnailPath'] = files_that_match[0].thumbnailPath;
+                category['duration'] = files_that_match.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
+                category['id'] = category['uid'];
+                categories_as_playlists.push(category);
+            }
+        }
+    }
+    return categories_as_playlists;
+}
+
 function applyCategoryRules(file_json, rules, category_name) {
     let rules_apply = false;
     for (let i = 0; i < rules.length; i++) {
@@ -126,4 +145,6 @@ async function addTagToExistingTags(tag) {
 module.exports = {
     initialize: initialize,
     categorize: categorize,
+    getCategories: getCategories,
+    getCategoriesAsPlaylists: getCategoriesAsPlaylists
 }

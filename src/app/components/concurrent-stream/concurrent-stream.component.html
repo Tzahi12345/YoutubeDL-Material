@@ -1,0 +1,6 @@
+<div class="buttons-container">
+    <button (click)="startWatching()" *ngIf="!watch_together_clicked" mat-flat-button>Watch together</button>
+    <button (click)="startServer()" *ngIf="watch_together_clicked && !started && server_mode && server_already_exists === false" mat-flat-button>Start stream</button>
+    <button (click)="startClient()" *ngIf="watch_together_clicked && !started && server_already_exists === true" mat-flat-button>Join stream</button>
+    <button style="margin-left: 10px;" (click)="stop()" *ngIf="watch_together_clicked" mat-flat-button>Stop</button>
+</div>

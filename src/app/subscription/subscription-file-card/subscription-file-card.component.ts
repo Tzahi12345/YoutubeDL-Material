@@ -42,7 +42,7 @@ export class SubscriptionFileCardComponent implements OnInit {
 
   goToFile() {
     const emit_obj = {
-      name: this.file.id,
+      uid: this.file.uid,
       url: this.file.requested_formats ? this.file.requested_formats[0].url : this.file.url
     }
     this.goToFileEmit.emit(emit_obj);

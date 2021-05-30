@@ -1,6 +1,7 @@
-var fs = require('fs-extra')
-var path = require('path')
+const fs = require('fs-extra')
+const path = require('path')
 const config_api = require('./config');
+const archiver = require('archiver');
 
 const is_windows = process.platform === 'win32';
 
@@ -50,6 +51,43 @@ async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
         files.push(file_obj);
     }
     return files;
+}
+
+async function createContainerZipFile(container_obj, container_file_objs) {
+    const container_files_to_download = [];
+    for (let i = 0; i < container_file_objs.length; i++) {
+        const container_file_obj = container_file_objs[i];
+        container_files_to_download.push(container_file_obj.path);
+    }
+    return await createZipFile(path.join('appdata', container_obj.name + '.zip'), container_files_to_download);
+}
+
+async function createZipFile(zip_file_path, file_paths) {
+    let output = fs.createWriteStream(zip_file_path);
+
+    var archive = archiver('zip', {
+        gzip: true,
+        zlib: { level: 9 } // Sets the compression level.
+    });
+
+    archive.on('error', function(err) {
+        logger.error(err);
+        throw err;
+    });
+
+    // pipe archive data to the output file
+    archive.pipe(output);
+
+    for (let file_path of file_paths) {
+        const file_name = path.parse(file_path).base;
+        archive.file(file_path, {name: file_name})
+    }
+
+    await archive.finalize();
+
+    // wait a tiny bit for the zip to reload in fs
+    await wait(100);
+    return zip_file_path;
 }
 
 function getJSONMp4(name, customPath, openReadPerms = false) {
@@ -164,6 +202,52 @@ function deleteJSONFile(name, type, customPath = null) {
     if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
 }
 
+async function removeIDFromArchive(archive_path, id) {
+    let data = await fs.readFile(archive_path, {encoding: 'utf-8'});
+    if (!data) {
+        logger.error('Archive could not be found.');
+        return;
+    }
+
+    let dataArray = data.split('\n'); // convert file data in an array
+    const searchKeyword = id; // we are looking for a line, contains, key word id in the file
+    let lastIndex = -1; // let say, we have not found the keyword
+
+    for (let index=0; index<dataArray.length; index++) {
+        if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
+            lastIndex = index; // found a line includes a id keyword
+            break;
+        }
+    }
+
+    const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
+
+    // UPDATE FILE WITH NEW DATA
+    const updatedData = dataArray.join('\n');
+    await fs.writeFile(archive_path, updatedData);
+    if (line) return line;
+    if (err) throw err;
+}
+
+function durationStringToNumber(dur_str) {
+    if (typeof dur_str === 'number') return dur_str;
+    let num_sum = 0;
+    const dur_str_parts = dur_str.split(':');
+    for (let i = dur_str_parts.length-1; i >= 0; i--) {
+      num_sum += parseInt(dur_str_parts[i])*(60**(dur_str_parts.length-1-i));
+    }
+    return num_sum;
+}
+
+function getMatchingCategoryFiles(category, files) {
+    return files && files.filter(file => file.category && file.category.uid === category.uid);
+}
+
+function addUIDsToCategory(category, files) {
+    const files_that_match = getMatchingCategoryFiles(category, files);
+    category['uids'] = files_that_match.map(file => file.uid);
+    return files_that_match;
+}
 
 async function recFindByExt(base,ext,files,result)
 {
@@ -193,6 +277,16 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
+/**
+ * setTimeout, but its a promise.
+ * @param {number} ms
+ */
+ async function wait(ms) {
+    await new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -220,8 +314,14 @@ module.exports = {
     getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
     deleteJSONFile: deleteJSONFile,
+    removeIDFromArchive, removeIDFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
+    createContainerZipFile: createContainerZipFile,
+    durationStringToNumber: durationStringToNumber,
+    getMatchingCategoryFiles: getMatchingCategoryFiles,
+    addUIDsToCategory: addUIDsToCategory,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
+    wait: wait,
     File: File
 }

@@ -19,9 +19,9 @@
                 <mat-label *ngIf="type === 'audio'"><ng-container i18n="Audio files title">Audio files</ng-container></mat-label>
                 <mat-label *ngIf="type === 'video'"><ng-container i18n="Videos title">Videos</ng-container></mat-label>
                 <mat-select [formControl]="filesSelect" multiple required aria-required>
-                    <ng-container *ngIf="filesToSelectFrom"><mat-option *ngFor="let file of filesToSelectFrom" [value]="file.id">{{file.id}}</mat-option></ng-container>
-                    <ng-container *ngIf="audiosToSelectFrom && type === 'audio'"><mat-option *ngFor="let file of audiosToSelectFrom" [value]="file.id">{{file.id}}</mat-option></ng-container>
-                    <ng-container *ngIf="videosToSelectFrom && type === 'video'"><mat-option *ngFor="let file of videosToSelectFrom" [value]="file.id">{{file.id}}</mat-option></ng-container>
+                    <ng-container *ngIf="filesToSelectFrom"><mat-option *ngFor="let file of filesToSelectFrom" [value]="file.uid">{{file.id}}</mat-option></ng-container>
+                    <ng-container *ngIf="audiosToSelectFrom && type === 'audio'"><mat-option *ngFor="let file of audiosToSelectFrom" [value]="file.uid">{{file.id}}</mat-option></ng-container>
+                    <ng-container *ngIf="videosToSelectFrom && type === 'video'"><mat-option *ngFor="let file of videosToSelectFrom" [value]="file.uid">{{file.id}}</mat-option></ng-container>
                 </mat-select>
             </mat-form-field>
             <!-- No videos available -->

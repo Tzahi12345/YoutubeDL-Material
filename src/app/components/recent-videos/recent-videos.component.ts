@@ -201,8 +201,7 @@ export class RecentVideosComponent implements OnInit {
     const type = file.isAudio ? 'audio' : 'video';
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.downloadFileFromServer(file.id, type, null, null, sub.name, sub.isPlaylist,
-      this.postsService.user ? this.postsService.user.uid : null, null).subscribe(res => {
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
           const blob: Blob = res;
           saveAs(blob, file.id + ext);
         }, err => {
@@ -215,14 +214,14 @@ export class RecentVideosComponent implements OnInit {
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const name = file.id;
     this.downloading_content[type][name] = true;
-    this.postsService.downloadFileFromServer(name, type).subscribe(res => {
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
       this.downloading_content[type][name] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(name) + ext);
 
       if (!this.postsService.config.Extra.file_manager_enabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, type).subscribe(delRes => {
+        this.postsService.deleteFile(file.uid).subscribe(delRes => {
           // reload mp4s
           this.getAllFiles();
         });
@@ -245,7 +244,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   deleteNormalFile(file, blacklistMode = false) {
-    this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
+    this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
         this.removeFileCard(file);
