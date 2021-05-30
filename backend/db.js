@@ -53,14 +53,14 @@ exports.registerFileDB = (file_path, type, multiUserMode = null, sub = null, cus
         }
     }
 
-    const file_uid = registerFileDBManual(db_path, file_object);
+    const file_obj = registerFileDBManual(db_path, file_object);
 
     // remove metadata JSON if needed
     if (!config_api.getConfigItem('ytdl_include_metadata')) {
         utils.deleteJSONFile(file_id, type, multiUserMode && multiUserMode.file_path)
     }
 
-    return file_uid;
+    return file_obj;
 }
 
 function registerFileDBManual(db_path, file_object) {
@@ -75,7 +75,7 @@ function registerFileDBManual(db_path, file_object) {
 
     // add new file to db
     db_path.push(file_object).write();
-    return file_object['uid'];
+    return file_object;
 }
 
 function generateFileObject(id, type, customPath = null, sub = null) {
@@ -224,15 +224,45 @@ exports.preimportUnregisteredSubscriptionFile = async (sub, appendedBasePath) =>
     return preimported_file_paths;
 }
 
+exports.createPlaylist = async (playlist_name, uids, type, thumbnail_url, user_uid = null) => {
+    let new_playlist = {
+        name: playlist_name,
+        uids: uids,
+        id: uuid(),
+        thumbnailURL: thumbnail_url,
+        type: type,
+        registered: Date.now(),
+    };
+
+    const duration = await exports.calculatePlaylistDuration(new_playlist, user_uid);
+    new_playlist.duration = duration;
+    
+    if (user_uid) {
+        users_db.get('users').find({uid: user_uid}).get(`playlists`).push(new_playlist).write();
+    } else {
+        db.get(`playlists`)
+            .push(new_playlist)
+            .write();
+    }
+
+    return new_playlist;
+}
+
 exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = false) => {
     let playlist = null
     if (user_uid) {
         playlist = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlist_id}).value();
-
-        // prevent unauthorized users from accessing the file info
-        if (require_sharing && !playlist['sharingEnabled']) return null;
     } else {
         playlist = db.get(`playlists`).find({id: playlist_id}).value();
+    }
+
+    if (!playlist) {
+        playlist = db.get('categories').find({uid: playlist_id}).value();
+        if (playlist) {
+            // category found
+            const files = await exports.getFiles(user_uid);
+            utils.addUIDsToCategory(playlist, files);
+        }
     }
 
     // converts playlists to new UID-based schema
@@ -248,11 +278,18 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
         exports.updatePlaylist(playlist, user_uid);
     }
 
+    // prevent unauthorized users from accessing the file info
+    if (require_sharing && !playlist['sharingEnabled']) return null;
+
     return playlist;
 }
 
-exports.updatePlaylist = (playlist, user_uid = null) => {
+exports.updatePlaylist = async (playlist, user_uid = null) => {
     let playlistID = playlist.id;
+
+    const duration = await exports.calculatePlaylistDuration(playlist, user_uid);
+    playlist.duration = duration;
+
     let db_loc = null;
     if (user_uid) {
         db_loc = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID});
@@ -263,6 +300,103 @@ exports.updatePlaylist = (playlist, user_uid = null) => {
     return true;
 }
 
+exports.calculatePlaylistDuration = async (playlist, uuid, playlist_file_objs = null) => {
+    if (!playlist_file_objs) {
+        playlist_file_objs = [];
+        for (let i = 0; i < playlist['uids'].length; i++) {
+            const uid = playlist['uids'][i];
+            const file_obj = await exports.getVideo(uid, uuid);
+            if (file_obj) playlist_file_objs.push(file_obj);
+        }
+    }
+
+    return playlist_file_objs.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
+}
+
+exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
+    const file_obj = await exports.getVideo(uid, uuid);
+    const type = file_obj.isAudio ? 'audio' : 'video';
+    const folderPath = path.dirname(file_obj.path);
+    const ext = type === 'audio' ? 'mp3' : 'mp4';
+    const name = file_obj.id;
+    const filePathNoExtension = utils.removeFileExtension(file_obj.path);
+
+    var jsonPath = `${file_obj.path}.info.json`;
+    var altJSONPath = `${filePathNoExtension}.info.json`;
+    var thumbnailPath = `${filePathNoExtension}.webp`;
+    var altThumbnailPath = `${filePathNoExtension}.jpg`;
+
+    jsonPath = path.join(__dirname, jsonPath);
+    altJSONPath = path.join(__dirname, altJSONPath);
+
+    let jsonExists = await fs.pathExists(jsonPath);
+    let thumbnailExists = await fs.pathExists(thumbnailPath);
+
+    if (!jsonExists) {
+        if (await fs.pathExists(altJSONPath)) {
+            jsonExists = true;
+            jsonPath = altJSONPath;
+        }
+    }
+
+    if (!thumbnailExists) {
+        if (await fs.pathExists(altThumbnailPath)) {
+            thumbnailExists = true;
+            thumbnailPath = altThumbnailPath;
+        }
+    }
+
+    let fileExists = await fs.pathExists(file_obj.path);
+
+    if (config_api.descriptors[uid]) {
+        try {
+            for (let i = 0; i < config_api.descriptors[uid].length; i++) {
+                config_api.descriptors[uid][i].destroy();
+            }
+        } catch(e) {
+
+        }
+    }
+
+    let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+    if (useYoutubeDLArchive) {
+        const archive_path = uuid ? path.join(usersFileFolder, uuid, 'archives', `archive_${type}.txt`) : path.join('appdata', 'archives', `archive_${type}.txt`);
+
+        // get ID from JSON
+
+        var jsonobj = await (type === 'audio' ? utils.getJSONMp3(name, folderPath) : utils.getJSONMp4(name, folderPath));
+        let id = null;
+        if (jsonobj) id = jsonobj.id;
+
+        // use subscriptions API to remove video from the archive file, and write it to the blacklist
+        if (await fs.pathExists(archive_path)) {
+            const line = id ? await utils.removeIDFromArchive(archive_path, id) : null;
+            if (blacklistMode && line) await writeToBlacklist(type, line);
+        } else {
+            logger.info('Could not find archive file for audio files. Creating...');
+            await fs.close(await fs.open(archive_path, 'w'));
+        }
+    }
+
+    if (jsonExists) await fs.unlink(jsonPath);
+    if (thumbnailExists) await fs.unlink(thumbnailPath);
+
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    base_db_path.get('files').remove({uid: uid}).write();
+
+    if (fileExists) {
+        await fs.unlink(file_obj.path);
+        if (await fs.pathExists(jsonPath) || await fs.pathExists(file_obj.path)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        // TODO: tell user that the file didn't exist
+        return true;
+    }
+}
+
 // Video ID is basically just the file name without the base path and file extension - this method helps us get away from that
 exports.getVideoUIDByID = (file_id, uuid = null) => {
     const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
@@ -270,10 +404,15 @@ exports.getVideoUIDByID = (file_id, uuid = null) => {
     return file_obj ? file_obj['uid'] : null;
 }
 
-exports.getVideo = async (file_uid, uuid, sub_id) => {
+exports.getVideo = async (file_uid, uuid = null, sub_id = null) => {
     const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
     const sub_db_path = sub_id ? base_db_path.get('subscriptions').find({id: sub_id}).get('videos') : base_db_path.get('files');
     return sub_db_path.find({uid: file_uid}).value();
+}
+
+exports.getFiles = async (uuid = null) => {
+    const base_db_path = uuid ? users_db.get('users').find({uid: uuid}) : db;
+    return base_db_path.get('files').value();
 }
 
 exports.setVideoProperty = async (file_uid, assignment_obj, uuid, sub_id) => {

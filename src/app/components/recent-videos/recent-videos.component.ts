@@ -221,7 +221,7 @@ export class RecentVideosComponent implements OnInit {
 
       if (!this.postsService.config.Extra.file_manager_enabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, type).subscribe(delRes => {
+        this.postsService.deleteFile(file.uid).subscribe(delRes => {
           // reload mp4s
           this.getAllFiles();
         });

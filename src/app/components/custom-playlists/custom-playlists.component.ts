@@ -53,14 +53,12 @@ export class CustomPlaylistsComponent implements OnInit {
   goToPlaylist(info_obj) {
     const playlist = info_obj.file;
     const playlistID = playlist.id;
-    const type = playlist.type;
 
     if (playlist) {
       if (this.postsService.config['Extra']['download_only_mode']) {
         this.downloadPlaylist(playlist.id, playlist.name);
       } else {
         localStorage.setItem('player_navigator', this.router.url);
-        const fileNames = playlist.fileNames;
         this.router.navigate(['/player', {playlist_id: playlistID, auto: playlist.auto}]);
       }
     } else {

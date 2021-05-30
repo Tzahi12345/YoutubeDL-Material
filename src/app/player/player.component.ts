@@ -180,10 +180,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getPlaylistFiles() {
-    if (this.route.snapshot.paramMap.get('auto') === 'true') {
-      this.show_player = true;
-      return;
-    }
     this.postsService.getPlaylist(this.playlist_id, this.uuid, true).subscribe(res => {
       if (res['playlist']) {
         this.db_playlist = res['playlist'];
@@ -200,18 +196,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  parseFileNames() {
-    let fileType = null;
-    if (this.type === 'audio') {
-      fileType = 'audio/mp3';
-    } else {
-      fileType = 'video/mp4';
-    }
+  parseFileNames() {    
     this.playlist = [];
     for (let i = 0; i < this.uids.length; i++) {
       const uid = this.uids[i];
 
       const file_obj = this.playlist_id ? this.db_playlist['file_objs'][i] : this.db_file;
+
+      const mime_type = file_obj.isAudio ? 'audio/mp3' : 'video/mp4' 
 
       let baseLocation = 'stream/';
       let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${file_obj['uid']}`;
@@ -233,7 +225,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       const mediaObject: IMedia = {
         title: file_obj['title'],
         src: fullLocation,
-        type: fileType,
+        type: mime_type,
         label: file_obj['title']
       }
       this.playlist.push(mediaObject);
@@ -328,8 +320,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadFile() {
-    const ext = (this.type === 'audio') ? '.mp3' : '.mp4';
     const filename = this.playlist[0].title;
+    const ext = (this.playlist[0].type === 'audio/mp3') ? '.mp3' : '.mp4';
     this.downloading = true;
     this.postsService.downloadFileFromServer(this.uid, this.uuid, this.sub_id).subscribe(res => {
       this.downloading = false;
@@ -376,7 +368,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const dialogRef = this.dialog.open(ShareMediaDialogComponent, {
       data: {
         uid: this.playlist_id ? this.playlist_id : this.uid,
-        type: this.type,
         sharing_enabled: this.playlist_id ? this.db_playlist.sharingEnabled : this.db_file.sharingEnabled,
         is_playlist: !!this.playlist_id,
         uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : null,

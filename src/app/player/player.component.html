@@ -1,10 +1,10 @@
 <div style="height: 100%" *ngIf="playlist.length > 0 && show_player">
-    <div style="height: 100%" [ngClass]="(type === 'audio') ? null : 'container-video'">
+    <div style="height: 100%" [ngClass]="(currentItem.type === 'audio/mp3') ? null : 'container-video'">
             <div style="max-width: 100%; margin-left: 0px; height: 100%">
                 <mat-drawer-container style="height: 100%" class="example-container" autosize>
-                    <div style="height: fit-content" [ngClass]="(type === 'audio') ? 'audio-col' : 'video-col'">
-                        <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
-                            <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
+                    <div style="height: fit-content" [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-col' : 'video-col'">
+                        <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(currentItem.type === 'audio/mp3') ? 'transparent' : 'black'">
+                            <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
                             </video>
                         </vg-player>
                     </div>

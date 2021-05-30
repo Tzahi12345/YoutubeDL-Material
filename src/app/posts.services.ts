@@ -171,20 +171,8 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    makeMP3(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null) {
-        return this.http.post(this.path + 'tomp3', {url: url,
-                                                    maxBitrate: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration,
-                                                    customArgs: customArgs,
-                                                    customOutput: customOutput,
-                                                    youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword,
-                                                    ui_uid: ui_uid}, this.httpOptions);
-    }
-
-    // tslint:disable-next-line: max-line-length
-    makeMP4(url: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null, cropFileSettings = null) {
-        return this.http.post(this.path + 'tomp4', {url: url,
+    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null, cropFileSettings = null) {
+        return this.http.post(this.path + 'downloadFile', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
@@ -192,6 +180,7 @@ export class PostsService implements CanActivate {
                                                     youtubeUsername: youtubeUsername,
                                                     youtubePassword: youtubePassword,
                                                     ui_uid: ui_uid,
+                                                    type: type,
                                                     cropFileSettings: cropFileSettings}, this.httpOptions);
     }
 
@@ -248,7 +237,7 @@ export class PostsService implements CanActivate {
     }
 
     downloadFileFromServer(uid, uuid = null, sub_id = null) {
-        return this.http.post(this.path + 'downloadFile', {
+        return this.http.post(this.path + 'downloadFileFromServer', {
                                                             uid: uid,
                                                             uuid: uuid,
                                                             sub_id: sub_id
@@ -257,7 +246,7 @@ export class PostsService implements CanActivate {
     }
 
     downloadPlaylistFromServer(playlist_id, uuid = null) {
-        return this.http.post(this.path + 'downloadFile', {
+        return this.http.post(this.path + 'downloadFileFromServer', {
                                                             uuid: uuid,
                                                             playlist_id: playlist_id
                                                             },
@@ -265,7 +254,7 @@ export class PostsService implements CanActivate {
     }
 
     downloadSubFromServer(sub_id, uuid = null) {
-        return this.http.post(this.path + 'downloadFile', {
+        return this.http.post(this.path + 'downloadFileFromServer', {
                                                             uuid: uuid,
                                                             sub_id: sub_id
                                                             },
@@ -307,24 +296,23 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'generateNewAPIKey', {}, this.httpOptions);
     }
 
-    enableSharing(uid, type, is_playlist) {
-        return this.http.post(this.path + 'enableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
+    enableSharing(uid, is_playlist) {
+        return this.http.post(this.path + 'enableSharing', {uid: uid, is_playlist: is_playlist}, this.httpOptions);
+    }
+
+    disableSharing(uid, is_playlist) {
+        return this.http.post(this.path + 'disableSharing', {uid: uid, is_playlist: is_playlist}, this.httpOptions);
     }
 
     incrementViewCount(file_uid, sub_id, uuid) {
         return this.http.post(this.path + 'incrementViewCount', {file_uid: file_uid, sub_id: sub_id, uuid: uuid}, this.httpOptions);
     }
 
-    disableSharing(uid, type, is_playlist) {
-        return this.http.post(this.path + 'disableSharing', {uid: uid, type: type, is_playlist: is_playlist}, this.httpOptions);
-    }
-
-    createPlaylist(playlistName, uids, type, thumbnailURL, duration = null) {
+    createPlaylist(playlistName, uids, type, thumbnailURL) {
         return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
                                                             uids: uids,
                                                             type: type,
-                                                            thumbnailURL: thumbnailURL,
-                                                            duration: duration}, this.httpOptions);
+                                                            thumbnailURL: thumbnailURL}, this.httpOptions);
     }
 
     getPlaylist(playlist_id, uuid = null, include_file_metadata = false) {

@@ -1,12 +1,10 @@
 const path = require('path');
 const config_api = require('../config');
 const consts = require('../consts');
-var subscriptions_api = require('../subscriptions')
 const fs = require('fs-extra');
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const { uuid } = require('uuidv4');
-var bcrypt = require('bcryptjs');
-
+const bcrypt = require('bcryptjs');
 
 var LocalStrategy = require('passport-local').Strategy;
 var LdapStrategy = require('passport-ldapauth');
@@ -299,11 +297,6 @@ exports.getUserVideo = function(user_uid, file_uid, requireSharing = false) {
   return file;
 }
 
-exports.addPlaylist = function(user_uid, new_playlist) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists`).push(new_playlist).write();
-  return true;
-}
-
 exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames) {
   users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).assign({fileNames: new_filenames});
   return true;
@@ -317,35 +310,6 @@ exports.removePlaylist = function(user_uid, playlistID) {
 exports.getUserPlaylists = function(user_uid, user_files = null) {
   const user = users_db.get('users').find({uid: user_uid}).value();
   const playlists = JSON.parse(JSON.stringify(user['playlists']));
-  const categories = db.get('categories').value();
-  if (categories && user_files) {
-      categories.forEach(category => {
-          const audio_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && file.isAudio);
-          const video_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && !file.isAudio);
-          if (audio_files && audio_files.length > 0) {
-              playlists.push({
-                  name: category['name'],
-                  thumbnailURL: audio_files[0].thumbnailURL,
-                  thumbnailPath: audio_files[0].thumbnailPath,
-                  fileNames: audio_files.map(file => file.id),
-                  type: 'audio',
-                  uid: user_uid,
-                  auto: true
-              });
-          }
-          if (video_files && video_files.length > 0) {
-              playlists.push({
-                  name: category['name'],
-                  thumbnailURL: video_files[0].thumbnailURL,
-                  thumbnailPath: video_files[0].thumbnailPath,
-                  fileNames: video_files.map(file => file.id),
-                  type: 'video',
-                  uid: user_uid,
-                  auto: true
-              });
-          }
-      });
-  }
   return playlists;
 }
 
@@ -367,75 +331,6 @@ exports.registerUserFile = function(user_uid, file_object) {
   users_db.get('users').find({uid: user_uid}).get(`files`)
       .push(file_object)
       .write();
-}
-
-exports.deleteUserFile = async function(user_uid, file_uid, blacklistMode = false) {
-  let success = false;
-  const file_obj = users_db.get('users').find({uid: user_uid}).get(`files`).find({uid: file_uid}).value();
-  if (file_obj) {
-    const type = file_obj.isAudio ? 'audio' : 'video';
-    const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-    const ext = type === 'audio' ? '.mp3' : '.mp4';
-
-    // close descriptors
-    if (config_api.descriptors[file_obj.id]) {
-      try {
-          for (let i = 0; i < config_api.descriptors[file_obj.id].length; i++) {
-            config_api.descriptors[file_obj.id][i].destroy();
-          }
-      } catch(e) {
-
-      }
-    }
-
-    const full_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext);
-    users_db.get('users').find({uid: user_uid}).get(`files`)
-      .remove({
-          uid: file_uid
-      }).write();
-    if (await fs.pathExists(full_path)) {
-      // remove json and file
-      const json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + '.info.json');
-      const alternate_json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext + '.info.json');
-      let youtube_id = null;
-      if (await fs.pathExists(json_path)) {
-        youtube_id = await fs.readJSON(json_path).id;
-        await fs.unlink(json_path);
-      } else if (await fs.pathExists(alternate_json_path)) {
-        youtube_id = await fs.readJSON(alternate_json_path).id;
-        await fs.unlink(alternate_json_path);
-      }
-
-      await fs.unlink(full_path);
-
-      // do archive stuff
-
-      let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-      if (useYoutubeDLArchive) {
-          const archive_path = path.join(usersFileFolder, user_uid, 'archives', `archive_${type}.txt`);
-
-          // use subscriptions API to remove video from the archive file, and write it to the blacklist
-          if (await fs.pathExists(archive_path)) {
-              const line = youtube_id ? await subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
-              if (blacklistMode && line) {
-                let blacklistPath = path.join(usersFileFolder, user_uid, 'archives', `blacklist_${type}.txt`);
-                // adds newline to the beginning of the line
-                line = '\n' + line;
-                await fs.appendFile(blacklistPath, line);
-              }
-          } else {
-              logger.info(`Could not find archive file for ${type} files. Creating...`);
-              await fs.ensureFile(archive_path);
-          }
-      }
-    }
-    success = true;
-  } else {
-    success = false;
-    logger.warn(`User file ${file_uid} does not exist!`);
-  }
-
-  return success;
 }
 
 exports.changeSharingMode = function(user_uid, file_uid, is_playlist, enabled) {

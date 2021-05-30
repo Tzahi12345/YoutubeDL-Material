@@ -1,7 +1,6 @@
 <h4 mat-dialog-title>
     <ng-container *ngIf="is_playlist" i18n="Share playlist dialog title">Share playlist</ng-container>
-    <ng-container *ngIf="!is_playlist && type === 'video'" i18n="Share video dialog title">Share video</ng-container>
-    <ng-container *ngIf="!is_playlist && type === 'audio'" i18n="Share audio dialog title">Share audio</ng-container>
+    <ng-container *ngIf="!is_playlist" i18n="Share video dialog title">Share file</ng-container>
 </h4>
 
 <mat-dialog-content>
