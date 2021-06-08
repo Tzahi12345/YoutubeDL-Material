@@ -45,6 +45,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   subPlaylist = null;
   uuid = null; // used for sharing in multi-user mode, uuid is the user that downloaded the video
   timestamp = null;
+  auto = null;
 
   db_playlist = null;
   db_file = null;
@@ -82,6 +83,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.name = this.route.snapshot.paramMap.get('name');
     this.uuid = this.route.snapshot.paramMap.get('uuid');
     this.timestamp = this.route.snapshot.paramMap.get('timestamp');
+    this.auto = this.route.snapshot.paramMap.get('auto');
 
     // loading config
     if (this.postsService.initialized) {

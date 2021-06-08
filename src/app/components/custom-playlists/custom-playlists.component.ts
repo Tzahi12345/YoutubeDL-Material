@@ -59,7 +59,9 @@ export class CustomPlaylistsComponent implements OnInit {
         this.downloadPlaylist(playlist.id, playlist.name);
       } else {
         localStorage.setItem('player_navigator', this.router.url);
-        this.router.navigate(['/player', {playlist_id: playlistID, auto: playlist.auto}]);
+        const routeParams = {playlist_id: playlistID};
+        if (playlist.auto) { routeParams['auto'] =  playlist.auto; }
+        this.router.navigate(['/player', routeParams]);
       }
     } else {
       // playlist not found
