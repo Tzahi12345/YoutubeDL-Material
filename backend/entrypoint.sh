@@ -14,4 +14,4 @@ if [ "$*" = "$CMD" ] && [ "$(id -u)" = "0" ]; then
   exec su-exec "$UID:$GID" "$0" "$@"
 fi
 
-exec "$@"
+exec $@

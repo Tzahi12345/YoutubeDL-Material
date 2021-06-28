@@ -9,6 +9,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
+import { ɵangular_packages_platform_browser_dynamic_testing_testing_b } from '@angular/platform-browser-dynamic/testing';
 
 export interface IMedia {
   title: string;
@@ -49,7 +50,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   is_shared = false;
 
   db_playlist = null;
-  db_file = null;
+  db_file = null; // the current file
+  db_files = []; // all files in the subscription
 
   baseStreamPath = null;
   audioFolderPath = null;
@@ -120,7 +122,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
     this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
     this.subscriptionFolderPath = this.postsService.config['Subscriptions']['subscriptions_base_path'];
-    this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split('|nvr|') : null;
+    this.fileNames = this.route.snapshot.paramMap.get('fileNames') ? this.route.snapshot.paramMap.get('fileNames').split(',') : null;
 
     if (!this.fileNames && !this.type) {
       this.is_shared = true;
@@ -189,16 +191,16 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.subscription = subscription;
       if (this.fileNames) {
         subscription.videos.forEach(video => {
+          this.db_files.push(video);
           if (video['id'] === this.fileNames[0]) {
-            this.db_file = video;
-            this.postsService.incrementViewCount(this.db_file['uid'], this.subscription['id'], this.uuid).subscribe(res => {}, err => {
+            this.postsService.incrementViewCount(video['uid'], this.subscription['id'], this.uuid).subscribe(res => {}, err => {
               console.error('Failed to increment view count');
               console.error(err);
             });
-            this.show_player = true;
-            this.parseFileNames();
           }
         });
+        this.show_player = true;
+        this.parseFileNames();
       } else {
         console.log('no file name specified');
       }
@@ -239,52 +241,61 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.playlist = [];
     for (let i = 0; i < this.fileNames.length; i++) {
-      const fileName = this.fileNames[i];
-      let baseLocation = null;
-      let fullLocation = null;
-
-      // adds user token if in multi-user-mode
-      const uuid_str = this.uuid ? `&uuid=${this.uuid}` : '';
-      const uid_str = (this.id || !this.db_file) ? '' : `&uid=${this.db_file.uid}`;
-      const type_str = (this.type || !this.db_file) ? `&type=${this.type}` : `&type=${this.db_file.type}`
-      const id_str = this.id ? `&id=${this.id}` : '';
-      const file_path_str = (!this.db_file) ? '' : `&file_path=${encodeURIComponent(this.db_file.path)}`;
-
-      if (!this.subscriptionName) {
-        baseLocation = 'stream/';
-        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + `?test=test${type_str}${file_path_str}`;
+      const currentDBFileIndex = this.db_files.findIndex( db_item => db_item.id == this.fileNames[i] );
+      if (currentDBFileIndex != -1) {
+        const fileName = this.fileNames[i];
+        let baseLocation = null;
+        let fullLocation = null;
+  
+        // adds user token if in multi-user-mode
+        const uuid_str = this.db_files[currentDBFileIndex].uid ? `&uuid=${this.db_files[currentDBFileIndex].uid}` : '';
+        const uid_str = (this.id || !this.db_files[currentDBFileIndex]) ? '' : `&uid=${this.db_files[currentDBFileIndex].id}`;
+        const type_str = (this.type || !this.db_files[currentDBFileIndex]) ? `&type=${this.type}` : `&type=${this.db_files[currentDBFileIndex].type}`;
+        const id_str = this.id ? `&id=${this.id}` : '';
+        const file_path_str = (!this.db_files[currentDBFileIndex]) ? '' : `&file_path=${encodeURIComponent(this.db_files[currentDBFileIndex].path)}`;
+  
+        if (!this.subscriptionName) {
+          baseLocation = 'stream/';
+          fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + `?test=test${type_str}${file_path_str}`;
+        } else {
+          // default to video but include subscription name param
+          baseLocation = 'stream/';
+          fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
+                          '&subPlaylist=' + this.subPlaylist + `${file_path_str}${type_str}`;
+        }
+  
+        if (this.postsService.isLoggedIn) {
+          fullLocation += (this.subscriptionName ? '&' : '&') + `jwt=${this.postsService.token}`;
+          if (this.is_shared) { fullLocation += `${uuid_str}${uid_str}${type_str}${id_str}`; }
+        } else if (this.is_shared) {
+          fullLocation += (this.subscriptionName ? '&' : '?') + `test=test${uuid_str}${uid_str}${type_str}${id_str}`;
+        }
+        // if it has a slash (meaning it's in a directory), only get the file name for the label
+        let label = null;
+        const decodedName = decodeURIComponent(fileName);
+        const hasSlash = decodedName.includes('/') || decodedName.includes('\\');
+        if (hasSlash) {
+          label = decodedName.replace(/^.*[\\\/]/, '');
+        } else {
+          label = decodedName;
+        }
+        const mediaObject: IMedia = {
+          title: fileName,
+          src: fullLocation,
+          type: fileType,
+          label: label
+        }
+        console.log('pushing to playlist');
+        console.log(mediaObject);
+        this.playlist.push(mediaObject);
       } else {
-        // default to video but include subscription name param
-        baseLocation = 'stream/';
-        fullLocation = this.baseStreamPath + baseLocation + encodeURIComponent(fileName) + '?subName=' + this.subscriptionName +
-                        '&subPlaylist=' + this.subPlaylist + `${file_path_str}${type_str}`;
+        console.log(this.fileNames[i] + ' was not found in the db_files object');
+        console.log(this.db_files);
       }
-
-      if (this.postsService.isLoggedIn) {
-        fullLocation += (this.subscriptionName ? '&' : '&') + `jwt=${this.postsService.token}`;
-        if (this.is_shared) { fullLocation += `${uuid_str}${uid_str}${type_str}${id_str}`; }
-      } else if (this.is_shared) {
-        fullLocation += (this.subscriptionName ? '&' : '?') + `test=test${uuid_str}${uid_str}${type_str}${id_str}`;
+      console.log(this.playlist);
+      this.currentItem = this.playlist[this.currentIndex];
+      this.original_playlist = JSON.stringify(this.playlist);
       }
-      // if it has a slash (meaning it's in a directory), only get the file name for the label
-      let label = null;
-      const decodedName = decodeURIComponent(fileName);
-      const hasSlash = decodedName.includes('/') || decodedName.includes('\\');
-      if (hasSlash) {
-        label = decodedName.replace(/^.*[\\\/]/, '');
-      } else {
-        label = decodedName;
-      }
-      const mediaObject: IMedia = {
-        title: fileName,
-        src: fullLocation,
-        type: fileType,
-        label: label
-      }
-      this.playlist.push(mediaObject);
-    }
-    this.currentItem = this.playlist[this.currentIndex];
-    this.original_playlist = JSON.stringify(this.playlist);
   }
 
   onPlayerReady(api: VgApiService) {

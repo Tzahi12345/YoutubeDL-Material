@@ -22,6 +22,12 @@
                 <div style="display: inline-block;">
                     <button (click)="toggleModeChange()" mat-icon-button><mat-icon>{{descendingMode ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
                 </div>
+                <div style="display: inline-block">
+                    <span><button (click)="playAllSubscriptionVideos()" mat-icon-button><mat-icon>playlist_play</mat-icon></button></span>
+                </div>
+                <div style="display: inline-block">
+                    <span><button (click)="shuffleAllSubscriptionVideos()" mat-icon-button><mat-icon>shuffle</mat-icon></button></span>
+                </div>
             </div>
             <div class="col">
             </div>

@@ -115,6 +115,33 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     }
   }
 
+  shuffleAllSubscriptionVideos() {
+    var array = this.subscription.videos;
+    var currentIndex = array.length,  randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    this.subscription.videos = array;
+    this.playAllSubscriptionVideos();
+  }
+
+  playAllSubscriptionVideos() {
+    var fileNames = [];
+    this.subscription.videos.forEach( video => { fileNames.push(video.id) });
+    this.router.navigate(['/player', {fileNames: fileNames,
+      type: this.subscription.type ? this.subscription.type : 'video', subscriptionName: this.subscription.name,
+      subPlaylist: this.subscription.isPlaylist}]);
+  }
+
   onSearchInputChanged(newvalue) {
     if (newvalue.length > 0) {
       this.search_mode = true;
