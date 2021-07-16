@@ -862,7 +862,8 @@ exports.generateJSONTables = async (db_json, users_json) => {
 }
 
 exports.importJSONToDB = async (db_json, users_json) => {
-    // TODO: backup db
+    await fs.writeFile(`appdata/db.json.${Date.now()/1000}.bak`, db_json);
+    await fs.writeFile(`appdata/users_db.json.${Date.now()/1000}.bak`, users_json);
 
     // TODO: delete current records
     const tables_obj = await exports.generateJSONTables(db_json, users_json);

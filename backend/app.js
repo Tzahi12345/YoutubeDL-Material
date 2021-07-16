@@ -220,6 +220,17 @@ async function checkMigrations() {
         else { logger.error('Migration failed: 4.1->4.2+'); }
     }
 
+    const new_db_system_migration_complete = db.get('new_db_system_migration_complete').value();
+    if (!new_db_system_migration_complete) {
+        logger.info('Beginning migration: 4.2->4.3+')
+        let success = await db_api.importJSONToDB(db.value(), users_db.value());
+
+        // sets migration to complete
+        db.set('new_db_system_migration_complete', true).write();
+        if (success) { logger.info('4.2->4.3+ migration complete!'); }
+        else { logger.error('Migration failed: 4.2->4.3+'); }
+    }
+
     return true;
 }
 
