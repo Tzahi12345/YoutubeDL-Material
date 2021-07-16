@@ -280,6 +280,43 @@
             </div>
         </ng-template>
     </mat-tab>
+    <!-- Database -->
+    <mat-tab label="Database" i18n-label="Database settings label">
+        <ng-template matTabContent>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <div *ngIf="db_info">
+                            <h5 i18n="Database info title">Database Info</h5>
+                            <p><ng-container i18n="Database location label">Database location:</ng-container>&nbsp;<strong>{{db_info['using_local_db'] ? 'Local' : 'MongoDB'}}</strong></p>
+                            <h6 i18n="Records per table label">Records per table</h6>
+                            <mat-list style="padding-top: 0px">
+                                <mat-list-item style="height: 28px" *ngFor="let table_stats of db_info['stats_by_table'] | keyvalue">
+                                    {{table_stats.key}}: {{table_stats.value.records_count}}
+                                </mat-list-item>
+                            </mat-list>
+
+                            <mat-form-field style="width: 100%; margin-top: 15px; margin-bottom: 10px" color="accent">
+                                <input [(ngModel)]="new_config['Database']['mongodb_connection_string']" matInput placeholder="MongoDB Connection String" i18n-placeholder="MongoDB Connection String" required>
+                                <mat-hint><ng-container i18n="MongoDB Connection String setting hint AKA preamble">Example:</ng-container>&nbsp;mongodb://127.0.0.1:27017/?compressors=zlib</mat-hint>
+                            </mat-form-field>
+
+                            <br>
+
+                            <button (click)="testConnectionString()" [disabled]="testing_connection_string" mat-flat-button color="accent"><ng-container i18n="Test connection string button">Test connection string</ng-container></button>
+
+                            <br>
+
+                            <button class="transfer-db-button" [disabled]="db_transferring" color="accent" (click)="transferDB()" mat-raised-button><ng-container i18n="Transfer DB button">Transfer DB to </ng-container>{{db_info['using_local_db'] ? 'MongoDB' : 'Local'}}</button>
+                        </div>
+                        <div *ngIf="!db_info">
+                            <ng-container i18n="Database info not retrieved error message">Database information could not be retrieved. Check the server logs for more information.</ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </mat-tab>
     <!-- Advanced -->
     <mat-tab label="Advanced" i18n-label="Host settings label">
         <ng-template matTabContent>

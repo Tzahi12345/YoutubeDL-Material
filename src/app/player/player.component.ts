@@ -171,7 +171,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
             console.error('Failed to increment view count');
             console.error(err);
           });
-          this.uids = this.db_file['uid'];
+          this.uids = [this.db_file['uid']];
           this.show_player = true;
           this.parseFileNames();
         }
@@ -304,12 +304,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadContent() {
-    const fileNames = [];
-    for (let i = 0; i < this.playlist.length; i++) {
-      fileNames.push(this.playlist[i].title);
-    }
-
-    const zipName = fileNames[0].split(' ')[0] + fileNames[1].split(' ')[0];
+    const zipName = this.db_playlist.name;
     this.downloading = true;
     this.postsService.downloadPlaylistFromServer(this.playlist_id, this.uuid).subscribe(res => {
       this.downloading = false;

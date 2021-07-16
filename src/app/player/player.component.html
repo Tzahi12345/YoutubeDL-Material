@@ -27,11 +27,11 @@
                                     </ng-container>
                                 </div>
                                 <div class="col-2">
-                                    <ng-container *ngIf="playlist.length > 1">
+                                    <ng-container *ngIf="db_playlist">
                                         <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
                                         <button *ngIf="(!postsService.isLoggedIn || postsService.permissions.includes('sharing')) && !auto" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                     </ng-container>
-                                    <ng-container *ngIf="playlist.length === 1">
+                                    <ng-container *ngIf="db_file">
                                         <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
                                         <button *ngIf="type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                         <button (click)="openFileInfoDialog()" *ngIf="db_file" mat-icon-button><mat-icon>info</mat-icon></button>

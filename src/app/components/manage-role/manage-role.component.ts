@@ -47,7 +47,7 @@ export class ManageRoleComponent implements OnInit {
   }
 
   changeRolePermissions(change, permission) {
-    this.postsService.setRolePermission(this.role.name, permission, change.value).subscribe(res => {
+    this.postsService.setRolePermission(this.role.key, permission, change.value).subscribe(res => {
       if (res['success']) {
 
       } else {

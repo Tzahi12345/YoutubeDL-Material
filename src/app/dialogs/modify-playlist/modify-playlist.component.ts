@@ -61,7 +61,7 @@ export class ModifyPlaylistComponent implements OnInit {
   }
 
   playlistChanged() {
-    return JSON.stringify(this.playlist) === JSON.stringify(this.original_playlist);
+    return JSON.stringify(this.playlist) !== JSON.stringify(this.original_playlist);
   }
 
   getPlaylist() {

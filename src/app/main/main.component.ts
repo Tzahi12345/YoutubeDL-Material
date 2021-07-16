@@ -500,23 +500,26 @@ export class MainComponent implements OnInit {
   }
 
   getSelectedAudioFormat() {
-    if (this.selectedQuality === '') { return null };
+    if (this.selectedQuality === '') { return null; }
     const cachedFormatsExists = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
     if (cachedFormatsExists) {
       const audio_formats = this.cachedAvailableFormats[this.url]['formats']['audio'];
-      return audio_formats[this.selectedQuality]['format_id'];
+      return this.selectedQuality['format_id'];
     } else {
       return null;
     }
   }
 
   getSelectedVideoFormat() {
-    if (this.selectedQuality === '') { return null };
-    const cachedFormatsExists = this.cachedAvailableFormats[this.url] &&  this.cachedAvailableFormats[this.url]['formats'];
-    if (cachedFormatsExists) {
-      const video_formats = this.cachedAvailableFormats[this.url]['formats']['video'];
-      if (video_formats['best_audio_format'] && this.selectedQuality !== '') {
-          return video_formats[this.selectedQuality]['format_id'] + '+' + video_formats['best_audio_format'];
+    if (this.selectedQuality === '') { return null; }
+    const cachedFormats = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
+    if (cachedFormats) {
+      const video_formats = cachedFormats['video'];
+      if (this.selectedQuality) {
+        let selected_video_format = this.selectedQuality['format_id'];
+        // add in audio format if necessary
+        if (!this.selectedQuality['acodec'] && cachedFormats['best_audio_format']) selected_video_format += `+${cachedFormats['best_audio_format']}`;
+        return selected_video_format;
       }
     }
     return null;
@@ -644,9 +647,8 @@ export class MainComponent implements OnInit {
           this.errorFormats(url);
           return;
         }
-        const parsed_infos = this.getAudioAndVideoFormats(infos.formats);
-        const available_formats = {audio: parsed_infos[0], video: parsed_infos[1]};
-        this.cachedAvailableFormats[url]['formats'] = available_formats;
+        this.cachedAvailableFormats[url]['formats'] = this.getAudioAndVideoFormats(infos.formats);
+        console.log(this.cachedAvailableFormats[url]['formats']);
       }, err => {
         this.errorFormats(url);
       });
@@ -689,7 +691,7 @@ export class MainComponent implements OnInit {
       if (audio_format) {
         format_array.push('-f', audio_format);
       } else if (this.selectedQuality) {
-        format_array.push('--audio-quality', this.selectedQuality);
+        format_array.push('--audio-quality', this.selectedQuality['format_id']);
       }
 
       // pushes formats
@@ -705,7 +707,7 @@ export class MainComponent implements OnInit {
       if (video_format) {
         format_array = ['-f', video_format];
       } else if (this.selectedQuality) {
-        format_array = [`bestvideo[height=${this.selectedQuality}]+bestaudio/best[height=${this.selectedQuality}]`];
+        format_array = [`bestvideo[height=${this.selectedQuality['format_id']}]+bestaudio/best[height=${this.selectedQuality}]`];
       }
 
       // pushes formats
@@ -802,9 +804,11 @@ export class MainComponent implements OnInit {
     }
   }
 
-  getAudioAndVideoFormats(formats): any[] {
-    const audio_formats = {};
-    const video_formats = {};
+  getAudioAndVideoFormats(formats) {
+    const audio_formats: any = {};
+    const video_formats: any = {};
+
+    console.log(formats);
 
     for (let i = 0; i < formats.length; i++) {
       const format_obj = {type: null};
@@ -815,9 +819,12 @@ export class MainComponent implements OnInit {
       format_obj.type = format_type;
       if (format_obj.type === 'audio' && format.abr) {
         const key = format.abr.toString() + 'K';
+        format_obj['key'] = key;
         format_obj['bitrate'] = format.abr;
         format_obj['format_id'] = format.format_id;
         format_obj['ext'] = format.ext;
+        format_obj['label'] = key;
+
         // don't overwrite if not m4a
         if (audio_formats[key]) {
           if (format.ext === 'm4a') {
@@ -828,11 +835,14 @@ export class MainComponent implements OnInit {
         }
       } else if (format_obj.type === 'video') {
         // check if video format is mp4
-        const key = format.format_note.replace('p', '');
+        const key = `${format.height}p${Math.round(format.fps)}`;
         if (format.ext === 'mp4' || format.ext === 'mkv' || format.ext === 'webm') {
+          format_obj['key'] = key;
           format_obj['height'] = format.height;
           format_obj['acodec'] = format.acodec;
           format_obj['format_id'] = format.format_id;
+          format_obj['label'] = key;
+          format_obj['fps'] = Math.round(format.fps);
 
           // no acodec means no overwrite
           if (!(video_formats[key]) || format_obj['acodec'] !== 'none') {
@@ -842,9 +852,17 @@ export class MainComponent implements OnInit {
       }
     }
 
-    video_formats['best_audio_format'] = this.getBestAudioFormatForMp4(audio_formats);
+    const parsed_formats: any = {};
 
-    return [audio_formats, video_formats]
+    parsed_formats['best_audio_format'] = this.getBestAudioFormatForMp4(audio_formats);
+
+    parsed_formats['video'] = Object.values(video_formats);
+    parsed_formats['audio'] = Object.values(audio_formats);
+
+    parsed_formats['video'] = parsed_formats['video'].sort((a, b) => b.height - a.height || b.fps - a.fps);
+    parsed_formats['audio'] = parsed_formats['audio'].sort((a, b) => b.bitrate - a.bitrate);
+
+    return parsed_formats;
   }
 
   getBestAudioFormatForMp4(audio_formats) {

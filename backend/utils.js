@@ -122,6 +122,21 @@ function getJSONMp3(name, customPath, openReadPerms = false) {
     return obj;
 }
 
+function getJSON(file_path, type) {
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+    let obj = null;
+    var jsonPath = removeFileExtension(file_path) + '.info.json';
+    var alternateJsonPath = removeFileExtension(file_path) + `${ext}.info.json`;
+    if (fs.existsSync(jsonPath))
+    {
+        obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    } else if (fs.existsSync(alternateJsonPath)) {
+        obj = JSON.parse(fs.readFileSync(alternateJsonPath, 'utf8'));
+    }
+    else obj = 0;
+    return obj;
+}
+
 function getJSONByType(type, name, customPath, openReadPerms = false) {
     return type === 'audio' ? getJSONMp3(name, customPath, openReadPerms) : getJSONMp4(name, customPath, openReadPerms)
 }
@@ -132,6 +147,23 @@ function getDownloadedThumbnail(name, type, customPath = null) {
     let jpgPath = path.join(customPath, name + '.jpg');
     let webpPath = path.join(customPath, name + '.webp');
     let pngPath = path.join(customPath, name + '.png');
+
+    if (fs.existsSync(jpgPath))
+        return jpgPath;
+    else if (fs.existsSync(webpPath))
+        return webpPath;
+    else if (fs.existsSync(pngPath))
+        return pngPath;
+    else
+        return null;
+}
+
+function getDownloadedThumbnail2(file_path, type) {
+    const file_path_no_extension = removeFileExtension(file_path);
+
+    let jpgPath = file_path_no_extension + '.jpg';
+    let webpPath = file_path_no_extension + '.webp';
+    let pngPath = file_path_no_extension + '.png';
 
     if (fs.existsSync(jpgPath))
         return jpgPath;
@@ -190,6 +222,28 @@ function fixVideoMetadataPerms(name, type, customPath = null) {
     }
 }
 
+function fixVideoMetadataPerms2(file_path, type) {
+    if (is_windows) return;
+
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+
+    const file_path_no_extension = removeFileExtension(file_path);
+
+    const files_to_fix = [
+        // JSONs
+        file_path_no_extension + '.info.json',
+        file_path_no_extension + ext + '.info.json',
+        // Thumbnails
+        file_path_no_extension + '.webp',
+        file_path_no_extension + '.jpg'
+    ];
+
+    for (const file of files_to_fix) {
+        if (!fs.existsSync(file)) continue;
+        fs.chmodSync(file, 0o644);
+    }
+}
+
 function deleteJSONFile(name, type, customPath = null) {
     if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
                                                    : config_api.getConfigItem('ytdl_video_folder_path');
@@ -197,6 +251,18 @@ function deleteJSONFile(name, type, customPath = null) {
     const ext = type === 'audio' ? '.mp3' : '.mp4';
     let json_path = path.join(customPath, name + '.info.json');
     let alternate_json_path = path.join(customPath, name + ext + '.info.json');
+
+    if (fs.existsSync(json_path)) fs.unlinkSync(json_path);
+    if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
+}
+
+function deleteJSONFile2(file_path, type) {
+    const ext = type === 'audio' ? '.mp3' : '.mp4';
+
+    const file_path_no_extension = removeFileExtension(file_path);
+    
+    let json_path = file_path_no_extension + '.info.json';
+    let alternate_json_path = file_path_no_extension + ext + '.info.json';
 
     if (fs.existsSync(json_path)) fs.unlinkSync(json_path);
     if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
@@ -309,11 +375,15 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
 module.exports = {
     getJSONMp3: getJSONMp3,
     getJSONMp4: getJSONMp4,
+    getJSON: getJSON,
     getTrueFileName: getTrueFileName,
     getDownloadedThumbnail: getDownloadedThumbnail,
+    getDownloadedThumbnail2: getDownloadedThumbnail2,
     getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
+    fixVideoMetadataPerms2: fixVideoMetadataPerms2,
     deleteJSONFile: deleteJSONFile,
+    deleteJSONFile2: deleteJSONFile2,
     removeIDFromArchive, removeIDFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
     createContainerZipFile: createContainerZipFile,

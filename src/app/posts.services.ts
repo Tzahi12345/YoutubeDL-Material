@@ -184,6 +184,18 @@ export class PostsService implements CanActivate {
                                                     cropFileSettings: cropFileSettings}, this.httpOptions);
     }
 
+    getDBInfo() {
+        return this.http.post(this.path + 'getDBInfo', {}, this.httpOptions);
+    }
+
+    transferDB(local_to_remote) {
+        return this.http.post(this.path + 'transferDB', {local_to_remote: local_to_remote}, this.httpOptions);
+    }
+
+    testConnectionString() {
+        return this.http.post(this.path + 'testConnectionString', {}, this.httpOptions);
+    }
+
     killAllDownloads() {
         return this.http.post(this.path + 'killAllDownloads', {}, this.httpOptions);
     }
@@ -236,11 +248,12 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'downloadTwitchChatByVODID', {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub}, this.httpOptions);
     }
 
-    downloadFileFromServer(uid, uuid = null, sub_id = null) {
+    downloadFileFromServer(uid, uuid = null, sub_id = null, is_playlist = null) {
         return this.http.post(this.path + 'downloadFileFromServer', {
                                                             uid: uid,
                                                             uuid: uuid,
-                                                            sub_id: sub_id
+                                                            sub_id: sub_id,
+                                                            is_playlist: is_playlist
                                                             },
                                                           {responseType: 'blob', params: this.httpOptions.params});
     }

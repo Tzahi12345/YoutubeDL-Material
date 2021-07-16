@@ -13,16 +13,15 @@ var JwtStrategy = require('passport-jwt').Strategy,
 
 // other required vars
 let logger = null;
-let db =  null;
-let users_db = null;
+let db_api = null;
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function(input_db, input_users_db, input_logger) {
+exports.initialize = function(db_api, input_logger) {
   setLogger(input_logger)
-  setDB(input_db, input_users_db);
+  setDB(db_api);
 
   /*************************
    * Authentication module
@@ -32,21 +31,19 @@ exports.initialize = function(input_db, input_users_db, input_logger) {
   JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
 
   SERVER_SECRET = null;
-  if (users_db.get('jwt_secret').value()) {
-    SERVER_SECRET = users_db.get('jwt_secret').value();
+  if (db_api.users_db.get('jwt_secret').value()) {
+    SERVER_SECRET = db_api.users_db.get('jwt_secret').value();
   } else {
     SERVER_SECRET = uuid();
-    users_db.set('jwt_secret', SERVER_SECRET).write();
+    db_api.users_db.set('jwt_secret', SERVER_SECRET).write();
   }
 
   opts = {}
   opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
   opts.secretOrKey = SERVER_SECRET;
-  /*opts.issuer = 'example.com';
-  opts.audience = 'example.com';*/
 
-  exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    const user = users_db.get('users').find({uid: jwt_payload.user}).value();
+  exports.passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
+    const user = await db_api.getRecord('users', {uid: jwt_payload.user});
     if (user) {
         return done(null, user);
     } else {
@@ -60,9 +57,8 @@ function setLogger(input_logger) {
   logger = input_logger;
 }
 
-function setDB(input_db, input_users_db) {
-  db = input_db;
-  users_db = input_users_db;
+function setDB(input_db_api) {
+  db_api = input_db_api;
 }
 
 exports.passport = require('passport');
@@ -78,7 +74,7 @@ exports.passport.deserializeUser(function(user, done) {
 /***************************************
  * Register user with hashed password
  **************************************/
-exports.registerUser = function(req, res) {
+exports.registerUser = async function(req, res) {
   var userid = req.body.userid;
   var username = req.body.username;
   var plaintextPassword = req.body.password;
@@ -96,20 +92,20 @@ exports.registerUser = function(req, res) {
   }
 
   bcrypt.hash(plaintextPassword, saltRounds)
-    .then(function(hash) {
+    .then(async function(hash) {
       let new_user = generateUserObject(userid, username, hash);
       // check if user exists
-      if (users_db.get('users').find({uid: userid}).value()) {
+      if (await db_api.getRecord('users', {uid: userid})) {
         // user id is taken!
         logger.error('Registration failed: UID is already taken!');
         res.status(409).send('UID is already taken!');
-      } else if (users_db.get('users').find({name: username}).value()) {
+      } else if (await db_api.getRecord('users', {name: username})) {
           // user name is taken!
           logger.error('Registration failed: User name is already taken!');
           res.status(409).send('User name is already taken!');
       } else {
         // add to db
-        users_db.get('users').push(new_user).write();
+        await db_api.insertRecordIntoTable('users', new_user);
         logger.verbose(`New user created: ${new_user.name}`);
         res.send({
           user: new_user
@@ -143,7 +139,7 @@ exports.registerUser = function(req, res) {
 
 
 exports.login = async (username, password) => {
-  const user = users_db.get('users').find({name: username}).value();
+  const user = await db_api.getRecord('users', {name: username});
   if (!user) { logger.error(`User ${username} not found`); false }
   if (user.auth_method && user.auth_method !== 'internal') { return false }
   return await bcrypt.compare(password, user.passhash) ? user : false;
@@ -164,17 +160,17 @@ var getLDAPConfiguration = function(req, callback) {
 };
 
 exports.passport.use(new LdapStrategy(getLDAPConfiguration,
-  function(user, done) {
+  async function(user, done) {
     // check if ldap auth is enabled
     const ldap_enabled = config_api.getConfigItem('ytdl_auth_method') === 'ldap';
     if (!ldap_enabled) return done(null, false);
 
     const user_uid = user.uid;
-    let db_user = users_db.get('users').find({uid: user_uid}).value();
+    let db_user = await db_api.getRecord('users', {uid: user_uid});
     if (!db_user) {
       // generate DB user
       let new_user = generateUserObject(user_uid, user_uid, null, 'ldap');
-      users_db.get('users').push(new_user).write();
+      await db_api.insertRecordIntoTable('users', new_user);
       db_user = new_user;
       logger.verbose(`Generated new user ${user_uid} using LDAP`);
     }
@@ -198,11 +194,11 @@ exports.generateJWT = function(req, res, next) {
   next();
 }
 
-exports.returnAuthResponse = function(req, res) {
+exports.returnAuthResponse = async function(req, res) {
   res.status(200).json({
     user: req.user,
     token: req.token,
-    permissions: exports.userPermissions(req.user.uid),
+    permissions: await exports.userPermissions(req.user.uid),
     available_permissions: consts['AVAILABLE_PERMISSIONS']
   });
 }
@@ -215,7 +211,7 @@ exports.returnAuthResponse = function(req, res) {
  * It also passes the user object to the next
  * middleware through res.locals
  **************************************/
-exports.ensureAuthenticatedElseError = function(req, res, next) {
+exports.ensureAuthenticatedElseError = (req, res, next) => {
   var token = getToken(req.query);
   if( token ) {
     try {
@@ -233,10 +229,10 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
 }
 
 // change password
-exports.changeUserPassword = async function(user_uid, new_pass) {
+exports.changeUserPassword = async (user_uid, new_pass) => {
   try {
     const hash = await bcrypt.hash(new_pass, saltRounds);
-    users_db.get('users').find({uid: user_uid}).assign({passhash: hash}).write();
+    await db_api.updateRecord('users', {uid: user_uid}, {passhash: hash});
     return true;
   } catch (err) {
     return false;
@@ -244,16 +240,15 @@ exports.changeUserPassword = async function(user_uid, new_pass) {
 }
 
 // change user permissions
-exports.changeUserPermissions = function(user_uid, permission, new_value) {
+exports.changeUserPermissions = async (user_uid, permission, new_value) => {
   try {
-    const user_db_obj = users_db.get('users').find({uid: user_uid});
-    user_db_obj.get('permissions').pull(permission).write();
-    user_db_obj.get('permission_overrides').pull(permission).write();
+    await db_api.pullFromRecordsArray('users', {uid: user_uid}, 'permissions', permission);
+    await db_api.pullFromRecordsArray('users', {uid: user_uid}, 'permission_overrides', permission);
     if (new_value === 'yes') {
-      user_db_obj.get('permissions').push(permission).write();
-      user_db_obj.get('permission_overrides').push(permission).write();
+      await db_api.pushToRecordsArray('users', {uid: user_uid}, 'permissions', permission);
+      await db_api.pushToRecordsArray('users', {uid: user_uid}, 'permission_overrides', permission);
     } else if (new_value === 'no') {
-      user_db_obj.get('permission_overrides').push(permission).write();
+      await db_api.pushToRecordsArray('users', {uid: user_uid}, 'permission_overrides', permission);
     }
     return true;
   } catch (err) {
@@ -263,12 +258,11 @@ exports.changeUserPermissions = function(user_uid, permission, new_value) {
 }
 
 // change role permissions
-exports.changeRolePermissions = function(role, permission, new_value) {
+exports.changeRolePermissions = async (role, permission, new_value) => {
   try {
-    const role_db_obj = users_db.get('roles').get(role);
-    role_db_obj.get('permissions').pull(permission).write();
+    await db_api.pullFromRecordsArray('roles', {key: role}, 'permissions', permission);
     if (new_value === 'yes') {
-      role_db_obj.get('permissions').push(permission).write();
+      await db_api.pushToRecordsArray('roles', {key: role}, 'permissions', permission);
     }
     return true;
   } catch (err) {
@@ -277,19 +271,19 @@ exports.changeRolePermissions = function(role, permission, new_value) {
   }
 }
 
-exports.adminExists = function() {
-  return !!users_db.get('users').find({uid: 'admin'}).value();
+exports.adminExists = async function() {
+  return !!(await db_api.getRecord('users', {uid: 'admin'}));
 }
 
 // video stuff
 
-exports.getUserVideos = function(user_uid, type) {
-    const user = users_db.get('users').find({uid: user_uid}).value();
-    return type ? user['files'].filter(file => file.isAudio === (type === 'audio')) : user['files'];
+exports.getUserVideos = async function(user_uid, type) {
+    const files = await db_api.getRecords('files', {user_uid: user_uid});
+    return type ? files.filter(file => file.isAudio === (type === 'audio')) : files;
 }
 
-exports.getUserVideo = function(user_uid, file_uid, requireSharing = false) {
-  let file = users_db.get('users').find({uid: user_uid}).get(`files`).find({uid: file_uid}).value();
+exports.getUserVideo = async function(user_uid, file_uid, requireSharing = false) {
+  let file = await db_api.getRecord('files', {file_uid: file_uid});
 
   // prevent unauthorized users from accessing the file info
   if (file && !file['sharingEnabled'] && requireSharing) file = null;
@@ -302,19 +296,17 @@ exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames) {
   return true;
 }
 
-exports.removePlaylist = function(user_uid, playlistID) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists`).remove({id: playlistID}).write();
+exports.removePlaylist = async function(user_uid, playlistID) {
+  await db_api.removeRecord('playlist', {playlistID: playlistID});
   return true;
 }
 
-exports.getUserPlaylists = function(user_uid, user_files = null) {
-  const user = users_db.get('users').find({uid: user_uid}).value();
-  const playlists = JSON.parse(JSON.stringify(user['playlists']));
-  return playlists;
+exports.getUserPlaylists = async function(user_uid, user_files = null) {
+  return await db_api.getRecords('playlists', {user_uid: user_uid});
 }
 
-exports.getUserPlaylist = function(user_uid, playlistID, requireSharing = false) {
-  let playlist = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).value();
+exports.getUserPlaylist = async function(user_uid, playlistID, requireSharing = false) {
+  let playlist = await db_api.getRecord('playlists', {id: playlistID});
 
   // prevent unauthorized users from accessing the file info
   if (requireSharing && !playlist['sharingEnabled']) playlist = null;
@@ -322,40 +314,23 @@ exports.getUserPlaylist = function(user_uid, playlistID, requireSharing = false)
   return playlist;
 }
 
-exports.registerUserFile = function(user_uid, file_object) {
-  users_db.get('users').find({uid: user_uid}).get(`files`)
-    .remove({
-        path: file_object['path']
-    }).write();
-
-  users_db.get('users').find({uid: user_uid}).get(`files`)
-      .push(file_object)
-      .write();
-}
-
-exports.changeSharingMode = function(user_uid, file_uid, is_playlist, enabled) {
+exports.changeSharingMode = async function(user_uid, file_uid, is_playlist, enabled) {
   let success = false;
-  const user_db_obj = users_db.get('users').find({uid: user_uid});
-  if (user_db_obj.value()) {
-    const file_db_obj = is_playlist ? user_db_obj.get(`playlists`).find({id: file_uid}) : user_db_obj.get(`files`).find({uid: file_uid});
-    if (file_db_obj.value()) {
-      success = true;
-      file_db_obj.assign({sharingEnabled: enabled}).write();
-    }
-  }
-
+  is_playlist ? await db_api.updateRecord(`playlists`, {id: file_uid}, {sharingEnabled: enabled}) : await db_api.updateRecord(`files`, {uid: file_uid}, {sharingEnabled: enabled});
+  success = true;
   return success;
 }
 
-exports.userHasPermission = function(user_uid, permission) {
-  const user_obj = users_db.get('users').find({uid: user_uid}).value();
+exports.userHasPermission = async function(user_uid, permission) {
+
+  const user_obj = await db_api.getRecord('users', ({uid: user_uid}));
   const role = user_obj['role'];
   if (!role) {
     // role doesn't exist
     logger.error('Invalid role ' + role);
     return false;
   }
-  const role_permissions = (users_db.get('roles').value())['permissions'];
+  const role_permissions = (await db_api.getRecords('roles'))['permissions'];
 
   const user_has_explicit_permission = user_obj['permissions'].includes(permission);
   const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
@@ -378,16 +353,17 @@ exports.userHasPermission = function(user_uid, permission) {
   }
 }
 
-exports.userPermissions = function(user_uid) {
+exports.userPermissions = async function(user_uid) {
   let user_permissions = [];
-  const user_obj = users_db.get('users').find({uid: user_uid}).value();
+  const user_obj = await db_api.getRecord('users', ({uid: user_uid}));
   const role = user_obj['role'];
   if (!role) {
     // role doesn't exist
     logger.error('Invalid role ' + role);
     return null;
   }
-  const role_permissions = users_db.get('roles').get(role).get('permissions').value()
+  const role_obj = await db_api.getRecord('roles', {key: role});
+  const role_permissions = role_obj['permissions'];
 
   for (let i = 0; i < consts['AVAILABLE_PERMISSIONS'].length; i++) {
     let permission = consts['AVAILABLE_PERMISSIONS'][i];

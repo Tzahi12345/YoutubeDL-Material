@@ -153,6 +153,16 @@ let CONFIG_ITEMS = {
         'path': 'YoutubeDLMaterial.Users.ldap_config'
     },
 
+    // Database
+    'ytdl_use_local_db': {
+        'key': 'ytdl_use_local_db',
+        'path': 'YoutubeDLMaterial.Database.use_local_db'
+    },
+    'ytdl_mongodb_connection_string': {
+        'key': 'ytdl_mongodb_connection_string',
+        'path': 'YoutubeDLMaterial.Database.mongodb_connection_string'
+    },
+
     // Advanced
     'ytdl_default_downloader': {
         'key': 'ytdl_default_downloader',

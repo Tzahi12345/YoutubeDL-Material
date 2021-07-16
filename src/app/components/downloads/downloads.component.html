@@ -1,21 +1,21 @@
 <div style="padding: 20px;">
-    <div *ngFor="let session_downloads of downloads | keyvalue">
-        <ng-container *ngIf="keys(session_downloads.value).length > 0">
+    <div *ngFor="let session_downloads of downloads">
+        <ng-container *ngIf="keys(session_downloads).length > 2">
             <mat-card style="padding-bottom: 30px; margin-bottom: 15px;">
-                <h4 style="text-align: center;"><ng-container i18n="Session ID">Session ID:</ng-container>&nbsp;{{session_downloads.key}}
-                    <span *ngIf="session_downloads.key === postsService.session_id">&nbsp;<ng-container i18n="Current session">(current)</ng-container></span>
+                <h4 style="text-align: center;"><ng-container i18n="Session ID">Session ID:</ng-container>&nbsp;{{session_downloads['session_id']}}
+                    <span *ngIf="session_downloads['session_id'] === postsService.session_id">&nbsp;<ng-container i18n="Current session">(current)</ng-container></span>
                 </h4>
                 <div class="container">
                     <div class="row">
-                        <div *ngFor="let download of session_downloads.value | keyvalue: sort_downloads; let i = index;" class="col-12 my-1">
-                            <mat-card *ngIf="download.value" class="mat-elevation-z3">
-                                <app-download-item [download]="download.value" [queueNumber]="i+1" (cancelDownload)="clearDownload(session_downloads.key, download.value.uid)"></app-download-item>
+                        <div *ngFor="let download of session_downloads | keyvalue: sort_downloads; let i = index;" class="col-12 my-1">
+                            <mat-card *ngIf="download.key !== 'session_id' && download.key !== '_id' && download.value" class="mat-elevation-z3">
+                                <app-download-item [download]="download.value" [queueNumber]="i+1" (cancelDownload)="clearDownload(session_downloads['session_id'], download.value.uid)"></app-download-item>
                             </mat-card>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <button style="top: 15px;" (click)="clearDownloads(session_downloads.key)" mat-stroked-button color="warn"><ng-container i18n="clear all downloads action button">Clear all downloads</ng-container></button>
+                    <button style="top: 15px;" (click)="clearDownloads(session_downloads['session_id'])" mat-stroked-button color="warn"><ng-container i18n="clear all downloads action button">Clear all downloads</ng-container></button>
                 </div>
             </mat-card>
         </ng-container>
