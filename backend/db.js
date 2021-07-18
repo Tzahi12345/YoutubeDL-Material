@@ -873,6 +873,7 @@ exports.importJSONToDB = async (db_json, users_json) => {
     let success = true;
     for (let i = 0; i < table_keys.length; i++) {
         const table_key = table_keys[i];
+        if (!tables_obj[table_key] || tables_obj[table_key].length === 0) continue;
         success &= await exports.insertRecordsIntoTable(table_key, tables_obj[table_key]);
     }
 
