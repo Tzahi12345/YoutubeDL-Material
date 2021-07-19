@@ -38,7 +38,7 @@
     "Subscriptions": {
       "allow_subscriptions": true,
       "subscriptions_base_path": "subscriptions/",
-      "subscriptions_check_interval": "300",
+      "subscriptions_check_interval": "86400",
       "subscriptions_use_youtubedl_archive": true
     },
     "Users": {
