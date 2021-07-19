@@ -15,10 +15,43 @@ var db = null;
 var users_db = null;
 var database = null;
 
-const tables = ['files', 'playlists', 'categories', 'subscriptions', 'downloads', 'users', 'roles', 'test'];
+const tables = {
+    files: {
+        name: 'files',
+        primary_key: 'uid'
+    },
+    playlists: {
+        name: 'playlists',
+        primary_key: 'id'
+    },
+    categories: {
+        name: 'categories',
+        primary_key: 'uid'
+    },
+    subscriptions: {
+        name: 'subscriptions',
+        primary_key: 'id'
+    },
+    downloads: {
+        name: 'downloads'
+    },
+    users: {
+        name: 'users',
+        primary_key: 'uid'
+    },
+    roles: {
+        name: 'roles',
+        primary_key: 'key'
+    },
+    test: {
+        name: 'test'
+    }
+}
+
+const tables_list = Object.keys(tables);
 
 const local_db_defaults = {}
-tables.forEach(table => {local_db_defaults[table] = []});
+tables_list.forEach(table => {local_db_defaults[table] = []});
 local_db.defaults(local_db_defaults).write();
 
 let using_local_db = config_api.getConfigItem('ytdl_use_local_db');
@@ -81,10 +114,16 @@ exports._connectToDB = async () => {
         database = client.db('ytdl_material');
         const existing_collections = (await database.listCollections({}, { nameOnly: true }).toArray()).map(collection => collection.name);
 
-        const missing_tables = tables.filter(table => !(existing_collections.includes(table)));
+        const missing_tables = tables_list.filter(table => !(existing_collections.includes(table)));
         missing_tables.forEach(async table => {
             await database.createCollection(table);
-        })
+        });
+
+        tables_list.forEach(async table => {
+            const primary_key = tables[table]['primary_key'];
+            if (!primary_key) return;
+            await database.collection(table).createIndex({[primary_key]: 1}, { unique: true });
+        });
         return true;
     } catch(err) {
         logger.error(err);
@@ -555,48 +594,6 @@ exports.setVideoProperty = async (file_uid, assignment_obj) => {
     await exports.updateRecord('files', {uid: file_uid}, assignment_obj);
 }
 
-// DB to JSON
-
-exports.exportDBToJSON = async (tables) => {
-    const users_db_json = await createUsersJSONs(tables.files, tables.playlists, tables.subscriptions, tables.categories, tables.users);
-    const db_json = await createNonUserJSON(tables.files, tables.playlists, tables.subscriptions, tables.categories);
-
-    return {users_db_json: users_db_json, db_json: db_json};
-}
-
-const createUsersJSONs = async (files, playlists, subscriptions, categories, users) => {
-    // we need to already have a list of user objects to gather the records into
-    for (let user of users) {
-        const files_of_user = files.filter(file => file.user_uid === user.uid && !file.sub_id);
-        const playlists_of_user = playlists.filter(playlist => playlist.user_uid === user.uid);
-        const subs_of_user = subscriptions.filter(sub => sub.user_uid === user.uid);
-        const categories_of_user = categories ? categories.filter(category => category && category.user_uid === user.uid) : [];
-        user['files'] = files_of_user;
-        user['playlists'] = playlists_of_user;
-        user['subscriptions'] = subs_of_user;
-        user['categories'] = categories_of_user;
-
-        for (let subscription of subscriptions) {
-            subscription['videos'] = files.filter(file => file.user_uid === user.uid && file.sub_id === sub.id);
-        }
-    }
-}
-
-const createNonUserJSON = async (files, playlists, subscriptions, categories) => {
-    const non_user_json = {
-        files: files.filter(file => !file.user_uid && !file.sub_id),
-        playlists: playlists.filter(playlist => !playlist.user_uid),
-        subscriptions: subscriptions.filter(sub => !sub.user_uid),
-        categories: categories ? categories.filter(category => category && !category.user_uid) : []
-    }
-
-    for (let subscription of non_user_json['subscriptions']) {
-        subscription['videos'] = files.filter(file => !file.user_uid && file.sub_id === subscription.id);
-    }
-
-    return non_user_json;
-}
-
 // Basic DB functions
 
 // Create
@@ -616,14 +613,13 @@ exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
     return !!(output['result']['ok']);
 }
 
-exports.insertRecordsIntoTable = async (table, docs) => {
+exports.insertRecordsIntoTable = async (table, docs, ignore_errors = false) => {
     // local db override
     if (using_local_db) {
         local_db.get(table).push(...docs).write();
         return true;
     }
-
-    const output = await database.collection(table).insertMany(docs);
+    const output = await database.collection(table).insertMany(docs, {ordered: !ignore_errors});
     logger.debug(`Inserted ${output.insertedCount} docs into ${table}`);
     return !!(output['result']['ok']);
 }
@@ -765,8 +761,8 @@ exports.removeRecord = async (table, filter_obj) => {
 
 exports.removeAllRecords = async (table = null) => {
     // local db override
+    const tables_to_remove = table ? [table] : tables_list;
     if (using_local_db) {
-        const tables_to_remove = table ? [table] : tables;
         logger.debug(`Removing all records from: ${tables_to_remove}`)
         for (let i = 0; i < tables_to_remove.length; i++) {
             const table_to_remove = tables_to_remove[i];
@@ -777,7 +773,6 @@ exports.removeAllRecords = async (table = null) => {
     }
 
     let success = true;
-    const tables_to_remove = table ? [table] : tables;
     logger.debug(`Removing all records from: ${tables_to_remove}`)
     for (let i = 0; i < tables_to_remove.length; i++) {
         const table_to_remove = tables_to_remove[i];
@@ -793,8 +788,8 @@ exports.removeAllRecords = async (table = null) => {
 
 exports.getDBStats = async () => {
     const stats_by_table = {};
-    for (let i = 0; i < tables.length; i++) {
-        const table = tables[i];
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
         if (table === 'test') continue;
 
         stats_by_table[table] = await getDBTableStats(table);
@@ -862,10 +857,10 @@ exports.generateJSONTables = async (db_json, users_json) => {
 }
 
 exports.importJSONToDB = async (db_json, users_json) => {
-    await fs.writeFile(`appdata/db.json.${Date.now()/1000}.bak`, db_json);
-    await fs.writeFile(`appdata/users_db.json.${Date.now()/1000}.bak`, users_json);
+    await fs.writeFile(`appdata/db.json.${Date.now()/1000}.bak`, JSON.stringify(db_json));
+    await fs.writeFile(`appdata/users_db.json.${Date.now()/1000}.bak`, JSON.stringify(users_json));
 
-    // TODO: delete current records
+    await exports.removeAllRecords();
     const tables_obj = await exports.generateJSONTables(db_json, users_json);
 
     const table_keys = Object.keys(tables_obj);
@@ -874,7 +869,8 @@ exports.importJSONToDB = async (db_json, users_json) => {
     for (let i = 0; i < table_keys.length; i++) {
         const table_key = table_keys[i];
         if (!tables_obj[table_key] || tables_obj[table_key].length === 0) continue;
-        success &= await exports.insertRecordsIntoTable(table_key, tables_obj[table_key]);
+        console.log('hi');
+        success &= await exports.insertRecordsIntoTable(table_key, tables_obj[table_key], true);
     }
 
     return success;
@@ -885,7 +881,6 @@ const createFilesRecords = (files, subscriptions) => {
         const subscription = subscriptions[i];
         subscription['videos'] = subscription['videos'].map(file => ({ ...file, sub_id: subscription['id'], user_uid: subscription['user_uid'] ? subscription['user_uid'] : undefined}));
         files = files.concat(subscriptions[i]['videos']);
-        console.log(files.length);
     }
 
     return files;
@@ -940,8 +935,8 @@ const createDownloadsRecords = (downloads) => {
 
 exports.transferDB = async (local_to_remote) => {
     const table_to_records = {};
-    for (let i = 0; i < tables.length; i++) {
-        const table = tables[i];
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
         table_to_records[table] = await exports.getRecords(table);
     }
 
@@ -964,8 +959,8 @@ exports.transferDB = async (local_to_remote) => {
 
     logger.debug('Database cleared! Beginning transfer.');
 
-    for (let i = 0; i < tables.length; i++) {
-        const table = tables[i];
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
         if (!table_to_records[table] || table_to_records[table].length === 0) continue;
         success &= await exports.bulkInsertRecordsIntoTable(table, table_to_records[table]);
     }
