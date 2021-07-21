@@ -29,7 +29,8 @@
       "use_youtube_API": false,
       "youtube_API_key": "",
       "use_twitch_API": false,
-      "twitch_API_key": ""
+      "twitch_API_key": "",
+      "twitch_auto_download_chat": true
     },
     "Themes": {
       "default_theme": "default",
@@ -53,6 +54,10 @@
         "searchFilter": "(uid={{username}})"
       }
     },
+    "Database": {
+      "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib",
+      "use_local_db": false
+    },
     "Advanced": {
       "use_default_downloading_agent": true,
       "custom_downloading_agent": "",
@@ -61,7 +66,7 @@
       "jwt_expiration": 86400,
       "logger_level": "debug",
       "use_cookies": false,
-      "default_downloader": "youtube-dlc"
+      "default_downloader": "youtube-dl"
     }
   }
 }
