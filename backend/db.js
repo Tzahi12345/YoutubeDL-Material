@@ -616,7 +616,15 @@ exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
 exports.insertRecordsIntoTable = async (table, docs, ignore_errors = false) => {
     // local db override
     if (using_local_db) {
-        local_db.get(table).push(...docs).write();
+        const records_limit = 30000;
+        if (docs.length < records_limit) {
+            local_db.get(table).push(...docs).write();
+        } else {
+            for (let i = 0; i < docs.length; i+=records_limit) {
+                const records_to_push = docs.slice(i, i+records_limit > docs.length ? docs.length : i+records_limit)
+                local_db.get(table).push(...records_to_push).write();
+            }
+        }
         return true;
     }
     const output = await database.collection(table).insertMany(docs, {ordered: !ignore_errors});
@@ -857,8 +865,8 @@ exports.generateJSONTables = async (db_json, users_json) => {
 }
 
 exports.importJSONToDB = async (db_json, users_json) => {
-    await fs.writeFile(`appdata/db.json.${Date.now()/1000}.bak`, JSON.stringify(db_json));
-    await fs.writeFile(`appdata/users_db.json.${Date.now()/1000}.bak`, JSON.stringify(users_json));
+    await fs.writeFile(`appdata/db.json.${Date.now()/1000}.bak`, JSON.stringify(db_json, null, 2));
+    await fs.writeFile(`appdata/users_db.json.${Date.now()/1000}.bak`, JSON.stringify(users_json, null, 2));
 
     await exports.removeAllRecords();
     const tables_obj = await exports.generateJSONTables(db_json, users_json);
@@ -869,7 +877,6 @@ exports.importJSONToDB = async (db_json, users_json) => {
     for (let i = 0; i < table_keys.length; i++) {
         const table_key = table_keys[i];
         if (!tables_obj[table_key] || tables_obj[table_key].length === 0) continue;
-        console.log('hi');
         success &= await exports.insertRecordsIntoTable(table_key, tables_obj[table_key], true);
     }
 
