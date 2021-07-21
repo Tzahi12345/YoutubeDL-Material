@@ -77,8 +77,13 @@
 }
 
 .category-custom-placeholder {
-background: #ccc;
-border: dotted 3px #999;
-min-height: 60px;
-transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    background: #ccc;
+    border: dotted 3px #999;
+    min-height: 60px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.transfer-db-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

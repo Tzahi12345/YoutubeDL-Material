@@ -342,12 +342,8 @@ export class MainComponent implements OnInit {
     }
   }
 
-  public goToFile(name, isAudio, uid) {
-    if (isAudio) {
-      this.downloadHelperMp3(name, uid, false, false, null, true);
-    } else {
-      this.downloadHelperMp4(name, uid, false, false, null, true);
-    }
+  public goToFile(container, isAudio, uid) {
+    this.downloadHelper(container, isAudio ? 'audio' : 'video', false, false, null, true);
   }
 
   public goToPlaylist(playlistID, type) {
@@ -355,7 +351,7 @@ export class MainComponent implements OnInit {
     if (playlist) {
       if (this.downloadOnlyMode) {
         this.downloading_content[type][playlistID] = true;
-        this.downloadPlaylist(playlist.fileNames, type, playlist.name, playlistID);
+        this.downloadPlaylist(playlist);
       } else {
         localStorage.setItem('player_navigator', this.router.url);
         const fileNames = playlist.fileNames;
@@ -379,56 +375,26 @@ export class MainComponent implements OnInit {
 
   // download helpers
 
-  downloadHelperMp3(name, uid, is_playlist = false, forceView = false, new_download = null, navigate_mode = false) {
+  downloadHelper(container, type, is_playlist = false, force_view = false, new_download = null, navigate_mode = false) {
     this.downloadingfile = false;
     if (this.multiDownloadMode && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
       this.reloadRecentVideos();
     } else {
       // if download only mode, just download the file. no redirect
-      if (forceView === false && this.downloadOnlyMode && !this.iOS) {
+      if (force_view === false && this.downloadOnlyMode && !this.iOS) {
         if (is_playlist) {
-          const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
-          this.downloadPlaylist(name, 'audio', zipName);
+          this.downloadPlaylist(container['uid']);
         } else {
-          this.downloadAudioFile(decodeURI(name));
+          this.downloadFileFromServer(container, type);
         }
         this.reloadRecentVideos();
       } else {
         localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
         if (is_playlist) {
-          this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'audio'}]);
+          this.router.navigate(['/player', {playlist_id: container['id'], type: type}]);
         } else {
-          this.router.navigate(['/player', {type: 'audio', uid: uid}]);
-        }
-      }
-    }
-
-    // remove download from current downloads
-    this.removeDownloadFromCurrentDownloads(new_download);
-  }
-
-  downloadHelperMp4(name, uid, is_playlist = false, forceView = false, new_download = null, navigate_mode = false) {
-    this.downloadingfile = false;
-    if (this.multiDownloadMode && !this.downloadOnlyMode && !navigate_mode) {
-      // do nothing
-      this.reloadRecentVideos();
-    } else {
-      // if download only mode, just download the file. no redirect
-      if (forceView === false && this.downloadOnlyMode) {
-        if (is_playlist) {
-          const zipName = name[0].split(' ')[0] + name[1].split(' ')[0];
-          this.downloadPlaylist(name, 'video', zipName);
-        } else {
-          this.downloadVideoFile(decodeURI(name));
-        }
-        this.reloadRecentVideos();
-      } else {
-        localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
-        if (is_playlist) {
-          this.router.navigate(['/player', {fileNames: name.join('|nvr|'), type: 'video'}]);
-        } else {
-          this.router.navigate(['/player', {type: 'video', uid: uid}]);
+          this.router.navigate(['/player', {type: type, uid: container['uid']}]);
         }
       }
     }
@@ -439,133 +405,85 @@ export class MainComponent implements OnInit {
 
   // download click handler
   downloadClicked() {
-    if (this.ValidURL(this.url)) {
-      this.urlError = false;
-      this.path = '';
-
-      // get common args
-      const customArgs = (this.customArgsEnabled ? this.customArgs : null);
-      const customOutput = (this.customOutputEnabled ? this.customOutput : null);
-      const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
-      const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
-
-      // set advanced inputs
-      if (this.allowAdvancedDownload) {
-        if (customArgs) {
-          localStorage.setItem('customArgs', customArgs);
-        }
-        if (customOutput) {
-          localStorage.setItem('customOutput', customOutput);
-        }
-        if (youtubeUsername) {
-          localStorage.setItem('youtubeUsername', youtubeUsername);
-        }
-      }
-
-      if (this.audioOnly) {
-        // create download object
-        const new_download: Download = {
-          uid: uuid(),
-          type: 'audio',
-          percent_complete: 0,
-          url: this.url,
-          downloading: true,
-          is_playlist: this.url.includes('playlist'),
-          error: false
-        };
-        this.downloads.push(new_download);
-        if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
-        this.downloadingfile = true;
-
-        let customQualityConfiguration = null;
-        if (this.selectedQuality !== '') {
-          customQualityConfiguration = this.getSelectedAudioFormat();
-        }
-
-        this.postsService.makeMP3(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid).subscribe(posts => {
-          // update download object
-          new_download.downloading = false;
-          new_download.percent_complete = 100;
-
-          const is_playlist = !!(posts['file_names']);
-          this.path = is_playlist ? posts['file_names'] : posts['audiopathEncoded'];
-
-          this.current_download = null;
-
-          if (this.path !== '-1') {
-            this.downloadHelperMp3(this.path, posts['uid'], is_playlist, false, new_download);
-          }
-        }, error => { // can't access server or failed to download for other reasons
-          this.downloadingfile = false;
-          this.current_download = null;
-          new_download['downloading'] = false;
-          // removes download from list of downloads
-          const downloads_index = this.downloads.indexOf(new_download);
-          if (downloads_index !== -1) {
-            this.downloads.splice(downloads_index)
-          }
-          this.openSnackBar('Download failed!', 'OK.');
-        });
-      } else {
-        // create download object
-        const new_download: Download = {
-          uid: uuid(),
-          type: 'video',
-          percent_complete: 0,
-          url: this.url,
-          downloading: true,
-          is_playlist: this.url.includes('playlist'),
-          error: false
-        };
-        this.downloads.push(new_download);
-        if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
-        this.downloadingfile = true;
-
-        const customQualityConfiguration = this.getSelectedVideoFormat();
-
-        let cropFileSettings = null;
-
-        if (this.cropFile) {
-          cropFileSettings = {
-            cropFileStart: this.cropFileStart,
-            cropFileEnd: this.cropFileEnd
-          }
-        }
-
-        this.postsService.makeMP4(this.url, (this.selectedQuality === '' ? null : this.selectedQuality),
-          customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid, cropFileSettings).subscribe(posts => {
-          // update download object
-          new_download.downloading = false;
-          new_download.percent_complete = 100;
-
-          const is_playlist = !!(posts['file_names']);
-          this.path = is_playlist ? posts['file_names'] : posts['videopathEncoded'];
-
-          this.current_download = null;
-
-          if (this.path !== '-1') {
-            this.downloadHelperMp4(this.path, posts['uid'], is_playlist, false, new_download);
-          }
-        }, error => { // can't access server
-          this.downloadingfile = false;
-          this.current_download = null;
-          new_download['downloading'] = false;
-          // removes download from list of downloads
-          const downloads_index = this.downloads.indexOf(new_download);
-          if (downloads_index !== -1) {
-            this.downloads.splice(downloads_index)
-          }
-          this.openSnackBar('Download failed!', 'OK.');
-      });
-      }
-
-      if (this.multiDownloadMode) {
-          this.url = '';
-          this.downloadingfile = false;
-      }
-    } else {
+    if (!this.ValidURL(this.url)) {
       this.urlError = true;
+      return;
+    }
+
+    this.urlError = false;
+
+    // get common args
+    const customArgs = (this.customArgsEnabled ? this.customArgs : null);
+    const customOutput = (this.customOutputEnabled ? this.customOutput : null);
+    const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
+    const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
+
+    // set advanced inputs
+    if (this.allowAdvancedDownload) {
+      if (customArgs) {
+        localStorage.setItem('customArgs', customArgs);
+      }
+      if (customOutput) {
+        localStorage.setItem('customOutput', customOutput);
+      }
+      if (youtubeUsername) {
+        localStorage.setItem('youtubeUsername', youtubeUsername);
+      }
+    }
+
+    const type = this.audioOnly ? 'audio' : 'video';
+    // create download object
+    const new_download: Download = {
+      uid: uuid(),
+      type: type,
+      percent_complete: 0,
+      url: this.url,
+      downloading: true,
+      is_playlist: this.url.includes('playlist'),
+      error: false
+    };
+    this.downloads.push(new_download);
+    if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
+    this.downloadingfile = true;
+
+    let customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
+
+    let cropFileSettings = null;
+
+    if (this.cropFile) {
+      cropFileSettings = {
+        cropFileStart: this.cropFileStart,
+        cropFileEnd: this.cropFileEnd
+      }
+    }
+
+    this.postsService.downloadFile(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
+      customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid, cropFileSettings).subscribe(res => {
+      // update download object
+      new_download.downloading = false;
+      new_download.percent_complete = 100;
+
+      const container = res['container'];
+      const is_playlist = res['file_uids'].length > 1;
+
+      this.current_download = null;
+
+      this.downloadHelper(container, type, is_playlist, false, new_download);
+    }, error => { // can't access server
+      this.downloadingfile = false;
+      this.current_download = null;
+      new_download['downloading'] = false;
+      // removes download from list of downloads
+      const downloads_index = this.downloads.indexOf(new_download);
+      if (downloads_index !== -1) {
+        this.downloads.splice(downloads_index)
+      }
+      this.openSnackBar('Download failed!', 'OK.');
+    });
+
+    if (this.multiDownloadMode) {
+        this.url = '';
+        this.downloadingfile = false;
     }
   }
 
@@ -582,23 +500,26 @@ export class MainComponent implements OnInit {
   }
 
   getSelectedAudioFormat() {
-    if (this.selectedQuality === '') { return null };
+    if (this.selectedQuality === '') { return null; }
     const cachedFormatsExists = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
     if (cachedFormatsExists) {
       const audio_formats = this.cachedAvailableFormats[this.url]['formats']['audio'];
-      return audio_formats[this.selectedQuality]['format_id'];
+      return this.selectedQuality['format_id'];
     } else {
       return null;
     }
   }
 
   getSelectedVideoFormat() {
-    if (this.selectedQuality === '') { return null };
-    const cachedFormatsExists = this.cachedAvailableFormats[this.url] &&  this.cachedAvailableFormats[this.url]['formats'];
-    if (cachedFormatsExists) {
-      const video_formats = this.cachedAvailableFormats[this.url]['formats']['video'];
-      if (video_formats['best_audio_format'] && this.selectedQuality !== '') {
-          return video_formats[this.selectedQuality]['format_id'] + '+' + video_formats['best_audio_format'];
+    if (this.selectedQuality === '') { return null; }
+    const cachedFormats = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
+    if (cachedFormats) {
+      const video_formats = cachedFormats['video'];
+      if (this.selectedQuality) {
+        let selected_video_format = this.selectedQuality['format_id'];
+        // add in audio format if necessary
+        if (!this.selectedQuality['acodec'] && cachedFormats['best_audio_format']) selected_video_format += `+${cachedFormats['best_audio_format']}`;
+        return selected_video_format;
       }
     }
     return null;
@@ -626,41 +547,27 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadAudioFile(name) {
-    this.downloading_content['audio'][name] = true;
-    this.postsService.downloadFileFromServer(name, 'audio').subscribe(res => {
-      this.downloading_content['audio'][name] = false;
+  downloadFileFromServer(file, type) {
+    const ext = type === 'audio' ? 'mp3' : 'mp4'
+    this.downloading_content[type][file.id] = true;
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
+      this.downloading_content[type][file.id] = false;
       const blob: Blob = res;
-      saveAs(blob, decodeURIComponent(name) + '.mp3');
+      saveAs(blob, decodeURIComponent(file.id) + `.${ext}`);
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, 'video').subscribe(delRes => {
+        this.postsService.deleteFile(file.uid).subscribe(delRes => {
         });
       }
     });
   }
 
-  downloadVideoFile(name) {
-    this.downloading_content['video'][name] = true;
-    this.postsService.downloadFileFromServer(name, 'video').subscribe(res => {
-      this.downloading_content['video'][name] = false;
+  downloadPlaylist(playlist) {
+    this.postsService.downloadPlaylistFromServer(playlist.id).subscribe(res => {
+      if (playlist.id) { this.downloading_content[playlist.type][playlist.id] = false };
       const blob: Blob = res;
-      saveAs(blob, decodeURIComponent(name) + '.mp4');
-
-      if (!this.fileManagerEnabled) {
-        // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, 'audio').subscribe(delRes => {
-        });
-      }
-    });
-  }
-
-  downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
-    this.postsService.downloadFileFromServer(fileNames, type, zipName).subscribe(res => {
-      if (playlistID) { this.downloading_content[type][playlistID] = false };
-      const blob: Blob = res;
-      saveAs(blob, zipName + '.zip');
+      saveAs(blob, playlist.name + '.zip');
     });
 
   }
@@ -740,9 +647,8 @@ export class MainComponent implements OnInit {
           this.errorFormats(url);
           return;
         }
-        const parsed_infos = this.getAudioAndVideoFormats(infos.formats);
-        const available_formats = {audio: parsed_infos[0], video: parsed_infos[1]};
-        this.cachedAvailableFormats[url]['formats'] = available_formats;
+        this.cachedAvailableFormats[url]['formats'] = this.getAudioAndVideoFormats(infos.formats);
+        console.log(this.cachedAvailableFormats[url]['formats']);
       }, err => {
         this.errorFormats(url);
       });
@@ -785,7 +691,7 @@ export class MainComponent implements OnInit {
       if (audio_format) {
         format_array.push('-f', audio_format);
       } else if (this.selectedQuality) {
-        format_array.push('--audio-quality', this.selectedQuality);
+        format_array.push('--audio-quality', this.selectedQuality['format_id']);
       }
 
       // pushes formats
@@ -801,7 +707,7 @@ export class MainComponent implements OnInit {
       if (video_format) {
         format_array = ['-f', video_format];
       } else if (this.selectedQuality) {
-        format_array = [`bestvideo[height=${this.selectedQuality}]+bestaudio/best[height=${this.selectedQuality}]`];
+        format_array = [`bestvideo[height=${this.selectedQuality['format_id']}]+bestaudio/best[height=${this.selectedQuality}]`];
       }
 
       // pushes formats
@@ -898,9 +804,11 @@ export class MainComponent implements OnInit {
     }
   }
 
-  getAudioAndVideoFormats(formats): any[] {
-    const audio_formats = {};
-    const video_formats = {};
+  getAudioAndVideoFormats(formats) {
+    const audio_formats: any = {};
+    const video_formats: any = {};
+
+    console.log(formats);
 
     for (let i = 0; i < formats.length; i++) {
       const format_obj = {type: null};
@@ -911,9 +819,12 @@ export class MainComponent implements OnInit {
       format_obj.type = format_type;
       if (format_obj.type === 'audio' && format.abr) {
         const key = format.abr.toString() + 'K';
+        format_obj['key'] = key;
         format_obj['bitrate'] = format.abr;
         format_obj['format_id'] = format.format_id;
         format_obj['ext'] = format.ext;
+        format_obj['label'] = key;
+
         // don't overwrite if not m4a
         if (audio_formats[key]) {
           if (format.ext === 'm4a') {
@@ -924,11 +835,14 @@ export class MainComponent implements OnInit {
         }
       } else if (format_obj.type === 'video') {
         // check if video format is mp4
-        const key = format.format_note.replace('p', '');
+        const key = `${format.height}p${Math.round(format.fps)}`;
         if (format.ext === 'mp4' || format.ext === 'mkv' || format.ext === 'webm') {
+          format_obj['key'] = key;
           format_obj['height'] = format.height;
           format_obj['acodec'] = format.acodec;
           format_obj['format_id'] = format.format_id;
+          format_obj['label'] = key;
+          format_obj['fps'] = Math.round(format.fps);
 
           // no acodec means no overwrite
           if (!(video_formats[key]) || format_obj['acodec'] !== 'none') {
@@ -938,9 +852,17 @@ export class MainComponent implements OnInit {
       }
     }
 
-    video_formats['best_audio_format'] = this.getBestAudioFormatForMp4(audio_formats);
+    const parsed_formats: any = {};
 
-    return [audio_formats, video_formats]
+    parsed_formats['best_audio_format'] = this.getBestAudioFormatForMp4(audio_formats);
+
+    parsed_formats['video'] = Object.values(video_formats);
+    parsed_formats['audio'] = Object.values(audio_formats);
+
+    parsed_formats['video'] = parsed_formats['video'].sort((a, b) => b.height - a.height || b.fps - a.fps);
+    parsed_formats['audio'] = parsed_formats['audio'].sort((a, b) => b.bitrate - a.bitrate);
+
+    return parsed_formats;
   }
 
   getBestAudioFormatForMp4(audio_formats) {

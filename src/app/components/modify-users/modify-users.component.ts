@@ -78,16 +78,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
 
   getRoles() {
     this.postsService.getRoles().subscribe(res => {
-      this.roles = [];
-      const roles = res['roles'];
-      const role_names = Object.keys(roles);
-      for (let i = 0; i < role_names.length; i++) {
-        const role_name = role_names[i];
-        this.roles.push({
-          name: role_name,
-          permissions: roles[role_name]['permissions']
-        });
-      }
+      this.roles = res['roles'];
     });
   }
 

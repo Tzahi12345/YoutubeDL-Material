@@ -3,6 +3,8 @@ services:
     ytdl_material:
         environment: 
             ALLOW_CONFIG_MUTATIONS: 'true'
+            ytdl_mongodb_connection_string: 'mongodb://ytdl-mongo-db:27018'
+            ytdl_use_local_db: 'false'
         restart: always
         volumes:
             - ./appdata:/app/appdata
@@ -13,3 +15,12 @@ services:
         ports:
             - "8998:17442"
         image: tzahi12345/youtubedl-material:latest
+    ytdl-mongo-db:
+        image: mongo
+        ports:
+            - "27018:27017"
+        logging:
+            driver: "none"          
+        container_name: mongo-db
+        volumes:
+            - ./db/:/data/db

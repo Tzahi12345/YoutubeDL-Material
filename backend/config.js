@@ -231,6 +231,10 @@ DEFAULT_CONFIG = {
             "searchFilter": "(uid={{username}})"
         }
       },
+      "Database": {
+        "use_local_db": false,
+        "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib"
+      },
       "Advanced": {
         "default_downloader": "youtube-dl",
         "use_default_downloading_agent": true,

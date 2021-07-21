@@ -35,7 +35,7 @@ import { Router } from '@angular/router';
 export class DownloadsComponent implements OnInit, OnDestroy {
 
   downloads_check_interval = 1000;
-  downloads = {};
+  downloads = [];
   interval_id = null;
 
   keys = Object.keys;
@@ -137,6 +137,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         this.downloads[session_id] = session_downloads_by_id;
       } else {
         for (let j = 0; j < session_download_ids.length; j++) {
+          if (session_download_ids[j] === 'session_id' || session_download_ids[j] === '_id') continue;
           const download_id = session_download_ids[j];
           const download = new_downloads_by_session[session_id][download_id]
           if (!this.downloads[session_id][download_id]) {
@@ -156,11 +157,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   downloadsValid() {
     let valid = false;
-    const keys = this.keys(this.downloads);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const value = this.downloads[key];
-      if (this.keys(value).length > 0) {
+    for (let i = 0; i < this.downloads.length; i++) {
+      const session_downloads = this.downloads[i];
+      if (!session_downloads) continue;
+      if (this.keys(session_downloads).length > 2) {
         valid = true;
         break;
       }

@@ -1,4 +1,5 @@
 const config_api = require('./config');
+const utils = require('./utils');
 
 var logger = null;
 var db = null;
@@ -38,10 +39,9 @@ async function categorize(file_jsons) {
     if (!Array.isArray(file_jsons)) file_jsons = [file_jsons];
 
     let selected_category = null;
-    const categories = getCategories();
+    const categories = await getCategories();
     if (!categories) {
-        logger.warn('Categories could not be found. Initializing categories...');
-        db.assign({categories: []}).write();
+        logger.warn('Categories could not be found.');
         return null;
     }
 
@@ -63,9 +63,27 @@ async function categorize(file_jsons) {
     return selected_category;
 }
 
-function getCategories() {
-    const categories = db.get('categories').value();
+async function getCategories() {
+    const categories = await db_api.getRecords('categories');
     return categories ? categories : null;
+}
+
+async function getCategoriesAsPlaylists(files = null) {
+    const categories_as_playlists = [];
+    const available_categories = await getCategories();
+    if (available_categories && files) {
+        for (category of available_categories) {
+            const files_that_match = utils.addUIDsToCategory(category, files);
+            if (files_that_match && files_that_match.length > 0) {
+                category['thumbnailURL'] = files_that_match[0].thumbnailURL;
+                category['thumbnailPath'] = files_that_match[0].thumbnailPath;
+                category['duration'] = files_that_match.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
+                category['id'] = category['uid'];
+                categories_as_playlists.push(category);
+            }
+        }
+    }
+    return categories_as_playlists;
 }
 
 function applyCategoryRules(file_json, rules, category_name) {
@@ -78,10 +96,10 @@ function applyCategoryRules(file_json, rules, category_name) {
 
         switch (rule['comparator']) {
             case 'includes':
-                rule_applies = file_json[rule['property']].includes(rule['value']);
+                rule_applies = file_json[rule['property']].toLowerCase().includes(rule['value'].toLowerCase());
                 break;
             case 'not_includes':
-                rule_applies = !(file_json[rule['property']].includes(rule['value']));
+                rule_applies = !(file_json[rule['property']].toLowerCase().includes(rule['value'].toLowerCase()));
                 break;
             case 'equals':
                 rule_applies = file_json[rule['property']] === rule['value'];
@@ -126,4 +144,6 @@ async function addTagToExistingTags(tag) {
 module.exports = {
     initialize: initialize,
     categorize: categorize,
+    getCategories: getCategories,
+    getCategoriesAsPlaylists: getCategoriesAsPlaylists
 }
