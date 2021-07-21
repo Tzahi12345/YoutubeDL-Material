@@ -166,15 +166,14 @@ export class RecentVideosComponent implements OnInit {
       const sub = this.postsService.getSubscriptionByID(file.sub_id);
       if (sub.streamingOnly) {
         // streaming only mode subscriptions
-        !new_tab ? this.router.navigate(['/player', {name: file.id,
-                                          url: file.requested_formats ? file.requested_formats[0].url : file.url}])
-                : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
+        // !new_tab ? this.router.navigate(['/player', {name: file.id,
+        //                                   url: file.requested_formats ? file.requested_formats[0].url : file.url}])
+        //         : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
       } else {
         // normal subscriptions
-        !new_tab ? this.router.navigate(['/player', {fileNames: file.id,
-                                          type: file.isAudio ? 'audio' : 'video', subscriptionName: sub.name,
-                                          subPlaylist: sub.isPlaylist}]) 
-                 : window.open(`/#/player;fileNames=${file.id};type=${file.isAudio ? 'audio' : 'video'};subscriptionName=${sub.name};subPlaylist=${sub.isPlaylist}`);
+        !new_tab ? this.router.navigate(['/player', {uid: file.uid,
+                                          type: file.isAudio ? 'audio' : 'video', sub_id: sub.id}]) 
+                 : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'};sub_id=${sub.id}`);
       }
     } else {
       // normal files

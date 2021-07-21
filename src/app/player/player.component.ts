@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { VgApiService } from '@videogular/ngx-videogular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -98,6 +98,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    this.cdr.detectChanges();
     this.postsService.sidenav.close();
   }
 
@@ -107,7 +108,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
-              public snackBar: MatSnackBar) {
+              public snackBar: MatSnackBar, private cdr: ChangeDetectorRef) {
 
   }
 
@@ -240,6 +241,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   onPlayerReady(api: VgApiService) {
       this.api = api;
       this.api_ready = true;
+      this.cdr.detectChanges();
 
       // checks if volume has been previously set. if so, use that as default
       if (localStorage.getItem('player_volume')) {
