@@ -20,7 +20,7 @@ import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/ed
 })
 export class SettingsComponent implements OnInit {
   all_locales = isoLangs;
-  supported_locales = ['en', 'es', 'de', 'fr', 'zh', 'nb', 'it', 'en-GB'];
+  supported_locales = ['en', 'es', 'de', 'fr', 'nl', 'zh', 'nb', 'it', 'en-GB'];
   initialLocale = localStorage.getItem('locale');
 
   initial_config = null;
@@ -28,6 +28,10 @@ export class SettingsComponent implements OnInit {
   loading_config = false;
   generated_bookmarklet_code = null;
   bookmarkletAudioOnly = false;
+
+  db_info = null;
+  db_transferring = false;
+  testing_connection_string = false;
 
   _settingsSame = true;
 
@@ -48,6 +52,7 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.getConfig();
+    this.getDBInfo();
 
     this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());
 
@@ -252,6 +257,68 @@ export class SettingsComponent implements OnInit {
           this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
         });
       }
+    });
+  }
+
+  restartServer() {
+    this.postsService.restartServer().subscribe(res => {
+      this.postsService.openSnackBar('Restarting!');
+    }, err => {
+      this.postsService.openSnackBar('Failed to restart the server.');
+    });
+  }
+
+  getDBInfo() {
+    this.postsService.getDBInfo().subscribe(res => {
+      this.db_info = res['db_info'];
+    });
+  }
+
+  transferDB() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: 'Transfer DB',
+        dialogText: `Are you sure you want to transfer the DB?`,
+        submitText: 'Transfer',
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this._transferDB();
+      }
+    });
+  }
+
+  _transferDB() {
+    this.db_transferring = true;
+    this.postsService.transferDB(this.db_info['using_local_db']).subscribe(res => {
+      this.db_transferring = false;
+      const success = res['success'];
+      if (success) {
+        this.openSnackBar('Successfully transfered DB! Reloading info...');
+        this.getDBInfo();
+      } else {
+        this.openSnackBar('Failed to transfer DB -- transfer was aborted. Error: ' + res['error']);
+      }
+    }, err => {
+      this.db_transferring = false;
+      this.openSnackBar('Failed to transfer DB -- API call failed. See browser logs for details.');
+      console.error(err);
+    });
+  }
+
+  testConnectionString() {
+    this.testing_connection_string = true;
+    this.postsService.testConnectionString().subscribe(res => {
+      this.testing_connection_string = false;
+      if (res['success']) {
+        this.postsService.openSnackBar('Connection successful!');
+      } else {
+        this.postsService.openSnackBar('Connection failed! Error: ' + res['error']);
+      }
+    }, err => {
+      this.testing_connection_string = false;
+      this.postsService.openSnackBar('Connection failed! Error: Server error. See logs for more info.');
     });
   }
 

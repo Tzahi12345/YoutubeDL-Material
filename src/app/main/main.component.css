@@ -124,6 +124,10 @@ mat-form-field.mat-form-field {
     width: 100%;
 }
 
+.advanced-input-time {
+    margin-left: 10px;
+}
+
 .edit-button {
     margin-left: 10px;
     top: -5px;

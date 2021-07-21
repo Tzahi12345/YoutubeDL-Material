@@ -140,7 +140,7 @@
             <mat-divider></mat-divider>
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
-                    <div class="col-12 mt-3 mb-2">
+                    <div class="col-12 mt-3">
                         <h6 i18n="Categories">Categories</h6>
                         <div cdkDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
                             <div class="category-box" *ngFor="let category of postsService.categories" cdkDrag>
@@ -153,6 +153,9 @@
                             </div>
                         </div>
                         <button style="margin-top: 10px;" mat-mini-fab (click)="openAddCategoryDialog()"><mat-icon>add</mat-icon></button>
+                    </div>
+                    <div class="col-12 mt-2 mb-2">
+                        <mat-checkbox [(ngModel)]="new_config['Extra']['allow_playlist_categorization']" matTooltip="With this setting enabled, if a single video matches a category, the entire playlist will receive that category." i18n-matTooltip="Allow playlist categorization setting tooltip"><ng-container i18n="Allow playlist categorization setting label">Allow playlist categorization</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>
@@ -216,7 +219,7 @@
                         <div class="enable-api-key-div">
                             <mat-form-field class="text-field" color="accent">
                                 <input [disabled]="!new_config['API']['use_API_key']" [(ngModel)]="new_config['API']['API_key']" matInput placeholder="Public API Key" i18n-placeholder="Public API Key setting placeholder" required>
-                                <mat-hint><a target="_blank" href="https://stoplight.io/p/docs/gh/tzahi12345/youtubedl-material"><ng-container i18n="View API docs setting hint">View documentation</ng-container></a></mat-hint>
+                                <mat-hint><a target="_blank" href="https://youtubedl-material.stoplight.io/docs/youtubedl-material/Public%20API%20v1.yaml"><ng-container i18n="View API docs setting hint">View documentation</ng-container></a></mat-hint>
                             </mat-form-field>
                         </div>
                         <div class="api-key-div">
@@ -272,6 +275,43 @@
                         <mat-checkbox (change)="bookmarkletAudioOnlyChanged($event)"><ng-container i18n="Generate audio only bookmarklet checkbox">Generate 'audio only' bookmarklet</ng-container></mat-checkbox>
                         <!--<button style="margin-bottom: 5px;" mat-stroked-button color="accent" (click)="generateBookmarklet()">Generate bookmarklet</button>-->
                         <p><a [href]="generated_bookmarklet_code" target="_blank">YTDL-Bookmarklet</a></p>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </mat-tab>
+    <!-- Database -->
+    <mat-tab label="Database" i18n-label="Database settings label">
+        <ng-template matTabContent>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <div *ngIf="db_info">
+                            <h5 i18n="Database info title">Database Info</h5>
+                            <p><ng-container i18n="Database location label">Database location:</ng-container>&nbsp;<strong>{{db_info['using_local_db'] ? 'Local' : 'MongoDB'}}</strong></p>
+                            <h6 i18n="Records per table label">Records per table</h6>
+                            <mat-list style="padding-top: 0px">
+                                <mat-list-item style="height: 28px" *ngFor="let table_stats of db_info['stats_by_table'] | keyvalue">
+                                    {{table_stats.key}}: {{table_stats.value.records_count}}
+                                </mat-list-item>
+                            </mat-list>
+
+                            <mat-form-field style="width: 100%; margin-top: 15px; margin-bottom: 10px" color="accent">
+                                <input [(ngModel)]="new_config['Database']['mongodb_connection_string']" matInput placeholder="MongoDB Connection String" i18n-placeholder="MongoDB Connection String" required>
+                                <mat-hint><ng-container i18n="MongoDB Connection String setting hint AKA preamble">Example:</ng-container>&nbsp;mongodb://127.0.0.1:27017/?compressors=zlib</mat-hint>
+                            </mat-form-field>
+
+                            <br>
+
+                            <button (click)="testConnectionString()" [disabled]="testing_connection_string" mat-flat-button color="accent"><ng-container i18n="Test connection string button">Test connection string</ng-container></button>
+
+                            <br>
+
+                            <button class="transfer-db-button" [disabled]="db_transferring" color="accent" (click)="transferDB()" mat-raised-button><ng-container i18n="Transfer DB button">Transfer DB to </ng-container>{{db_info['using_local_db'] ? 'MongoDB' : 'Local'}}</button>
+                        </div>
+                        <div *ngIf="!db_info">
+                            <ng-container i18n="Database info not retrieved error message">Database information could not be retrieved. Check the server logs for more information.</ng-container>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -350,6 +390,14 @@
             <mat-divider></mat-divider>
             <div *ngIf="new_config" class="container-fluid mt-1">
                 <app-updater></app-updater>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container">
+                <div class="row">
+                    <div class="col-12 mt-4">
+                        <button (click)="restartServer()" mat-stroked-button color="warn"><ng-container i18n="Restart server button">Restart server</ng-container></button>
+                    </div>
+                </div>
             </div>
         </ng-template>
     </mat-tab>

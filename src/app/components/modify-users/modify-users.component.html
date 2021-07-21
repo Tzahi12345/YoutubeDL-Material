@@ -94,7 +94,7 @@
     </div>
     <button color="primary" [matMenuTriggerFor]="edit_roles_menu" class="edit-role" mat-raised-button><ng-container i18n="Edit role">Edit Role</ng-container></button>
     <mat-menu #edit_roles_menu="matMenu">
-        <button (click)="openModifyRole(role)" mat-menu-item *ngFor="let role of roles">{{role.name}}</button>
+        <button (click)="openModifyRole(role)" mat-menu-item *ngFor="let role of roles">{{role.key}}</button>
     </mat-menu>
     </div>
     

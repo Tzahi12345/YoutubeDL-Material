@@ -1,14 +1,14 @@
 <div style="height: 100%" *ngIf="playlist.length > 0 && show_player">
-    <div style="height: 100%" [ngClass]="(type === 'audio') ? null : 'container-video'">
+    <div style="height: 100%" [ngClass]="(currentItem.type === 'audio/mp3') ? null : 'container-video'">
             <div style="max-width: 100%; margin-left: 0px; height: 100%">
                 <mat-drawer-container style="height: 100%" class="example-container" autosize>
-                    <div style="height: fit-content" [ngClass]="(type === 'audio') ? 'audio-col' : 'video-col'">
-                        <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(type === 'audio') ? 'transparent' : 'black'">
-                            <video [ngClass]="(type === 'audio') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
+                    <div style="height: fit-content" [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-col' : 'video-col'">
+                        <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(currentItem.type === 'audio/mp3') ? postsService.theme.drawer_color : 'black'">
+                            <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
                             </video>
                         </vg-player>
                     </div>
-                    <div *ngIf="db_file" style="height: fit-content; width: 100%; margin-top: 10px;">
+                    <div style="height: fit-content; width: 100%; margin-top: 10px;">
                         <div class="container">
                             <div class="row">
                                 <div class="col-2 col-lg-1">
@@ -27,14 +27,13 @@
                                     </ng-container>
                                 </div>
                                 <div class="col-2">
-                                    <ng-container *ngIf="playlist.length > 1">
+                                    <ng-container *ngIf="db_playlist">
                                         <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
-                                        <button *ngIf="!id" color="accent" (click)="namePlaylistDialog()" mat-icon-button><mat-icon>favorite</mat-icon></button>
-                                        <button *ngIf="!is_shared && id && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
+                                        <button *ngIf="(!postsService.isLoggedIn || postsService.permissions.includes('sharing')) && !auto" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                     </ng-container>
-                                    <ng-container *ngIf="playlist.length === 1">
+                                    <ng-container *ngIf="db_file">
                                         <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
-                                        <button *ngIf="!is_shared && uid && uid !== 'false' && type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
+                                        <button *ngIf="type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                         <button (click)="openFileInfoDialog()" *ngIf="db_file" mat-icon-button><mat-icon>info</mat-icon></button>
                                     </ng-container>
                                     <button *ngIf="db_file && db_file.url.includes('twitch.tv/videos/') && postsService['config']['API']['use_twitch_API']" (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
@@ -47,6 +46,9 @@
                             <mat-button-toggle cdkDrag *ngFor="let playlist_item of playlist; let i = index" [checked]="currentItem.title === playlist_item.title" (click)="onClickPlaylistItem(playlist_item, i)" class="toggle-button" [value]="playlist_item.title">{{playlist_item.label}}</mat-button-toggle>
                         </mat-button-toggle-group>
                     </div>
+
+                    <app-concurrent-stream *ngIf="db_file && api && postsService.config" (setPlaybackRate)="setPlaybackRate($event)" (togglePlayback)="togglePlayback($event)" (setPlaybackTimestamp)="setPlaybackTimestamp($event)" [playing]="api.state === 'playing'" [uid]="uid" [playback_timestamp]="api.time.current/1000" [server_mode]="!postsService.config.Advanced.multi_user_mode || postsService.isLoggedIn"></app-concurrent-stream>
+
                     <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [opened]="db_file && db_file['chat_exists'] && postsService['config']['API']['use_twitch_API']">
                         <ng-container *ngIf="api_ready && db_file && db_file.url.includes('twitch.tv/videos/')">
                             <app-twitch-chat #twitchchat [db_file]="db_file" [current_timestamp]="api.currentTime" [sub]="subscription"></app-twitch-chat>

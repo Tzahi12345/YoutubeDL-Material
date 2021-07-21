@@ -1,0 +1,21 @@
+{{- if and .Values.persistence.audio.enabled (not .Values.persistence.audio.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "youtubedl-material.fullname" . }}-audio
+  labels:
+    {{- include "youtubedl-material.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.audio.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.audio.size | quote }}
+  {{- if .Values.persistence.audio.storageClass }}
+  {{- if (eq "-" .Values.persistence.audio.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.persistence.audio.storageClass }}"
+  {{- end }}
+  {{- end }}
+  {{- end -}}

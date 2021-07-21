@@ -20,11 +20,16 @@
                                         </ng-container>
                                     </mat-label>
                                     <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality">
-                                      <ng-container *ngFor="let option of qualityOptions[(audioOnly) ? 'audio' : 'video']">
-                                        <mat-option *ngIf="option.value === '' || url && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats'] && cachedAvailableFormats[url]['formats'][(audioOnly) ? 'audio' : 'video'][option.value]" [value]="option.value">
-                                            {{option.label}}
+                                        <mat-option [value]="''">
+                                            Max
                                         </mat-option>
-                                      </ng-container>
+                                        <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats">
+                                            <ng-container *ngFor="let option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']">
+                                                <mat-option *ngIf="option.key !== 'best_audio_format'" [value]="option">
+                                                    {{option.key}}
+                                                </mat-option>
+                                            </ng-container>
+                                        </ng-container>
                                     </mat-select>
                                     <div class="spinner-div" *ngIf="url !== '' && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']">
                                         <mat-spinner [diameter]="25"></mat-spinner>
@@ -129,7 +134,7 @@
                             </mat-hint>
                         </mat-form-field>
                     </div>
-                    <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-2">
+                    <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-3">
                         <mat-checkbox color="accent" [disabled]="current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
                             <ng-container i18n="Use authentication checkbox">
                                 Use authentication
@@ -139,9 +144,24 @@
                             <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Username" i18n-placeholder="YT Username placeholder">
                         </mat-form-field>
                     </div>
-                    <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-2">
+                    <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-3">
                         <mat-form-field style="margin-top: 31px;" color="accent" class="advanced-input">
                             <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" [disabled]="!youtubeAuthEnabled" matInput placeholder="Password" i18n-placeholder="YT Password placeholder">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-sm-6 mt-3">
+                        <mat-checkbox color="accent" [disabled]="current_download" [(ngModel)]="cropFile" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                            <ng-container i18n="Crop video checkbox">
+                                Crop file
+                            </ng-container>
+                        </mat-checkbox>
+                        <mat-form-field color="accent" class="advanced-input">
+                            <input [(ngModel)]="cropFileStart" type="number" [ngModelOptions]="{standalone: true}" [disabled]="!cropFile" matInput placeholder="Crop from (seconds)" i18n-placeholder="Crom from placeholder">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 col-sm-6 mt-3">
+                        <mat-form-field style="margin-top: 31px;" color="accent" class="advanced-input">
+                            <input [(ngModel)]="cropFileEnd" type="number" [ngModelOptions]="{standalone: true}" [disabled]="!cropFile" matInput placeholder="Crop to (seconds)" i18n-placeholder="Crop to placeholder">
                         </mat-form-field>
                     </div>
                 </div>

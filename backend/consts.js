@@ -68,6 +68,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_enable_downloads_manager',
         'path': 'YoutubeDLMaterial.Extra.enable_downloads_manager'
     },
+    'ytdl_allow_playlist_categorization': {
+        'key': 'ytdl_allow_playlist_categorization',
+        'path': 'YoutubeDLMaterial.Extra.allow_playlist_categorization'
+    },
 
     // API
     'ytdl_use_api_key': {
@@ -147,6 +151,16 @@ let CONFIG_ITEMS = {
     'ytdl_ldap_config': {
         'key': 'ytdl_ldap_config',
         'path': 'YoutubeDLMaterial.Users.ldap_config'
+    },
+
+    // Database
+    'ytdl_use_local_db': {
+        'key': 'ytdl_use_local_db',
+        'path': 'YoutubeDLMaterial.Database.use_local_db'
+    },
+    'ytdl_mongodb_connection_string': {
+        'key': 'ytdl_mongodb_connection_string',
+        'path': 'YoutubeDLMaterial.Database.mongodb_connection_string'
     },
 
     // Advanced

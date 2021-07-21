@@ -29,7 +29,7 @@ NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker
 Debian/Ubuntu:
 
 ```bash
-sudo apt-get install nodejs youtube-dl ffmpeg
+sudo apt-get install nodejs youtube-dl ffmpeg unzip python npm
 ```
 
 CentOS 7:
