@@ -1184,6 +1184,11 @@ async function generateArgs(url, type, options) {
             }
             downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
         }
+        
+        const default_downloader = getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+        if (default_downloader === 'yt-dlp') {
+            downloadConfig.push('--no-clean-infojson');
+        }
 
     }
 
@@ -1359,7 +1364,6 @@ async function autoUpdateYoutubeDL() {
     }
     return new Promise(async resolve => {
         const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
-        const using_youtube_dlc = default_downloader === 'youtube-dlc';
         const tags_url = download_sources[default_downloader]['tags_url'];
         // get current version
         let current_app_details_path = 'node_modules/youtube-dl/bin/details';
@@ -1461,6 +1465,12 @@ function updateDetailsJSON(new_version, downloader) {
     if (new_version) details_json['version'] = new_version;
     details_json['downloader'] = downloader;
     fs.writeJSONSync(details_path, details_json);
+}
+
+function getCurrentDownloader() {
+    const details_path = 'node_modules/youtube-dl/bin/details';
+    const details_json = fs.readJSONSync(details_path);
+    return details_json['downloader'];
 }
 
 async function checkExistsWithTimeout(filePath, timeout) {
