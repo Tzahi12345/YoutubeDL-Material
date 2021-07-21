@@ -76,24 +76,6 @@ describe('Database', async function() {
 
     });
 
-    describe('Import and Export', async function() {
-        it('Existing data', async function() {
-            const users_db_json = users_db.value();
-            const db_json = db.value();
-
-            const users_db_json_stringified = JSON.stringify(users_db_json);
-            const db_json_stringified = JSON.stringify(db_json);
-
-            const tables_obj = await db_api.importJSONtoDB(users_db_json, db_json);
-            const db_jsons = await db_api.exportDBToJSON(tables_obj);
-
-            const users_db_json_returned_stringified = db_jsons['users_db_json'];
-            const db_json_returned_stringified = db_jsons['db_json'];
-
-            assert(users_db_json_returned_stringified.length === users_db_json_stringified.length);
-            assert(db_json_returned_stringified.length === db_json_stringified.length);
-        });
-    });
 
     describe('Basic functions', async function() {
         beforeEach(async function() {
@@ -185,6 +167,35 @@ describe('Database', async function() {
         it('Stats', async function() {
             const stats = await db_api.getDBStats();
             assert(stats);
+        });
+
+        it('Query speed', async function() {
+            this.timeout(120000); 
+            const NUM_RECORDS_TO_ADD = 300004; // max batch ops is 1000
+            const test_records = [];
+            let random_uid = '06241f83-d1b8-4465-812c-618dfa7f2943';
+            for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
+                const uid = uuid();
+                if (i === NUM_RECORDS_TO_ADD/2) random_uid = uid;
+                test_records.push({"id":"A$AP Mob - Yamborghini High (Official Music Video) ft. Juicy J","title":"A$AP Mob - Yamborghini High (Official Music Video) ft. Juicy J","thumbnailURL":"https://i.ytimg.com/vi/tt7gP_IW-1w/maxresdefault.jpg","isAudio":true,"duration":312,"url":"https://www.youtube.com/watch?v=tt7gP_IW-1w","uploader":"asapmobVEVO","size":5060157,"path":"audio\\A$AP Mob - Yamborghini High (Official Music Video) ft. Juicy J.mp3","upload_date":"2016-05-11","description":"A$AP Mob ft. Juicy J  - \"Yamborghini High\" Get it now on:\niTunes: http://smarturl.it/iYAMH?IQid=yt\nListen on Spotify: http://smarturl.it/sYAMH?IQid=yt\nGoogle Play: http://smarturl.it/gYAMH?IQid=yt\nAmazon:  http://smarturl.it/aYAMH?IQid=yt\n\nFollow A$AP Mob:\nhttps://www.facebook.com/asapmobofficial\nhttps://twitter.com/ASAPMOB\nhttp://instagram.com/asapmob \nhttp://www.asapmob.com/\n\n#AsapMob #YamborghiniHigh #Vevo #HipHop #OfficialMusicVideo #JuicyJ","view_count":118689353,"height":null,"abr":160,"uid": uid,"registered":1626672120632});
+            }
+            const insert_start = Date.now();
+            let success = await db_api.bulkInsertRecordsIntoTable('test', test_records);
+            const insert_end = Date.now();
+
+            console.log(`Insert time: ${(insert_end - insert_start)/1000}s`);
+
+            const query_start = Date.now();
+            const random_record = await db_api.getRecord('test', {uid: random_uid});
+            const query_end = Date.now();
+
+            console.log(random_record)
+
+            console.log(`Query time: ${(query_end - query_start)/1000}s`);
+
+            success = !!random_record;
+
+            assert(success);
         });
     });
 });
