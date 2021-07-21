@@ -1025,7 +1025,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     }
 
                     // registers file in DB
-                    const file_obj = await db_api.registerFileDB2(full_file_path, options.user, category, null, options.cropFileSettings);
+                    const file_obj = await db_api.registerFileDB2(full_file_path, type, options.user, category, null, options.cropFileSettings);
 
                     // TODO: remove the following line
                     if (file_name) file_names.push(file_name);
