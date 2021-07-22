@@ -76,22 +76,25 @@ exports.connectToDB = async (retries = 5, no_fallback = false) => {
     const success = await exports._connectToDB();
     if (success) return true;
 
-    logger.warn(`MongoDB connection failed! Retrying ${retries} times...`);
-    const retry_delay_ms = 2000;
-    for (let i = 0; i < retries; i++) {
-        const retry_succeeded = await exports._connectToDB();
-        if (retry_succeeded) {
-            logger.info(`Successfully connected to DB after ${i+1} attempt(s)`);
-            return true;
-        }
+    if (retries) {
+        logger.warn(`MongoDB connection failed! Retrying ${retries} times...`);
+        const retry_delay_ms = 2000;
+        for (let i = 0; i < retries; i++) {
+            const retry_succeeded = await exports._connectToDB();
+            if (retry_succeeded) {
+                logger.info(`Successfully connected to DB after ${i+1} attempt(s)`);
+                return true;
+            }
 
-        if (i !== retries - 1) {
-            logger.warn(`Retry ${i+1} failed, waiting ${retry_delay_ms}ms before trying again.`);
-            await utils.wait(retry_delay_ms);
-        } else {
-            logger.warn(`Retry ${i+1} failed.`);
+            if (i !== retries - 1) {
+                logger.warn(`Retry ${i+1} failed, waiting ${retry_delay_ms}ms before trying again.`);
+                await utils.wait(retry_delay_ms);
+            } else {
+                logger.warn(`Retry ${i+1} failed.`);
+            }
         }
     }
+    
     if (no_fallback) {
         logger.error('Failed to connect to MongoDB. Verify your connection string is valid.');
         return;
