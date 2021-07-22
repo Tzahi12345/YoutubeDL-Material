@@ -4,7 +4,6 @@ var { promisify } = require('util');
 var auth_api = require('./authentication/auth');
 var winston = require('winston');
 var path = require('path');
-var youtubedl = require('youtube-dl');
 var ffmpeg = require('fluent-ffmpeg');
 var compression = require('compression');
 var glob = require("glob")
@@ -24,14 +23,21 @@ const fetch = require('node-fetch');
 var URL = require('url').URL;
 const shortid = require('shortid')
 const url_api = require('url');
-var config_api = require('./config.js');
-var subscriptions_api = require('./subscriptions')
-var categories_api = require('./categories');
-var twitch_api = require('./twitch');
 const CONSTS = require('./consts')
 const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
 var ps = require('ps-node');
+
+// needed if bin/details somehow gets deleted
+const DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
+if (!fs.existsSync(DETAILS_BIN_PATH)) fs.writeJSONSync(DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
+
+var youtubedl = require('youtube-dl');
+
+var config_api = require('./config.js');
+var subscriptions_api = require('./subscriptions')
+var categories_api = require('./categories');
+var twitch_api = require('./twitch');
 
 const is_windows = process.platform === 'win32';
 
@@ -1366,18 +1372,17 @@ async function autoUpdateYoutubeDL() {
         const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
         const tags_url = download_sources[default_downloader]['tags_url'];
         // get current version
-        let current_app_details_path = 'node_modules/youtube-dl/bin/details';
-        let current_app_details_exists = fs.existsSync(current_app_details_path);
+        let current_app_details_exists = fs.existsSync(DETAILS_BIN_PATH);
         if (!current_app_details_exists) {
-            logger.warn(`Failed to get youtube-dl binary details at location '${current_app_details_path}'. Generating file...`);
-            fs.writeJSONSync('node_modules/youtube-dl/bin/details', {"version":"2020.00.00", "downloader": default_downloader});
+            logger.warn(`Failed to get youtube-dl binary details at location '${DETAILS_BIN_PATH}'. Generating file...`);
+            fs.writeJSONSync(DETAILS_BIN_PATH, {"version":"2020.00.00", "downloader": default_downloader});
         }
-        let current_app_details = JSON.parse(fs.readFileSync(current_app_details_path));
+        let current_app_details = JSON.parse(fs.readFileSync(DETAILS_BIN_PATH));
         let current_version = current_app_details['version'];
         let current_downloader = current_app_details['downloader'];
         let stored_binary_path = current_app_details['path'];
         if (!stored_binary_path || typeof stored_binary_path !== 'string') {
-            // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${current_app_details_path}, attempting to guess actual path...`);
+            // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${DETAILS_BIN_PATH}, attempting to guess actual path...`);
             const guessed_base_path = 'node_modules/youtube-dl/bin/';
             const guessed_file_path = guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
             if (fs.existsSync(guessed_file_path)) {
@@ -1460,16 +1465,14 @@ async function downloadLatestYoutubeDLPBinary(new_version) {
 }
 
 function updateDetailsJSON(new_version, downloader) {
-    const details_path = 'node_modules/youtube-dl/bin/details';
-    const details_json = fs.readJSONSync(details_path);
+    const details_json = fs.readJSONSync(DETAILS_BIN_PATH);
     if (new_version) details_json['version'] = new_version;
     details_json['downloader'] = downloader;
-    fs.writeJSONSync(details_path, details_json);
+    fs.writeJSONSync(DETAILS_BIN_PATH, details_json);
 }
 
 function getCurrentDownloader() {
-    const details_path = 'node_modules/youtube-dl/bin/details';
-    const details_json = fs.readJSONSync(details_path);
+    const details_json = fs.readJSONSync(DETAILS_BIN_PATH);
     return details_json['downloader'];
 }
 
