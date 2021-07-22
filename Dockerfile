@@ -29,7 +29,7 @@ RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 RUN apk add --no-cache \
   ffmpeg \
   npm \
-  python2 \
+  python3 \
   su-exec \
   && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
     atomicparsley
