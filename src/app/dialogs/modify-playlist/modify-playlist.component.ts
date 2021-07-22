@@ -77,6 +77,7 @@ export class ModifyPlaylistComponent implements OnInit {
 
   addContent(file) {
     this.playlist_file_objs.push(file);
+    this.playlist.uids.push(file.uid);
     this.processFiles();
   }
 
