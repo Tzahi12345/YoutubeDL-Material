@@ -34,6 +34,9 @@ RUN apk add --no-cache \
   && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
     atomicparsley
 
+RUN ln -s /usr/bin/python3 /usr/bin/python & \
+    ln -s /usr/bin/pip3 /usr/bin/pip
+
 WORKDIR /app
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 RUN npm install forever -g
