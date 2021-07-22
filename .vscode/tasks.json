@@ -1,0 +1,25 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "start",
+			"problemMatcher": [],
+			"label": "Dev: start frontend",
+			"detail": "ng serve"
+		},
+		{
+			"label": "Dev: start backend",
+			"type": "shell",
+			"command": "set YTDL_MODE=debug && node app.js",
+			"options": {
+				"cwd": "./backend"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		}
+	]
+}
