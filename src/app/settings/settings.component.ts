@@ -20,7 +20,7 @@ import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/ed
 })
 export class SettingsComponent implements OnInit {
   all_locales = isoLangs;
-  supported_locales = ['en', 'es', 'de', 'fr', 'nl', 'zh', 'nb', 'it', 'en-GB'];
+  supported_locales = ['en', 'es', 'de', 'fr', 'nl', 'pt', 'it', 'ca', 'cs', 'nb', 'ru', 'zh', 'id', 'en-GB'];
   initialLocale = localStorage.getItem('locale');
 
   initial_config = null;
