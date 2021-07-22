@@ -413,6 +413,7 @@ exports.createPlaylist = async (playlist_name, uids, type, thumbnail_url, user_u
         thumbnailURL: thumbnail_url,
         type: type,
         registered: Date.now(),
+        randomize_order: false
     };
 
     const duration = await exports.calculatePlaylistDuration(new_playlist, user_uid);

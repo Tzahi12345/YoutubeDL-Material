@@ -9,6 +9,10 @@
             </mat-form-field>
         </div>
 
+        <div>
+            <mat-checkbox [(ngModel)]="playlist.randomize_order"><ng-container i18n="Randomize order when playing checkbox label">Randomize order when playing</ng-container></mat-checkbox>
+        </div>
+
         <div style="margin-bottom: 10px; height: 40px;">
             <div style="float: left">
                 <span *ngIf="reverse_order === false" i18n="Normal order">Normal order&nbsp;</span>

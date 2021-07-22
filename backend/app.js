@@ -2399,14 +2399,17 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
     let uid = decodeURIComponent(req.query.uid);
 
     let file_path = null;
+    let file_obj = null;
 
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     if (!multiUserMode || req.isAuthenticated() || req.can_watch) {
-        const file_obj = await db_api.getVideo(uid, uuid, sub_id);
+        file_obj = await db_api.getVideo(uid, uuid, sub_id);
         if (file_obj) file_path = file_obj['path'];
         else file_path = null;
     }
-
+    if (!fs.existsSync(file_path)) {
+        logger.error(`File ${file_path} could not be found! UID: ${uid}, ID: ${file_obj.id}`);
+    }
     const stat = fs.statSync(file_path)
     const fileSize = stat.size
     const range = req.headers.range

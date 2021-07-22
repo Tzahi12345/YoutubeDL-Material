@@ -85,6 +85,7 @@ export class ModifyPlaylistComponent implements OnInit {
       index = this.playlist_file_objs.length - 1 - index;
     }
     this.playlist_file_objs.splice(index, 1);
+    this.playlist.uids.splice(index, 1);
     this.processFiles();
   }
 

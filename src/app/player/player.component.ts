@@ -233,6 +233,9 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.playlist.push(mediaObject);
     }
+    if (this.db_playlist && this.db_playlist['randomize_order']) {
+      this.shuffleArray(this.playlist);
+    }
     this.currentItem = this.playlist[this.currentIndex];
     this.original_playlist = JSON.stringify(this.playlist);
     this.show_player = true;
@@ -407,6 +410,13 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setPlaybackRate(speed) {
     this.api.playbackRate = speed;
+  }
+
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
   }
 
   // snackbar helper
