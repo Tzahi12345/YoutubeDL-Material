@@ -136,7 +136,6 @@ var downloadOnlyMode = null;
 var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
 var allowSubscriptions = null;
-var subscriptionsCheckInterval = null;
 var archivePath = path.join(__dirname, 'appdata', 'archives');
 
 // other needed values
@@ -627,10 +626,13 @@ async function loadConfig() {
         let subscriptions = await subscriptions_api.getAllSubscriptions();
         subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
-        watchSubscriptions();
-        setInterval(() => {
+        const watchSubscriptionsInterval = function() {
             watchSubscriptions();
-        }, subscriptionsCheckInterval * 1000);
+            const subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
+            setTimeout(watchSubscriptionsInterval, subscriptionsCheckInterval*1000);
+        }
+
+        watchSubscriptionsInterval();
     }
 
     await db_api.importUnregisteredFiles();
@@ -653,7 +655,6 @@ function loadConfigValues() {
     useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
     customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
     allowSubscriptions = config_api.getConfigItem('ytdl_allow_subscriptions');
-    subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
 
     if (!useDefaultDownloadingAgent && validDownloadingAgents.indexOf(customDownloadingAgent) !== -1 ) {
         logger.info(`Using non-default downloading agent \'${customDownloadingAgent}\'`)
@@ -678,6 +679,7 @@ function loadConfigValues() {
 
 function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
     // frequency is once every 5 mins by default
+    const subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
     let interval_in_ms = subscriptionsCheckInterval * 1000;
     const subinterval_in_ms = interval_in_ms/subscriptions_amount;
     return subinterval_in_ms;
@@ -722,6 +724,7 @@ async function watchSubscriptions() {
         }, current_delay);
         subscription_timeouts[sub.id] = true;
         current_delay += delay_interval;
+        const subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
         if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
     }
 }
