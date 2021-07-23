@@ -1583,7 +1583,8 @@ app.post('/api/setConfig', optionalJwt, function(req, res) {
 });
 
 app.post('/api/restartServer', optionalJwt, (req, res) => {
-    restartServer();
+    // delayed by a little bit so that the client gets a response
+    setTimeout(() => {restartServer()}, 100);
     res.send({success: true});
 });
 
