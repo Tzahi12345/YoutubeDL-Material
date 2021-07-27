@@ -74,9 +74,9 @@ exports.initialize = (input_db, input_users_db, input_logger) => {
     using_local_db = config_api.getConfigItem('ytdl_use_local_db');
 }
 
-exports.connectToDB = async (retries = 5, no_fallback = false) => {
+exports.connectToDB = async (retries = 5, no_fallback = false, custom_connection_string = null) => {
     if (using_local_db) return;
-    const success = await exports._connectToDB();
+    const success = await exports._connectToDB(custom_connection_string);
     if (success) return true;
 
     if (retries) {
@@ -108,8 +108,8 @@ exports.connectToDB = async (retries = 5, no_fallback = false) => {
     return true;
 }
 
-exports._connectToDB = async () => {
-    const uri = config_api.getConfigItem('ytdl_mongodb_connection_string'); // "mongodb://127.0.0.1:27017/?compressors=zlib&gssapiServiceName=mongodb";
+exports._connectToDB = async (custom_connection_string = null) => {
+    const uri = !custom_connection_string ? config_api.getConfigItem('ytdl_mongodb_connection_string') : custom_connection_string; // "mongodb://127.0.0.1:27017/?compressors=zlib&gssapiServiceName=mongodb";
     const client = new MongoClient(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -118,6 +118,10 @@ exports._connectToDB = async () => {
     try {
         await client.connect();
         database = client.db('ytdl_material');
+
+        // avoid doing anything else if it's just a test
+        if (custom_connection_string) return true;
+
         const existing_collections = (await database.listCollections({}, { nameOnly: true }).toArray()).map(collection => collection.name);
 
         const missing_tables = tables_list.filter(table => !(existing_collections.includes(table)));

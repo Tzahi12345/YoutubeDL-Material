@@ -1600,9 +1600,10 @@ app.post('/api/transferDB', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/testConnectionString', optionalJwt, async (req, res) => {
+    const connection_string = req.body.connection_string;
     let success = null;
     let error = '';
-    success = await db_api.connectToDB(0, true);
+    success = await db_api.connectToDB(0, true, connection_string);
     if (!success) error = 'Connection string failed.';
 
     res.send({success: success, error: error});

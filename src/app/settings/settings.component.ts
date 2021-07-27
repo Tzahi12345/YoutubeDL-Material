@@ -307,9 +307,9 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  testConnectionString() {
+  testConnectionString(connection_string) {
     this.testing_connection_string = true;
-    this.postsService.testConnectionString().subscribe(res => {
+    this.postsService.testConnectionString(connection_string).subscribe(res => {
       this.testing_connection_string = false;
       if (res['success']) {
         this.postsService.openSnackBar('Connection successful!');

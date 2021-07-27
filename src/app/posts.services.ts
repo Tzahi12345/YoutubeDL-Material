@@ -195,8 +195,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'transferDB', {local_to_remote: local_to_remote}, this.httpOptions);
     }
 
-    testConnectionString() {
-        return this.http.post(this.path + 'testConnectionString', {}, this.httpOptions);
+    testConnectionString(connection_string) {
+        return this.http.post(this.path + 'testConnectionString', {connection_string: connection_string}, this.httpOptions);
     }
 
     killAllDownloads() {
