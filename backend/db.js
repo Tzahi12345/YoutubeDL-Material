@@ -411,23 +411,26 @@ exports.addMetadataPropertyToDB = async (property_key) => {
     }
 }
 
-exports.createPlaylist = async (playlist_name, uids, type, thumbnail_url, user_uid = null) => {
+exports.createPlaylist = async (playlist_name, uids, type, user_uid = null) => {
+    const first_video = await exports.getVideo(uids[0]);
+    const thumbnailToUse = first_video['thumbnailURL'];
+    
     let new_playlist = {
         name: playlist_name,
         uids: uids,
         id: uuid(),
-        thumbnailURL: thumbnail_url,
+        thumbnailURL: thumbnailToUse,
         type: type,
         registered: Date.now(),
         randomize_order: false
     };
 
-    const duration = await exports.calculatePlaylistDuration(new_playlist, user_uid);
-    new_playlist.duration = duration;
-
     new_playlist.user_uid = user_uid ? user_uid : undefined;
 
     await exports.insertRecordIntoTable('playlists', new_playlist);
+    
+    const duration = await exports.calculatePlaylistDuration(new_playlist);
+    await exports.updateRecord('playlists', {id: new_playlist.id}, {duration: duration});
 
     return new_playlist;
 }
@@ -463,10 +466,10 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
     return playlist;
 }
 
-exports.updatePlaylist = async (playlist, user_uid = null) => {
+exports.updatePlaylist = async (playlist) => {
     let playlistID = playlist.id;
 
-    const duration = await exports.calculatePlaylistDuration(playlist, user_uid);
+    const duration = await exports.calculatePlaylistDuration(playlist);
     playlist.duration = duration;
 
     return await exports.updateRecord('playlists', {id: playlistID}, playlist);
@@ -486,12 +489,12 @@ exports.setPlaylistProperty = async (playlist_id, assignment_obj, user_uid = nul
     return success;
 }
 
-exports.calculatePlaylistDuration = async (playlist, uuid, playlist_file_objs = null) => {
+exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) => {
     if (!playlist_file_objs) {
         playlist_file_objs = [];
         for (let i = 0; i < playlist['uids'].length; i++) {
             const uid = playlist['uids'][i];
-            const file_obj = await exports.getVideo(uid, uuid);
+            const file_obj = await exports.getVideo(uid);
             if (file_obj) playlist_file_objs.push(file_obj);
         }
     }
@@ -588,7 +591,7 @@ exports.getVideoUIDByID = async (file_id, uuid = null) => {
     return file_obj ? file_obj['uid'] : null;
 }
 
-exports.getVideo = async (file_uid, uuid = null, sub_id = null) => {
+exports.getVideo = async (file_uid) => {
     return await exports.getRecord('files', {uid: file_uid});
 }
 

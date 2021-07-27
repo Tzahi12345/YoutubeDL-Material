@@ -50,6 +50,8 @@ export class RecentVideosComponent implements OnInit {
     }
   };
   filterProperty = this.filterProperties['upload_date'];
+  
+  playlists = null;
 
   pageSize = 10;
   paged_data = null;
@@ -68,20 +70,39 @@ export class RecentVideosComponent implements OnInit {
   ngOnInit(): void {
     if (this.postsService.initialized) {
       this.getAllFiles();
+      this.getAllPlaylists();
     }
 
     this.postsService.service_initialized.subscribe(init => {
       if (init) {
         this.getAllFiles();
+        this.getAllPlaylists();
       }
     });
 
+    this.postsService.files_changed.subscribe(changed => {
+      if (changed) {
+        this.getAllFiles();
+      }
+    });
+
+    this.postsService.playlists_changed.subscribe(changed => {
+      if (changed) {
+        this.getAllPlaylists();
+      }
+    });
 
     // set filter property to cached
     const cached_filter_property = localStorage.getItem('filter_property');
     if (cached_filter_property && this.filterProperties[cached_filter_property]) {
       this.filterProperty = this.filterProperties[cached_filter_property];
     }
+  }
+
+  getAllPlaylists() {
+    this.postsService.getPlaylists().subscribe(res => {
+      this.playlists = res['playlists'];
+    });
   }
 
   // search
@@ -286,6 +307,23 @@ export class RecentVideosComponent implements OnInit {
       this.filterFiles(this.search_text);
     }
     this.filterByProperty(this.filterProperty['property']);
+  }
+
+  addFileToPlaylist(info_obj) {
+    const file = info_obj['file'];
+    const playlist_id = info_obj['playlist_id'];
+    const playlist = this.playlists.find(potential_playlist => potential_playlist['id'] === playlist_id);
+    this.postsService.addFileToPlaylist(playlist_id, file['uid']).subscribe(res => {
+      if (res['success']) {
+        this.postsService.openSnackBar(`Successfully added ${file.title} to ${playlist.title}!`);
+        this.postsService.playlists_changed.next(true);
+      } else {
+        this.postsService.openSnackBar(`Failed to add ${file.title} to ${playlist.title}! Unknown error.`);
+      }
+    }, err => {
+      console.error(err);
+      this.postsService.openSnackBar(`Failed to add ${file.title} to ${playlist.title}! See browser console for error.`);
+    });
   }
 
   // sorting and filtering

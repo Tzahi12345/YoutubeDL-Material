@@ -754,20 +754,6 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-function getThumbnailMp3(name)
-{
-    var obj = utils.getJSONMp3(name, audioFolderPath);
-    var thumbnailLink = obj.thumbnail;
-    return thumbnailLink;
-}
-
-function getThumbnailMp4(name)
-{
-    var obj = utils.getJSONMp4(name, videoFolderPath);
-    var thumbnailLink = obj.thumbnail;
-    return thumbnailLink;
-}
-
 function getFileSizeMp3(name)
 {
     var jsonPath = audioFolderPath+name+".mp3.info.json";
@@ -1061,7 +1047,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     // create playlist
                     const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
                     const duration = file_objs.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
-                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, file_objs[0]['thumbnailURL'], options.user);
+                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, options.user);
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {
@@ -2181,9 +2167,8 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let playlistName = req.body.playlistName;
     let uids = req.body.uids;
     let type = req.body.type;
-    let thumbnailURL = req.body.thumbnailURL;
 
-    const new_playlist = await db_api.createPlaylist(playlistName, uids, type, thumbnailURL, req.isAuthenticated() ? req.user.uid : null);
+    const new_playlist = await db_api.createPlaylist(playlistName, uids, type, req.isAuthenticated() ? req.user.uid : null);
 
     res.send({
         new_playlist: new_playlist,
@@ -2216,8 +2201,18 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     });
 });
 
+app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+
+    const playlists = await db_api.getRecords('playlists', {user_uid: uuid});
+
+    res.send({
+        playlists: playlists
+    });
+});
+
 app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
-    let playlistID = req.body.playlistID;
+    let playlistID = req.body.playlist_id;
     let uids = req.body.uids;
 
     let success = false;
@@ -2238,6 +2233,20 @@ app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
     })
 });
 
+app.post('/api/addFileToPlaylist', optionalJwt, async (req, res) => {
+    let playlist_id = req.body.playlist_id;
+    let file_uid = req.body.file_uid;
+    
+    const playlist = await db_api.getRecord('playlists', {id: playlist_id});
+
+    playlist.uids.push(file_uid);
+
+    let success = await db_api.updatePlaylist(playlist);
+    res.send({
+        success: success
+    });
+});
+
 app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     let playlist = req.body.playlist;
     let success = await db_api.updatePlaylist(playlist, req.user && req.user.uid);
@@ -2247,7 +2256,7 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
-    let playlistID = req.body.playlistID;
+    let playlistID = req.body.playlist_id;
 
     let success = null;
     try {

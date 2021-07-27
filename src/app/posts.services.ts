@@ -48,6 +48,9 @@ export class PostsService implements CanActivate {
     settings_changed = new BehaviorSubject<boolean>(false);
     open_create_default_admin_dialog = new BehaviorSubject<boolean>(false);
 
+    files_changed = new BehaviorSubject<boolean>(false);
+    playlists_changed = new BehaviorSubject<boolean>(false);
+
     // app status
     initialized = false;
 
@@ -334,18 +337,28 @@ export class PostsService implements CanActivate {
                                                             include_file_metadata: include_file_metadata}, this.httpOptions);
     }
 
+    getPlaylists() {
+        return this.http.post(this.path + 'getPlaylists', {}, this.httpOptions);
+    }
+
     updatePlaylist(playlist) {
         return this.http.post(this.path + 'updatePlaylist', {playlist: playlist}, this.httpOptions);
     }
 
-    updatePlaylistFiles(playlistID, fileNames, type) {
-        return this.http.post(this.path + 'updatePlaylistFiles', {playlistID: playlistID,
+    updatePlaylistFiles(playlist_id, fileNames, type) {
+        return this.http.post(this.path + 'updatePlaylistFiles', {playlist_id: playlist_id,
                                                             fileNames: fileNames,
                                                             type: type}, this.httpOptions);
     }
 
-    removePlaylist(playlistID, type) {
-        return this.http.post(this.path + 'deletePlaylist', {playlistID: playlistID, type: type}, this.httpOptions);
+    addFileToPlaylist(playlist_id, file_uid) {
+        return this.http.post(this.path + 'addFileToPlaylist', {playlist_id: playlist_id,
+                                                                file_uid: file_uid},
+                                                                this.httpOptions);
+    }
+
+    removePlaylist(playlist_id, type) {
+        return this.http.post(this.path + 'deletePlaylist', {playlist_id: playlist_id, type: type}, this.httpOptions);
     }
 
     // categories

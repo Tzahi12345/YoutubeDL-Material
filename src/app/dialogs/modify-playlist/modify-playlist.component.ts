@@ -57,6 +57,7 @@ export class ModifyPlaylistComponent implements OnInit {
       this.playlist_updated = true;
       this.postsService.openSnackBar('Playlist updated successfully.');
       this.getPlaylist();
+      this.postsService.playlists_changed.next(true);
     });
   }
 

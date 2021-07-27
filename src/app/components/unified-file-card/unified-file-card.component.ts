@@ -46,9 +46,11 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() locale = null;
   @Input() baseStreamPath = null;
   @Input() jwtString = null;
+  @Input() availablePlaylists = null;
   @Output() goToFile = new EventEmitter<any>();
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
+  @Output() addFileToPlaylist = new EventEmitter<any>();
   @Output() editPlaylist = new EventEmitter<any>();
 
 
@@ -83,6 +85,13 @@ export class UnifiedFileCardComponent implements OnInit {
       file: this.file_obj,
       index: this.index,
       blacklistMode: blacklistMode
+    });
+  }
+
+  emitAddFileToPlaylist(playlist_id) {
+    this.addFileToPlaylist.emit({
+      file: this.file_obj,
+      playlist_id: playlist_id
     });
   }
 
