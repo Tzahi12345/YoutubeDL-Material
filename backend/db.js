@@ -54,7 +54,7 @@ const local_db_defaults = {}
 tables_list.forEach(table => {local_db_defaults[table] = []});
 local_db.defaults(local_db_defaults).write();
 
-let using_local_db = config_api.getConfigItem('ytdl_use_local_db');
+let using_local_db = null; 
 
 function setDB(input_db, input_users_db) {
     db = input_db; users_db = input_users_db;
@@ -69,6 +69,9 @@ function setLogger(input_logger) {
 exports.initialize = (input_db, input_users_db, input_logger) => {
     setDB(input_db, input_users_db);
     setLogger(input_logger);
+
+    // must be done here to prevent getConfigItem from being called before init
+    using_local_db = config_api.getConfigItem('ytdl_use_local_db');
 }
 
 exports.connectToDB = async (retries = 5, no_fallback = false) => {
