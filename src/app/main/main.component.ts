@@ -230,7 +230,7 @@ export class MainComponent implements OnInit {
   async loadConfig() {
     // loading config
     this.fileManagerEnabled = this.postsService.config['Extra']['file_manager_enabled']
-                              && (!this.postsService.isLoggedIn || this.postsService.permissions.includes('filemanager'));
+                              && this.postsService.hasPermission('filemanager');
     this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
     this.allowMultiDownloadMode = this.postsService.config['Extra']['allow_multi_download_mode'];
     this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
@@ -242,7 +242,7 @@ export class MainComponent implements OnInit {
     this.youtubeAPIKey = this.youtubeSearchEnabled ? this.postsService.config['API']['youtube_API_key'] : null;
     this.allowQualitySelect = this.postsService.config['Extra']['allow_quality_select'];
     this.allowAdvancedDownload = this.postsService.config['Advanced']['allow_advanced_download']
-                                  && (!this.postsService.isLoggedIn || this.postsService.permissions.includes('advanced_download'));
+                                  && this.postsService.hasPermission('advanced_download');
     this.useDefaultDownloadingAgent = this.postsService.config['Advanced']['use_default_downloading_agent'];
     this.customDownloadingAgent = this.postsService.config['Advanced']['custom_downloading_agent'];
 

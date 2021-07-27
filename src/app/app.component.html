@@ -23,10 +23,10 @@
                           <span i18n="Dark mode toggle label">Dark</span>
                           <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
                         </button>
-                        <button *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('settings')))" (click)="openSettingsDialog()" mat-menu-item>
+                        <!-- <button *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('settings')))" (click)="openSettingsDialog()" mat-menu-item>
                           <mat-icon>settings</mat-icon>
                           <span i18n="Settings menu label">Settings</span>
-                        </button>
+                        </button> -->
                         <button (click)="openAboutDialog()" mat-menu-item>
                             <mat-icon>info</mat-icon>
                             <span i18n="About menu label">About</span>
@@ -42,9 +42,10 @@
                 <mat-nav-list>
                     <a *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || postsService.isLoggedIn)" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/home'><ng-container i18n="Navigation menu Home Page title">Home</ng-container></a>
                     <a *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode && !postsService.isLoggedIn" mat-list-item (click)="sidenav.close()" routerLink='/login'><ng-container i18n="Navigation menu Login Page title">Login</ng-container></a>
-                    <a *ngIf="postsService.config && allowSubscriptions && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('subscriptions')))" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/subscriptions'><ng-container i18n="Navigation menu Subscriptions Page title">Subscriptions</ng-container></a>
-                    <a *ngIf="postsService.config && enableDownloadsManager && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('downloads_manager')))" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/downloads'><ng-container i18n="Navigation menu Downloads Page title">Downloads</ng-container></a>
-                    <ng-container *ngIf="postsService.config && allowSubscriptions && postsService.subscriptions && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('subscriptions')))">
+                    <a *ngIf="postsService.config && allowSubscriptions && postsService.hasPermission('subscriptions')" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/subscriptions'><ng-container i18n="Navigation menu Subscriptions Page title">Subscriptions</ng-container></a>
+                    <a *ngIf="postsService.config && enableDownloadsManager && postsService.hasPermission('downloads_manager')" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/downloads'><ng-container i18n="Navigation menu Downloads Page title">Downloads</ng-container></a>
+                    <a *ngIf="postsService.config && postsService.hasPermission('settings')" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/settings'><ng-container i18n="Settings menu label">Settings</ng-container></a>
+                    <ng-container *ngIf="postsService.config && allowSubscriptions && postsService.subscriptions && postsService.hasPermission('subscriptions')">
                         <mat-divider></mat-divider>
                         <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatar [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatar>{{subscription.name}}</a>
                     </ng-container>

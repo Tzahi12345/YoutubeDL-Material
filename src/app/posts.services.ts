@@ -498,6 +498,12 @@ export class PostsService implements CanActivate {
         this.resetHttpParams();
     }
 
+    hasPermission(permission) {
+        // assume not logged in users never have permission
+        if (this.config.Advanced.multi_user_mode && !this.isLoggedIn) return false;
+        return this.config.Advanced.multi_user_mode ? this.permissions.includes(permission) : true;
+    }
+
     // user methods
     register(username, password) {
         const call = this.http.post(this.path + 'auth/register', {userid: username,

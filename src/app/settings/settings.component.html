@@ -1,13 +1,12 @@
-<h4 i18n="Settings title" mat-dialog-title>Settings</h4>
+<h4 class="settings-title" i18n="Settings title">Settings</h4>
 <!-- <ng-container i18n="Allow subscriptions setting"></ng-container> -->
-<mat-dialog-content>
 
 <!-- Language
 <div style="margin-bottom: 10px;">
 
 </div> -->
 
-<mat-tab-group>
+<mat-tab-group style="height: 79vh" mat-align-tabs="center">
     <!-- Server -->
     <mat-tab label="Main" i18n-label="Main settings label">
         <ng-template matTabContent style="padding: 15px;">
@@ -391,7 +390,7 @@
                 <app-updater></app-updater>
             </div>
             <mat-divider></mat-divider>
-            <div *ngIf="new_config" class="container">
+            <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
                     <div class="col-12 mt-4">
                         <button (click)="restartServer()" mat-stroked-button color="warn"><ng-container i18n="Restart server button">Restart server</ng-container></button>
@@ -450,21 +449,19 @@
     </mat-tab>
     <mat-tab *ngIf="postsService.config" label="Logs" i18n-label="Logs settings label">
         <ng-template matTabContent>
-            <div style="margin-left: 48px; margin-top: 24px; height: 340px">
+            <div style="margin-top: 15px; height: 84%;">
                 <app-logs-viewer></app-logs-viewer>
             </div>
         </ng-template>
     </mat-tab>
 </mat-tab-group>
-</mat-dialog-content>
 
-<mat-dialog-actions>
-    <div style="margin-bottom: 10px;">
-        <button color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;
+    <div style="margin-top: 10px;">
+        <button style="margin-left: 10px;" color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;
             <ng-container i18n="Settings save button">Save</ng-container>
         </button>
-        <button mat-flat-button [mat-dialog-close]="false"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;
-            <span i18n="Settings cancel and close button">{settingsAreTheSame + "", select, true {Close} false {Cancel} other {otha}}</span>
+        <button style="margin-left: 10px;" mat-flat-button (click)="cancelSettings()" [disabled]="settingsSame()"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;
+            <span i18n="Settings cancel button">Cancel</span>
         </button>
     </div>
-</mat-dialog-actions>
+

@@ -85,6 +85,10 @@ export class SettingsComponent implements OnInit {
     })
   }
 
+  cancelSettings() {
+    this.new_config = JSON.parse(JSON.stringify(this.initial_config));
+  }
+
   dropCategory(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.postsService.categories, event.previousIndex, event.currentIndex);
     this.postsService.updateCategories(this.postsService.categories).subscribe(res => {
