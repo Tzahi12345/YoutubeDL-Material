@@ -2512,6 +2512,150 @@
         </context-group>
         <note priority="1" from="description">Video duration label</note>
       </trans-unit>
+      <trans-unit id="94e2674467c7a08a291f9bd97ce694d4e47ffd62" datatype="html">
+        <source>Share file</source>
+        <target>Bestand delen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">Share video dialog title</note>
+      </trans-unit>
+      <trans-unit id="635285fa5624d50a408feb7eb564c0db0d3f1ce1" datatype="html">
+        <source>Restart server</source>
+        <target>Server herstarten</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">397</context>
+        </context-group>
+        <note priority="1" from="description">Restart server button</note>
+      </trans-unit>
+      <trans-unit id="b1c08387975e6feada407c9b5f5f564261b8192b" datatype="html">
+        <source>Database information could not be retrieved. Check the server logs for more information.</source>
+        <target>De databankinformatie kan niet worden opgehaald. Bekijk voor meer informatie de serverlogboeken.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">312</context>
+        </context-group>
+        <note priority="1" from="description">Database info not retrieved error message</note>
+      </trans-unit>
+      <trans-unit id="98e94c9bdac1ca8beb29d73b2e6f7a9e5e035aec" datatype="html">
+        <source>Transfer DB to</source>
+        <target>DB overzetten naar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">308</context>
+        </context-group>
+        <note priority="1" from="description">Transfer DB button</note>
+      </trans-unit>
+      <trans-unit id="d54142de169844b014ae913a4056c31495f4a305" datatype="html">
+        <source>Test connection string</source>
+        <target>Tekenreeks testen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">304</context>
+        </context-group>
+        <note priority="1" from="description">Test connection string button</note>
+      </trans-unit>
+      <trans-unit id="5473e36f5102e2ae22ce4c6620cacc40cc98da95" datatype="html">
+        <source>Example:</source>
+        <target>Voorbeeld:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">300</context>
+        </context-group>
+        <note priority="1" from="description">MongoDB Connection String setting hint AKA preamble</note>
+      </trans-unit>
+      <trans-unit id="3913164a51898aac444bf6c7150e46ad5a8a18ad" datatype="html">
+        <source>MongoDB Connection String</source>
+        <target>MongoDB-verbindingstekenreeks</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">299</context>
+        </context-group>
+        <note priority="1" from="description">MongoDB Connection String</note>
+      </trans-unit>
+      <trans-unit id="9f8de81d44ec2a9a58b97e589b9e3154b3966c60" datatype="html">
+        <source>Records per table</source>
+        <target>Aantal items per tabel</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">291</context>
+        </context-group>
+        <note priority="1" from="description">Records per table label</note>
+      </trans-unit>
+      <trans-unit id="47955e2cc6986625528b4352034858180d675281" datatype="html">
+        <source>Database location:</source>
+        <target>Databanklocatie:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+        <note priority="1" from="description">Database location label</note>
+      </trans-unit>
+      <trans-unit id="5da94ccb2301f586af26916e921bdad6d673ab58" datatype="html">
+        <source>Allow playlist categorization</source>
+        <target>Afspeellijsten categoriseren</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <note priority="1" from="description">Allow playlist categorization setting label</note>
+      </trans-unit>
+      <trans-unit id="1f6d3986a970af27f16f8a95ce0dc3033cc90a83" datatype="html">
+        <source>With this setting enabled, if a single video matches a category, the entire playlist will receive that category.</source>
+        <target>Schakel in om een categorie toe te kennen aan een volledige afspeellijst als ook maar één video overeenkomt.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <note priority="1" from="description">Allow playlist categorization setting tooltip</note>
+      </trans-unit>
+      <trans-unit id="fb324ec7da611c6283caa6fc6257c39a56d6aaf7" datatype="html">
+        <source>Database</source>
+        <target>Databank</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">284</context>
+        </context-group>
+        <note priority="1" from="description">Database settings label</note>
+      </trans-unit>
+      <trans-unit id="cba36d610ddba59b6dd6fbec77199eabf0ff2de3" datatype="html">
+        <source>Randomize order when playing</source>
+        <target>Willkeurig afspelen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">Randomize order when playing checkbox label</note>
+      </trans-unit>
+      <trans-unit id="661206c3ab91fa81e9d8b40afb29f1866b78432f" datatype="html">
+        <source>Crop to (seconds)</source>
+        <target>Bijsnijden tot (in seconden)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note priority="1" from="description">Crop to placeholder</note>
+      </trans-unit>
+      <trans-unit id="44d007f6f8a2b19f12d85f9e49647b4ac02d7cbe" datatype="html">
+        <source>Crop from (seconds)</source>
+        <target>Bijsnijden vanaf (in seconden)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">159</context>
+        </context-group>
+        <note priority="1" from="description">Crop from placeholder</note>
+      </trans-unit>
+      <trans-unit id="4e1291cb1d579e7b7a1b802e6a8fd16ef7a557fa" datatype="html">
+        <source>Crop file</source>
+        <target>Bestand bijsnijden</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">155,156</context>
+        </context-group>
+        <note priority="1" from="description">Crop video checkbox</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
