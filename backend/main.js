@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const server = require('./app');
 
 let win;
 
@@ -8,13 +9,7 @@ function createWindow() {
   win = new BrowserWindow({ width: 800, height: 600 });
 
   // load the dist folder from Angular
-  win.loadURL(
-    url.format({
-      pathname: path.join(__dirname, `/dist/index.html`),
-      protocol: 'file:',
-      slashes: true
-    })
-  );
+  win.loadURL('http://localhost:17442')  //ADD THIS
 
   // The following is optional and will open the DevTools:
   // win.webContents.openDevTools()

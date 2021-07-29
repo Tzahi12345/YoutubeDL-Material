@@ -28,11 +28,21 @@ const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
 var ps = require('ps-node');
 
-// needed if bin/details somehow gets deleted
-const DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
-if (!fs.existsSync(DETAILS_BIN_PATH)) fs.writeJSONSync(DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
+const using_electron = process.versions['electron'];
+
+// youtube-dl consts
+const YOUTUBE_DL_PATH = using_electron ? 'youtube-dl' : 'node_modules/youtube-dl/bin';
+const DETAILS_BIN_PATH = path.join(YOUTUBE_DL_PATH, 'details');
+const DEFAULT_BIN_JSON = {"version":"2000.06.06","path": path.join(YOUTUBE_DL_PATH, "youtube-dl.exe"),"exec":"youtube-dl.exe","downloader":"youtube-dl"};
+if (!fs.existsSync(DETAILS_BIN_PATH)) fs.writeJSONSync(DETAILS_BIN_PATH, DEFAULT_BIN_JSON);
 
 var youtubedl = require('youtube-dl');
+
+if (using_electron) {
+    youtubedl.setYtdlBinary(YOUTUBE_DL_PATH);
+}
+
+// local APIs
 
 var config_api = require('./config.js');
 var subscriptions_api = require('./subscriptions')
@@ -1372,8 +1382,8 @@ async function autoUpdateYoutubeDL() {
         let stored_binary_path = current_app_details['path'];
         if (!stored_binary_path || typeof stored_binary_path !== 'string') {
             // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${DETAILS_BIN_PATH}, attempting to guess actual path...`);
-            const guessed_base_path = 'node_modules/youtube-dl/bin/';
-            const guessed_file_path = guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
+            const guessed_base_path = YOUTUBE_DL_PATH;
+            const guessed_file_path = path.join(guessed_base_path, 'youtube-dl' + (is_windows ? '.exe' : ''));
             if (fs.existsSync(guessed_file_path)) {
                 stored_binary_path = guessed_file_path;
                 // logger.info('INFO: Guess successful! Update process continuing...')
@@ -1424,7 +1434,7 @@ async function downloadLatestYoutubeDLBinary(new_version) {
     const file_ext = is_windows ? '.exe' : '';
 
     const download_url = `https://github.com/ytdl-org/youtube-dl/releases/latest/download/youtube-dl${file_ext}`;
-    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
+    const output_path = path.join(YOUTUBE_DL_PATH, `youtube-dl${file_ext}`);
 
     await fetchFile(download_url, output_path, `youtube-dl ${new_version}`);
 
@@ -1435,7 +1445,7 @@ async function downloadLatestYoutubeDLCBinary(new_version) {
     const file_ext = is_windows ? '.exe' : '';
 
     const download_url = `https://github.com/blackjack4494/yt-dlc/releases/latest/download/youtube-dlc${file_ext}`;
-    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
+    const output_path = path.join(YOUTUBE_DL_PATH, `youtube-dl${file_ext}`);
 
     await fetchFile(download_url, output_path, `youtube-dlc ${new_version}`);
 
@@ -1446,7 +1456,8 @@ async function downloadLatestYoutubeDLPBinary(new_version) {
     const file_ext = is_windows ? '.exe' : '';
 
     const download_url = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp${file_ext}`;
-    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
+    const output_path = path.join(YOUTUBE_DL_PATH, `youtube-dl${file_ext}`);
+
 
     await fetchFile(download_url, output_path, `yt-dlp ${new_version}`);
 

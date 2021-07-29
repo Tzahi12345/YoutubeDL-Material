@@ -2,11 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "backend for YoutubeDL-Material",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "debug": "set YTDL_MODE=debug && node app.js"
+    "debug": "set YTDL_MODE=debug && node app.js",
+    "electron": "electron main.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "nodemonConfig": {
     "ignore": [
@@ -18,6 +21,13 @@
       "restart_update.json",
       "restart_general.json"
     ]
+  },
+  "build": {
+    "appId": "youtubedl.material",
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "files": ["!audio/*", "!video/*", "!users/*", "!subscriptions/*", "!appdata/*"]
   },
   "repository": {
     "type": "git",
@@ -65,5 +75,9 @@
     "uuidv4": "^6.0.6",
     "winston": "^3.2.1",
     "youtube-dl": "^3.0.2"
+  },
+  "devDependencies": {
+    "electron": "^13.1.7",
+    "electron-builder": "^22.11.7"
   }
 }
