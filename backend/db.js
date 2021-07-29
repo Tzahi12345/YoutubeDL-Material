@@ -234,7 +234,7 @@ function generateFileObject(id, type, customPath = null, sub = null) {
     const ext = (type === 'audio') ? '.mp3' : '.mp4'
     const file_path = utils.getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
     // console.
-    var stats = fs.statSync(path.join(__dirname, file_path));
+    var stats = fs.statSync(path.join(file_path));
 
     var title = jsonobj.title;
     var url = jsonobj.webpage_url;
@@ -519,8 +519,8 @@ exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
     var thumbnailPath = `${filePathNoExtension}.webp`;
     var altThumbnailPath = `${filePathNoExtension}.jpg`;
 
-    jsonPath = path.join(__dirname, jsonPath);
-    altJSONPath = path.join(__dirname, altJSONPath);
+    jsonPath = path.join(jsonPath);
+    altJSONPath = path.join(altJSONPath);
 
     let jsonExists = await fs.pathExists(jsonPath);
     let thumbnailExists = await fs.pathExists(thumbnailPath);

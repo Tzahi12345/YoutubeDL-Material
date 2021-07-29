@@ -146,7 +146,7 @@ var downloadOnlyMode = null;
 var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
 var allowSubscriptions = null;
-var archivePath = path.join(__dirname, 'appdata', 'archives');
+var archivePath = path.join('appdata', 'archives');
 
 // other needed values
 var url_domain = null;
@@ -399,8 +399,8 @@ async function downloadReleaseFiles(tag) {
         await downloadReleaseZip(tag);
 
         // deletes contents of public dir
-        fs.removeSync(path.join(__dirname, 'public'));
-        fs.mkdirSync(path.join(__dirname, 'public'));
+        fs.removeSync(path.join('public'));
+        fs.mkdirSync(path.join('public'));
 
         let replace_ignore_list = ['youtubedl-material/appdata/default.json',
                                     'youtubedl-material/appdata/db.json',
@@ -409,7 +409,7 @@ async function downloadReleaseFiles(tag) {
         logger.info(`Installing update ${tag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
-        fs.createReadStream(path.join(__dirname, `youtubedl-material-release-${tag}.zip`)).pipe(unzipper.Parse())
+        fs.createReadStream(path.join(`youtubedl-material-release-${tag}.zip`)).pipe(unzipper.Parse())
         .on('entry', function (entry) {
             var fileName = entry.path;
             var type = entry.type; // 'Directory' or 'File'
@@ -419,8 +419,8 @@ async function downloadReleaseFiles(tag) {
                 // get public folder files
                 var actualFileName = fileName.replace('youtubedl-material/public/', '');
                 if (actualFileName.length !== 0 && actualFileName.substring(actualFileName.length-1, actualFileName.length) !== '/') {
-                    fs.ensureDirSync(path.join(__dirname, 'public', path.dirname(actualFileName)));
-                    entry.pipe(fs.createWriteStream(path.join(__dirname, 'public', actualFileName)));
+                    fs.ensureDirSync(path.join('public', path.dirname(actualFileName)));
+                    entry.pipe(fs.createWriteStream(path.join('public', actualFileName)));
                 } else {
                     entry.autodrain();
                 }
@@ -428,7 +428,7 @@ async function downloadReleaseFiles(tag) {
                 // get package.json
                 var actualFileName = fileName.replace('youtubedl-material/', '');
                 logger.verbose('Downloading file ' + actualFileName);
-                entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
+                entry.pipe(fs.createWriteStream(path.join(actualFileName)));
             } else {
                 entry.autodrain();
             }
@@ -474,7 +474,7 @@ async function downloadReleaseZip(tag) {
         const tag_without_v = tag.substring(1, tag.length);
         const zip_file_name = `youtubedl-material-${tag_without_v}.zip`
         const latest_zip_link = latest_release_link + zip_file_name;
-        let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
+        let output_path = path.join(`youtubedl-material-release-${tag}.zip`);
 
         // download zip from release
         await fetchFile(latest_zip_link, output_path, 'update ' + tag);
@@ -492,10 +492,10 @@ async function installDependencies() {
 }
 
 async function backupServerLite() {
-    await fs.ensureDir(path.join(__dirname, 'appdata', 'backups'));
+    await fs.ensureDir(path.join('appdata', 'backups'));
     let output_path = path.join('appdata', 'backups', `backup-${Date.now()}.zip`);
     logger.info(`Backing up your non-video/audio files to ${output_path}. This may take up to a few seconds/minutes.`);
-    let output = fs.createWriteStream(path.join(__dirname, output_path));
+    let output = fs.createWriteStream(path.join(output_path));
 
     await new Promise(resolve => {
         var archive = archiver('zip', {
@@ -616,18 +616,23 @@ async function setConfigFromEnv() {
 }
 
 async function loadConfig() {
+    logger.info('loading config')
     loadConfigValues();
 
     // connect to DB
+    logger.info('connecting to db')
     await db_api.connectToDB();
 
     // creates archive path if missing
+    logger.info('ensuring archive path of ' + archivePath)
     await fs.ensureDir(archivePath);
 
     // check migrations
+    logger.info('checking migrations')
     await checkMigrations();
 
     // now this is done here due to youtube-dl's repo takedown
+    logger.info('starting youtube dl')
     await startYoutubeDL();
 
     // get subscriptions
@@ -1136,7 +1141,7 @@ async function generateArgs(url, type, options) {
         }
 
         if (useCookies) {
-            if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+            if (await fs.pathExists(path.join('appdata', 'cookies.txt'))) {
                 downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
             } else {
                 logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
@@ -2334,7 +2339,7 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
         const file_obj = await db_api.getVideo(uid, uuid, sub_id)
         file_path_to_download = file_obj.path;
     }
-    if (!path.isAbsolute(file_path_to_download)) file_path_to_download = path.join(__dirname, file_path_to_download);
+    if (!path.isAbsolute(file_path_to_download)) file_path_to_download = path.join(file_path_to_download);
     res.sendFile(file_path_to_download, function (err) {
         if (err) {
           logger.error(err);
@@ -2363,9 +2368,9 @@ app.post('/api/downloadArchive', async (req, res) => {
 
 });
 
-var upload_multer = multer({ dest: __dirname + '/appdata/' });
+var upload_multer = multer({ dest: './appdata/' });
 app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res) => {
-    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+    const new_path = path.join('appdata', 'cookies.txt');
 
     if (await fs.pathExists(req.file.path)) {
         await fs.rename(req.file.path, new_path);
@@ -2476,7 +2481,7 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
 
 app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
     let file_path = decodeURIComponent(req.params.path);
-    if (fs.existsSync(file_path)) path.isAbsolute(file_path) ? res.sendFile(file_path) : res.sendFile(path.join(__dirname, file_path));
+    if (fs.existsSync(file_path)) path.isAbsolute(file_path) ? res.sendFile(file_path) : res.sendFile(path.join('./', file_path));
     else res.sendStatus(404);
 });
 
@@ -2647,7 +2652,7 @@ app.post('/api/deleteUser', optionalJwt, async (req, res) => {
     try {
         let success = false;
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-        const user_folder = path.join(__dirname, usersFileFolder, uid);
+        const user_folder = path.join(usersFileFolder, uid);
         const user_db_obj = await db_api.getRecord('users', {uid: uid});
         if (user_db_obj) {
             // user exists, let's delete
@@ -2707,12 +2712,12 @@ app.use(function(req, res, next) {
         return next();
     }
 
-    let index_path = path.join(__dirname, 'public', 'index.html');
+    let index_path = path.join('public', 'index.html');
 
     fs.createReadStream(index_path).pipe(res);
 
 });
 
-let public_dir = path.join(__dirname, 'public');
+let public_dir = path.join('public');
 
 app.use(express.static(public_dir));

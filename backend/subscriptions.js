@@ -72,7 +72,7 @@ async function getSubscriptionInfo(sub, user_uid = null) {
     let downloadConfig = ['--dump-json', '--playlist-end', '1'];
     let useCookies = config_api.getConfigItem('ytdl_use_cookies');
     if (useCookies) {
-        if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+        if (await fs.pathExists(path.join('appdata', 'cookies.txt'))) {
             downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
         } else {
             logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
@@ -117,7 +117,7 @@ async function getSubscriptionInfo(sub, user_uid = null) {
                     const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
                     if (useArchive && !sub.archive) {
                         // must create the archive
-                        const archive_dir = path.join(__dirname, basePath, 'archives', sub.name);
+                        const archive_dir = path.join(basePath, 'archives', sub.name);
                         const archive_path = path.join(archive_dir, 'archive.txt');
 
                         // creates archive directory and text file if it doesn't exist
@@ -185,10 +185,10 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
 
     let filePath = appendedBasePath;
     const ext = (sub.type && sub.type === 'audio') ? '.mp3' : '.mp4'
-    var jsonPath = path.join(__dirname,filePath,name+'.info.json');
-    var videoFilePath = path.join(__dirname,filePath,name+ext);
-    var imageFilePath = path.join(__dirname,filePath,name+'.jpg');
-    var altImageFilePath = path.join(__dirname,filePath,name+'.webp');
+    var jsonPath = path.join(filePath,name+'.info.json');
+    var videoFilePath = path.join(filePath,name+ext);
+    var imageFilePath = path.join(filePath,name+'.jpg');
+    var altImageFilePath = path.join(filePath,name+'.webp');
 
     const [jsonExists, videoFileExists, imageFileExists, altImageFileExists] = await Promise.all([
         fs.pathExists(jsonPath),
@@ -402,7 +402,7 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     let useCookies = config_api.getConfigItem('ytdl_use_cookies');
     if (useCookies) {
-        if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+        if (await fs.pathExists(path.join('appdata', 'cookies.txt'))) {
             downloadConfig.push('--cookies', path.join('appdata', 'cookies.txt'));
         } else {
             logger.warn('Cookies file could not be found. You can either upload one, or disable \'use cookies\' in the Advanced tab in the settings.');
