@@ -413,6 +413,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         downloadConfig.push('--write-thumbnail');
     }
 
+    const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+    if (default_downloader === 'yt-dlp') {
+        downloadConfig.push('--no-clean-infojson');
+    }
+
     return downloadConfig;
 }
 

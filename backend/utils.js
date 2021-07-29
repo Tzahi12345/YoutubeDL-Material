@@ -1,6 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const config_api = require('./config');
+const CONSTS = require('./consts')
 const archiver = require('archiver');
 
 const is_windows = process.platform === 'win32';
@@ -315,6 +316,11 @@ function addUIDsToCategory(category, files) {
     return files_that_match;
 }
 
+function getCurrentDownloader() {
+    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
+    return details_json['downloader'];
+}
+
 async function recFindByExt(base,ext,files,result)
 {
     files = files || (await fs.readdir(base))
@@ -390,6 +396,7 @@ module.exports = {
     durationStringToNumber: durationStringToNumber,
     getMatchingCategoryFiles: getMatchingCategoryFiles,
     addUIDsToCategory: addUIDsToCategory,
+    getCurrentDownloader: getCurrentDownloader,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
     wait: wait,

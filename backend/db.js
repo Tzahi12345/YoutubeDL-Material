@@ -256,6 +256,9 @@ function generateFileObject2(file_path, type) {
     var jsonobj = utils.getJSON(file_path, type);
     if (!jsonobj) {
         return null;
+    } else if (!jsonobj['_filename']) {
+        logger.error(`Failed to get filename from info JSON! File ${jsonobj['title']} could not be added.`);
+        return null;
     }
     const ext = (type === 'audio') ? '.mp3' : '.mp4'
     const true_file_path = utils.getTrueFileName(jsonobj['_filename'], type);
@@ -781,26 +784,26 @@ exports.removeRecord = async (table, filter_obj) => {
     return !!(output['result']['ok']);
 }
 
-exports.removeAllRecords = async (table = null) => {
+exports.removeAllRecords = async (table = null, filter_obj = null) => {
     // local db override
     const tables_to_remove = table ? [table] : tables_list;
+    logger.debug(`Removing all records from: ${tables_to_remove} with filter: ${JSON.stringify(filter_obj)}`)
     if (using_local_db) {
-        logger.debug(`Removing all records from: ${tables_to_remove}`)
         for (let i = 0; i < tables_to_remove.length; i++) {
             const table_to_remove = tables_to_remove[i];
-            local_db.assign({[table_to_remove]: []}).write();
-            logger.debug(`Removed all records from ${table_to_remove}`);
+            if (filter_obj) applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+            else local_db.assign({[table_to_remove]: []}).write();
+            logger.debug(`Successfully removed records from ${table_to_remove}`);
         }
         return true;
     }
 
     let success = true;
-    logger.debug(`Removing all records from: ${tables_to_remove}`)
     for (let i = 0; i < tables_to_remove.length; i++) {
         const table_to_remove = tables_to_remove[i];
 
-        const output = await database.collection(table_to_remove).deleteMany({});
-        logger.debug(`Removed all records from ${table_to_remove}`);
+        const output = await database.collection(table_to_remove).deleteMany(filter_obj ? filter_obj : {});
+        logger.debug(`Successfully removed records from ${table_to_remove}`);
         success &= !!(output['result']['ok']);
     }
     return success;
@@ -987,6 +990,8 @@ exports.transferDB = async (local_to_remote) => {
     }
 
     config_api.setConfigItem('ytdl_use_local_db', using_local_db);
+
+    logger.debug('Transfer finished!');
 
     return success;
 }
