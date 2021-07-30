@@ -28,4 +28,4 @@ If applicable, add screenshots to help explain your problem.
 - Docker tag: <tag> (optional)
 
 **Additional context**
-Add any other context about the problem here.
+Add any other context about the problem here. For example, a YouTube link.
