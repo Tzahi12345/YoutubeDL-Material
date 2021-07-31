@@ -327,9 +327,14 @@ async function startServer() {
         await setPortItemFromENV();
     }
 
-    app.listen(backendPort,function(){
+    const server = app.listen(backendPort,function(){
         logger.info(`YoutubeDL-Material ${CONSTS['CURRENT_VERSION']} started on PORT ${backendPort}`);
     });
+    process.on('uncaughtException', err => {
+        logger.error('Server has crashed!');
+        logger.error(err);
+        server.close();
+    })
 }
 
 async function restartServer(is_update = false) {
@@ -616,23 +621,18 @@ async function setConfigFromEnv() {
 }
 
 async function loadConfig() {
-    logger.info('loading config')
     loadConfigValues();
 
     // connect to DB
-    logger.info('connecting to db')
     await db_api.connectToDB();
 
     // creates archive path if missing
-    logger.info('ensuring archive path of ' + archivePath)
     await fs.ensureDir(archivePath);
 
     // check migrations
-    logger.info('checking migrations')
     await checkMigrations();
 
     // now this is done here due to youtube-dl's repo takedown
-    logger.info('starting youtube dl')
     await startYoutubeDL();
 
     // get subscriptions
@@ -2479,9 +2479,10 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
     }
 });
 
-app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
-    let file_path = decodeURIComponent(req.params.path);
-    if (fs.existsSync(file_path)) path.isAbsolute(file_path) ? res.sendFile(file_path) : res.sendFile(path.join('./', file_path));
+app.get('/api/thumbnail/:uid', optionalJwt, async (req, res) => {
+    const file_obj = await db_api.getRecord('files', {uid: req.params.uid});
+    const file_path = file_obj['thumbnailPath'];
+    if (fs.existsSync(file_path)) res.sendFile(file_path, { root: '.' });
     else res.sendStatus(404);
 });
 

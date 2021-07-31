@@ -72,7 +72,7 @@ export class UnifiedFileCardComponent implements OnInit {
     }
 
     if (this.file_obj && this.file_obj.thumbnailPath) {
-      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}${this.jwtString}`;
+      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${this.file_obj.uid}${this.jwtString}`;
       /*const mime = getMimeByFilename(this.file_obj.thumbnailPath);
       const blob = new Blob([new Uint8Array(this.file_obj.thumbnailBlob.data)], {type: mime});
       const bloburl = URL.createObjectURL(blob);
