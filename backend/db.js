@@ -75,7 +75,7 @@ exports.initialize = (input_db, input_users_db, input_logger) => {
 }
 
 exports.connectToDB = async (retries = 5, no_fallback = false, custom_connection_string = null) => {
-    if (using_local_db) return;
+    if (using_local_db && !custom_connection_string) return;
     const success = await exports._connectToDB(custom_connection_string);
     if (success) return true;
 
@@ -1018,4 +1018,16 @@ const applyFilterLocalDB = (db_path, filter_obj, operation) => {
         return filtered;
     });
     return return_val;
+}
+
+// archive helper functions
+
+async function writeToBlacklist(type, line) {
+    const archivePath = path.join(__dirname, 'appdata', 'archives');
+    let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
+    // adds newline to the beginning of the line
+    line.replace('\n', '');
+    line.replace('\r', '');
+    line = '\n' + line;
+    await fs.appendFile(blacklistPath, line);
 }

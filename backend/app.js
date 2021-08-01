@@ -18,13 +18,10 @@ var mergeFiles = require('merge-files');
 const low = require('lowdb')
 var ProgressBar = require('progress');
 const NodeID3 = require('node-id3')
-const downloader = require('youtube-dl/lib/downloader')
 const fetch = require('node-fetch');
 var URL = require('url').URL;
-const shortid = require('shortid')
 const url_api = require('url');
 const CONSTS = require('./consts')
-const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
 var ps = require('ps-node');
 
@@ -753,67 +750,6 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-function getFileSizeMp3(name)
-{
-    var jsonPath = audioFolderPath+name+".mp3.info.json";
-
-    if (fs.existsSync(jsonPath))
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    else
-        var obj = 0;
-
-    return obj.filesize;
-}
-
-function getFileSizeMp4(name)
-{
-    var jsonPath = videoFolderPath+name+".info.json";
-    var filesize = 0;
-    if (fs.existsSync(jsonPath))
-    {
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        var format = obj.format.substring(0,3);
-        for (i = 0; i < obj.formats.length; i++)
-        {
-            if (obj.formats[i].format_id == format)
-            {
-                filesize = obj.formats[i].filesize;
-            }
-        }
-    }
-
-    return filesize;
-}
-
-function getAmountDownloadedMp3(name)
-{
-    var partPath = audioFolderPath+name+".mp3.part";
-    if (fs.existsSync(partPath))
-    {
-        const stats = fs.statSync(partPath);
-        const fileSizeInBytes = stats.size;
-        return fileSizeInBytes;
-    }
-    else
-        return 0;
-}
-
-
-
-function getAmountDownloadedMp4(name)
-{
-    var format = getVideoFormatID(name);
-    var partPath = videoFolderPath+name+".f"+format+".mp4.part";
-    if (fs.existsSync(partPath))
-    {
-        const stats = fs.statSync(partPath);
-        const fileSizeInBytes = stats.size;
-        return fileSizeInBytes;
-    }
-    else
-        return 0;
-}
-
 function getVideoFormatID(name)
 {
     var jsonPath = videoFolderPath+name+".info.json";
@@ -1281,17 +1217,6 @@ async function cropFile(file_path, start, end, ext) {
                 resolve(false);
             }).save(temp_file_path);
     });    
-}
-
-// archive helper functions
-
-async function writeToBlacklist(type, line) {
-    let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
-    // adds newline to the beginning of the line
-    line.replace('\n', '');
-    line.replace('\r', '');
-    line = '\n' + line;
-    await fs.appendFile(blacklistPath, line);
 }
 
 // download management functions
