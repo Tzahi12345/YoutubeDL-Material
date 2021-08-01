@@ -18,19 +18,15 @@ var mergeFiles = require('merge-files');
 const low = require('lowdb')
 var ProgressBar = require('progress');
 const NodeID3 = require('node-id3')
-const downloader = require('youtube-dl/lib/downloader')
 const fetch = require('node-fetch');
 var URL = require('url').URL;
-const shortid = require('shortid')
 const url_api = require('url');
 const CONSTS = require('./consts')
-const { spawn } = require('child_process')
 const read_last_lines = require('read-last-lines');
 var ps = require('ps-node');
 
 // needed if bin/details somehow gets deleted
-const DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
-if (!fs.existsSync(DETAILS_BIN_PATH)) fs.writeJSONSync(DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
+if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
 
 var youtubedl = require('youtube-dl');
 
@@ -754,81 +750,6 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-function getThumbnailMp3(name)
-{
-    var obj = utils.getJSONMp3(name, audioFolderPath);
-    var thumbnailLink = obj.thumbnail;
-    return thumbnailLink;
-}
-
-function getThumbnailMp4(name)
-{
-    var obj = utils.getJSONMp4(name, videoFolderPath);
-    var thumbnailLink = obj.thumbnail;
-    return thumbnailLink;
-}
-
-function getFileSizeMp3(name)
-{
-    var jsonPath = audioFolderPath+name+".mp3.info.json";
-
-    if (fs.existsSync(jsonPath))
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    else
-        var obj = 0;
-
-    return obj.filesize;
-}
-
-function getFileSizeMp4(name)
-{
-    var jsonPath = videoFolderPath+name+".info.json";
-    var filesize = 0;
-    if (fs.existsSync(jsonPath))
-    {
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        var format = obj.format.substring(0,3);
-        for (i = 0; i < obj.formats.length; i++)
-        {
-            if (obj.formats[i].format_id == format)
-            {
-                filesize = obj.formats[i].filesize;
-            }
-        }
-    }
-
-    return filesize;
-}
-
-function getAmountDownloadedMp3(name)
-{
-    var partPath = audioFolderPath+name+".mp3.part";
-    if (fs.existsSync(partPath))
-    {
-        const stats = fs.statSync(partPath);
-        const fileSizeInBytes = stats.size;
-        return fileSizeInBytes;
-    }
-    else
-        return 0;
-}
-
-
-
-function getAmountDownloadedMp4(name)
-{
-    var format = getVideoFormatID(name);
-    var partPath = videoFolderPath+name+".f"+format+".mp4.part";
-    if (fs.existsSync(partPath))
-    {
-        const stats = fs.statSync(partPath);
-        const fileSizeInBytes = stats.size;
-        return fileSizeInBytes;
-    }
-    else
-        return 0;
-}
-
 function getVideoFormatID(name)
 {
     var jsonPath = videoFolderPath+name+".info.json";
@@ -1061,7 +982,7 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                     // create playlist
                     const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
                     const duration = file_objs.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
-                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, file_objs[0]['thumbnailURL'], options.user);
+                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, options.user);
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {
@@ -1194,7 +1115,7 @@ async function generateArgs(url, type, options) {
             downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
         }
         
-        const default_downloader = getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+        const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
         if (default_downloader === 'yt-dlp') {
             downloadConfig.push('--no-clean-infojson');
         }
@@ -1298,17 +1219,6 @@ async function cropFile(file_path, start, end, ext) {
     });    
 }
 
-// archive helper functions
-
-async function writeToBlacklist(type, line) {
-    let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
-    // adds newline to the beginning of the line
-    line.replace('\n', '');
-    line.replace('\r', '');
-    line = '\n' + line;
-    await fs.appendFile(blacklistPath, line);
-}
-
 // download management functions
 
 async function updateDownloads() {
@@ -1375,17 +1285,17 @@ async function autoUpdateYoutubeDL() {
         const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
         const tags_url = download_sources[default_downloader]['tags_url'];
         // get current version
-        let current_app_details_exists = fs.existsSync(DETAILS_BIN_PATH);
+        let current_app_details_exists = fs.existsSync(CONSTS.DETAILS_BIN_PATH);
         if (!current_app_details_exists) {
-            logger.warn(`Failed to get youtube-dl binary details at location '${DETAILS_BIN_PATH}'. Generating file...`);
-            fs.writeJSONSync(DETAILS_BIN_PATH, {"version":"2020.00.00", "downloader": default_downloader});
+            logger.warn(`Failed to get youtube-dl binary details at location '${CONSTS.DETAILS_BIN_PATH}'. Generating file...`);
+            fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2020.00.00", "downloader": default_downloader});
         }
-        let current_app_details = JSON.parse(fs.readFileSync(DETAILS_BIN_PATH));
+        let current_app_details = JSON.parse(fs.readFileSync(CONSTS.DETAILS_BIN_PATH));
         let current_version = current_app_details['version'];
         let current_downloader = current_app_details['downloader'];
         let stored_binary_path = current_app_details['path'];
         if (!stored_binary_path || typeof stored_binary_path !== 'string') {
-            // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${DETAILS_BIN_PATH}, attempting to guess actual path...`);
+            // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${CONSTS.DETAILS_BIN_PATH}, attempting to guess actual path...`);
             const guessed_base_path = 'node_modules/youtube-dl/bin/';
             const guessed_file_path = guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
             if (fs.existsSync(guessed_file_path)) {
@@ -1468,15 +1378,10 @@ async function downloadLatestYoutubeDLPBinary(new_version) {
 }
 
 function updateDetailsJSON(new_version, downloader) {
-    const details_json = fs.readJSONSync(DETAILS_BIN_PATH);
+    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
     if (new_version) details_json['version'] = new_version;
     details_json['downloader'] = downloader;
-    fs.writeJSONSync(DETAILS_BIN_PATH, details_json);
-}
-
-function getCurrentDownloader() {
-    const details_json = fs.readJSONSync(DETAILS_BIN_PATH);
-    return details_json['downloader'];
+    fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
 }
 
 async function checkExistsWithTimeout(filePath, timeout) {
@@ -1614,9 +1519,10 @@ app.post('/api/transferDB', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/testConnectionString', optionalJwt, async (req, res) => {
+    const connection_string = req.body.connection_string;
     let success = null;
     let error = '';
-    success = await db_api.connectToDB(0, true);
+    success = await db_api.connectToDB(0, true, connection_string);
     if (!success) error = 'Connection string failed.';
 
     res.send({success: success, error: error});
@@ -2181,9 +2087,8 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let playlistName = req.body.playlistName;
     let uids = req.body.uids;
     let type = req.body.type;
-    let thumbnailURL = req.body.thumbnailURL;
 
-    const new_playlist = await db_api.createPlaylist(playlistName, uids, type, thumbnailURL, req.isAuthenticated() ? req.user.uid : null);
+    const new_playlist = await db_api.createPlaylist(playlistName, uids, type, req.isAuthenticated() ? req.user.uid : null);
 
     res.send({
         new_playlist: new_playlist,
@@ -2216,8 +2121,18 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     });
 });
 
+app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+
+    const playlists = await db_api.getRecords('playlists', {user_uid: uuid});
+
+    res.send({
+        playlists: playlists
+    });
+});
+
 app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
-    let playlistID = req.body.playlistID;
+    let playlistID = req.body.playlist_id;
     let uids = req.body.uids;
 
     let success = false;
@@ -2238,6 +2153,20 @@ app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
     })
 });
 
+app.post('/api/addFileToPlaylist', optionalJwt, async (req, res) => {
+    let playlist_id = req.body.playlist_id;
+    let file_uid = req.body.file_uid;
+    
+    const playlist = await db_api.getRecord('playlists', {id: playlist_id});
+
+    playlist.uids.push(file_uid);
+
+    let success = await db_api.updatePlaylist(playlist);
+    res.send({
+        success: success
+    });
+});
+
 app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     let playlist = req.body.playlist;
     let success = await db_api.updatePlaylist(playlist, req.user && req.user.uid);
@@ -2247,7 +2176,7 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
-    let playlistID = req.body.playlistID;
+    let playlistID = req.body.playlist_id;
 
     let success = null;
     try {

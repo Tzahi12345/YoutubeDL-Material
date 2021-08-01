@@ -23,6 +23,12 @@
         <ng-container *ngIf="!is_playlist && !loading">
             <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
             <button (click)="navigateToSubscription()" mat-menu-item *ngIf="file_obj.sub_id"><mat-icon>{{file_obj.isAudio ? 'library_music' : 'video_library'}}</mat-icon>&nbsp;<ng-container i18n="Go to subscription menu item">Go to subscription</ng-container></button>
+            <button *ngIf="availablePlaylists" [matMenuTriggerFor]="addtoplaylist" mat-menu-item><mat-icon>playlist_add</mat-icon>&nbsp;<ng-container i18n="Add to playlist menu item">Add to playlist</ng-container></button>
+            <mat-menu #addtoplaylist="matMenu">
+                <ng-container *ngFor="let playlist of availablePlaylists">
+                    <button *ngIf="(playlist.type === 'audio') === file_obj.isAudio" [disabled]="playlist.uids?.includes(file_obj.uid)" (click)="emitAddFileToPlaylist(playlist.id)" mat-menu-item>{{playlist.name}}</button>
+                </ng-container>
+            </mat-menu>
             <mat-divider></mat-divider>
             <button *ngIf="file_obj.sub_id" (click)="emitDeleteFile()" mat-menu-item>
                 <mat-icon>restore</mat-icon><ng-container i18n="Delete and redownload subscription video button">Delete and redownload</ng-container>

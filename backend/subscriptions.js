@@ -347,7 +347,9 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     let appendedBasePath = getAppendedBasePath(sub, basePath);
 
-    let fullOutput = `${appendedBasePath}/%(title)s.%(ext)s`;
+    const file_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
+
+    let fullOutput = `${appendedBasePath}/${file_output}.%(ext)s`;
     if (desired_path) {
         fullOutput = `${desired_path}.%(ext)s`;
     } else if (sub.custom_output) {
@@ -409,6 +411,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         downloadConfig.push('--write-thumbnail');
+    }
+
+    const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+    if (default_downloader === 'yt-dlp') {
+        downloadConfig.push('--no-clean-infojson');
     }
 
     return downloadConfig;

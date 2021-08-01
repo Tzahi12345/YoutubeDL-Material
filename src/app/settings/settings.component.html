@@ -300,7 +300,7 @@
                             </mat-form-field>
 
                             <div class="test-connection-div">
-                                <button (click)="testConnectionString()" [disabled]="testing_connection_string" mat-flat-button color="accent"><ng-container i18n="Test connection string button">Test connection string</ng-container></button>
+                                <button (click)="testConnectionString(new_config['Database']['mongodb_connection_string'])" [disabled]="testing_connection_string" mat-flat-button color="accent"><ng-container i18n="Test connection string button">Test connection string</ng-container></button>
                             </div>
 
                             <div class="transfer-db-div">

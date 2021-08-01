@@ -55,7 +55,7 @@
       }
     },
     "Database": {
-      "use_local_db": false,
+      "use_local_db": true,
       "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib"
     },
     "Advanced": {

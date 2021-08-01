@@ -54,7 +54,7 @@ const local_db_defaults = {}
 tables_list.forEach(table => {local_db_defaults[table] = []});
 local_db.defaults(local_db_defaults).write();
 
-let using_local_db = config_api.getConfigItem('ytdl_use_local_db');
+let using_local_db = null; 
 
 function setDB(input_db, input_users_db) {
     db = input_db; users_db = input_users_db;
@@ -69,11 +69,14 @@ function setLogger(input_logger) {
 exports.initialize = (input_db, input_users_db, input_logger) => {
     setDB(input_db, input_users_db);
     setLogger(input_logger);
+
+    // must be done here to prevent getConfigItem from being called before init
+    using_local_db = config_api.getConfigItem('ytdl_use_local_db');
 }
 
-exports.connectToDB = async (retries = 5, no_fallback = false) => {
-    if (using_local_db) return;
-    const success = await exports._connectToDB();
+exports.connectToDB = async (retries = 5, no_fallback = false, custom_connection_string = null) => {
+    if (using_local_db && !custom_connection_string) return;
+    const success = await exports._connectToDB(custom_connection_string);
     if (success) return true;
 
     if (retries) {
@@ -105,8 +108,8 @@ exports.connectToDB = async (retries = 5, no_fallback = false) => {
     return true;
 }
 
-exports._connectToDB = async () => {
-    const uri = config_api.getConfigItem('ytdl_mongodb_connection_string'); // "mongodb://127.0.0.1:27017/?compressors=zlib&gssapiServiceName=mongodb";
+exports._connectToDB = async (custom_connection_string = null) => {
+    const uri = !custom_connection_string ? config_api.getConfigItem('ytdl_mongodb_connection_string') : custom_connection_string; // "mongodb://127.0.0.1:27017/?compressors=zlib&gssapiServiceName=mongodb";
     const client = new MongoClient(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -115,6 +118,10 @@ exports._connectToDB = async () => {
     try {
         await client.connect();
         database = client.db('ytdl_material');
+
+        // avoid doing anything else if it's just a test
+        if (custom_connection_string) return true;
+
         const existing_collections = (await database.listCollections({}, { nameOnly: true }).toArray()).map(collection => collection.name);
 
         const missing_tables = tables_list.filter(table => !(existing_collections.includes(table)));
@@ -248,6 +255,9 @@ function generateFileObject(id, type, customPath = null, sub = null) {
 function generateFileObject2(file_path, type) {
     var jsonobj = utils.getJSON(file_path, type);
     if (!jsonobj) {
+        return null;
+    } else if (!jsonobj['_filename']) {
+        logger.error(`Failed to get filename from info JSON! File ${jsonobj['title']} could not be added.`);
         return null;
     }
     const ext = (type === 'audio') ? '.mp3' : '.mp4'
@@ -408,23 +418,26 @@ exports.addMetadataPropertyToDB = async (property_key) => {
     }
 }
 
-exports.createPlaylist = async (playlist_name, uids, type, thumbnail_url, user_uid = null) => {
+exports.createPlaylist = async (playlist_name, uids, type, user_uid = null) => {
+    const first_video = await exports.getVideo(uids[0]);
+    const thumbnailToUse = first_video['thumbnailURL'];
+    
     let new_playlist = {
         name: playlist_name,
         uids: uids,
         id: uuid(),
-        thumbnailURL: thumbnail_url,
+        thumbnailURL: thumbnailToUse,
         type: type,
         registered: Date.now(),
         randomize_order: false
     };
 
-    const duration = await exports.calculatePlaylistDuration(new_playlist, user_uid);
-    new_playlist.duration = duration;
-
     new_playlist.user_uid = user_uid ? user_uid : undefined;
 
     await exports.insertRecordIntoTable('playlists', new_playlist);
+    
+    const duration = await exports.calculatePlaylistDuration(new_playlist);
+    await exports.updateRecord('playlists', {id: new_playlist.id}, {duration: duration});
 
     return new_playlist;
 }
@@ -460,10 +473,10 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
     return playlist;
 }
 
-exports.updatePlaylist = async (playlist, user_uid = null) => {
+exports.updatePlaylist = async (playlist) => {
     let playlistID = playlist.id;
 
-    const duration = await exports.calculatePlaylistDuration(playlist, user_uid);
+    const duration = await exports.calculatePlaylistDuration(playlist);
     playlist.duration = duration;
 
     return await exports.updateRecord('playlists', {id: playlistID}, playlist);
@@ -483,12 +496,12 @@ exports.setPlaylistProperty = async (playlist_id, assignment_obj, user_uid = nul
     return success;
 }
 
-exports.calculatePlaylistDuration = async (playlist, uuid, playlist_file_objs = null) => {
+exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) => {
     if (!playlist_file_objs) {
         playlist_file_objs = [];
         for (let i = 0; i < playlist['uids'].length; i++) {
             const uid = playlist['uids'][i];
-            const file_obj = await exports.getVideo(uid, uuid);
+            const file_obj = await exports.getVideo(uid);
             if (file_obj) playlist_file_objs.push(file_obj);
         }
     }
@@ -585,7 +598,7 @@ exports.getVideoUIDByID = async (file_id, uuid = null) => {
     return file_obj ? file_obj['uid'] : null;
 }
 
-exports.getVideo = async (file_uid, uuid = null, sub_id = null) => {
+exports.getVideo = async (file_uid) => {
     return await exports.getRecord('files', {uid: file_uid});
 }
 
@@ -771,26 +784,26 @@ exports.removeRecord = async (table, filter_obj) => {
     return !!(output['result']['ok']);
 }
 
-exports.removeAllRecords = async (table = null) => {
+exports.removeAllRecords = async (table = null, filter_obj = null) => {
     // local db override
     const tables_to_remove = table ? [table] : tables_list;
+    logger.debug(`Removing all records from: ${tables_to_remove} with filter: ${JSON.stringify(filter_obj)}`)
     if (using_local_db) {
-        logger.debug(`Removing all records from: ${tables_to_remove}`)
         for (let i = 0; i < tables_to_remove.length; i++) {
             const table_to_remove = tables_to_remove[i];
-            local_db.assign({[table_to_remove]: []}).write();
-            logger.debug(`Removed all records from ${table_to_remove}`);
+            if (filter_obj) applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+            else local_db.assign({[table_to_remove]: []}).write();
+            logger.debug(`Successfully removed records from ${table_to_remove}`);
         }
         return true;
     }
 
     let success = true;
-    logger.debug(`Removing all records from: ${tables_to_remove}`)
     for (let i = 0; i < tables_to_remove.length; i++) {
         const table_to_remove = tables_to_remove[i];
 
-        const output = await database.collection(table_to_remove).deleteMany({});
-        logger.debug(`Removed all records from ${table_to_remove}`);
+        const output = await database.collection(table_to_remove).deleteMany(filter_obj ? filter_obj : {});
+        logger.debug(`Successfully removed records from ${table_to_remove}`);
         success &= !!(output['result']['ok']);
     }
     return success;
@@ -978,6 +991,8 @@ exports.transferDB = async (local_to_remote) => {
 
     config_api.setConfigItem('ytdl_use_local_db', using_local_db);
 
+    logger.debug('Transfer finished!');
+
     return success;
 }
 
@@ -1003,4 +1018,16 @@ const applyFilterLocalDB = (db_path, filter_obj, operation) => {
         return filtered;
     });
     return return_val;
+}
+
+// archive helper functions
+
+async function writeToBlacklist(type, line) {
+    const archivePath = path.join(__dirname, 'appdata', 'archives');
+    let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
+    // adds newline to the beginning of the line
+    line.replace('\n', '');
+    line.replace('\r', '');
+    line = '\n' + line;
+    await fs.appendFile(blacklistPath, line);
 }

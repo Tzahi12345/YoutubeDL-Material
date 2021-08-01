@@ -207,8 +207,11 @@ AVAILABLE_PERMISSIONS = [
     'downloads_manager'
 ];
 
+const DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
+
 module.exports = {
     CONFIG_ITEMS: CONFIG_ITEMS,
     AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
-    CURRENT_VERSION: 'v4.2'
+    CURRENT_VERSION: 'v4.2',
+    DETAILS_BIN_PATH: DETAILS_BIN_PATH
 }

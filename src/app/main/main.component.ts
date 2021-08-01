@@ -951,8 +951,6 @@ export class MainComponent implements OnInit {
   }
 
   reloadRecentVideos() {
-    if (this.recentVideos) {
-      this.recentVideos.getAllFiles();
-    }
+    this.postsService.files_changed.next(true);
   }
 }
