@@ -1114,6 +1114,11 @@ async function generateArgs(url, type, options) {
             }
             downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
         }
+
+        const rate_limit = config_api.getConfigItem('ytdl_download_rate_limit');
+        if (rate_limit && downloadConfig.indexOf('-r') === -1 && downloadConfig.indexOf('--limit-rate') === -1) {
+            downloadConfig.push('-r', rate_limit);
+        }
         
         const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
         if (default_downloader === 'yt-dlp') {

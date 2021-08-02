@@ -149,6 +149,21 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
     let result_obj = { success: false, error: '' };
 
     let id = sub.id;
+
+    const sub_files = await db_api.getRecords('files', {sub_id: id});
+    for (let i = 0; i < sub_files.length; i++) {
+        const sub_file = sub_files[i];
+        if (config_api.descriptors[sub_file['uid']]) {
+            try {
+                for (let i = 0; i < config_api.descriptors[sub_file['uid']].length; i++) {
+                    config_api.descriptors[sub_file['uid']][i].destroy();
+                }
+            } catch(e) {
+    
+            }
+        }
+    }
+
     await db_api.removeRecord('subscriptions', {id: id});
     await db_api.removeAllRecords('files', {sub_id: id});
 
@@ -260,7 +275,7 @@ async function getVideosForSub(sub, user_uid = null) {
     const downloadConfig = await generateArgsForSubscription(sub, user_uid);
 
     // get videos
-    logger.verbose('Subscription: getting videos for subscription ' + sub.name);
+    logger.verbose(`Subscription: getting videos for subscription ${sub.name} with args: ${downloadConfig.join(',')}`);
 
     return new Promise(async resolve => {
         const preimported_file_paths = [];
@@ -411,6 +426,20 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     if (config_api.getConfigItem('ytdl_include_thumbnail')) {
         downloadConfig.push('--write-thumbnail');
+    }
+
+    const download_delay = config_api.getConfigItem('ytdl_subscriptions_download_delay');
+    if (download_delay && downloadConfig.indexOf('--sleep-interval') === -1) {
+        if (!(+download_delay)) {
+            logger.warn(`Invalid download delay of ${download_delay}, please remember to use non-zero numbers.`);
+        } else {
+            downloadConfig.push('--sleep-interval', +download_delay);
+        }
+    }
+
+    const rate_limit = config_api.getConfigItem('ytdl_download_rate_limit');
+    if (rate_limit && downloadConfig.indexOf('-r') === -1 && downloadConfig.indexOf('--limit-rate') === -1) {
+        downloadConfig.push('-r', rate_limit);
     }
 
     const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');

@@ -58,7 +58,13 @@
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-2 mb-3">
+                    <div class="col-12 mt-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <input [(ngModel)]="new_config['Subscriptions']['download_delay']" matInput placeholder="Download delay" i18n-placeholder="Download delay input placeholder">
+                            <mat-hint><ng-container i18n="Download delay input hint">Units is seconds, will force youtube-dl to sleep between videos in a subscription by the specified number of seconds. Only include numbers.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-4 mb-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['redownload_fresh_uploads']" matTooltip="Sometimes new videos are downloaded before being fully processed. This setting will mean new videos will be checked for a higher quality version the following day." i18n-matTooltip="Redownload fresh uploads tooltip"><ng-container i18n="Redownload fresh uploads">Redownload fresh uploads</ng-container></mat-checkbox>
                     </div>
                 </div>
@@ -110,14 +116,14 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-5">
+                    <div class="col-12 mt-3">
                         <mat-form-field class="text-field" color="accent">
                             <input matInput [(ngModel)]="new_config['Downloader']['path-video']" placeholder="Video folder path" i18n-placeholder="Video folder path input placeholder" required>
                             <mat-hint><ng-container i18n="Video path setting input hint">Path for video downloads. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-4">
+                    <div class="col-12 mt-3">
                         <mat-form-field class="text-field" color="accent">
                             <input matInput [(ngModel)]="new_config['Downloader']['default_file_output']" matInput placeholder="Default file output" i18n-placeholder="Default file output placeholder">
                             <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
@@ -127,7 +133,7 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-4 mb-5">
+                    <div class="col-12 mt-3 mb-4">
                         <mat-form-field class="text-field" style="margin-right: 12px;" color="accent">
                             <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Global custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                             <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</ng-container></mat-hint>
@@ -141,7 +147,7 @@
                 <div class="row">
                     <div class="col-12 mt-3">
                         <h6 i18n="Categories">Categories</h6>
-                        <div cdkDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
+                        <div *ngIf="postsService.categories && postsService.categories.length > 0" kDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
                             <div class="category-box" *ngFor="let category of postsService.categories" cdkDrag>
                                 <div class="category-custom-placeholder" *cdkDragPlaceholder></div>
                                 {{category['name']}}
@@ -169,11 +175,26 @@
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['include_thumbnail']"><ng-container i18n="Include thumbnail setting">Include thumbnail</ng-container></mat-checkbox>
                     </div>
 
-                    <div class="col-12 mt-2">
+                    <div class="col-12 mt-2 mb-2">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['include_metadata']"><ng-container i18n="Include metadata setting">Include metadata</ng-container></mat-checkbox>
                     </div>
-
-                    <div class="col-12 mt-2">
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3 mb-4">
+                        <mat-form-field class="text-field" color="accent">
+                            <input [(ngModel)]="new_config['Downloader']['download_rate_limit']" matInput placeholder="Download rate limit" i18n-placeholder="Download rate limit input placeholder">
+                            <mat-hint><ng-container i18n="Download rate limit input hint">Rate limits your downloads to the specified amount. Ex: 200K</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
                         <button (click)="killAllDownloads()" mat-stroked-button color="warn"><ng-container i18n="Kill all downloads button">Kill all downloads</ng-container></button>
                     </div>
                 </div>

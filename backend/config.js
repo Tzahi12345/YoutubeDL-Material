@@ -189,7 +189,8 @@ DEFAULT_CONFIG = {
         "custom_args": "",
         "safe_download_override": false,
         "include_thumbnail": true,
-        "include_metadata": true
+        "include_metadata": true,
+        "download_rate_limit": ""
       },
       "Extra": {
         "title_top": "YoutubeDL-Material",
@@ -217,7 +218,8 @@ DEFAULT_CONFIG = {
         "allow_subscriptions": true,
         "subscriptions_base_path": "subscriptions/",
         "subscriptions_check_interval": "300",
-        "redownload_fresh_uploads": false
+        "redownload_fresh_uploads": false,
+        "download_delay": ""
       },
       "Users": {
         "base_path": "users/",
