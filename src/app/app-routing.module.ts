@@ -7,12 +7,14 @@ import { SubscriptionComponent } from './subscription/subscription/subscription.
 import { PostsService } from './posts.services';
 import { LoginComponent } from './components/login/login.component';
 import { DownloadsComponent } from './components/downloads/downloads.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   { path: 'home', component: MainComponent, canActivate: [PostsService] },
   { path: 'player', component: PlayerComponent, canActivate: [PostsService]},
   { path: 'subscriptions', component: SubscriptionsComponent, canActivate: [PostsService] },
   { path: 'subscription', component: SubscriptionComponent, canActivate: [PostsService] },
+  { path: 'settings', component: SettingsComponent, canActivate: [PostsService] },
   { path: 'login', component: LoginComponent },
   { path: 'downloads', component: DownloadsComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' }

@@ -51,8 +51,17 @@ export class SettingsComponent implements OnInit {
     private dialog: MatDialog) { }
 
   ngOnInit() {
-    this.getConfig();
-    this.getDBInfo();
+    if (this.postsService.initialized) {
+      this.getConfig();
+      this.getDBInfo();
+    } else {
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.getConfig();
+          this.getDBInfo();
+        }
+      });
+    }
 
     this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());
 
@@ -83,6 +92,10 @@ export class SettingsComponent implements OnInit {
     }, err => {
       console.error('Failed to save config!');
     })
+  }
+
+  cancelSettings() {
+    this.new_config = JSON.parse(JSON.stringify(this.initial_config));
   }
 
   dropCategory(event: CdkDragDrop<string[]>) {

@@ -2,6 +2,15 @@
     margin-bottom: 20px;
 }
 
+.settings-title {
+    text-align: center;
+    margin-top: 15px;
+}
+
+::ng-deep .mat-tab-body {
+    margin-left: 15px;
+}
+
 .ext-divider {
     margin-bottom: 14px;
 }
@@ -90,4 +99,9 @@
 
 .transfer-db-div {
     margin-bottom: 10px;
+}
+
+.action-buttons {
+    position: absolute;
+    bottom: 15px;
 }

@@ -1,5 +1,5 @@
 <mat-card class="login-card">
-    <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+    <mat-tab-group style="margin-bottom: 20px" [(selectedIndex)]="selectedTabIndex">
         <mat-tab label="Login">
             <div style="margin-top: 10px;">
                 <mat-form-field>
@@ -10,9 +10,6 @@
                 <mat-form-field>
                     <input [(ngModel)]="loginPasswordInput" (keyup.enter)="login()" type="password" matInput placeholder="Password">
                 </mat-form-field>
-            </div>
-            <div style="margin-bottom: 10px; margin-top: 10px;">
-                <button [disabled]="loggingIn" color="primary" (click)="login()" mat-raised-button><ng-container i18n="Login">Login</ng-container></button>
             </div>
         </mat-tab>
         <mat-tab *ngIf="registrationEnabled" label="Register">
@@ -31,9 +28,14 @@
                     <input [(ngModel)]="registrationPasswordConfirmationInput" type="password" matInput placeholder="Confirm Password">
                 </mat-form-field>
             </div>
-            <div style="margin-bottom: 10px; margin-top: 10px;">
-                <button [disabled]="registering" color="primary" (click)="register()" mat-raised-button><ng-container i18n="Register">Register</ng-container></button>
-            </div>
         </mat-tab>
     </mat-tab-group>
+    <div *ngIf="selectedTabIndex === 0" class="login-button-div">
+        <button [disabled]="loggingIn" color="primary" (click)="login()" mat-raised-button><ng-container i18n="Login">Login</ng-container></button>
+        <mat-progress-bar *ngIf="loggingIn" class="login-progress-bar" mode="indeterminate"></mat-progress-bar>
+    </div>
+    <div *ngIf="selectedTabIndex === 1" class="login-button-div">
+        <button [disabled]="registering" color="primary" (click)="register()" mat-raised-button><ng-container i18n="Register">Register</ng-container></button>
+        <mat-progress-bar *ngIf="registering" class="login-progress-bar" mode="indeterminate"></mat-progress-bar>
+    </div>
 </mat-card>
