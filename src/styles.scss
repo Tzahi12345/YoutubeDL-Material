@@ -42,6 +42,10 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include angular-material-theme($dark-theme);
 }
 
+.mat-stroked-button, .mat-raised-button, .mat-flat-button {
+  border-radius: 24px !important
+}
+
 // Light theme
 $light-primary: mat-palette($mat-grey, 200, 500, 300);
 $light-accent: mat-palette($mat-brown, 200);
@@ -50,7 +54,7 @@ $light-warn: mat-palette($mat-deep-orange, 200);
 $light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
 
 .light-theme {
-  @include angular-material-theme($light-theme)
+  @include angular-material-theme($light-theme);
 }
 
 .no-outline {

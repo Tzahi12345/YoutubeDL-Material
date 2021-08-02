@@ -133,12 +133,16 @@ mat-form-field.mat-form-field {
     top: -5px;
 }
 
+.border-radius-both {
+    border-radius: 16px;
+}
+
 .no-border-radius-bottom {
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 16px 16px 0px 0px;
 }
 
 .no-border-radius-top {
-    border-radius: 0px 0px 4px 4px;
+    border-radius: 0px 0px 16px 16px;
 }
 
 @media (max-width: 576px) {
