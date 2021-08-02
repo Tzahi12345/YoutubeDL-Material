@@ -10,7 +10,7 @@
     </cdk-virtual-scroll-viewport>-->
 
     <!-- Non-virtual mode (slow, bug-free) -->
-    <div style="height: 274px; overflow-y: auto">
+    <div style="height: 100%; overflow-y: auto">
         <div *ngFor="let log of logs; let i = index" class="example-item">
             <span [ngStyle]="{'color':log.color}">{{log.text}}</span>
         </div>

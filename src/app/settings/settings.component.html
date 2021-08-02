@@ -6,7 +6,7 @@
 
 </div> -->
 
-<mat-tab-group style="height: 79vh" mat-align-tabs="center">
+<mat-tab-group style="height: 76vh" mat-align-tabs="center">
     <!-- Server -->
     <mat-tab label="Main" i18n-label="Main settings label">
         <ng-template matTabContent style="padding: 15px;">
@@ -400,8 +400,7 @@
         </ng-template>
     </mat-tab>
     <mat-tab *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode" label="Users" i18n-label="Users settings label">
-        
-        <div style="margin-left: 48px; margin-top: 24px; margin-bottom: -25px;">
+        <div *ngIf="new_config" style="margin-top: 24px; margin-bottom: -25px;">
             <div>
                 <mat-checkbox color="accent" [(ngModel)]="new_config['Users']['allow_registration']"><ng-container i18n="Allow registration setting">Allow user registration</ng-container></mat-checkbox>
             </div>
@@ -445,7 +444,7 @@
             </div>
             <mat-divider></mat-divider>
         </div>
-        <app-modify-users></app-modify-users>
+        <app-modify-users *ngIf="new_config"></app-modify-users>
     </mat-tab>
     <mat-tab *ngIf="postsService.config" label="Logs" i18n-label="Logs settings label">
         <ng-template matTabContent>
@@ -456,12 +455,12 @@
     </mat-tab>
 </mat-tab-group>
 
-    <div style="margin-top: 10px;">
-        <button style="margin-left: 10px;" color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;
-            <ng-container i18n="Settings save button">Save</ng-container>
-        </button>
-        <button style="margin-left: 10px;" mat-flat-button (click)="cancelSettings()" [disabled]="settingsSame()"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;
-            <span i18n="Settings cancel button">Cancel</span>
-        </button>
-    </div>
+<div class="action-buttons">
+    <button style="margin-left: 10px; height: 37.3px" color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;
+        <ng-container i18n="Settings save button">Save</ng-container>
+    </button>
+    <button style="margin-left: 10px;" mat-flat-button (click)="cancelSettings()" [disabled]="settingsSame()"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;
+        <span i18n="Settings cancel button">Cancel</span>
+    </button>
+</div>
 
