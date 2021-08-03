@@ -1634,26 +1634,12 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     let playlists = null;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
-    let subscriptions = config_api.getConfigItem('ytdl_allow_subscriptions') ? (await subscriptions_api.getSubscriptions(req.isAuthenticated() ? req.user.uid : null)) : [];
-
     files = await db_api.getRecords('files', {user_uid: uuid});
     playlists = await db_api.getRecords('playlists', {user_uid: uuid});
 
     const categories = await categories_api.getCategoriesAsPlaylists(files);
     if (categories) {
         playlists = playlists.concat(categories);
-    }
-
-    // loop through subscriptions and add videos
-    for (let i = 0; i < subscriptions.length; i++) {
-        sub = subscriptions[i];
-        if (!sub.videos) continue;
-        // add sub id for UI
-        for (let j = 0; j < sub.videos.length; j++) {
-            sub.videos[j].sub_id = sub.id;
-        }
-
-        files = files.concat(sub.videos);
     }
 
     files = JSON.parse(JSON.stringify(files));
@@ -1980,6 +1966,8 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
         res.sendStatus(400);
         return;
     }
+
+    subscription = JSON.parse(JSON.stringify(subscription));
 
     // get sub videos
     if (subscription.name && !subscription.streamingOnly) {
