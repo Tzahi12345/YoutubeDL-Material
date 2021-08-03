@@ -287,4 +287,39 @@ describe('Multi User', async function() {
     //     });
     // });
     
+    describe('Downloader', function() {
+        const url = '';
+        const options = {
+            ui_uid: uuid(),
+            user: 'admin'
+        }
+
+        const download = {
+            url: url,
+            options: options,
+            type: 'video'
+        }
+
+        beforeEach(async function() {
+            await db_api.connectToDB();
+            await db_api.removeAllRecords('download_queue');
+            await db_api.insertRecordIntoTable('download_queue', download)
+        });
+
+        it('Get file info', async function() {
+
+        });
+
+        it('Download file', async function() {
+
+        });
+
+        it('Queue file', async function() {
+
+        });
+
+        it('Pause file', async function() {
+
+        });
+    });
 });
