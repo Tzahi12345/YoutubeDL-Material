@@ -132,7 +132,7 @@
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target state="translated" state-qualifier="leveraged-glossary">La ruta es relativa a la ruta de descarga de la config. No incluya el extensión.</target>
+        <target state="translated" state-qualifier="leveraged-glossary">La ruta es relativa a la ruta de descarga de la configuración. No incluya el extensión.</target>
       </trans-unit>
       <trans-unit id="8fad10737d3e3735a6699a4d89cbf6c20f6bb55f">
         <source>Use authentication</source>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8">
         <source>Close</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Cerca</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Cerrar</target>
       </trans-unit>
       <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1">
         <source>ID:</source>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a">
         <source>About</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Sobre</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Acerca de</target>
       </trans-unit>
       <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c">
         <source>Home</source>
@@ -724,7 +724,7 @@
       </trans-unit>
       <trans-unit id="a1ad8b1be9be43b5183bd2c3186d4e19496f2a0b">
         <source>Session ID:</source>
-        <target state="translated">ID de sesión:</target>
+        <target state="translated">Id. de sesión:</target>
       </trans-unit>
       <trans-unit id="eb98135e35af26a9a326ee69bd8ff104d36dd8ec">
         <source>(current)</source>
@@ -1136,7 +1136,7 @@
       </trans-unit>
       <trans-unit id="e9aff8e6df2e2bf6299ea27bb2894c70bc48bd4d" datatype="html">
         <source>An error has occurred:</source>
-        <target>Un error ha ocurrido:</target>
+        <target>Ha ocurrido un error:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1145,7 +1145,7 @@
       </trans-unit>
       <trans-unit id="348cc5d553b18e862eb1c1770e5636f6b05ba130" datatype="html">
         <source>An error has occurred</source>
-        <target>Un error ha ocurrido</target>
+        <target>Ha ocurrido un error</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1154,7 +1154,7 @@
       </trans-unit>
       <trans-unit id="4d8a18b04a1f785ecd8021ac824e0dfd5881dbfc" datatype="html">
         <source>The download was successful</source>
-        <target>La descarga era exitosa</target>
+        <target>La descarga fue exitosa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1172,7 +1172,7 @@
       </trans-unit>
       <trans-unit id="b6c453e0e61faea184bbaf5c5b0a1e164f4de2a2" datatype="html">
         <source>Clear all downloads</source>
-        <target>Claro todas las descargas</target>
+        <target>Borrar todas las descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">18</context>
