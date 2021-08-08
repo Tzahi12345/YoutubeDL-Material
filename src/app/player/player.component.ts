@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, EventEmitter, OnDestroy, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { VgApiService } from '@videogular/ngx-videogular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,6 +15,7 @@ export interface IMedia {
   src: string;
   type: string;
   label: string;
+  url: string;
 }
 
 @Component({
@@ -133,7 +134,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         title: this.name,
         label: this.name,
         src: this.url,
-        type: 'video/mp4'
+        type: 'video/mp4',
+        url: this.url
       }
       this.playlist.push(imedia);
       this.currentItem = this.playlist[0];
@@ -229,7 +231,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         title: file_obj['title'],
         src: fullLocation,
         type: mime_type,
-        label: file_obj['title']
+        label: file_obj['title'],
+        url: file_obj['url']
       }
       this.playlist.push(mediaObject);
     }
@@ -287,13 +290,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       // console.log('new current item is ' + item.title + ' at index ' + index);
       this.currentIndex = index;
       this.currentItem = item;
-  }
-
-  getFileInfos() {
-    const fileNames = this.getFileNames();
-    this.postsService.getFileInfo(fileNames, this.type, false).subscribe(res => {
-
-    });
   }
 
   getFileNames() {

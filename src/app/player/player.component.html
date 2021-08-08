@@ -4,8 +4,9 @@
                 <mat-drawer-container style="height: 100%" class="example-container" autosize>
                     <div style="height: fit-content" [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-col' : 'video-col'">
                         <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(currentItem.type === 'audio/mp3') ? postsService.theme.drawer_color : 'black'">
-                            <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
+                            <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls playsinline>
                             </video>
+                            <app-skip-ad-button *ngIf="postsService['config']['API']['use_sponsorblock_API'] && api && playlist?.length > 0 && playlist[currentIndex]['type'] === 'video/mp4'" (setPlaybackTimestamp)="setPlaybackTimestamp($event)" [current_video]="playlist[currentIndex]" [playback_timestamp]="api.currentTime" [sponsor_block_cache]="sponsor_block_cache" class="skip-ad-button"></app-skip-ad-button>
                         </vg-player>
                     </div>
                     <div style="height: fit-content; width: 100%; margin-top: 10px;">

@@ -208,7 +208,8 @@ DEFAULT_CONFIG = {
         "youtube_API_key": "",
         "use_twitch_API": false,
         "twitch_API_key": "",
-        "twitch_auto_download_chat": false
+        "twitch_auto_download_chat": false,
+        "use_sponsorblock_API": false
       },
       "Themes": {
         "default_theme": "default",
@@ -217,7 +218,7 @@ DEFAULT_CONFIG = {
       "Subscriptions": {
         "allow_subscriptions": true,
         "subscriptions_base_path": "subscriptions/",
-        "subscriptions_check_interval": "300",
+        "subscriptions_check_interval": "86400",
         "redownload_fresh_uploads": false,
         "download_delay": ""
       },

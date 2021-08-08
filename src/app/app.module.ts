@@ -87,6 +87,7 @@ import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.compon
 import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
 import { H401Interceptor } from './http.interceptor';
 import { ConcurrentStreamComponent } from './components/concurrent-stream/concurrent-stream.component';
+import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
 
 registerLocaleData(es, 'es');
 
@@ -136,7 +137,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     EditCategoryDialogComponent,
     TwitchChatComponent,
     SeeMoreComponent,
-    ConcurrentStreamComponent
+    ConcurrentStreamComponent,
+    SkipAdButtonComponent
   ],
   imports: [
     CommonModule,
