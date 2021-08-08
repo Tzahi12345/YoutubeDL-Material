@@ -1,17 +1,12 @@
-const config_api = require('./config');
 const utils = require('./utils');
+const logger = require('./logger');
 
-var logger = null;
-var db = null;
-var users_db = null;
 var db_api = null;
 
-function setDB(input_db, input_users_db, input_db_api) { db = input_db; users_db = input_users_db; db_api = input_db_api }
-function setLogger(input_logger) { logger = input_logger; }
+function setDB(input_db_api) { db_api = input_db_api }
 
-function initialize(input_db, input_users_db, input_logger, input_db_api) {
-    setDB(input_db, input_users_db, input_db_api);
-    setLogger(input_logger);
+function initialize(input_db_api) {
+    setDB(input_db_api);
 }
 
 /*
@@ -72,7 +67,7 @@ async function getCategoriesAsPlaylists(files = null) {
     const categories_as_playlists = [];
     const available_categories = await getCategories();
     if (available_categories && files) {
-        for (category of available_categories) {
+        for (let category of available_categories) {
             const files_that_match = utils.addUIDsToCategory(category, files);
             if (files_that_match && files_that_match.length > 0) {
                 category['thumbnailURL'] = files_that_match[0].thumbnailURL;
@@ -125,21 +120,21 @@ function applyCategoryRules(file_json, rules, category_name) {
     return rules_apply;
 }
 
-async function addTagToVideo(tag, video, user_uid) {
-    // TODO: Implement
-}
+// async function addTagToVideo(tag, video, user_uid) {
+//     // TODO: Implement
+// }
 
-async function removeTagFromVideo(tag, video, user_uid) {
-    // TODO: Implement
-}
+// async function removeTagFromVideo(tag, video, user_uid) {
+//     // TODO: Implement
+// }
 
-// adds tag to list of existing tags (used for tag suggestions)
-async function addTagToExistingTags(tag) {
-    const existing_tags = db.get('tags').value();
-    if (!existing_tags.includes(tag)) {
-        db.get('tags').push(tag).write();
-    }
-}
+// // adds tag to list of existing tags (used for tag suggestions)
+// async function addTagToExistingTags(tag) {
+//     const existing_tags = db.get('tags').value();
+//     if (!existing_tags.includes(tag)) {
+//         db.get('tags').push(tag).write();
+//     }
+// }
 
 module.exports = {
     initialize: initialize,

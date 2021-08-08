@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 const fs = require('fs');
 
 let CONFIG_ITEMS = require('./consts.js')['CONFIG_ITEMS'];
@@ -5,11 +7,7 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 
 let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.json';
 
-var logger = null;
-function setLogger(input_logger) { logger = input_logger; }
-
-function initialize(input_logger) {
-    setLogger(input_logger);
+function initialize() {
     ensureConfigFileExists();
     ensureConfigItemsExist();
 }
@@ -175,7 +173,7 @@ module.exports = {
     globalArgsRequiresSafeDownload: globalArgsRequiresSafeDownload
 }
 
-DEFAULT_CONFIG = {
+const DEFAULT_CONFIG = {
     "YoutubeDLMaterial": {
       "Host": {
         "url": "http://example.com",

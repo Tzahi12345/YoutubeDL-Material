@@ -1,19 +1,18 @@
 var fs = require('fs-extra')
 var path = require('path')
-var utils = require('./utils')
-const { uuid } = require('uuidv4');
-const config_api = require('./config');
 const { MongoClient } = require("mongodb");
+const { uuid } = require('uuidv4');
+
+const config_api = require('./config');
+var utils = require('./utils')
+const logger = require('./logger');
 
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync');
 const local_adapter = new FileSync('./appdata/local_db.json');
 const local_db = low(local_adapter);
 
-var logger = null;
-var db = null;
-var users_db = null;
-var database = null;
+let database = null;
 
 const tables = {
     files: {
@@ -62,13 +61,8 @@ function setDB(input_db, input_users_db) {
     exports.users_db = input_users_db
 }
 
-function setLogger(input_logger) {
-    logger = input_logger;
-}
-
-exports.initialize = (input_db, input_users_db, input_logger) => {
+exports.initialize = (input_db, input_users_db) => {
     setDB(input_db, input_users_db);
-    setLogger(input_logger);
 
     // must be done here to prevent getConfigItem from being called before init
     using_local_db = config_api.getConfigItem('ytdl_use_local_db');

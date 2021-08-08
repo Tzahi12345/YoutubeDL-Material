@@ -1,27 +1,20 @@
-const FileSync = require('lowdb/adapters/FileSync')
+const fs = require('fs-extra');
+const path = require('path');
+const youtubedl = require('youtube-dl');
 
-var fs = require('fs-extra');
-const { uuid } = require('uuidv4');
-var path = require('path');
-
-var youtubedl = require('youtube-dl');
 const config_api = require('./config');
 const twitch_api = require('./twitch');
-var utils = require('./utils');
+const utils = require('./utils');
+const logger = require('./logger');
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
-var logger = null;
-var db = null;
-var users_db = null;
 let db_api = null;
 
 function setDB(input_db_api) { db_api = input_db_api }
-function setLogger(input_logger) { logger = input_logger; }
 
-function initialize(input_db_api, input_logger) {
+function initialize(input_db_api) {
     setDB(input_db_api);
-    setLogger(input_logger);
 }
 
 async function subscribe(sub, user_uid = null) {
@@ -52,7 +45,7 @@ async function subscribe(sub, user_uid = null) {
             getVideosForSub(sub, user_uid);
         } else {
             logger.error('Subscribe: Failed to get subscription info. Subscribe failed.')
-        };
+        }
 
         result_obj.success = success;
         result_obj.sub = sub;
@@ -146,7 +139,6 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
     else
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-    let result_obj = { success: false, error: '' };
 
     let id = sub.id;
 
@@ -451,39 +443,26 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 }
 
 async function handleOutputJSON(sub, output_json, multiUserMode = null, reset_videos = false) {
-    // TODO: remove streaming only mode
-    if (false && sub.streamingOnly) {
-        if (reset_videos) {
-            sub_db.assign({videos: []}).write();
-        }
+    const path_object = path.parse(output_json['_filename']);
+    const path_string = path.format(path_object);
 
-        // remove unnecessary info
-        output_json.formats = null;
+    const file_exists = await db_api.getRecord('files', {path: path_string, sub_id: sub.id});
+    if (file_exists) {
+        // TODO: fix issue where files of different paths due to custom path get downloaded multiple times
+        // file already exists in DB, return early to avoid reseting the download date
+        return;
+    }
 
-        // add to db
-        sub_db.get('videos').push(output_json).write();
-    } else {
-        path_object = path.parse(output_json['_filename']);
-        const path_string = path.format(path_object);
+    await db_api.registerFileDB2(output_json['_filename'], sub.type, sub.user_uid, null, sub.id);
 
-        const file_exists = await db_api.getRecord('files', {path: path_string, sub_id: sub.id});
-        if (file_exists) {
-            // TODO: fix issue where files of different paths due to custom path get downloaded multiple times
-            // file already exists in DB, return early to avoid reseting the download date
-            return;
-        }
-
-        await db_api.registerFileDB2(output_json['_filename'], sub.type, sub.user_uid, null, sub.id);
-
-        const url = output_json['webpage_url'];
-        if (sub.type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
-            && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
-                const file_name = path.basename(output_json['_filename']);
-                const id = file_name.substring(0, file_name.length-4);
-                let vodId = url.split('twitch.tv/videos/')[1];
-                vodId = vodId.split('?')[0];
-                twitch_api.downloadTwitchChatByVODID(vodId, id, sub.type, multiUserMode.user, sub);
-        }
+    const url = output_json['webpage_url'];
+    if (sub.type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
+        && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
+            const file_name = path.basename(output_json['_filename']);
+            const id = file_name.substring(0, file_name.length-4);
+            let vodId = url.split('twitch.tv/videos/')[1];
+            vodId = vodId.split('?')[0];
+            twitch_api.downloadTwitchChatByVODID(vodId, id, sub.type, multiUserMode.user, sub);
     }
 }
 
@@ -505,7 +484,7 @@ async function getSubscriptionByName(subName, user_uid = null) {
     return await db_api.getRecord('subscriptions', {name: subName, user_uid: user_uid});
 }
 
-async function updateSubscription(sub, user_uid = null) {
+async function updateSubscription(sub) {
     await db_api.updateRecord('subscriptions', {id: sub.id}, sub);
     return true;
 }
@@ -516,7 +495,7 @@ async function updateSubscriptionPropertyMultiple(subs, assignment_obj) {
     });
 }
 
-async function updateSubscriptionProperty(sub, assignment_obj, user_uid = null) {
+async function updateSubscriptionProperty(sub, assignment_obj) {
     // TODO: combine with updateSubscription
     await db_api.updateRecord('subscriptions', {id: sub.id}, assignment_obj);
     return true;
@@ -585,7 +564,6 @@ module.exports = {
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
-    setLogger              : setLogger,
     initialize             : initialize,
     updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple
 }

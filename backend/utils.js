@@ -1,6 +1,8 @@
 const fs = require('fs-extra')
 const path = require('path')
+const ffmpeg = require('fluent-ffmpeg');
 const config_api = require('./config');
+const logger = require('./logger');
 const CONSTS = require('./consts')
 const archiver = require('archiver');
 
@@ -349,6 +351,33 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
+// ffmpeg helper functions
+
+async function cropFile(file_path, start, end, ext) {
+    return new Promise(resolve => {
+        const temp_file_path = `${file_path}.cropped${ext}`;
+        let base_ffmpeg_call = ffmpeg(file_path);
+        if (start) {
+            base_ffmpeg_call = base_ffmpeg_call.seekOutput(start);
+        }
+        if (end) {
+            base_ffmpeg_call = base_ffmpeg_call.duration(end - start);
+        }
+        base_ffmpeg_call
+            .on('end', () => {
+                logger.verbose(`Cropping for '${file_path}' complete.`);
+                fs.unlinkSync(file_path);
+                fs.moveSync(temp_file_path, file_path);
+                resolve(true);
+            })
+            .on('error', (err) => {
+                logger.error(`Failed to crop ${file_path}.`);
+                logger.error(err);
+                resolve(false);
+            }).save(temp_file_path);
+    });    
+}
+
 /**
  * setTimeout, but its a promise.
  * @param {number} ms
@@ -390,7 +419,7 @@ module.exports = {
     fixVideoMetadataPerms2: fixVideoMetadataPerms2,
     deleteJSONFile: deleteJSONFile,
     deleteJSONFile2: deleteJSONFile2,
-    removeIDFromArchive, removeIDFromArchive,
+    removeIDFromArchive: removeIDFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
     createContainerZipFile: createContainerZipFile,
     durationStringToNumber: durationStringToNumber,
@@ -399,6 +428,7 @@ module.exports = {
     getCurrentDownloader: getCurrentDownloader,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
+    cropFile: cropFile,
     wait: wait,
     File: File
 }

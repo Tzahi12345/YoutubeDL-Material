@@ -1,35 +1,35 @@
 const { uuid } = require('uuidv4');
-var fs = require('fs-extra');
-var { promisify } = require('util');
-var auth_api = require('./authentication/auth');
-var winston = require('winston');
-var path = require('path');
-var ffmpeg = require('fluent-ffmpeg');
-var compression = require('compression');
-var glob = require("glob")
-var multer  = require('multer');
-var express = require("express");
-var bodyParser = require("body-parser");
-var archiver = require('archiver');
-var unzipper = require('unzipper');
-var db_api = require('./db');
-var utils = require('./utils')
-var mergeFiles = require('merge-files');
+const fs = require('fs-extra');
+const { promisify } = require('util');
+const auth_api = require('./authentication/auth');
+const winston = require('winston');
+const path = require('path');
+const compression = require('compression');
+const glob = require("glob")
+const multer  = require('multer');
+const express = require("express");
+const bodyParser = require("body-parser");
+const archiver = require('archiver');
+const unzipper = require('unzipper');
+const db_api = require('./db');
+const utils = require('./utils')
+const mergeFiles = require('merge-files');
 const low = require('lowdb')
-var ProgressBar = require('progress');
+const ProgressBar = require('progress');
 const NodeID3 = require('node-id3')
 const fetch = require('node-fetch');
-var URL = require('url').URL;
+const URL = require('url').URL;
 const url_api = require('url');
 const CONSTS = require('./consts')
 const read_last_lines = require('read-last-lines');
-var ps = require('ps-node');
+const ps = require('ps-node');
 
 // needed if bin/details somehow gets deleted
 if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
 
-var youtubedl = require('youtube-dl');
+const youtubedl = require('youtube-dl');
 
+const logger = require('./logger');
 var config_api = require('./config.js');
 var subscriptions_api = require('./subscriptions')
 var categories_api = require('./categories');
@@ -61,30 +61,11 @@ const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 
 // logging setup
 
-// console format
-const defaultFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-    return `${timestamp} ${level.toUpperCase()}: ${message}`;
-});
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(winston.format.timestamp(), defaultFormat),
-    defaultMeta: {},
-    transports: [
-      //
-      // - Write to all logs with level `info` and below to `combined.log`
-      // - Write all logs error (and below) to `error.log`.
-      //
-      new winston.transports.File({ filename: 'appdata/logs/error.log', level: 'error' }),
-      new winston.transports.File({ filename: 'appdata/logs/combined.log' }),
-      new winston.transports.Console({level: !debugMode ? 'info' : 'debug', name: 'console'})
-    ]
-});
-
-config_api.initialize(logger);
-db_api.initialize(db, users_db, logger);
-auth_api.initialize(db_api, logger);
-subscriptions_api.initialize(db_api, logger);
-categories_api.initialize(db, users_db, logger, db_api);
+config_api.initialize();
+db_api.initialize(db, users_db);
+auth_api.initialize(db_api);
+subscriptions_api.initialize(db_api);
+categories_api.initialize(db_api);
 
 // Set some defaults
 db.defaults(
@@ -122,13 +103,9 @@ users_db.defaults(
 ).write();
 
 // config values
-var frontendUrl = null;
-var backendUrl = null;
 var backendPort = null;
-var basePath = null;
 var audioFolderPath = null;
 var videoFolderPath = null;
-var downloadOnlyMode = null;
 var useDefaultDownloadingAgent = null;
 var customDownloadingAgent = null;
 var allowSubscriptions = null;
@@ -137,8 +114,6 @@ var archivePath = path.join(__dirname, 'appdata', 'archives');
 // other needed values
 var url_domain = null;
 var updaterStatus = null;
-
-var timestamp_server_start = Date.now();
 
 const concurrentStreams = {};
 
@@ -368,6 +343,7 @@ async function updateServer(tag) {
         }
         restartServer(true);
     }, err => {
+        logger.error(err);
         updaterStatus = {
             updating: false,
             error: true,
@@ -398,12 +374,10 @@ async function downloadReleaseFiles(tag) {
         fs.createReadStream(path.join(__dirname, `youtubedl-material-release-${tag}.zip`)).pipe(unzipper.Parse())
         .on('entry', function (entry) {
             var fileName = entry.path;
-            var type = entry.type; // 'Directory' or 'File'
-            var size = entry.size;
             var is_dir = fileName.substring(fileName.length-1, fileName.length) === '/'
             if (!is_dir && fileName.includes('youtubedl-material/public/')) {
                 // get public folder files
-                var actualFileName = fileName.replace('youtubedl-material/public/', '');
+                const actualFileName = fileName.replace('youtubedl-material/public/', '');
                 if (actualFileName.length !== 0 && actualFileName.substring(actualFileName.length-1, actualFileName.length) !== '/') {
                     fs.ensureDirSync(path.join(__dirname, 'public', path.dirname(actualFileName)));
                     entry.pipe(fs.createWriteStream(path.join(__dirname, 'public', actualFileName)));
@@ -412,7 +386,7 @@ async function downloadReleaseFiles(tag) {
                 }
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
-                var actualFileName = fileName.replace('youtubedl-material/', '');
+                const actualFileName = fileName.replace('youtubedl-material/', '');
                 logger.verbose('Downloading file ' + actualFileName);
                 entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
             } else {
@@ -750,17 +724,6 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-function getVideoFormatID(name)
-{
-    var jsonPath = videoFolderPath+name+".info.json";
-    if (fs.existsSync(jsonPath))
-    {
-        var obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        var format = obj.format.substring(0,3);
-        return format;
-    }
-}
-
 /**
  * @param {'audio' | 'video'} type
  * @param {string[]} fileNames
@@ -808,16 +771,11 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
         let category = null;
 
         // prepend with user if needed
-        let multiUserMode = null;
         if (options.user) {
             let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
             const user_path = path.join(usersFileFolder, options.user, type);
             fs.ensureDirSync(user_path);
             fileFolderPath = user_path + path.sep;
-            multiUserMode = {
-                user: options.user,
-                file_path: fileFolderPath
-            }
             options.customFileFolderPath = fileFolderPath;
         }
 
@@ -947,11 +905,8 @@ async function downloadFileByURL_exec(url, type, options, sessionID = null) {
                         if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
                     }
 
-                    const file_path = options.noRelativePath ? path.basename(full_file_path) : full_file_path.substring(fileFolderPath.length, full_file_path.length);
-                    const customPath = options.noRelativePath ? path.dirname(full_file_path).split(path.sep).pop() : null;
-
                     if (options.cropFileSettings) {
-                        await cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
+                        await utils.cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
                     }
 
                     // registers file in DB
@@ -1022,6 +977,8 @@ async function generateArgs(url, type, options) {
     var youtubePassword = options.youtubePassword;
 
     let downloadConfig = null;
+
+    // TODO: fix
     let qualityPath = (is_audio && !options.skip_audio_args) ? ['-f', 'bestaudio'] : ['-f', 'bestvideo+bestaudio', '--merge-output-format', 'mp4'];
     const is_youtube = url.includes('youtu');
     if (!is_audio && !is_youtube) {
@@ -1195,33 +1152,6 @@ async function getUrlInfos(urls) {
             resolve(result);
         });
     });
-}
-
-// ffmpeg helper functions
-
-async function cropFile(file_path, start, end, ext) {
-    return new Promise(resolve => {
-        const temp_file_path = `${file_path}.cropped${ext}`;
-        let base_ffmpeg_call = ffmpeg(file_path);
-        if (start) {
-            base_ffmpeg_call = base_ffmpeg_call.seekOutput(start);
-        }
-        if (end) {
-            base_ffmpeg_call = base_ffmpeg_call.duration(end - start);
-        }
-        base_ffmpeg_call
-            .on('end', () => {
-                logger.verbose(`Cropping for '${file_path}' complete.`);
-                fs.unlinkSync(file_path);
-                fs.moveSync(temp_file_path, file_path);
-                resolve(true);
-            })
-            .on('error', (err, test, test2) => {
-                logger.error(`Failed to crop ${file_path}.`);
-                logger.error(err);
-                resolve(false);
-            }).save(temp_file_path);
-    });    
 }
 
 // download management functions
@@ -1951,14 +1881,12 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.id;
     let subName = req.body.name; // if included, subID is optional
 
-    let user_uid = req.isAuthenticated() ? req.user.uid : null;
-
     // get sub from db
     let subscription = null;
     if (subID) {
-        subscription = await subscriptions_api.getSubscription(subID, user_uid)
+        subscription = await subscriptions_api.getSubscription(subID)
     } else if (subName) {
-        subscription = await subscriptions_api.getSubscriptionByName(subName, user_uid)
+        subscription = await subscriptions_api.getSubscriptionByName(subName)
     }
 
     if (!subscription) {
@@ -2122,28 +2050,6 @@ app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
     res.send({
         playlists: playlists
     });
-});
-
-app.post('/api/updatePlaylistFiles', optionalJwt, async (req, res) => {
-    let playlistID = req.body.playlist_id;
-    let uids = req.body.uids;
-
-    let success = false;
-    try {
-        if (req.isAuthenticated()) {
-            auth_api.updatePlaylistFiles(req.user.uid, playlistID, uids);
-        } else {
-            await db_api.updateRecord('playlists', {id: playlistID}, {uids: uids})
-        }
-
-        success = true;
-    } catch(e) {
-        logger.error(`Failed to find playlist with ID ${playlistID}`);
-    }
-
-    res.send({
-        success: success
-    })
 });
 
 app.post('/api/addFileToPlaylist', optionalJwt, async (req, res) => {

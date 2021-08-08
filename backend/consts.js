@@ -1,4 +1,4 @@
-let CONFIG_ITEMS = {
+exports.CONFIG_ITEMS = {
     // Host
     'ytdl_url': {
         'key': 'ytdl_url',
@@ -210,7 +210,7 @@ let CONFIG_ITEMS = {
     }
 };
 
-AVAILABLE_PERMISSIONS = [
+exports.AVAILABLE_PERMISSIONS = [
     'filemanager',
     'settings',
     'subscriptions',
@@ -219,11 +219,6 @@ AVAILABLE_PERMISSIONS = [
     'downloads_manager'
 ];
 
-const DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
+exports.DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
 
-module.exports = {
-    CONFIG_ITEMS: CONFIG_ITEMS,
-    AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
-    CURRENT_VERSION: 'v4.2',
-    DETAILS_BIN_PATH: DETAILS_BIN_PATH
-}
+exports.CURRENT_VERSION = 'v4.2';
