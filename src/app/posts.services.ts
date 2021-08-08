@@ -614,6 +614,11 @@ export class PostsService implements CanActivate {
                                                                     this.httpOptions);
     }
 
+    getSponsorBlockDataForVideo(id_hash) {
+        const sponsor_block_api_path = 'https://sponsor.ajay.app/api/';
+        return this.http.get(sponsor_block_api_path + `skipSegments/${id_hash}`);
+    }
+
     public openSnackBar(message: string, action: string = '') {
         this.snackBar.open(message, action, {
           duration: 2000,

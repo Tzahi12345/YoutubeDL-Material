@@ -106,6 +106,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_twitch_auto_download_chat',
         'path': 'YoutubeDLMaterial.API.twitch_auto_download_chat'
     },
+    'ytdl_use_sponsorblock_api': {
+        'key': 'ytdl_use_sponsorblock_api',
+        'path': 'YoutubeDLMaterial.API.use_sponsorblock_API'
+    },
 
     // Themes
     'ytdl_default_theme': {

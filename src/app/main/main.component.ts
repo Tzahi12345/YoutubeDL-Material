@@ -648,7 +648,6 @@ export class MainComponent implements OnInit {
           return;
         }
         this.cachedAvailableFormats[url]['formats'] = this.getAudioAndVideoFormats(infos.formats);
-        console.log(this.cachedAvailableFormats[url]['formats']);
       }, err => {
         this.errorFormats(url);
       });
@@ -807,8 +806,6 @@ export class MainComponent implements OnInit {
   getAudioAndVideoFormats(formats) {
     const audio_formats: any = {};
     const video_formats: any = {};
-
-    console.log(formats);
 
     for (let i = 0; i < formats.length; i++) {
       const format_obj = {type: null};

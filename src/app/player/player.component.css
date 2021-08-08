@@ -90,3 +90,9 @@
     margin-right: 12px;
     top: 8px;
 }
+
+.skip-ad-button {
+    position: absolute;
+    right: 20px;
+    bottom: 75px;
+}
