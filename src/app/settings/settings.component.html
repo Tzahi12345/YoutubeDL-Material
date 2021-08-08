@@ -266,7 +266,7 @@
                     <div *ngIf="new_config['API']['use_twitch_API']" class="col-12 mt-1">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['API']['twitch_auto_download_chat']"><ng-container i18n="Auto download Twitch Chat setting">Auto-download Twitch Chat</ng-container></mat-checkbox>
                     </div>
-                    <div class="col-12 mt=3">
+                    <div class="col-12">
                         <mat-form-field class="text-field" color="accent">
                             <input [disabled]="!new_config['API']['use_twitch_API']" [(ngModel)]="new_config['API']['twitch_API_key']" matInput placeholder="Twitch API Key" i18n-placeholder="Twitch API Key setting placeholder" required>
                             <mat-hint><ng-container i18n="Twitch API Key setting hint AKA preamble">Also known as a Client ID.</ng-container>&nbsp;<a target="_blank" href="https://dev.twitch.tv/docs/api/"><ng-container i18n="Twitch API Key setting hint">Generating a key is easy!</ng-container></a></mat-hint>
