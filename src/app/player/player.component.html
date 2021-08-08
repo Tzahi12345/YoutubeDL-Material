@@ -4,7 +4,7 @@
                 <mat-drawer-container style="height: 100%" class="example-container" autosize>
                     <div style="height: fit-content" [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-col' : 'video-col'">
                         <vg-player style="height: fit-content; max-height: 75vh" (onPlayerReady)="onPlayerReady($event)" [style.background-color]="(currentItem.type === 'audio/mp3') ? postsService.theme.drawer_color : 'black'">
-                            <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls>
+                            <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="media" [src]="currentItem.src" id="singleVideo" preload="auto" controls playsinline>
                             </video>
                         </vg-player>
                     </div>
