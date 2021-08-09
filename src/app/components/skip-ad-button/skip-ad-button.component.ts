@@ -17,10 +17,16 @@ export class SkipAdButtonComponent implements OnInit {
   sponsor_block_cache = {};
   show_skip_ad_button = false;
 
+  skip_ad_button_check_interval = null;
+
   constructor(private postsService: PostsService) { }
 
   ngOnInit(): void {
-    setInterval(() => this.skipAdButtonCheck(), 500);
+    this.skip_ad_button_check_interval = setInterval(() => this.skipAdButtonCheck(), 500);
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.skip_ad_button_check_interval);
   }
 
   checkSponsorBlock(video_to_check) {
@@ -45,6 +51,8 @@ export class SkipAdButtonComponent implements OnInit {
       const found_data = res['find'](data => data['videoID'] === video_id);
       if (found_data) {
         this.sponsor_block_cache[video_to_check.url] = found_data;
+      } else {
+        this.sponsor_block_cache[video_to_check.url] = null;
       }
     }, err => {
       // likely doesn't exist
