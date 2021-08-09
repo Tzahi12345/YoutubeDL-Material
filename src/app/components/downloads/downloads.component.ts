@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-downloads',
@@ -36,11 +38,23 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   downloads_check_interval = 1000;
   downloads = [];
+  finished_downloads = [];
   interval_id = null;
 
   keys = Object.keys;
 
   valid_sessions_length = 0;
+
+  STEP_INDEX_TO_LABEL = {
+      0: 'Creating download',
+      1: 'Getting info',
+      2: 'Downloading file'
+  }
+
+  displayedColumns: string[] = ['date', 'title', 'stage', 'progress', 'actions'];
+  dataSource = null; // new MatTableDataSource<Download>();
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   sort_downloads = (a, b) => {
     const result = b.value.timestamp_start - a.value.timestamp_start;
@@ -64,108 +78,37 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.interval_id) { clearInterval(this.interval_id) }
   }
 
-  getCurrentDownloads() {
+  getCurrentDownloads(): void {
     this.postsService.getCurrentDownloads().subscribe(res => {
-      if (res['downloads']) {
-        this.assignNewValues(res['downloads']);
+      if (res['downloads'] !== null 
+        && res['downloads'] !== undefined
+        && JSON.stringify(this.downloads) !== JSON.stringify(res['downloads'])) {
+          this.downloads = res['downloads'];
+          this.dataSource = new MatTableDataSource<Download>(this.downloads);
+          this.dataSource.paginator = this.paginator;
       } else {
         // failed to get downloads
       }
     });
   }
 
-  clearDownload(session_id, download_uid) {
-    this.postsService.clearDownloads(false, session_id, download_uid).subscribe(res => {
-      if (res['success']) {
-        // this.downloads = res['downloads'];
-      } else {
-      }
-    });
-  }
-
-  clearDownloads(session_id) {
-    this.postsService.clearDownloads(false, session_id).subscribe(res => {
+  clearFinishedDownloads(): void {
+    this.postsService.clearDownloads(false).subscribe(res => {
       if (res['success']) {
         this.downloads = res['downloads'];
-      } else {
       }
     });
   }
 
-  clearAllDownloads() {
-    this.postsService.clearDownloads(true).subscribe(res => {
-      if (res['success']) {
-        this.downloads = res['downloads'];
-      } else {
-      }
-    });
-  }
+}
 
-  assignNewValues(new_downloads_by_session) {
-    const session_keys = Object.keys(new_downloads_by_session);
-
-    // remove missing session IDs
-    const current_session_ids = Object.keys(this.downloads);
-    const missing_session_ids = current_session_ids.filter(session => session_keys.indexOf(session) === -1)
-
-    for (const missing_session_id of missing_session_ids) {
-      delete this.downloads[missing_session_id];
-    }
-
-    // loop through sessions
-    for (let i = 0; i < session_keys.length; i++) {
-      const session_id = session_keys[i];
-      const session_downloads_by_id = new_downloads_by_session[session_id];
-      const session_download_ids = Object.keys(session_downloads_by_id);
-
-      if (this.downloads[session_id]) {
-        // remove missing download IDs
-        const current_download_ids = Object.keys(this.downloads[session_id]);
-        const missing_download_ids = current_download_ids.filter(download => session_download_ids.indexOf(download) === -1)
-
-        for (const missing_download_id of missing_download_ids) {
-          console.log('removing missing download id');
-          delete this.downloads[session_id][missing_download_id];
-        }
-      }
-
-      if (!this.downloads[session_id]) {
-        this.downloads[session_id] = session_downloads_by_id;
-      } else {
-        for (let j = 0; j < session_download_ids.length; j++) {
-          if (session_download_ids[j] === 'session_id' || session_download_ids[j] === '_id') continue;
-          const download_id = session_download_ids[j];
-          const download = new_downloads_by_session[session_id][download_id]
-          if (!this.downloads[session_id][download_id]) {
-            this.downloads[session_id][download_id] = download;
-          } else {
-            const download_to_update = this.downloads[session_id][download_id];
-            download_to_update['percent_complete'] = download['percent_complete'];
-            download_to_update['complete'] = download['complete'];
-            download_to_update['timestamp_end'] = download['timestamp_end'];
-            download_to_update['downloading'] = download['downloading'];
-            download_to_update['error'] = download['error'];
-          }
-        }
-      }
-    }
-  }
-
-  downloadsValid() {
-    let valid = false;
-    for (let i = 0; i < this.downloads.length; i++) {
-      const session_downloads = this.downloads[i];
-      if (!session_downloads) continue;
-      if (this.keys(session_downloads).length > 2) {
-        valid = true;
-        break;
-      }
-    }
-    return valid;
-  }
-
+export interface Download {
+  timestamp_start: number;
+  title: string;
+  step_index: number;
+  progress: string;
 }

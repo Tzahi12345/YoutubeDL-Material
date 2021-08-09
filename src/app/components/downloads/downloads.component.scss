@@ -1,0 +1,9 @@
+mat-header-cell, mat-cell {
+    justify-content: center;
+}
+
+.one-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

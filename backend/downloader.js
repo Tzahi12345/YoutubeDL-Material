@@ -15,12 +15,6 @@ const utils = require('./utils');
 
 let db_api = null;
 
-const STEP_INDEX_TO_LABEL = {
-    0: 'Creating download',
-    1: 'Getting info',
-    2: 'Downloading file'
-}
-
 const archivePath = path.join(__dirname, 'appdata', 'archives');
 
 function setDB(input_db_api) { db_api = input_db_api }
@@ -62,7 +56,7 @@ async function checkDownloads() {
     logger.verbose('Checking downloads');
     const downloads = await db_api.getRecords('download_queue');
     downloads.sort((download1, download2) => download1.timestamp_start - download2.timestamp_start);
-    const running_downloads = downloads.filter(download => !download.paused);
+    const running_downloads = downloads.filter(download => !download['paused'] && download['finished_step']);
     for (let i = 0; i < running_downloads.length; i++) {
         const running_download = running_downloads[i];
         if (i === 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
@@ -259,7 +253,7 @@ async function downloadQueuedFile(download_uid) {
                 }
 
                 const file_uids = file_objs.map(file_obj => file_obj.uid);
-                await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, percent_complete: 100, file_uids: file_uids, container: container});
+                await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, step_index: 3, percent_complete: 100, file_uids: file_uids, container: container});
                 resolve();
             }
         });
