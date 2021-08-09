@@ -174,7 +174,7 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null, cropFileSettings = null) {
+    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
         return this.http.post(this.path + 'downloadFile', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
@@ -182,7 +182,6 @@ export class PostsService implements CanActivate {
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
                                                     youtubePassword: youtubePassword,
-                                                    ui_uid: ui_uid,
                                                     type: type,
                                                     cropFileSettings: cropFileSettings}, this.httpOptions);
     }
@@ -345,12 +344,6 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'updatePlaylist', {playlist: playlist}, this.httpOptions);
     }
 
-    updatePlaylistFiles(playlist_id, fileNames, type) {
-        return this.http.post(this.path + 'updatePlaylistFiles', {playlist_id: playlist_id,
-                                                            fileNames: fileNames,
-                                                            type: type}, this.httpOptions);
-    }
-
     addFileToPlaylist(playlist_id, file_uid) {
         return this.http.post(this.path + 'addFileToPlaylist', {playlist_id: playlist_id,
                                                                 file_uid: file_uid},
@@ -426,8 +419,8 @@ export class PostsService implements CanActivate {
     }
 
     // current download
-    getCurrentDownload(session_id, download_id) {
-        return this.http.post(this.path + 'download', {download_id: download_id, session_id: session_id}, this.httpOptions);
+    getCurrentDownload(download_uid) {
+        return this.http.post(this.path + 'download', {download_uid: download_uid}, this.httpOptions);
     }
 
     // clear downloads. download_id is optional, if it exists only 1 download will be cleared

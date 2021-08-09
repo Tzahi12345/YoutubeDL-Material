@@ -1,57 +1,113 @@
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 const path = require('path');
-const queue = require('queue');
+const mergeFiles = require('merge-files');
+const NodeID3 = require('node-id3')
+const glob = require("glob")
 
 const youtubedl = require('youtube-dl');
+
+const logger = require('./logger');
 const config_api = require('./config');
 const twitch_api = require('./twitch');
+const categories_api = require('./categories');
 const utils = require('./utils');
 
 let db_api = null;
-let logger = null;
+
+const STEP_INDEX_TO_LABEL = {
+    0: 'Creating download',
+    1: 'Getting info',
+    2: 'Downloading file'
+}
+
+const archivePath = path.join(__dirname, 'appdata', 'archives');
 
 function setDB(input_db_api) { db_api = input_db_api }
-function setLogger(input_logger) { logger = input_logger; }
 
-exports.initialize = (input_db_api, input_logger) => {
+exports.initialize = (input_db_api) => {
     setDB(input_db_api);
-    setLogger(input_logger);
+    setInterval(checkDownloads, 10000);
+    categories_api.initialize(db_api);
+    // temporary
+    db_api.removeAllRecords('download_queue');
+}
+
+exports.createDownload = async (url, type, options) => {
+    const download = {
+        url: url,
+        type: type,
+        options: options,
+        uid: uuid(),
+        step_index: 0,
+        paused: false,
+        finished_step: true,
+        error: null,
+        percent_complete: null,
+        finished: false,
+        timestamp_start: Date.now()
+    };
+    await db_api.insertRecordIntoTable('download_queue', download);
+    return download;
 }
 
 exports.pauseDownload = () => {
 
 }
 
+// questions
+// how do we want to manage queued downloads that errored in any step? do we set the index back and finished_step to true or let the manager do it?
+
 async function checkDownloads() {
+    logger.verbose('Checking downloads');
     const downloads = await db_api.getRecords('download_queue');
     downloads.sort((download1, download2) => download1.timestamp_start - download2.timestamp_start);
-    downloads = downloads.filter(download => !download.paused);
-    for (let i = 0; i < downloads.length; i++) {
-        if (i === config_api.getConfigItem('ytdl_'))
+    const running_downloads = downloads.filter(download => !download.paused);
+    for (let i = 0; i < running_downloads.length; i++) {
+        const running_download = running_downloads[i];
+        if (i === 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
+
+        if (running_download['finished_step'] && !running_download['finished']) {
+            // move to next step
+
+            if (running_download['step_index'] === 0) {
+                
+                collectInfo(running_download['uid']);
+            } else if (running_download['step_index'] === 1) {
+                downloadQueuedFile(running_download['uid']);
+            }
+        }
     }
 }
 
-async function createDownload(url, type, options) {
-    const download = {url: url, type: type, options: options, uid: uuid()};
-    await db_api.insertRecord(download);
-    return download;
-}
-
 async function collectInfo(download_uid) {
-    const download = db_api.getRecord('download_queue', {uid: download_uid});
+    logger.verbose(`Collecting info for download ${download_uid}`);
+    await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 1, finished_step: false});
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
 
     const url = download['url'];
     const type = download['type'];
     const options = download['options'];
-    const args = download['args'];
+
+    if (options.user && !options.customFileFolderPath) {
+        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+        const user_path = path.join(usersFileFolder, options.user, type);
+        options.customFileFolderPath = user_path + path.sep;
+    }
+
+    let args = await generateArgs(url, type, options);
 
     // get video info prior to download
-    const info = await getVideoInfoByURL(url, args);
+    let info = await getVideoInfoByURL(url, args, download_uid);
 
     if (!info) {
         // info failed, record error and pause download
+        const error = 'Failed to get info, see server logs for specific error.';
+        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true});
+        return;
     }
+
+    let category = null;
 
     // check if it fits into a category. If so, then get info again using new args
     if (!Array.isArray(info) || config_api.getConfigItem('ytdl_allow_playlist_categorization')) category = await categories_api.categorize(info);
@@ -61,22 +117,37 @@ async function collectInfo(download_uid) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
         args = await generateArgs(url, type, options);
-        info = await getVideoInfoByURL(url, args);
-
-        // must update args
-        await db_api.updateRecord('download_queue', {uid: download_uid}, {args: args});
+        info = await getVideoInfoByURL(url, args, download_uid);
     }
 
-    await db_api.updateRecord('download_queue', {uid: download_uid}, {remote_metadata: info});
+    // setup info required to calculate download progress
+
+    const expected_file_size = utils.getExpectedFileSize(info);
+
+    const files_to_check_for_progress = [];
+
+    // store info in download for future use
+    if (Array.isArray(info)) {
+        for (let info_obj of info) files_to_check_for_progress.push(utils.removeFileExtension(info_obj['_filename']));
+    } else {
+        files_to_check_for_progress.push(utils.removeFileExtension(info['_filename']));
+    }
+
+    await db_api.updateRecord('download_queue', {uid: download_uid}, {args: args,
+                                                                    finished_step: true,
+                                                                    options: options,
+                                                                    files_to_check_for_progress: files_to_check_for_progress,
+                                                                    expected_file_size: expected_file_size
+                                                                });
 }
 
-async function downloadQueuedFile(url, type, options) {
-
-}
-
-async function downloadFileByURL_exec(url, type, options) {
-    return new Promise(resolve => {
-        const download = db_api.getRecord('download_queue', {uid: download_uid});
+async function downloadQueuedFile(download_uid) {
+    logger.verbose(`Downloading ${download_uid}`);
+    return new Promise(async resolve => {
+        const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
+        const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+        await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 2, finished_step: false});
+        const download = await db_api.getRecord('download_queue', {uid: download_uid});
 
         const url = download['url'];
         const type = download['type'];
@@ -84,20 +155,22 @@ async function downloadFileByURL_exec(url, type, options) {
         const args = download['args'];
         const category = download['category'];
         let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath; // TODO: fix
-        if (options.user) {
-            let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-            const user_path = path.join(usersFileFolder, options.user, type);
-            fs.ensureDirSync(user_path);
-            fileFolderPath = user_path + path.sep;
-            options.customFileFolderPath = fileFolderPath;
+        if (options.customFileFolderPath) {
+            fileFolderPath = options.customFileFolderPath;
         }
+        fs.ensureDirSync(fileFolderPath);
+
+        const start_time = Date.now();
+
+        const download_checker = setInterval(() => checkDownloadPercent(download['uid']), 1000);
 
         // download file
         youtubedl.exec(url, args, {maxBuffer: Infinity}, async function(err, output) {
             const file_objs = [];
-            let new_date = Date.now();
-            let difference = (new_date - date)/1000;
-            logger.debug(`${is_audio ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
+            let end_time = Date.now();
+            let difference = (end_time - start_time)/1000;
+            logger.debug(`${type === 'audio' ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
+            clearInterval(download_checker);
             if (err) {
                 logger.error(err.stderr);
 
@@ -107,7 +180,6 @@ async function downloadFileByURL_exec(url, type, options) {
                 if (output.length === 0 || output[0].length === 0) {
                     // ERROR!
                     logger.warn(`No output received for video download, check if it exists in your archive.`)
-
                     resolve(false);
                     return;
                 }
@@ -127,11 +199,12 @@ async function downloadFileByURL_exec(url, type, options) {
                     // get filepath with no extension
                     const filepath_no_extension = utils.removeFileExtension(output_json['_filename']);
 
+                    const ext = type === 'audio' ? '.mp3' : '.mp4';
                     var full_file_path = filepath_no_extension + ext;
                     var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
 
                     if (type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
-                        && config.getConfigItem('ytdl_use_twitch_api') && config.getConfigItem('ytdl_twitch_auto_download_chat')) {
+                        && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
                             let vodId = url.split('twitch.tv/videos/')[1];
                             vodId = vodId.split('?')[0];
                             twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, options.user);
@@ -143,6 +216,7 @@ async function downloadFileByURL_exec(url, type, options) {
                             fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
                             logger.info('Renamed ' + file_name + '.webm to ' + file_name);
                         } catch(e) {
+
                         }
                     }
 
@@ -156,7 +230,7 @@ async function downloadFileByURL_exec(url, type, options) {
                     }
 
                     if (options.cropFileSettings) {
-                        await cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
+                        await utils.cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
                     }
 
                     // registers file in DB
@@ -184,10 +258,9 @@ async function downloadFileByURL_exec(url, type, options) {
                     logger.error('Downloaded file failed to result in metadata object.');
                 }
 
-                resolve({
-                    file_uids: file_objs.map(file_obj => file_obj.uid),
-                    container: container
-                });
+                const file_uids = file_objs.map(file_obj => file_obj.uid);
+                await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, percent_complete: 100, file_uids: file_uids, container: container});
+                resolve();
             }
         });
     });
@@ -196,17 +269,20 @@ async function downloadFileByURL_exec(url, type, options) {
 // helper functions
 
 async function generateArgs(url, type, options) {
+    const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
+    const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+
     const videopath = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
     const globalArgs = config_api.getConfigItem('ytdl_custom_args');
     const useCookies = config_api.getConfigItem('ytdl_use_cookies');
     const is_audio = type === 'audio';
 
-    const fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+    let fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
 
     if (options.customFileFolderPath) fileFolderPath = options.customFileFolderPath;
 
     const customArgs = options.customArgs;
-    const customOutput = options.customOutput;
+    let customOutput = options.customOutput;
     const customQualityConfiguration = options.customQualityConfiguration;
 
     // video-specific args
@@ -246,7 +322,7 @@ async function generateArgs(url, type, options) {
             downloadConfig = ['-o', path.join(fileFolderPath, videopath + (is_audio ? '.%(ext)s' : '.mp4')), '--write-info-json', '--print-json'];
         }
 
-        if (qualityPath && options.downloading_method === 'exec') downloadConfig.push(...qualityPath);
+        if (qualityPath) downloadConfig.push(...qualityPath);
 
         if (is_audio && !options.skip_audio_args) {
             downloadConfig.push('-x');
@@ -265,6 +341,8 @@ async function generateArgs(url, type, options) {
             }
         }
 
+        const useDefaultDownloadingAgent = config_api.getConfigItem('ytdl_use_default_downloading_agent');
+        const customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
         if (!useDefaultDownloadingAgent && customDownloadingAgent) {
             downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
         }
@@ -284,7 +362,7 @@ async function generateArgs(url, type, options) {
             await fs.ensureFile(merged_path);
             // merges blacklist and regular archive
             let inputPathList = [archive_path, blacklist_path];
-            let status = await mergeFiles(inputPathList, merged_path);
+            await mergeFiles(inputPathList, merged_path);
 
             options.merged_string = await fs.readFile(merged_path, "utf8");
 
@@ -324,7 +402,7 @@ async function generateArgs(url, type, options) {
     return downloadConfig;
 }
 
-async function getVideoInfoByURL(url, args = [], download = null) {
+async function getVideoInfoByURL(url, args = [], download_uid = null) {
     return new Promise(resolve => {
         // remove bad args
         const new_args = [...args];
@@ -334,21 +412,85 @@ async function getVideoInfoByURL(url, args = [], download = null) {
             new_args.splice(archiveArgIndex, 2);
         }
 
-        // actually get info
-        youtubedl.getInfo(url, new_args, (err, output) => {
+        new_args.push('--dump-json');
+
+        youtubedl.exec(url, new_args, {maxBuffer: Infinity}, async (err, output) => {
             if (output) {
-                resolve(output);
+                let outputs = [];
+                try {
+                    for (let i = 0; i < output.length; i++) {
+                        let output_json = null;
+                        try {
+                            output_json = JSON.parse(output[i]);
+                        } catch(e) {
+                            output_json = null;
+                        }
+    
+                        if (!output_json) {
+                            continue;
+                        }
+
+                        outputs.push(output_json);
+                    }
+                    resolve(outputs.length === 1 ? outputs[0] : outputs);
+                } catch(e) {
+                    logger.error(`Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`);
+                    if (download_uid) {
+                        const error = 'Failed to get info, see server logs for specific error.';
+                        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true});
+                    }
+                    resolve(null);
+                }
             } else {
                 logger.error(`Error while retrieving info on video with URL ${url} with the following message: ${err}`);
                 if (err.stderr) {
                     logger.error(`${err.stderr}`)
                 }
-                if (download) {
-                    download['error'] = `Failed pre-check for video info: ${err}`;
-                    updateDownloads();
+                if (download_uid) {
+                    const error = 'Failed to get info, see server logs for specific error.';
+                    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true});
                 }
                 resolve(null);
             }
         });
+    });
+}
+
+function filterArgs(args, isAudio) {
+    const video_only_args = ['--add-metadata', '--embed-subs', '--xattrs'];
+    const audio_only_args = ['-x', '--extract-audio', '--embed-thumbnail'];
+    const args_to_remove = isAudio ? video_only_args : audio_only_args;
+    return args.filter(x => !args_to_remove.includes(x));
+}
+
+async function checkDownloadPercent(download_uid) {
+    /*
+    This is more of an art than a science, we're just selecting files that start with the file name,
+    thus capturing the parts being downloaded in files named like so: '<video title>.<format>.<ext>.part'.
+
+    Any file that starts with <video title> will be counted as part of the "bytes downloaded", which will
+    be divided by the "total expected bytes."
+    */
+
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    const files_to_check_for_progress = download['files_to_check_for_progress'];
+    const resulting_file_size = download['expected_file_size'];
+
+    if (!resulting_file_size) return;
+
+    let sum_size = 0;
+    glob(`{${files_to_check_for_progress.join(',')}, }*`, async (err, files) => {
+        files.forEach(async file => {
+            try {
+                const file_stats = fs.statSync(file);
+                if (file_stats && file_stats.size) {
+                    sum_size += file_stats.size;
+                }
+            } catch (e) {
+
+            }
+        });
+        const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
+        await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
     });
 }

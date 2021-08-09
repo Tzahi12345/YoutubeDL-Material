@@ -42,6 +42,10 @@ const tables = {
         name: 'roles',
         primary_key: 'key'
     },
+    download_queue: {
+        name: 'download_queue',
+        primary_key: 'uid'
+    },
     test: {
         name: 'test'
     }

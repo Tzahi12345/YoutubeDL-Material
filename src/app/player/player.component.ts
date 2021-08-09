@@ -345,22 +345,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     return JSON.stringify(this.playlist) !== this.original_playlist;
   }
 
-  updatePlaylist() {
-    const fileNames = this.getFileNames();
-    this.playlist_updating = true;
-    this.postsService.updatePlaylistFiles(this.playlist_id, fileNames, this.type).subscribe(res => {
-    this.playlist_updating = false;
-      if (res['success']) {
-        const fileNamesEncoded = fileNames.join('|nvr|');
-        this.router.navigate(['/player', {fileNames: fileNamesEncoded, type: this.type, id: this.playlist_id}]);
-        this.openSnackBar('Successfully updated playlist.', '');
-        this.original_playlist = JSON.stringify(this.playlist);
-      } else {
-        this.openSnackBar('ERROR: Failed to update playlist.', '');
-      }
-    })
-  }
-
   openShareDialog() {
     const dialogRef = this.dialog.open(ShareMediaDialogComponent, {
       data: {

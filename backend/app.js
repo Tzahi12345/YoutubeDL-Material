@@ -30,10 +30,11 @@ if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN
 const youtubedl = require('youtube-dl');
 
 const logger = require('./logger');
-var config_api = require('./config.js');
-var subscriptions_api = require('./subscriptions')
-var categories_api = require('./categories');
-var twitch_api = require('./twitch');
+const config_api = require('./config.js');
+const downloader_api = require('./downloader');
+const subscriptions_api = require('./subscriptions');
+const categories_api = require('./categories');
+const twitch_api = require('./twitch');
 
 const is_windows = process.platform === 'win32';
 
@@ -64,6 +65,7 @@ const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 config_api.initialize();
 db_api.initialize(db, users_db);
 auth_api.initialize(db_api);
+downloader_api.initialize(db_api);
 subscriptions_api.initialize(db_api);
 categories_api.initialize(db_api);
 
@@ -1479,9 +1481,10 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
         cropFileSettings: req.body.cropFileSettings
     }
 
-    let result_obj = await downloadFileByURL_exec(url, type, options, req.query.sessionID);
-    if (result_obj) {
-        res.send(result_obj);
+    const download = await downloader_api.createDownload(url, type, options);
+
+    if (download) {
+        res.send({download: download});
     } else {
         res.sendStatus(500);
     }
@@ -2294,18 +2297,12 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
   });
 
   app.post('/api/download', async (req, res) => {
-    const session_id = req.body.session_id;
-    const download_id = req.body.download_id;
-    const session_downloads = downloads.find(potential_session_downloads => potential_session_downloads['session_id'] === session_id);
-    let found_download = null;
+    const download_uid = req.body.download_uid;
 
-    // find download
-    if (session_downloads && Object.keys(session_downloads)) {
-        found_download = Object.values(session_downloads).find(session_download => session_download['ui_uid'] === download_id);
-    }
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
 
-    if (found_download) {
-        res.send({download: found_download});
+    if (download) {
+        res.send({download: download});
     } else {
         res.send({download: null});
     }

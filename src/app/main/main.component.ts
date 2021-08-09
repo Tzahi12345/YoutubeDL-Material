@@ -274,9 +274,9 @@ export class MainComponent implements OnInit {
       const customOutput = localStorage.getItem('customOutput');
       const youtubeUsername = localStorage.getItem('youtubeUsername');
 
-      if (customArgs && customArgs !== 'null') { this.customArgs = customArgs };
-      if (customOutput && customOutput !== 'null') { this.customOutput = customOutput };
-      if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername };
+      if (customArgs && customArgs !== 'null') { this.customArgs = customArgs }
+      if (customOutput && customOutput !== 'null') { this.customOutput = customOutput }
+      if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername }
     }
 
     // get downloads routine
@@ -343,7 +343,7 @@ export class MainComponent implements OnInit {
   }
 
   public goToFile(container, isAudio, uid) {
-    this.downloadHelper(container, isAudio ? 'audio' : 'video', false, false, null, true);
+    this.downloadHelper(container, isAudio ? 'audio' : 'video', false, false, true);
   }
 
   public goToPlaylist(playlistID, type) {
@@ -375,7 +375,7 @@ export class MainComponent implements OnInit {
 
   // download helpers
 
-  downloadHelper(container, type, is_playlist = false, force_view = false, new_download = null, navigate_mode = false) {
+  downloadHelper(container, type, is_playlist = false, force_view = false, navigate_mode = false) {
     this.downloadingfile = false;
     if (this.multiDownloadMode && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
@@ -399,8 +399,8 @@ export class MainComponent implements OnInit {
       }
     }
 
-    // remove download from current downloads
-    this.removeDownloadFromCurrentDownloads(new_download);
+    // // remove download from current downloads
+    // this.removeDownloadFromCurrentDownloads(new_download);
   }
 
   // download click handler
@@ -432,21 +432,11 @@ export class MainComponent implements OnInit {
     }
 
     const type = this.audioOnly ? 'audio' : 'video';
-    // create download object
-    const new_download: Download = {
-      uid: uuid(),
-      type: type,
-      percent_complete: 0,
-      url: this.url,
-      downloading: true,
-      is_playlist: this.url.includes('playlist'),
-      error: false
-    };
-    this.downloads.push(new_download);
-    if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
+    // this.downloads.push(new_download);
+    // if (!this.current_download && !this.multiDownloadMode) { this.current_download = new_download };
     this.downloadingfile = true;
 
-    let customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
+    const customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
 
     let cropFileSettings = null;
 
@@ -458,26 +448,19 @@ export class MainComponent implements OnInit {
     }
 
     this.postsService.downloadFile(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
-      customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, new_download.uid, cropFileSettings).subscribe(res => {
-      // update download object
-      new_download.downloading = false;
-      new_download.percent_complete = 100;
-
-      const container = res['container'];
-      const is_playlist = res['file_uids'].length > 1;
-
-      this.current_download = null;
-
-      this.downloadHelper(container, type, is_playlist, false, new_download);
+      customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
+        console.log(res);
+        this.current_download = res['download'];
+        this.downloadingfile = true;
     }, error => { // can't access server
       this.downloadingfile = false;
       this.current_download = null;
-      new_download['downloading'] = false;
-      // removes download from list of downloads
-      const downloads_index = this.downloads.indexOf(new_download);
-      if (downloads_index !== -1) {
-        this.downloads.splice(downloads_index)
-      }
+      // new_download['downloading'] = false;
+      // // removes download from list of downloads
+      // const downloads_index = this.downloads.indexOf(new_download);
+      // if (downloads_index !== -1) {
+      //   this.downloads.splice(downloads_index)
+      // }
       this.openSnackBar('Download failed!', 'OK.');
     });
 
@@ -934,12 +917,16 @@ export class MainComponent implements OnInit {
     if (!this.current_download) {
       return;
     }
-    const ui_uid = this.current_download['ui_uid'] ? this.current_download['ui_uid'] : this.current_download['uid'];
-    this.postsService.getCurrentDownload(this.postsService.session_id, ui_uid).subscribe(res => {
+    this.postsService.getCurrentDownload(this.current_download['uid']).subscribe(res => {
       if (res['download']) {
-        if (ui_uid === res['download']['ui_uid']) {
-          this.current_download = res['download'];
-          this.percentDownloaded = this.current_download.percent_complete;
+        this.current_download = res['download'];
+        this.percentDownloaded = this.current_download.percent_complete;
+
+        if (this.current_download['finished']) {
+          const container = this.current_download['container'];
+          const is_playlist = this.current_download['file_uids'].length > 1;    
+          this.downloadHelper(container, this.current_download['type'], is_playlist, false);
+          this.current_download = null;
         }
       } else {
         // console.log('failed to get new download');
