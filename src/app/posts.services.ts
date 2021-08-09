@@ -295,8 +295,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
     }
 
-    getFileInfo(fileNames, type, urlMode) {
-        return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode}, this.httpOptions);
+    getFileFormats(url) {
+        return this.http.post(this.path + 'getFileFormats', {url: url}, this.httpOptions);
     }
 
     getLogs(lines = 50) {
