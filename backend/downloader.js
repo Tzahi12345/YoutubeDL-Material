@@ -3,7 +3,8 @@ const { uuid } = require('uuidv4');
 const path = require('path');
 const mergeFiles = require('merge-files');
 const NodeID3 = require('node-id3')
-const glob = require("glob")
+const glob = require('glob')
+const Mutex = require('async-mutex').Mutex;
 
 const youtubedl = require('youtube-dl');
 
@@ -15,7 +16,8 @@ const utils = require('./utils');
 
 let db_api = null;
 
-let downloads_setup_done = false;
+const mutex = new Mutex();
+let should_check_downloads = true;
 
 const archivePath = path.join(__dirname, 'appdata', 'archives');
 
@@ -28,22 +30,26 @@ exports.initialize = (input_db_api) => {
 }
 
 exports.createDownload = async (url, type, options) => {
-    const download = {
-        url: url,
-        type: type,
-        title: '',
-        options: options,
-        uid: uuid(),
-        step_index: 0,
-        paused: false,
-        finished_step: true,
-        error: null,
-        percent_complete: null,
-        finished: false,
-        timestamp_start: Date.now()
-    };
-    await db_api.insertRecordIntoTable('download_queue', download);
-    return download;
+    return await mutex.runExclusive(async () => {
+        const download = {
+            url: url,
+            type: type,
+            title: '',
+            options: options,
+            uid: uuid(),
+            step_index: 0,
+            paused: false,
+            finished_step: true,
+            error: null,
+            percent_complete: null,
+            finished: false,
+            timestamp_start: Date.now()
+        };
+        await db_api.insertRecordIntoTable('download_queue', download);
+    
+        should_check_downloads = true;
+        return download;
+    });
 }
 
 exports.pauseDownload = async (download_uid) => {
@@ -60,19 +66,25 @@ exports.pauseDownload = async (download_uid) => {
 }
 
 exports.resumeDownload = async (download_uid) => {
-    const download = await db_api.getRecord('download_queue', {uid: download_uid});
-    if (!download['paused']) {
-        logger.warn(`Download ${download_uid} is not paused!`);
-        return false;
-    }
+    return await mutex.runExclusive(async () => {
+        const download = await db_api.getRecord('download_queue', {uid: download_uid});
+        if (!download['paused']) {
+            logger.warn(`Download ${download_uid} is not paused!`);
+            return false;
+        }
 
-    return await db_api.updateRecord('download_queue', {uid: download_uid}, {paused: false});
+        const success = db_api.updateRecord('download_queue', {uid: download_uid}, {paused: false});
+        should_check_downloads = true;
+        return success;
+    })
 }
 
 exports.restartDownload = async (download_uid) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     await exports.clearDownload(download_uid);
     const success = !!(await exports.createDownload(download['url'], download['type'], download['options']));
+    
+    should_check_downloads = true;
     return success;
 }
 
@@ -97,7 +109,7 @@ exports.clearDownload = async (download_uid) => {
 
 async function setupDownloads() {
     await fixDownloadState();
-    setInterval(checkDownloads, 10000);
+    setInterval(checkDownloads, 1000);
 }
 
 async function fixDownloadState() {
@@ -115,16 +127,24 @@ async function fixDownloadState() {
 }
 
 async function checkDownloads() {
-    if (!downloads_setup_done) {
-        await setupDownloads();
-        downloads_setup_done = true;
-    }
+    if (!should_check_downloads) return;
 
     const downloads = await db_api.getRecords('download_queue');
     downloads.sort((download1, download2) => download1.timestamp_start - download2.timestamp_start);
-    const running_downloads = downloads.filter(download => !download['paused'] && download['finished_step']);
-    for (let i = 0; i < running_downloads.length; i++) {
-        const running_download = running_downloads[i];
+
+    await mutex.runExclusive(async () => {
+        // avoid checking downloads unnecessarily, but double check that should_check_downloads is still true
+        const running_downloads = downloads.filter(download => !download['paused'] && !download['finished']);
+        if (running_downloads.length === 0) {
+            should_check_downloads = false;
+            logger.verbose('Disabling checking downloads as none are available.');
+        }
+        return;
+    });
+
+    const waiting_downloads = downloads.filter(download => !download['paused'] && download['finished_step']);
+    for (let i = 0; i < waiting_downloads.length; i++) {
+        const running_download = waiting_downloads[i];
         if (i === 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
 
         if (running_download['finished_step'] && !running_download['finished']) {
