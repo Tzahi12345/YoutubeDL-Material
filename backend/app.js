@@ -1608,7 +1608,7 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
     });
 });
 
-app.post('/api/downloadArchive', async (req, res) => {
+app.post('/api/downloadArchive', optionalJwt, async (req, res) => {
     let sub = req.body.sub;
     let archive_dir = sub.archive;
 
@@ -1643,7 +1643,7 @@ app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res)
 
 // Updater API calls
 
-app.get('/api/updaterStatus', async (req, res) => {
+app.get('/api/updaterStatus', optionalJwt, async (req, res) => {
     let status = updaterStatus;
 
     if (status) {
@@ -1654,7 +1654,7 @@ app.get('/api/updaterStatus', async (req, res) => {
 
 });
 
-app.post('/api/updateServer', async (req, res) => {
+app.post('/api/updateServer', optionalJwt, async (req, res) => {
     let tag = req.body.tag;
 
     updateServer(tag);
@@ -1667,7 +1667,7 @@ app.post('/api/updateServer', async (req, res) => {
 
 // API Key API calls
 
-app.post('/api/generateNewAPIKey', function (req, res) {
+app.post('/api/generateNewAPIKey', optionalJwt, function (req, res) {
     const new_api_key = uuid();
     config_api.setConfigItem('ytdl_api_key', new_api_key);
     res.send({new_api_key: new_api_key});
@@ -1739,12 +1739,12 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
 
   // Downloads management
 
-  app.get('/api/downloads', async (req, res) => {
+app.get('/api/downloads', optionalJwt, async (req, res) => {
     const downloads = await db_api.getRecords('download_queue');
     res.send({downloads: downloads});
-  });
+});
 
-  app.post('/api/download', async (req, res) => {
+app.post('/api/download', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
 
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
@@ -1754,15 +1754,46 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
     } else {
         res.send({download: null});
     }
-  });
+});
 
-  app.post('/api/clearFinishedDownloads', async (req, res) => {
+app.post('/api/clearFinishedDownloads', optionalJwt, async (req, res) => {
+    const success = db_api.removeAllRecords('download_queue', {finished: true});
+    res.send({success: success});
+});
 
-  });
+app.post('/api/clearDownload', optionalJwt, async (req, res) => {
+    const download_uid = req.body.download_uid;
+    const success = await downloader_api.clearDownload(download_uid);
+    res.send({success: success});
+});
+
+app.post('/api/pauseDownload', optionalJwt, async (req, res) => {
+    const download_uid = req.body.download_uid;
+    const success = await downloader_api.pauseDownload(download_uid);
+    res.send({success: success});
+});
+
+app.post('/api/resumeDownload', optionalJwt, async (req, res) => {
+    const download_uid = req.body.download_uid;
+    const success = await downloader_api.resumeDownload(download_uid);
+    res.send({success: success});
+});
+
+app.post('/api/restartDownload', optionalJwt, async (req, res) => {
+    const download_uid = req.body.download_uid;
+    const success = await downloader_api.restartDownload(download_uid);
+    res.send({success: success});
+});
+
+app.post('/api/cancelDownload', optionalJwt, async (req, res) => {
+    const download_uid = req.body.download_uid;
+    const success = await downloader_api.cancelDownload(download_uid);
+    res.send({success: success});
+});
 
 // logs management
 
-app.post('/api/logs', async function(req, res) {
+app.post('/api/logs', optionalJwt, async function(req, res) {
     let logs = null;
     let lines = req.body.lines;
     const logs_path = path.join('appdata', 'logs', 'combined.log')
@@ -1779,7 +1810,7 @@ app.post('/api/logs', async function(req, res) {
     });
 });
 
-app.post('/api/clearAllLogs', async function(req, res) {
+app.post('/api/clearAllLogs', optionalJwt, async function(req, res) {
     const logs_path = path.join('appdata', 'logs', 'combined.log');
     const logs_err_path = path.join('appdata', 'logs', 'error.log');
     let success = false;
@@ -1798,7 +1829,7 @@ app.post('/api/clearAllLogs', async function(req, res) {
     });
 });
 
-  app.post('/api/getFileFormats', async (req, res) => {
+  app.post('/api/getFileFormats', optionalJwt, async (req, res) => {
     let url = req.body.url;
     let result = await getUrlInfos(url);
     res.send({

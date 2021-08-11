@@ -15,22 +15,23 @@ const utils = require('./utils');
 
 let db_api = null;
 
+let downloads_setup_done = false;
+
 const archivePath = path.join(__dirname, 'appdata', 'archives');
 
 function setDB(input_db_api) { db_api = input_db_api }
 
 exports.initialize = (input_db_api) => {
     setDB(input_db_api);
-    setInterval(checkDownloads, 10000);
     categories_api.initialize(db_api);
-    // temporary
-    db_api.removeAllRecords('download_queue');
+    setupDownloads();
 }
 
 exports.createDownload = async (url, type, options) => {
     const download = {
         url: url,
         type: type,
+        title: '',
         options: options,
         uid: uuid(),
         step_index: 0,
@@ -45,15 +46,80 @@ exports.createDownload = async (url, type, options) => {
     return download;
 }
 
-exports.pauseDownload = () => {
+exports.pauseDownload = async (download_uid) => {
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (download['paused']) {
+        logger.warn(`Download ${download_uid} is already paused!`);
+        return false;
+    } else if (download['finished']) {
+        logger.info(`Download ${download_uid} could not be paused before completing.`);
+        return false;
+    }
 
+    return await db_api.updateRecord('download_queue', {uid: download_uid}, {paused: true});
+}
+
+exports.resumeDownload = async (download_uid) => {
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (!download['paused']) {
+        logger.warn(`Download ${download_uid} is not paused!`);
+        return false;
+    }
+
+    return await db_api.updateRecord('download_queue', {uid: download_uid}, {paused: false});
+}
+
+exports.restartDownload = async (download_uid) => {
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    await exports.clearDownload(download_uid);
+    const success = !!(await exports.createDownload(download['url'], download['type'], download['options']));
+    return success;
+}
+
+exports.cancelDownload = async (download_uid) => {
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (download['cancelled']) {
+        logger.warn(`Download ${download_uid} is already cancelled!`);
+        return false;
+    } else if (download['finished']) {
+        logger.info(`Download ${download_uid} could not be cancelled before completing.`);
+        return false;
+    }
+    return await db_api.updateRecord('download_queue', {uid: download_uid}, {cancelled: true});
+}
+
+exports.clearDownload = async (download_uid) => {
+    return await db_api.removeRecord('download_queue', {uid: download_uid});
 }
 
 // questions
 // how do we want to manage queued downloads that errored in any step? do we set the index back and finished_step to true or let the manager do it?
 
+async function setupDownloads() {
+    await fixDownloadState();
+    setInterval(checkDownloads, 10000);
+}
+
+async function fixDownloadState() {
+    const downloads = await db_api.getRecords('download_queue');
+    downloads.sort((download1, download2) => download1.timestamp_start - download2.timestamp_start);
+    const running_downloads = downloads.filter(download => !download['finished_step']);
+    for (let i = 0; i < running_downloads.length; i++) {
+        const running_download = running_downloads[i];
+        const update_obj = {finished_step: true, paused: true};
+        if (running_download['step_index'] > 0) {
+            update_obj['step_index'] = running_download['step_index'] - 1;
+        }
+        await db_api.updateRecord('download_queue', {uid: running_download['uid']}, update_obj);
+    }
+}
+
 async function checkDownloads() {
-    logger.verbose('Checking downloads');
+    if (!downloads_setup_done) {
+        await setupDownloads();
+        downloads_setup_done = true;
+    }
+
     const downloads = await db_api.getRecords('download_queue');
     downloads.sort((download1, download2) => download1.timestamp_start - download2.timestamp_start);
     const running_downloads = downloads.filter(download => !download['paused'] && download['finished_step']);
@@ -65,7 +131,6 @@ async function checkDownloads() {
             // move to next step
 
             if (running_download['step_index'] === 0) {
-                
                 collectInfo(running_download['uid']);
             } else if (running_download['step_index'] === 1) {
                 downloadQueuedFile(running_download['uid']);
@@ -75,9 +140,12 @@ async function checkDownloads() {
 }
 
 async function collectInfo(download_uid) {
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (download['paused']) {
+        return;
+    }
     logger.verbose(`Collecting info for download ${download_uid}`);
     await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 1, finished_step: false});
-    const download = await db_api.getRecord('download_queue', {uid: download_uid});
 
     const url = download['url'];
     const type = download['type'];
@@ -127,21 +195,26 @@ async function collectInfo(download_uid) {
         files_to_check_for_progress.push(utils.removeFileExtension(info['_filename']));
     }
 
+    const playlist_title = Array.isArray(info) ? info[0]['playlist_title'] || info[0]['playlist'] : null;
     await db_api.updateRecord('download_queue', {uid: download_uid}, {args: args,
                                                                     finished_step: true,
                                                                     options: options,
                                                                     files_to_check_for_progress: files_to_check_for_progress,
-                                                                    expected_file_size: expected_file_size
+                                                                    expected_file_size: expected_file_size,
+                                                                    title: playlist_title ? playlist_title : info['title']
                                                                 });
 }
 
 async function downloadQueuedFile(download_uid) {
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (download['paused']) {
+        return;
+    }
     logger.verbose(`Downloading ${download_uid}`);
     return new Promise(async resolve => {
         const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
         await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 2, finished_step: false});
-        const download = await db_api.getRecord('download_queue', {uid: download_uid});
 
         const url = download['url'];
         const type = download['type'];

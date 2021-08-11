@@ -7,3 +7,9 @@ mat-header-cell, mat-cell {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.icon-button-spinner {
+    position: absolute;
+    top: 7px;
+    left: 6px;
+}

@@ -12,8 +12,8 @@
           <ng-container matColumnDef="title">
             <mat-header-cell *matHeaderCellDef> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <span class="one-line" *ngIf="element.container">
-                    {{element.container.title ? element?.container.title : element.container.name}}
+                <span class="one-line" [matTooltip]="element.title ? element.title : null">
+                    {{element.title}}
                 </span>
             </mat-cell>
           </ng-container>
@@ -27,7 +27,14 @@
           <!-- Progress Column -->
           <ng-container matColumnDef="progress">
             <mat-header-cell *matHeaderCellDef> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}% </mat-cell>
+            <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.percent_complete">
+                    {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
+                </ng-container>
+                <ng-container *ngIf="!element.percent_complete">
+                    N/A
+                </ng-container>
+            </mat-cell>
           </ng-container>
 
           <!-- Actions Column -->
@@ -35,12 +42,14 @@
             <mat-header-cell *matHeaderCellDef> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <div *ngIf="!element.finished">
-                    <button mat-icon-button><mat-icon>pause</mat-icon></button>
-                    <button mat-icon-button><mat-icon>cancel</mat-icon></button>
+                    <button (click)="pauseDownload(element.uid)" *ngIf="!element.paused || !element.finished_step" [disabled]="element.paused && !element.finished_step" mat-icon-button matTooltip="Pause" i18n-matTooltip="Pause"><mat-spinner [diameter]="28" *ngIf="element.paused && !element.finished_step" class="icon-button-spinner"></mat-spinner><mat-icon>pause</mat-icon></button>
+                    <button (click)="resumeDownload(element.uid)" *ngIf="element.paused && element.finished_step" mat-icon-button matTooltip="Resume" i18n-matTooltip="Resume"><mat-icon>play_arrow</mat-icon></button>
+                    <button (click)="cancelDownload(element.uid)" mat-icon-button matTooltip="Cancel" i18n-matTooltip="Cancel"><mat-icon>cancel</mat-icon></button>
                 </div>
                 <div *ngIf="element.finished">
-                    <button mat-icon-button><mat-icon>restart_alt</mat-icon></button>
-                    <button mat-icon-button><mat-icon>delete</mat-icon></button>
+                    <button (click)="watchContent(element)" mat-icon-button matTooltip="Watch content" i18n-matTooltip="Watch content"><mat-icon>smart_display</mat-icon></button>
+                    <button (click)="restartDownload(element.uid)" mat-icon-button matTooltip="Restart" i18n-matTooltip="Restart"><mat-icon>restart_alt</mat-icon></button>
+                    <button (click)="clearDownload(element.uid)" mat-icon-button matTooltip="Clear" i18n-matTooltip="Clear"><mat-icon>delete</mat-icon></button>
                 </div>
             </mat-cell>
           </ng-container>

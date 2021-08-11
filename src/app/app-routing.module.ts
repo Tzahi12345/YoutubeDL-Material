@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'subscription', component: SubscriptionComponent, canActivate: [PostsService] },
   { path: 'settings', component: SettingsComponent, canActivate: [PostsService] },
   { path: 'login', component: LoginComponent },
-  { path: 'downloads', component: DownloadsComponent },
+  { path: 'downloads', component: DownloadsComponent, canActivate: [PostsService] },
   { path: '', redirectTo: '/home', pathMatch: 'full' }
 ];
 

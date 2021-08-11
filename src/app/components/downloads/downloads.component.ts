@@ -48,7 +48,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   STEP_INDEX_TO_LABEL = {
       0: 'Creating download',
       1: 'Getting info',
-      2: 'Downloading file'
+      2: 'Downloading file',
+      3: 'Complete'
   }
 
   displayedColumns: string[] = ['date', 'title', 'stage', 'progress', 'actions'];
@@ -57,25 +58,33 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   sort_downloads = (a, b) => {
-    const result = b.value.timestamp_start - a.value.timestamp_start;
+    const result = b.timestamp_start - a.timestamp_start;
     return result;
   }
 
   constructor(public postsService: PostsService, private router: Router) { }
 
   ngOnInit(): void {
+    if (this.postsService.initialized) {
+      this.getCurrentDownloadsRecurring();
+    } else {
+      this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.getCurrentDownloadsRecurring();
+        }
+      });
+    }
+  }
+
+  getCurrentDownloadsRecurring() {
+    if (!this.postsService.config['Extra']['enable_downloads_manager']) {
+      this.router.navigate(['/home']);
+      return;
+    }
     this.getCurrentDownloads();
     this.interval_id = setInterval(() => {
       this.getCurrentDownloads();
     }, this.downloads_check_interval);
-
-    this.postsService.service_initialized.subscribe(init => {
-      if (init) {
-        if (!this.postsService.config['Extra']['enable_downloads_manager']) {
-          this.router.navigate(['/home']);
-        }
-      }
-    });
   }
 
   ngOnDestroy(): void {
@@ -88,6 +97,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
         && res['downloads'] !== undefined
         && JSON.stringify(this.downloads) !== JSON.stringify(res['downloads'])) {
           this.downloads = res['downloads'];
+          this.downloads.sort(this.sort_downloads);
           this.dataSource = new MatTableDataSource<Download>(this.downloads);
           this.dataSource.paginator = this.paginator;
       } else {
@@ -97,11 +107,62 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   clearFinishedDownloads(): void {
-    this.postsService.clearDownloads(false).subscribe(res => {
-      if (res['success']) {
-        this.downloads = res['downloads'];
+    this.postsService.clearFinishedDownloads().subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to clear finished downloads!');
       }
     });
+  }
+
+  pauseDownload(download_uid) {
+    this.postsService.pauseDownload(download_uid).subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to pause download! See server logs for more info.');
+      }
+    });
+  }
+
+  resumeDownload(download_uid) {
+    this.postsService.resumeDownload(download_uid).subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to resume download! See server logs for more info.');
+      }
+    });
+  }
+
+  restartDownload(download_uid) {
+    this.postsService.restartDownload(download_uid).subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to restart download! See server logs for more info.');
+      }
+    });
+  }
+
+  cancelDownload(download_uid) {
+    this.postsService.cancelDownload(download_uid).subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to cancel download! See server logs for more info.');
+      }
+    });
+  }
+
+  clearDownload(download_uid) {
+    this.postsService.clearDownload(download_uid).subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to pause download! See server logs for more info.');
+      }
+    });
+  }
+
+  watchContent(download) {
+    const container = download['container'];
+    localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
+    const is_playlist = container['uids']; // hacky, TODO: fix
+    if (is_playlist) {
+      this.router.navigate(['/player', {playlist_id: container['id'], type: download['type']}]);
+    } else {
+      this.router.navigate(['/player', {type: download['type'], uid: container['uid']}]);
+    }
   }
 
 }

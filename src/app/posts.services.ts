@@ -413,24 +413,38 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getSubscriptions', {}, this.httpOptions);
     }
 
-    // current downloads
     getCurrentDownloads() {
         return this.http.get(this.path + 'downloads', this.httpOptions);
     }
 
-    // current download
     getCurrentDownload(download_uid) {
         return this.http.post(this.path + 'download', {download_uid: download_uid}, this.httpOptions);
     }
 
-    // clear downloads. download_id is optional, if it exists only 1 download will be cleared
-    clearDownloads(delete_all = false, session_id = null, download_id = null) {
-        return this.http.post(this.path + 'clearDownloads', {delete_all: delete_all,
-                                                            download_id: download_id,
-                                                            session_id: session_id ? session_id : this.session_id}, this.httpOptions);
+    pauseDownload(download_uid) {
+        return this.http.post(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
-    // updates the server to the latest version
+    resumeDownload(download_uid) {
+        return this.http.post(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    restartDownload(download_uid) {
+        return this.http.post(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    cancelDownload(download_uid) {
+        return this.http.post(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    clearDownload(download_uid) {
+        return this.http.post(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    clearFinishedDownloads() {
+        return this.http.post(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    }
+
     updateServer(tag) {
         return this.http.post(this.path + 'updateServer', {tag: tag}, this.httpOptions);
     }
