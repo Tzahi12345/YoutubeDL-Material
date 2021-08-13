@@ -29,12 +29,13 @@ exports.initialize = (input_db_api) => {
     setupDownloads();
 }
 
-exports.createDownload = async (url, type, options) => {
+exports.createDownload = async (url, type, options, user_uid = null) => {
     return await mutex.runExclusive(async () => {
         const download = {
             url: url,
             type: type,
             title: '',
+            user_uid: user_uid,
             options: options,
             uid: uuid(),
             step_index: 0,
@@ -82,7 +83,7 @@ exports.resumeDownload = async (download_uid) => {
 exports.restartDownload = async (download_uid) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     await exports.clearDownload(download_uid);
-    const success = !!(await exports.createDownload(download['url'], download['type'], download['options']));
+    const success = !!(await exports.createDownload(download['url'], download['type'], download['options'], download['user_uid']));
     
     should_check_downloads = true;
     return success;
@@ -171,13 +172,13 @@ async function collectInfo(download_uid) {
     const type = download['type'];
     const options = download['options'];
 
-    if (options.user && !options.customFileFolderPath) {
+    if (download['user_uid'] && !options.customFileFolderPath) {
         let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-        const user_path = path.join(usersFileFolder, options.user, type);
+        const user_path = path.join(usersFileFolder, download['user_uid'], type);
         options.customFileFolderPath = user_path + path.sep;
     }
 
-    let args = await generateArgs(url, type, options);
+    let args = await generateArgs(url, type, options, download['user_uid']);
 
     // get video info prior to download
     let info = await getVideoInfoByURL(url, args, download_uid);
@@ -198,7 +199,7 @@ async function collectInfo(download_uid) {
     if (category && category['custom_output']) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
-        args = await generateArgs(url, type, options);
+        args = await generateArgs(url, type, options, download['user_uid']);
         info = await getVideoInfoByURL(url, args, download_uid);
     }
 
@@ -294,7 +295,7 @@ async function downloadQueuedFile(download_uid) {
                         && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
                             let vodId = url.split('twitch.tv/videos/')[1];
                             vodId = vodId.split('?')[0];
-                            twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, options.user);
+                            twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, download['user_uid']);
                     }
 
                     // renames file if necessary due to bug
@@ -321,7 +322,7 @@ async function downloadQueuedFile(download_uid) {
                     }
 
                     // registers file in DB
-                    const file_obj = await db_api.registerFileDB2(full_file_path, type, options.user, category, null, options.cropFileSettings);
+                    const file_obj = await db_api.registerFileDB2(full_file_path, type, download['user_uid'], category, null, options.cropFileSettings);
 
                     file_objs.push(file_obj);
                 }
@@ -329,7 +330,7 @@ async function downloadQueuedFile(download_uid) {
                 if (options.merged_string !== null && options.merged_string !== undefined) {
                     let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
                     let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = options.user ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                    const archive_path = download['user_uid'] ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -338,7 +339,7 @@ async function downloadQueuedFile(download_uid) {
                 if (file_objs.length > 1) {
                     // create playlist
                     const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
-                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, options.user);
+                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, download['user_uid']);
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {
@@ -355,7 +356,7 @@ async function downloadQueuedFile(download_uid) {
 
 // helper functions
 
-async function generateArgs(url, type, options) {
+async function generateArgs(url, type, options, user_uid = null) {
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
 
@@ -436,13 +437,13 @@ async function generateArgs(url, type, options) {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            const archive_folder = options.user ? path.join(fileFolderPath, 'archives') : archivePath;
+            const archive_folder = user_uid ? path.join(fileFolderPath, 'archives') : archivePath;
             const archive_path = path.join(archive_folder, `archive_${type}.txt`);
 
             await fs.ensureDir(archive_folder);
             await fs.ensureFile(archive_path);
 
-            let blacklist_path = options.user ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
+            let blacklist_path = user_uid ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
             await fs.ensureFile(blacklist_path);
 
             let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);

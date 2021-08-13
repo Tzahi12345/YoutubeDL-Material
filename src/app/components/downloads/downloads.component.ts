@@ -54,6 +54,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   displayedColumns: string[] = ['date', 'title', 'stage', 'progress', 'actions'];
   dataSource = null; // new MatTableDataSource<Download>();
+  downloads_retrieved = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -93,10 +94,12 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   getCurrentDownloads(): void {
     this.postsService.getCurrentDownloads().subscribe(res => {
+      this.downloads_retrieved = true;
       if (res['downloads'] !== null 
         && res['downloads'] !== undefined
         && JSON.stringify(this.downloads) !== JSON.stringify(res['downloads'])) {
-          this.downloads = res['downloads'];
+          this.downloads = this.combineDownloads(this.downloads, res['downloads']);
+          // this.downloads = res['downloads'];
           this.downloads.sort(this.sort_downloads);
           this.dataSource = new MatTableDataSource<Download>(this.downloads);
           this.dataSource.paginator = this.paginator;
@@ -114,7 +117,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  pauseDownload(download_uid) {
+  pauseDownload(download_uid: string): void {
     this.postsService.pauseDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar('Failed to pause download! See server logs for more info.');
@@ -122,7 +125,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  resumeDownload(download_uid) {
+  resumeDownload(download_uid: string): void {
     this.postsService.resumeDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar('Failed to resume download! See server logs for more info.');
@@ -130,7 +133,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  restartDownload(download_uid) {
+  restartDownload(download_uid: string): void {
     this.postsService.restartDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar('Failed to restart download! See server logs for more info.');
@@ -138,7 +141,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  cancelDownload(download_uid) {
+  cancelDownload(download_uid: string): void {
     this.postsService.cancelDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar('Failed to cancel download! See server logs for more info.');
@@ -146,7 +149,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  clearDownload(download_uid) {
+  clearDownload(download_uid: string): void {
     this.postsService.clearDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar('Failed to pause download! See server logs for more info.');
@@ -154,7 +157,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  watchContent(download) {
+  watchContent(download): void {
     const container = download['container'];
     localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
     const is_playlist = container['uids']; // hacky, TODO: fix
@@ -165,6 +168,26 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     }
   }
 
+  combineDownloads(downloads_old, downloads_new) {
+    // only keeps downloads that exist in the new set
+    downloads_old = downloads_old.filter(download_old => downloads_new.some(download_new => download_new.uid === download_old.uid));
+
+    // add downloads from the new set that the old one doesn't have
+    const downloads_to_add = downloads_new.filter(download_new => !downloads_old.some(download_old => download_new.uid === download_old.uid));
+    downloads_old.push(...downloads_to_add);
+    downloads_old.forEach(download_old => {
+      const download_new = downloads_new.find(download_to_check => download_old.uid === download_to_check.uid);
+      Object.keys(download_new).forEach(key => {
+        download_old[key] = download_new[key];
+      });
+  
+      Object.keys(download_old).forEach(key => {
+        if (!download_new[key]) delete download_old[key];
+      });
+    });
+
+    return downloads_old;
+  }
 }
 
 export interface Download {

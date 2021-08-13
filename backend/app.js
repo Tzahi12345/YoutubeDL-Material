@@ -970,6 +970,7 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
     req.setTimeout(0); // remove timeout in case of long videos
     const url = req.body.url;
     const type = req.body.type;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
     var options = {
         customArgs: req.body.customArgs,
         customOutput: req.body.customOutput,
@@ -978,11 +979,10 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
         youtubeUsername: req.body.youtubeUsername,
         youtubePassword: req.body.youtubePassword,
         ui_uid: req.body.ui_uid,
-        user: req.isAuthenticated() ? req.user.uid : null,
         cropFileSettings: req.body.cropFileSettings
     }
 
-    const download = await downloader_api.createDownload(url, type, options);
+    const download = await downloader_api.createDownload(url, type, options, user_uid);
 
     if (download) {
         res.send({download: download});
@@ -1740,7 +1740,8 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
   // Downloads management
 
 app.get('/api/downloads', optionalJwt, async (req, res) => {
-    const downloads = await db_api.getRecords('download_queue');
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const downloads = await db_api.getRecords('download_queue', {user_uid: user_uid});
     res.send({downloads: downloads});
 });
 
@@ -1757,7 +1758,8 @@ app.post('/api/download', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/clearFinishedDownloads', optionalJwt, async (req, res) => {
-    const success = db_api.removeAllRecords('download_queue', {finished: true});
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const success = db_api.removeAllRecords('download_queue', {finished: true, user_uid: user_uid});
     res.send({success: success});
 });
 

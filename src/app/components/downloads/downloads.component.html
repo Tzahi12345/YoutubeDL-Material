@@ -1,4 +1,4 @@
-<div *ngIf="downloads">
+<div *ngIf="downloads && downloads.length > 0">
     <div class="mat-elevation-z8">
         <mat-table [dataSource]="dataSource">
       
@@ -63,4 +63,8 @@
                        aria-label="Select page of downloads">
         </mat-paginator>
       </div>
+</div>
+
+<div *ngIf="(!downloads || downloads.length === 0) && downloads_retrieved">
+  <h4 style="text-align: center; margin-top: 10px;" i18n="No downloads label">No downloads available!</h4>
 </div>

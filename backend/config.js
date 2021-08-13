@@ -195,7 +195,7 @@ const DEFAULT_CONFIG = {
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
-        "allow_multi_download_mode": true,
+        "allow_autoplay": true,
         "enable_downloads_manager": true,
         "allow_playlist_categorization": true
       },

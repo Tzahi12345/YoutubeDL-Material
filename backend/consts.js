@@ -64,9 +64,9 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_download_only_mode',
         'path': 'YoutubeDLMaterial.Extra.download_only_mode'
     },
-    'ytdl_allow_multi_download_mode': {
-        'key': 'ytdl_allow_multi_download_mode',
-        'path': 'YoutubeDLMaterial.Extra.allow_multi_download_mode'
+    'ytdl_allow_autoplay': {
+        'key': 'ytdl_allow_autoplay',
+        'path': 'YoutubeDLMaterial.Extra.allow_autoplay'
     },
     'ytdl_enable_downloads_manager': {
         'key': 'ytdl_enable_downloads_manager',

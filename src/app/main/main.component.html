@@ -65,9 +65,9 @@
                         Only Audio
                     </ng-container>
                 </mat-checkbox>
-                <mat-checkbox *ngIf="allowMultiDownloadMode" [disabled]="current_download" (change)="multiDownloadModeChanged($event)" [(ngModel)]="multiDownloadMode" style="float: right; margin-top: -12px">
-                    <ng-container i18n="Multi-download Mode checkbox">
-                        Multi-download Mode
+                <mat-checkbox *ngIf="allowAutoplay" (change)="autoplayChanged($event)" [(ngModel)]="autoplay" style="float: right; margin-top: -12px">
+                    <ng-container i18n="Autoplay checkbox">
+                        Autoplay
                     </ng-container>
                 </mat-checkbox>
                 
@@ -168,18 +168,6 @@
             </div>
         </mat-expansion-panel>
     </form>
-</div>
-<div *ngIf="multiDownloadMode && downloads.length > 0 && !current_download" style="margin-top: 15px;" class="big demo-basic">
-    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;">
-        <div class="container">
-            <div *ngFor="let download of downloads; let i = index;" class="row">
-                <ng-container *ngIf="current_download !== download && download['downloading']">
-                    <app-download-item style="width: 100%" [download]="download" [queueNumber]="i+1" (cancelDownload)="cancelDownload($event)"></app-download-item>
-                    <mat-divider style="position: relative" *ngIf="i !== downloads.length - 1"></mat-divider>
-                </ng-container>
-            </div>
-        </div>
-    </mat-card>
 </div>
 <br/>
 <div class="centered big" id="bar_div" *ngIf="current_download; else nofile">
