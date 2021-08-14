@@ -623,7 +623,22 @@ exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
         return true;
     }
 
-    if (replaceFilter) await database.collection(table).deleteMany(replaceFilter);
+    if (replaceFilter) {
+        const output = await database.collection(table).bulkWrite([
+            {
+                deleteMany: {
+                    filter: replaceFilter
+                }
+            },
+            {
+                insertOne: {
+                    document: doc
+                }
+            }
+        ]);
+        logger.debug(`Inserted doc into ${table} with filter: ${JSON.stringify(replaceFilter)}`);
+        return !!(output['result']['ok']);
+    }
 
     const output = await database.collection(table).insertOne(doc);
     logger.debug(`Inserted doc into ${table}`);
