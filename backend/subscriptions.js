@@ -494,7 +494,7 @@ async function getSubscriptions(user_uid = null) {
 async function getAllSubscriptions() {
     const all_subs = await db_api.getRecords('subscriptions');
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-    return all_subs.filter(sub => !!(sub.user_uid) === multiUserMode);
+    return all_subs.filter(sub => !!(sub.user_uid) === !!multiUserMode);
 }
 
 async function getSubscription(subID) {
