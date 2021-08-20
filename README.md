@@ -124,7 +124,7 @@ Official translators:
 * German - UnlimitedCookies
 * Chinese - TyRoyal
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/Tzahi12345/YoutubeDL-Material/graphs/contributors) who participated in this project.
 
 ## License
 
