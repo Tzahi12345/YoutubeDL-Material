@@ -166,18 +166,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       const subscription = res['subscription'];
       this.subscription = subscription;
       this.type === this.subscription.type;
-      subscription.videos.forEach(video => {
-        if (video['uid'] === this.uid) {
-          this.db_file = video;
-          this.postsService.incrementViewCount(this.db_file['uid'], this.sub_id, this.uuid).subscribe(res => {}, err => {
-            console.error('Failed to increment view count');
-            console.error(err);
-          });
-          this.uids = [this.db_file['uid']];
-          this.show_player = true;
-          this.parseFileNames();
-        }
-      });
+      this.uids = this.subscription.videos.map(video => video['uid']);
+      this.parseFileNames();
     }, err => {
       this.openSnackBar(`Failed to find subscription ${this.sub_id}`, 'Dismiss');
     });
@@ -205,7 +195,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 0; i < this.uids.length; i++) {
       const uid = this.uids[i];
 
-      const file_obj = this.playlist_id ? this.db_playlist['file_objs'][i] : this.db_file;
+      let file_obj = null;
+      if (this.playlist_id) {
+        file_obj = this.db_playlist['file_objs'][i];
+      } else if (this.sub_id) {
+        file_obj = this.subscription['videos'][i];
+      } else {
+        file_obj = this.db_file;
+      }
 
       const mime_type = file_obj.isAudio ? 'audio/mp3' : 'video/mp4' 
 

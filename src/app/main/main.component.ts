@@ -246,11 +246,6 @@ export class MainComponent implements OnInit {
     this.useDefaultDownloadingAgent = this.postsService.config['Advanced']['use_default_downloading_agent'];
     this.customDownloadingAgent = this.postsService.config['Advanced']['custom_downloading_agent'];
 
-    if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
-      this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
-      this.attachToInput();
-    }
-
     // set final cache items
 
     localStorage.setItem('cached_filemanager_enabled', this.fileManagerEnabled.toString());
@@ -328,6 +323,13 @@ export class MainComponent implements OnInit {
     }
 
     this.setCols();
+  }
+
+  ngAfterViewInit() {
+    if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
+      this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
+      this.attachToInput();
+    }
   }
 
   public setCols() {

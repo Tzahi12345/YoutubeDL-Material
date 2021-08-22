@@ -26,16 +26,24 @@ function setDB(input_db_api) { db_api = input_db_api }
 exports.initialize = (input_db_api) => {
     setDB(input_db_api);
     categories_api.initialize(db_api);
-    setupDownloads();
+    if (db_api.database_initialized) {
+        setupDownloads();
+    } else {
+        db_api.database_initialized_bs.subscribe(init => {
+            if (init) setupDownloads();
+        });
+    }
 }
 
-exports.createDownload = async (url, type, options, user_uid = null) => {
+exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null) => {
     return await mutex.runExclusive(async () => {
         const download = {
             url: url,
             type: type,
             title: '',
             user_uid: user_uid,
+            sub_id: sub_id,
+            sub_name: sub_name,
             options: options,
             uid: uuid(),
             step_index: 0,
@@ -116,7 +124,7 @@ async function setupDownloads() {
 async function fixDownloadState() {
     const downloads = await db_api.getRecords('download_queue');
     downloads.sort((download1, download2) => download1.timestamp_start - download2.timestamp_start);
-    const running_downloads = downloads.filter(download => !download['finished_step']);
+    const running_downloads = downloads.filter(download => !download['finished'] && !download['error']);
     for (let i = 0; i < running_downloads.length; i++) {
         const running_download = running_downloads[i];
         const update_obj = {finished_step: true, paused: true};
@@ -143,7 +151,7 @@ async function checkDownloads() {
         return;
     });
 
-    const waiting_downloads = downloads.filter(download => !download['paused'] && download['finished_step']);
+    const waiting_downloads = downloads.filter(download => !download['paused'] && download['finished_step'] && !download['finished']);
     for (let i = 0; i < waiting_downloads.length; i++) {
         const running_download = waiting_downloads[i];
         if (i === 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
@@ -322,7 +330,7 @@ async function downloadQueuedFile(download_uid) {
                     }
 
                     // registers file in DB
-                    const file_obj = await db_api.registerFileDB2(full_file_path, type, download['user_uid'], category, null, options.cropFileSettings);
+                    const file_obj = await db_api.registerFileDB2(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
 
                     file_objs.push(file_obj);
                 }
@@ -437,13 +445,20 @@ async function generateArgs(url, type, options, user_uid = null) {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            const archive_folder = user_uid ? path.join(fileFolderPath, 'archives') : archivePath;
+            let archive_folder = null;
+            if (options.customArchivePath) {
+                archive_folder = path.join(options.customArchivePath);
+            } else if (user_uid) {
+                archive_folder = path.join(fileFolderPath, 'archives');
+            } else {
+                archive_folder = path.join(archivePath);
+            }
             const archive_path = path.join(archive_folder, `archive_${type}.txt`);
 
             await fs.ensureDir(archive_folder);
             await fs.ensureFile(archive_path);
 
-            let blacklist_path = user_uid ? path.join(fileFolderPath, 'archives', `blacklist_${type}.txt`) : path.join(archivePath, `blacklist_${type}.txt`);
+            let blacklist_path = path.join(archive_folder, `blacklist_${type}.txt`);
             await fs.ensureFile(blacklist_path);
 
             let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
@@ -469,6 +484,10 @@ async function generateArgs(url, type, options, user_uid = null) {
                 downloadConfig.splice(original_output_index, 2);
             }
             downloadConfig = downloadConfig.concat(globalArgs.split(',,'));
+        }
+
+        if (options.additionalArgs && options.additionalArgs !== '') {
+            downloadConfig = downloadConfig.concat(options.additionalArgs.split(',,'));
         }
 
         const rate_limit = config_api.getConfigItem('ytdl_download_rate_limit');

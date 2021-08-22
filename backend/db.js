@@ -9,10 +9,13 @@ const logger = require('./logger');
 
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync');
+const { BehaviorSubject } = require('rxjs');
 const local_adapter = new FileSync('./appdata/local_db.json');
 const local_db = low(local_adapter);
 
 let database = null;
+exports.database_initialized = false;
+exports.database_initialized_bs = new BehaviorSubject(false);
 
 const tables = {
     files: {

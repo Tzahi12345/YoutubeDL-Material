@@ -109,8 +109,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     if (this.subscription.streamingOnly) {
       this.router.navigate(['/player', {uid: uid, url: url}]);
     } else {
-      this.router.navigate(['/player', {uid: uid,
-        sub_id: this.subscription.id}]);
+      this.router.navigate(['/player', {uid: uid}]);
     }
   }
 
@@ -169,6 +168,10 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
         sub: this.postsService.getSubscriptionByID(this.subscription.id)
       }
     });
+  }
+
+  watchSubscription() {
+    this.router.navigate(['/player', {sub_id: this.subscription.id}])
   }
 
 }

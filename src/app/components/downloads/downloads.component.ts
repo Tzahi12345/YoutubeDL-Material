@@ -52,7 +52,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       3: 'Complete'
   }
 
-  displayedColumns: string[] = ['date', 'title', 'stage', 'progress', 'actions'];
+  displayedColumns: string[] = ['date', 'title', 'stage', 'subscription', 'progress', 'actions'];
   dataSource = null; // new MatTableDataSource<Download>();
   downloads_retrieved = false;
 

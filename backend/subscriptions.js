@@ -10,11 +10,13 @@ const logger = require('./logger');
 const debugMode = process.env.YTDL_MODE === 'debug';
 
 let db_api = null;
+let downloader_api = null;
 
 function setDB(input_db_api) { db_api = input_db_api }
 
-function initialize(input_db_api) {
+function initialize(input_db_api, input_downloader_api) {
     setDB(input_db_api);
+    downloader_api = input_downloader_api;
 }
 
 async function subscribe(sub, user_uid = null) {
@@ -105,22 +107,6 @@ async function getSubscriptionInfo(sub, user_uid = null) {
                         if (sub.name) {
                             await db_api.updateRecord('subscriptions', {id: sub.id}, {name: sub.name});
                         }
-                    }
-
-                    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-                    if (useArchive && !sub.archive) {
-                        // must create the archive
-                        const archive_dir = path.join(__dirname, basePath, 'archives', sub.name);
-                        const archive_path = path.join(archive_dir, 'archive.txt');
-
-                        // creates archive directory and text file if it doesn't exist
-                        fs.ensureDirSync(archive_dir);
-                        fs.ensureFileSync(archive_path);
-
-                        // updates subscription
-                        sub.archive = archive_dir;
-
-                        await db_api.updateRecord('subscriptions', {id: sub.id}, {archive: archive_dir});
                     }
 
                     // TODO: get even more info
@@ -256,30 +242,15 @@ async function getVideosForSub(sub, user_uid = null) {
     let appendedBasePath = getAppendedBasePath(sub, basePath);
     fs.ensureDirSync(appendedBasePath);
 
-    let multiUserMode = null;
-    if (user_uid) {
-        multiUserMode = {
-            user: user_uid,
-            file_path: appendedBasePath
-        }
-    }
-
     const downloadConfig = await generateArgsForSubscription(sub, user_uid);
 
     // get videos
     logger.verbose(`Subscription: getting videos for subscription ${sub.name} with args: ${downloadConfig.join(',')}`);
 
     return new Promise(async resolve => {
-        const preimported_file_paths = [];
-        const PREIMPORT_INTERVAL = 5000;
-        const preregister_check = setInterval(async () => {
-            if (sub.streamingOnly) return;
-            await db_api.preimportUnregisteredSubscriptionFile(sub, appendedBasePath);
-        }, PREIMPORT_INTERVAL);
         youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, async function(err, output) {
             // cleanup
             updateSubscriptionProperty(sub, {downloading: false}, user_uid);
-            clearInterval(preregister_check);
 
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
@@ -287,19 +258,21 @@ async function getVideosForSub(sub, user_uid = null) {
                 if (err.stderr.includes('This video is unavailable')) {
                     logger.info('An error was encountered with at least one video, backup method will be used.')
                     try {
-                        const outputs = err.stdout.split(/\r\n|\r|\n/);
-                        for (let i = 0; i < outputs.length; i++) {
-                            const output = JSON.parse(outputs[i]);
-                            await handleOutputJSON(sub, output, i === 0, multiUserMode)
-                            if (err.stderr.includes(output['id']) && archive_path) {
-                                // we found a video that errored! add it to the archive to prevent future errors
-                                if (sub.archive) {
-                                    archive_dir = sub.archive;
-                                    archive_path = path.join(archive_dir, 'archive.txt')
-                                    fs.appendFileSync(archive_path, output['id']);
-                                }
-                            }
-                        }
+                        // TODO: reimplement
+
+                        // const outputs = err.stdout.split(/\r\n|\r|\n/);
+                        // for (let i = 0; i < outputs.length; i++) {
+                        //     const output = JSON.parse(outputs[i]);
+                        //     await handleOutputJSON(sub, output, i === 0, multiUserMode)
+                        //     if (err.stderr.includes(output['id']) && archive_path) {
+                        //         // we found a video that errored! add it to the archive to prevent future errors
+                        //         if (sub.archive) {
+                        //             archive_dir = sub.archive;
+                        //             archive_path = path.join(archive_dir, 'archive.txt')
+                        //             fs.appendFileSync(archive_path, output['id']);
+                        //         }
+                        //     }
+                        // }
                     } catch(e) {
                         logger.error('Backup method failed. See error below:');
                         logger.error(e);
@@ -312,20 +285,29 @@ async function getVideosForSub(sub, user_uid = null) {
                     resolve(true);
                     return;
                 }
+                const output_jsons = [];
                 for (let i = 0; i < output.length; i++) {
                     let output_json = null;
                     try {
                         output_json = JSON.parse(output[i]);
+                        output_jsons.push(output_json);
                     } catch(e) {
                         output_json = null;
                     }
                     if (!output_json) {
                         continue;
                     }
-
-                    const reset_videos = i === 0;
-                    await handleOutputJSON(sub, output_json, multiUserMode, preimported_file_paths, reset_videos);
                 }
+
+                const files_to_download = await getFilesToDownload(sub, output_jsons);
+                const base_download_options = generateOptionsForSubscriptionDownload(sub, user_uid);
+
+                for (let j = 0; j < files_to_download.length; j++) {
+                    const file_to_download = files_to_download[j];
+                    await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name);
+                }
+
+                resolve(files_to_download);
 
                 if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
                     await setFreshUploads(sub, user_uid);
@@ -338,8 +320,26 @@ async function getVideosForSub(sub, user_uid = null) {
     }, err => {
         logger.error(err);
         updateSubscriptionProperty(sub, {downloading: false}, user_uid);
-        clearInterval(preregister_check);
     });
+}
+
+function generateOptionsForSubscriptionDownload(sub, user_uid) {
+    let basePath = null;
+    if (user_uid)
+        basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
+    else
+        basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
+
+    let default_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
+
+    const base_download_options = {
+        selectedHeight: sub.maxQuality && sub.maxQuality !== 'best' ? sub.maxQuality : null,
+        customFileFolderPath: getAppendedBasePath(sub, basePath),
+        customOutput: sub.custom_output ? `${sub.custom_output}` : `${default_output}`,
+        customArchivePath: path.join(__dirname, basePath, 'archives', sub.name)
+    }
+
+    return base_download_options;
 }
 
 async function generateArgsForSubscription(sub, user_uid, redownload = false, desired_path = null) {
@@ -363,7 +363,7 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
     }
 
-    let downloadConfig = ['-o', fullOutput, !redownload ? '-ciw' : '-ci', '--write-info-json', '--print-json'];
+    let downloadConfig = ['--dump-json', '-o', fullOutput, !redownload ? '-ciw' : '-ci', '--write-info-json', '--print-json'];
 
     let qualityPath = null;
     if (sub.type && sub.type === 'audio') {
@@ -378,7 +378,7 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     downloadConfig.push(...qualityPath)
 
     if (sub.custom_args) {
-        customArgsArray = sub.custom_args.split(',,');
+        const customArgsArray = sub.custom_args.split(',,');
         if (customArgsArray.indexOf('-f') !== -1) {
             // if custom args has a custom quality, replce the original quality with that of custom args
             const original_output_index = downloadConfig.indexOf('-f');
@@ -465,6 +465,24 @@ async function handleOutputJSON(sub, output_json, multiUserMode = null, reset_vi
             twitch_api.downloadTwitchChatByVODID(vodId, id, sub.type, multiUserMode.user, sub);
     }
 }
+
+async function getFilesToDownload(sub, output_jsons) {
+    const files_to_download = [];
+    for (let i = 0; i < output_jsons.length; i++) {
+        const output_json = output_jsons[i];
+        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']}));
+        if (file_missing) {
+            const file_with_path_exists = await db_api.getRecord('files', {sub_id: sub.id, path: output_json['_filename']});
+            if (file_with_path_exists) {
+                // or maybe just overwrite???
+                logger.info(`Skipping adding file ${output_json['_filename']} for subscription ${sub.name} as a file with that path already exists.`)
+            }
+            files_to_download.push(output_json);
+        }
+    }
+    return files_to_download;
+}
+
 
 async function getSubscriptions(user_uid = null) {
     return await db_api.getRecords('subscriptions', {user_uid: user_uid});

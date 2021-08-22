@@ -61,7 +61,7 @@ config_api.initialize();
 db_api.initialize(db, users_db);
 auth_api.initialize(db_api);
 downloader_api.initialize(db_api);
-subscriptions_api.initialize(db_api);
+subscriptions_api.initialize(db_api, downloader_api);
 categories_api.initialize(db_api);
 
 // Set some defaults
@@ -533,6 +533,8 @@ async function loadConfig() {
 
     // connect to DB
     await db_api.connectToDB();
+    db_api.database_initialized = true;
+    db_api.database_initialized_bs.next(true);
 
     // creates archive path if missing
     await fs.ensureDir(archivePath);
