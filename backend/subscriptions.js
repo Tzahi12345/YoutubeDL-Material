@@ -41,7 +41,7 @@ async function subscribe(sub, user_uid = null) {
         sub['user_uid'] = user_uid ? user_uid : undefined;
         await db_api.insertRecordIntoTable('subscriptions', sub);
 
-        let success = await getSubscriptionInfo(sub, user_uid);
+        let success = await getSubscriptionInfo(sub);
 
         if (success) {
             getVideosForSub(sub, user_uid);
@@ -56,13 +56,7 @@ async function subscribe(sub, user_uid = null) {
 
 }
 
-async function getSubscriptionInfo(sub, user_uid = null) {
-    let basePath = null;
-    if (user_uid)
-        basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
-    else
-        basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
-
+async function getSubscriptionInfo(sub) {
     // get videos
     let downloadConfig = ['--dump-json', '--playlist-end', '1'];
     let useCookies = config_api.getConfigItem('ytdl_use_cookies');
@@ -137,7 +131,7 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
                     config_api.descriptors[sub_file['uid']][i].destroy();
                 }
             } catch(e) {
-    
+                continue;
             }
         }
     }
@@ -442,30 +436,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     return downloadConfig;
 }
 
-async function handleOutputJSON(sub, output_json, multiUserMode = null, reset_videos = false) {
-    const path_object = path.parse(output_json['_filename']);
-    const path_string = path.format(path_object);
-
-    const file_exists = await db_api.getRecord('files', {path: path_string, sub_id: sub.id});
-    if (file_exists) {
-        // TODO: fix issue where files of different paths due to custom path get downloaded multiple times
-        // file already exists in DB, return early to avoid reseting the download date
-        return;
-    }
-
-    await db_api.registerFileDB2(output_json['_filename'], sub.type, sub.user_uid, null, sub.id);
-
-    const url = output_json['webpage_url'];
-    if (sub.type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
-        && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
-            const file_name = path.basename(output_json['_filename']);
-            const id = file_name.substring(0, file_name.length-4);
-            let vodId = url.split('twitch.tv/videos/')[1];
-            vodId = vodId.split('?')[0];
-            twitch_api.downloadTwitchChatByVODID(vodId, id, sub.type, multiUserMode.user, sub);
-    }
-}
-
 async function getFilesToDownload(sub, output_jsons) {
     const files_to_download = [];
     for (let i = 0; i < output_jsons.length; i++) {
@@ -568,7 +538,6 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
 // helper functions
 
 function getAppendedBasePath(sub, base_path) {
-
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
 }
 
