@@ -631,7 +631,7 @@ async function loadConfig() {
         watchSubscriptionsInterval();
     }
 
-    await db_api.importUnregisteredFiles();
+    db_api.importUnregisteredFiles();
 
     // load in previous downloads
     downloads = await db_api.getRecords('downloads');
@@ -1632,9 +1632,23 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
     let files = null;
     let playlists = null;
+    let sort = req.body.sort;
+    let range = req.body.range;
+    let text_search = req.body.text_search;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
-    files = await db_api.getRecords('files', {user_uid: uuid});
+    const filter_obj = {user_uid: uuid};
+    const regex = true;
+    if (text_search) {
+        if (regex) {
+            filter_obj['title'] = {$regex: `.*${text_search}.*`, $options: 'i'};
+        } else {
+            filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
+        }
+    }
+    
+    files = await db_api.getRecords('files', filter_obj, false, sort, range, text_search);
+    let file_count = await db_api.getRecords('files', filter_obj, true);
     playlists = await db_api.getRecords('playlists', {user_uid: uuid});
 
     const categories = await categories_api.getCategoriesAsPlaylists(files);
@@ -1646,6 +1660,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
 
     res.send({
         files: files,
+        file_count: file_count,
         playlists: playlists
     });
 });
@@ -2116,8 +2131,15 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
     const uuid = req.isAuthenticated() ? req.user.uid : null;
+    const include_categories = req.body.include_categories;
 
     const playlists = await db_api.getRecords('playlists', {user_uid: uuid});
+    if (include_categories) {
+        const categories = await categories_api.getCategoriesAsPlaylists(files);
+        if (categories) {
+            playlists = playlists.concat(categories);
+        }
+    }
 
     res.send({
         playlists: playlists
