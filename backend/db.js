@@ -20,7 +20,12 @@ exports.database_initialized_bs = new BehaviorSubject(false);
 const tables = {
     files: {
         name: 'files',
-        primary_key: 'uid'
+        primary_key: 'uid',
+        text_search: {
+            title: 'text',
+            uploader: 'text',
+            uid: 'text'
+        }
     },
     playlists: {
         name: 'playlists',
@@ -132,8 +137,13 @@ exports._connectToDB = async (custom_connection_string = null) => {
 
         tables_list.forEach(async table => {
             const primary_key = tables[table]['primary_key'];
-            if (!primary_key) return;
-            await database.collection(table).createIndex({[primary_key]: 1}, { unique: true });
+            if (primary_key) {
+                await database.collection(table).createIndex({[primary_key]: 1}, { unique: true });
+            }
+            const text_search = tables[table]['text_search'];
+            if (text_search) {
+                await database.collection(table).createIndex(text_search);
+            }
         });
         return true;
     } catch(err) {
@@ -624,7 +634,22 @@ exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
         return true;
     }
 
-    if (replaceFilter) await database.collection(table).deleteMany(replaceFilter);
+    if (replaceFilter) {
+        const output = await database.collection(table).bulkWrite([
+            {
+                deleteMany: {
+                    filter: replaceFilter
+                }
+            },
+            {
+                insertOne: {
+                    document: doc
+                }
+            }
+        ]);
+        logger.debug(`Inserted doc into ${table} with filter: ${JSON.stringify(replaceFilter)}`);
+        return !!(output['result']['ok']);
+    }
 
     const output = await database.collection(table).insertOne(doc);
     logger.debug(`Inserted doc into ${table}`);
@@ -681,13 +706,28 @@ exports.getRecord = async (table, filter_obj) => {
     return await database.collection(table).findOne(filter_obj);
 }
 
-exports.getRecords = async (table, filter_obj = null) => {
+exports.getRecords = async (table, filter_obj = null, return_count = false, sort = null, range = null) => {
     // local db override
     if (using_local_db) {
-        return filter_obj ? applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').value() : local_db.get(table).value();
+        let cursor = filter_obj ? applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').value() : local_db.get(table).value();
+        if (sort) {
+            cursor = cursor.sort((a, b) => (a[sort['by']] > b[sort['by']] ? sort['order'] : sort['order']*-1));
+        }
+        if (range) {
+            cursor = cursor.slice(range[0], range[1]);
+        }
+        return !return_count ? cursor : cursor.length;
     }
 
-    return filter_obj ? await database.collection(table).find(filter_obj).toArray()  : await database.collection(table).find().toArray();
+    const cursor = filter_obj ? database.collection(table).find(filter_obj) : database.collection(table).find();
+    if (sort) {
+        cursor.sort({[sort['by']]: sort['order']});
+    }
+    if (range) {
+        cursor.skip(range[0]).limit(range[1] - range[0]);
+    }
+
+    return !return_count ? await cursor.toArray() : await cursor.count();
 }
 
 // Update
@@ -1013,7 +1053,13 @@ const applyFilterLocalDB = (db_path, filter_obj, operation) => {
             if (filter_prop_value === undefined || filter_prop_value === null) {
                 filtered &= record[filter_prop] === undefined || record[filter_prop] === null
             } else {
-                filtered &= record[filter_prop] === filter_prop_value;
+                if (typeof filter_prop_value === 'object') {
+                    if (filter_prop_value['$regex']) {
+                        filtered &= (record[filter_prop].search(new RegExp(filter_prop_value['$regex'], filter_prop_value['$options'])) !== -1);
+                    }
+                } else {
+                    filtered &= record[filter_prop] === filter_prop_value;
+                }
             }
         }
         return filtered;

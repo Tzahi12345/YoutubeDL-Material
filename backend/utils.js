@@ -347,6 +347,26 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
+function createEdgeNGrams(str) {
+    if (str && str.length > 3) {
+        const minGram = 3
+        const maxGram = str.length
+        
+        return str.split(" ").reduce((ngrams, token) => {
+            if (token.length > minGram) {   
+                for (let i = minGram; i <= maxGram && i <= token.length; ++i) {
+                    ngrams = [...ngrams, token.substr(0, i)]
+                }
+            } else {
+                ngrams = [...ngrams, token]
+            }
+            return ngrams
+        }, []).join(" ")
+    }
+    
+    return str
+}
+
 // ffmpeg helper functions
 
 async function cropFile(file_path, start, end, ext) {
@@ -371,7 +391,7 @@ async function cropFile(file_path, start, end, ext) {
                 logger.error(err);
                 resolve(false);
             }).save(temp_file_path);
-    });    
+    });
 }
 
 /**
@@ -425,6 +445,7 @@ module.exports = {
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
     cropFile: cropFile,
+    createEdgeNGrams: createEdgeNGrams,
     wait: wait,
     File: File
 }

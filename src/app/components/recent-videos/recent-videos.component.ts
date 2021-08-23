@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
+import { Subject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recent-videos',
@@ -15,8 +17,8 @@ export class RecentVideosComponent implements OnInit {
 
   normal_files_received = false;
   subscription_files_received = false;
-  files: any[] = null;
-  filtered_files: any[] = null;
+  file_count = 10;
+  searchChangedSubject: Subject<string> = new Subject<string>();
   downloading_content = {'video': {}, 'audio': {}};
   search_mode = false;
   search_text = '';
@@ -97,6 +99,18 @@ export class RecentVideosComponent implements OnInit {
     if (cached_filter_property && this.filterProperties[cached_filter_property]) {
       this.filterProperty = this.filterProperties[cached_filter_property];
     }
+
+    this.searchChangedSubject
+      .debounceTime(500)
+      .pipe(distinctUntilChanged()
+      ).subscribe(model => {
+        if (model.length > 0) {
+          this.search_mode = true;
+        } else {
+          this.search_mode = false;
+        }
+        this.getAllFiles();
+      });
   }
 
   getAllPlaylists() {
@@ -108,64 +122,40 @@ export class RecentVideosComponent implements OnInit {
   // search
 
   onSearchInputChanged(newvalue) {
-    if (newvalue.length > 0) {
-      this.search_mode = true;
-      this.filterFiles(newvalue);
-    } else {
-      this.search_mode = false;
-      this.filtered_files = this.files;
-    }
-  }
-
-  private filterFiles(value: string) {
-    const filterValue = value.toLowerCase();
-    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue) || option.category?.name?.toLowerCase().includes(filterValue));
-    this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex});
-  }
-
-  filterByProperty(prop) {
-    if (this.descendingMode) {
-      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? -1 : 1));
-    } else {
-      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? 1 : -1));
-    }
-    if (this.paginator) { this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex}) };
+    this.normal_files_received = false;
+    this.searchChangedSubject.next(newvalue);
   }
 
   filterOptionChanged(value) {
-    this.filterByProperty(value['property']);
     localStorage.setItem('filter_property', value['key']);
+    this.getAllFiles();
   }
 
   toggleModeChange() {
     this.descendingMode = !this.descendingMode;
-    this.filterByProperty(this.filterProperty['property']);
+    this.getAllFiles();
   }
 
   // get files
 
-  getAllFiles() {
-    this.normal_files_received = false;
-    this.postsService.getAllFiles().subscribe(res => {
-      this.files = res['files'];
-      this.files.sort(this.sortFiles);
-      for (let i = 0; i < this.files.length; i++) {
-        const file = this.files[i];
+  getAllFiles(cache_mode = false) {
+    this.normal_files_received = cache_mode;
+    const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
+    const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
+    const range = [current_file_index, current_file_index + this.pageSize];
+    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null).subscribe(res => {
+      this.file_count = res['file_count'];
+      this.paged_data = res['files'];
+      for (let i = 0; i < this.paged_data.length; i++) {
+        const file = this.paged_data[i];
         file.duration = typeof file.duration !== 'string' ? file.duration : this.durationStringToNumber(file.duration);
       }
-      if (this.search_mode) {
-        this.filterFiles(this.search_text);
-      } else {
-        this.filtered_files = this.files;
-      }
-      this.filterByProperty(this.filterProperty['property']);
 
       // set cached file count for future use, note that we convert the amount of files to a string
-      localStorage.setItem('cached_file_count', '' + this.files.length);
+      localStorage.setItem('cached_file_count', '' + this.file_count);
 
       this.normal_files_received = true;
 
-      this.paged_data = this.filtered_files.slice(0, 10);
     });
   }
 
@@ -301,12 +291,9 @@ export class RecentVideosComponent implements OnInit {
   }
 
   removeFileCard(file_to_remove) {
-    const index = this.files.map(e => e.uid).indexOf(file_to_remove.uid);
-    this.files.splice(index, 1);
-    if (this.search_mode) {
-      this.filterFiles(this.search_text);
-    }
-    this.filterByProperty(this.filterProperty['property']);
+    const index = this.paged_data.map(e => e.uid).indexOf(file_to_remove.uid);
+    this.paged_data.splice(index, 1);
+    this.getAllFiles(true);
   }
 
   addFileToPlaylist(info_obj) {
@@ -344,7 +331,8 @@ export class RecentVideosComponent implements OnInit {
   }
 
   pageChangeEvent(event) {
-    const offset = ((event.pageIndex + 1) - 1) * event.pageSize;
-    this.paged_data = this.filtered_files.slice(offset).slice(0, event.pageSize);
+    this.pageSize = event.pageSize;
+    this.loading_files = Array(this.pageSize).fill(0);
+    this.getAllFiles();
   }
 }
