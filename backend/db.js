@@ -375,7 +375,8 @@ exports.importUnregisteredFiles = async () => {
             const file = files[j];
 
             // check if file exists in db, if not add it
-            const file_is_registered = !!(await exports.getRecord('files', {id: file.id, sub_id: dir_to_check.sub_id}))
+            const files_with_same_url = await exports.getRecords('files', {url: file.url, sub_id: dir_to_check.sub_id});
+            const file_is_registered = !!(files_with_same_url.find(file_with_same_url => path.resolve(file_with_same_url.path) === path.resolve(file.path)));
             if (!file_is_registered) {
                 // add additional info
                 await exports.registerFileDB2(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
