@@ -463,12 +463,10 @@ async function handleOutputJSON(sub, output_json, multiUserMode = null, reset_vi
         // add to db
         sub_db.get('videos').push(output_json).write();
     } else {
-        path_object = path.parse(output_json['_filename']);
-        const path_string = path.format(path_object);
+        const file_url = output_json['webpage_url']
 
-        const file_exists = await db_api.getRecord('files', {path: path_string, sub_id: sub.id});
+        const file_exists = await db_api.getRecord('files', {url: file_url, sub_id: sub.id});
         if (file_exists) {
-            // TODO: fix issue where files of different paths due to custom path get downloaded multiple times
             // file already exists in DB, return early to avoid reseting the download date
             return;
         }
