@@ -4,6 +4,9 @@ import { trigger, transition, animateChild, stagger, query, style, animate } fro
 import { Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-downloads',
@@ -57,13 +60,14 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   downloads_retrieved = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   sort_downloads = (a, b) => {
     const result = b.timestamp_start - a.timestamp_start;
     return result;
   }
 
-  constructor(public postsService: PostsService, private router: Router) { }
+  constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     if (this.postsService.initialized) {
@@ -103,6 +107,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
           this.downloads.sort(this.sort_downloads);
           this.dataSource = new MatTableDataSource<Download>(this.downloads);
           this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
       } else {
         // failed to get downloads
       }
@@ -110,9 +115,21 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   clearFinishedDownloads(): void {
-    this.postsService.clearFinishedDownloads().subscribe(res => {
-      if (!res['success']) {
-        this.postsService.openSnackBar('Failed to clear finished downloads!');
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: $localize`Clear finished downloads`,
+        dialogText: $localize`Would you like to clear your finished downloads?`,
+        submitText: $localize`Clear`,
+        warnSubmitColor: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.postsService.clearFinishedDownloads().subscribe(res => {
+          if (!res['success']) {
+            this.postsService.openSnackBar('Failed to clear finished downloads!');
+          }
+        });
       }
     });
   }

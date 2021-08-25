@@ -414,15 +414,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         downloadConfig.push('--write-thumbnail');
     }
 
-    const download_delay = config_api.getConfigItem('ytdl_subscriptions_download_delay');
-    if (download_delay && downloadConfig.indexOf('--sleep-interval') === -1) {
-        if (!(+download_delay)) {
-            logger.warn(`Invalid download delay of ${download_delay}, please remember to use non-zero numbers.`);
-        } else {
-            downloadConfig.push('--sleep-interval', +download_delay);
-        }
-    }
-
     const rate_limit = config_api.getConfigItem('ytdl_download_rate_limit');
     if (rate_limit && downloadConfig.indexOf('-r') === -1 && downloadConfig.indexOf('--limit-rate') === -1) {
         downloadConfig.push('-r', rate_limit);
@@ -440,7 +431,7 @@ async function getFilesToDownload(sub, output_jsons) {
     const files_to_download = [];
     for (let i = 0; i < output_jsons.length; i++) {
         const output_json = output_jsons[i];
-        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']}));
+        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']})) && !(await db_api.getRecord('download_queue', {sub_id: sub.id, url: output_json['webpage_url'], error: null}));
         if (file_missing) {
             const file_with_path_exists = await db_api.getRecord('files', {sub_id: sub.id, path: output_json['_filename']});
             if (file_with_path_exists) {

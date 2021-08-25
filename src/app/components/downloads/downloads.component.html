@@ -1,16 +1,16 @@
-<div *ngIf="downloads && downloads.length > 0">
+<div [hidden]="!(downloads && downloads.length > 0)">
     <div class="mat-elevation-z8">
-        <mat-table [dataSource]="dataSource">
+        <mat-table matSort [dataSource]="dataSource">
       
           <!-- Date Column -->
           <ng-container matColumnDef="date">
-            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.timestamp_start | date: 'short'}} </mat-cell>
           </ng-container>
       
           <!-- Title Column -->
           <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <span class="one-line" [matTooltip]="element.title ? element.title : null">
                     {{element.title}}
@@ -20,7 +20,7 @@
 
           <!-- Subscription Column -->
           <ng-container matColumnDef="subscription">
-            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Subscription">Subscription</ng-container> </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Subscription">Subscription</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
               <ng-container *ngIf="element.sub_name">
                 {{element.sub_name}}
@@ -33,13 +33,13 @@
       
           <!-- Stage Column -->
           <ng-container matColumnDef="stage">
-            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Stage">Stage</ng-container> </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Stage">Stage</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{STEP_INDEX_TO_LABEL[element.step_index]}} </mat-cell>
           </ng-container>
       
           <!-- Progress Column -->
           <ng-container matColumnDef="progress">
-            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <ng-container *ngIf="element.percent_complete">
                     {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
@@ -77,6 +77,9 @@
                        showFirstLastButtons 
                        aria-label="Select page of downloads">
         </mat-paginator>
+      </div>
+      <div style="margin-top: 10px; margin-left: 5px;">
+        <button mat-stroked-button (click)="clearFinishedDownloads()"><ng-container i18n="Clear finished downloads">Clear finished downloads</ng-container></button>
       </div>
 </div>
 

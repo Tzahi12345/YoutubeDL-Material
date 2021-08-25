@@ -48,6 +48,7 @@ exports.createDownload = async (url, type, options, user_uid = null, sub_id = nu
             uid: uuid(),
             step_index: 0,
             paused: false,
+            running: false,
             finished_step: true,
             error: null,
             percent_complete: null,
@@ -71,7 +72,7 @@ exports.pauseDownload = async (download_uid) => {
         return false;
     }
 
-    return await db_api.updateRecord('download_queue', {uid: download_uid}, {paused: true});
+    return await db_api.updateRecord('download_queue', {uid: download_uid}, {paused: true, running: false});
 }
 
 exports.resumeDownload = async (download_uid) => {
@@ -106,7 +107,7 @@ exports.cancelDownload = async (download_uid) => {
         logger.info(`Download ${download_uid} could not be cancelled before completing.`);
         return false;
     }
-    return await db_api.updateRecord('download_queue', {uid: download_uid}, {cancelled: true});
+    return await db_api.updateRecord('download_queue', {uid: download_uid}, {cancelled: true, running: false});
 }
 
 exports.clearDownload = async (download_uid) => {
@@ -127,7 +128,7 @@ async function fixDownloadState() {
     const running_downloads = downloads.filter(download => !download['finished'] && !download['error']);
     for (let i = 0; i < running_downloads.length; i++) {
         const running_download = running_downloads[i];
-        const update_obj = {finished_step: true, paused: true};
+        const update_obj = {finished_step: true, paused: true, running: false};
         if (running_download['step_index'] > 0) {
             update_obj['step_index'] = running_download['step_index'] - 1;
         }
@@ -151,18 +152,19 @@ async function checkDownloads() {
         return;
     });
 
+    let running_downloads_count = downloads.filter(download => download['running']).length;
     const waiting_downloads = downloads.filter(download => !download['paused'] && download['finished_step'] && !download['finished']);
     for (let i = 0; i < waiting_downloads.length; i++) {
-        const running_download = waiting_downloads[i];
-        if (i === 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
+        const waiting_download = waiting_downloads[i];
+        if (running_downloads_count >= 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
 
-        if (running_download['finished_step'] && !running_download['finished']) {
+        if (waiting_download['finished_step'] && !waiting_download['finished']) {
             // move to next step
-
-            if (running_download['step_index'] === 0) {
-                collectInfo(running_download['uid']);
-            } else if (running_download['step_index'] === 1) {
-                downloadQueuedFile(running_download['uid']);
+            running_downloads_count++;
+            if (waiting_download['step_index'] === 0) {
+                collectInfo(waiting_download['uid']);
+            } else if (waiting_download['step_index'] === 1) {
+                downloadQueuedFile(waiting_download['uid']);
             }
         }
     }
@@ -174,7 +176,7 @@ async function collectInfo(download_uid) {
         return;
     }
     logger.verbose(`Collecting info for download ${download_uid}`);
-    await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 1, finished_step: false});
+    await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 1, finished_step: false, running: true});
 
     const url = download['url'];
     const type = download['type'];
@@ -194,7 +196,7 @@ async function collectInfo(download_uid) {
     if (!info) {
         // info failed, record error and pause download
         const error = 'Failed to get info, see server logs for specific error.';
-        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true});
+        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true, running: false});
         return;
     }
 
@@ -227,6 +229,7 @@ async function collectInfo(download_uid) {
     const playlist_title = Array.isArray(info) ? info[0]['playlist_title'] || info[0]['playlist'] : null;
     await db_api.updateRecord('download_queue', {uid: download_uid}, {args: args,
                                                                     finished_step: true,
+                                                                    running: false,
                                                                     options: options,
                                                                     files_to_check_for_progress: files_to_check_for_progress,
                                                                     expected_file_size: expected_file_size,
@@ -243,7 +246,7 @@ async function downloadQueuedFile(download_uid) {
     return new Promise(async resolve => {
         const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
-        await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 2, finished_step: false});
+        await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 2, finished_step: false, running: true});
 
         const url = download['url'];
         const type = download['type'];
@@ -355,7 +358,7 @@ async function downloadQueuedFile(download_uid) {
                 }
 
                 const file_uids = file_objs.map(file_obj => file_obj.uid);
-                await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, step_index: 3, percent_complete: 100, file_uids: file_uids, container: container});
+                await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, running: false, step_index: 3, percent_complete: 100, file_uids: file_uids, container: container});
                 resolve();
             }
         });
@@ -544,7 +547,7 @@ async function getVideoInfoByURL(url, args = [], download_uid = null) {
                     logger.error(`Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`);
                     if (download_uid) {
                         const error = 'Failed to get info, see server logs for specific error.';
-                        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true});
+                        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true, running: false});
                     }
                     resolve(null);
                 }
@@ -555,7 +558,7 @@ async function getVideoInfoByURL(url, args = [], download_uid = null) {
                 }
                 if (download_uid) {
                     const error = 'Failed to get info, see server logs for specific error.';
-                    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true});
+                    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true, running: false});
                 }
                 resolve(null);
             }
