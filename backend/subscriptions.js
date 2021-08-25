@@ -3,7 +3,6 @@ const path = require('path');
 const youtubedl = require('youtube-dl');
 
 const config_api = require('./config');
-const twitch_api = require('./twitch');
 const utils = require('./utils');
 const logger = require('./logger');
 

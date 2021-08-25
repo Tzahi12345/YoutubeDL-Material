@@ -194,9 +194,7 @@ async function collectInfo(download_uid) {
     let info = await getVideoInfoByURL(url, args, download_uid);
 
     if (!info) {
-        // info failed, record error and pause download
-        const error = 'Failed to get info, see server logs for specific error.';
-        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true, running: false});
+        // info failed, error presumably already recorded
         return;
     }
 
@@ -315,7 +313,7 @@ async function downloadQueuedFile(download_uid) {
                             fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
                             logger.info('Renamed ' + file_name + '.webm to ' + file_name);
                         } catch(e) {
-
+                            logger.error(`Failed to rename file ${output_json['_filename']} to its appropriate extension.`);
                         }
                     }
 
@@ -333,7 +331,7 @@ async function downloadQueuedFile(download_uid) {
                     }
 
                     // registers file in DB
-                    const file_obj = await db_api.registerFileDB2(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
+                    const file_obj = await db_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
 
                     file_objs.push(file_obj);
                 }
@@ -544,9 +542,9 @@ async function getVideoInfoByURL(url, args = [], download_uid = null) {
                     }
                     resolve(outputs.length === 1 ? outputs[0] : outputs);
                 } catch(e) {
-                    logger.error(`Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`);
+                    const error = `Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`;
+                    logger.error(error);
                     if (download_uid) {
-                        const error = 'Failed to get info, see server logs for specific error.';
                         await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true, running: false});
                     }
                     resolve(null);
@@ -558,7 +556,7 @@ async function getVideoInfoByURL(url, args = [], download_uid = null) {
                 }
                 if (download_uid) {
                     const error = 'Failed to get info, see server logs for specific error.';
-                    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, paused: true, running: false});
+                    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: err.stderr ? err.stderr : error, paused: true, running: false});
                 }
                 resolve(null);
             }

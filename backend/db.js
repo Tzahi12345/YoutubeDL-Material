@@ -155,51 +155,17 @@ exports._connectToDB = async (custom_connection_string = null) => {
     }
 }
 
-exports.registerFileDB = async (file_path, type, multiUserMode = null, sub = null, customPath = null, category = null, cropFileSettings = null, file_object = null) => {
-    let db_path = null;
-    const file_id = utils.removeFileExtension(file_path);
-    if (!file_object) file_object = generateFileObject(file_id, type, customPath || multiUserMode && multiUserMode.file_path, sub);
-    if (!file_object) {
-        logger.error(`Could not find associated JSON file for ${type} file ${file_id}`);
-        return false;
-    }
-
-    utils.fixVideoMetadataPerms(file_id, type, multiUserMode && multiUserMode.file_path);
-
-    // add thumbnail path
-    file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_id, type, customPath || multiUserMode && multiUserMode.file_path);
-
-    // if category exists, only include essential info
-    if (category) file_object['category'] = {name: category['name'], uid: category['uid']};
-
-    // modify duration
-    if (cropFileSettings) {
-        file_object['duration'] = (cropFileSettings.cropFileEnd || file_object.duration) - cropFileSettings.cropFileStart;
-    }
-
-    if (multiUserMode) file_object['user_uid'] = multiUserMode.user;
-
-    const file_obj = await registerFileDBManual(file_object);
-
-    // remove metadata JSON if needed
-    if (!config_api.getConfigItem('ytdl_include_metadata')) {
-        utils.deleteJSONFile(file_id, type, multiUserMode && multiUserMode.file_path)
-    }
-
-    return file_obj;
-}
-
-exports.registerFileDB2 = async (file_path, type, user_uid = null, category = null, sub_id = null, cropFileSettings = null, file_object = null) => {
-    if (!file_object) file_object = generateFileObject2(file_path, type);
+exports.registerFileDB = async (file_path, type, user_uid = null, category = null, sub_id = null, cropFileSettings = null, file_object = null) => {
+    if (!file_object) file_object = generateFileObject(file_path, type);
     if (!file_object) {
         logger.error(`Could not find associated JSON file for ${type} file ${file_path}`);
         return false;
     }
 
-    utils.fixVideoMetadataPerms2(file_path, type);
+    utils.fixVideoMetadataPerms(file_path, type);
 
     // add thumbnail path
-    file_object['thumbnailPath'] = utils.getDownloadedThumbnail2(file_path, type);
+    file_object['thumbnailPath'] = utils.getDownloadedThumbnail(file_path);
 
     // if category exists, only include essential info
     if (category) file_object['category'] = {name: category['name'], uid: category['uid']};
@@ -216,7 +182,7 @@ exports.registerFileDB2 = async (file_path, type, user_uid = null, category = nu
 
     // remove metadata JSON if needed
     if (!config_api.getConfigItem('ytdl_include_metadata')) {
-        utils.deleteJSONFile2(file_path, type)
+        utils.deleteJSONFile(file_path, type)
     }
 
     return file_obj;
@@ -234,36 +200,7 @@ async function registerFileDBManual(file_object) {
     return file_object;
 }
 
-function generateFileObject(id, type, customPath = null, sub = null) {
-    if (!customPath && sub) {
-        customPath = getAppendedBasePathSub(sub, config_api.getConfigItem('ytdl_subscriptions_base_path'));
-    }
-    var jsonobj = (type === 'audio') ? utils.getJSONMp3(id, customPath, true) : utils.getJSONMp4(id, customPath, true);
-    if (!jsonobj) {
-        return null;
-    }
-    const ext = (type === 'audio') ? '.mp3' : '.mp4'
-    const file_path = utils.getTrueFileName(jsonobj['_filename'], type); // path.join(type === 'audio' ? audioFolderPath : videoFolderPath, id + ext);
-    // console.
-    var stats = fs.statSync(path.join(__dirname, file_path));
-
-    var title = jsonobj.title;
-    var url = jsonobj.webpage_url;
-    var uploader = jsonobj.uploader;
-    var upload_date = jsonobj.upload_date;
-    upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : 'N/A';
-
-    var size = stats.size;
-
-    var thumbnail = jsonobj.thumbnail;
-    var duration = jsonobj.duration;
-    var isaudio = type === 'audio';
-    var description = jsonobj.description;
-    var file_obj = new utils.File(id, title, thumbnail, isaudio, duration, url, uploader, size, file_path, upload_date, description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
-    return file_obj;
-}
-
-function generateFileObject2(file_path, type) {
+function generateFileObject(file_path, type) {
     var jsonobj = utils.getJSON(file_path, type);
     if (!jsonobj) {
         return null;
@@ -380,30 +317,12 @@ exports.importUnregisteredFiles = async () => {
             const file_is_registered = !!(files_with_same_url.find(file_with_same_url => path.resolve(file_with_same_url.path) === path.resolve(file.path)));
             if (!file_is_registered) {
                 // add additional info
-                await exports.registerFileDB2(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
+                await exports.registerFileDB(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
                 logger.verbose(`Added discovered file to the database: ${file.id}`);
             }
         }
     }
 
-}
-
-exports.preimportUnregisteredSubscriptionFile = async (sub, appendedBasePath) => {
-    const preimported_file_paths = [];
-
-    const files = await utils.getDownloadedFilesByType(appendedBasePath, sub.type);
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        // check if file exists in db, if not add it
-        const file_is_registered = await exports.getRecord('files', {id: file.id, sub_id: sub.id});
-        if (!file_is_registered) {
-            // add additional info
-            await exports.registerFileDB2(file['path'], sub.type, sub.user_uid, null, sub.id, null, file);
-            preimported_file_paths.push(file['path']);
-            logger.verbose(`Preemptively added subscription file to the database: ${file.id}`);
-        }
-    }
-    return preimported_file_paths;
 }
 
 exports.addMetadataPropertyToDB = async (property_key) => {

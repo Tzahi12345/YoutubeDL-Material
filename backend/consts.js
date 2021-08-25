@@ -134,14 +134,6 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_subscriptions_check_interval',
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
     },
-    'ytdl_subscriptions_check_interval': {
-        'key': 'ytdl_subscriptions_check_interval',
-        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
-    },
-    'ytdl_subscriptions_download_delay': {
-        'key': 'ytdl_subscriptions_download_delay',
-        'path': 'YoutubeDLMaterial.Subscriptions.download_delay'
-    },
     'ytdl_subscriptions_redownload_fresh_uploads': {
         'key': 'ytdl_subscriptions_redownload_fresh_uploads',
         'path': 'YoutubeDLMaterial.Subscriptions.redownload_fresh_uploads'

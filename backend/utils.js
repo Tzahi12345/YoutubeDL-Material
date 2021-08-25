@@ -144,24 +144,7 @@ function getJSONByType(type, name, customPath, openReadPerms = false) {
     return type === 'audio' ? getJSONMp3(name, customPath, openReadPerms) : getJSONMp4(name, customPath, openReadPerms)
 }
 
-function getDownloadedThumbnail(name, type, customPath = null) {
-    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path') : config_api.getConfigItem('ytdl_video_folder_path');
-
-    let jpgPath = path.join(customPath, name + '.jpg');
-    let webpPath = path.join(customPath, name + '.webp');
-    let pngPath = path.join(customPath, name + '.png');
-
-    if (fs.existsSync(jpgPath))
-        return jpgPath;
-    else if (fs.existsSync(webpPath))
-        return webpPath;
-    else if (fs.existsSync(pngPath))
-        return pngPath;
-    else
-        return null;
-}
-
-function getDownloadedThumbnail2(file_path, type) {
+function getDownloadedThumbnail(file_path) {
     const file_path_no_extension = removeFileExtension(file_path);
 
     let jpgPath = file_path_no_extension + '.jpg';
@@ -199,29 +182,7 @@ function getExpectedFileSize(input_info_jsons) {
     return expected_filesize;
 }
 
-function fixVideoMetadataPerms(name, type, customPath = null) {
-    if (is_windows) return;
-    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
-                                                   : config_api.getConfigItem('ytdl_video_folder_path');
-
-    const ext = type === 'audio' ? '.mp3' : '.mp4';
-
-    const files_to_fix = [
-        // JSONs
-        path.join(customPath, name + '.info.json'),
-        path.join(customPath, name + ext + '.info.json'),
-        // Thumbnails
-        path.join(customPath, name + '.webp'),
-        path.join(customPath, name + '.jpg')
-    ];
-
-    for (const file of files_to_fix) {
-        if (!fs.existsSync(file)) continue;
-        fs.chmodSync(file, 0o644);
-    }
-}
-
-function fixVideoMetadataPerms2(file_path, type) {
+function fixVideoMetadataPerms(file_path, type) {
     if (is_windows) return;
 
     const ext = type === 'audio' ? '.mp3' : '.mp4';
@@ -243,19 +204,7 @@ function fixVideoMetadataPerms2(file_path, type) {
     }
 }
 
-function deleteJSONFile(name, type, customPath = null) {
-    if (!customPath) customPath = type === 'audio' ? config_api.getConfigItem('ytdl_audio_folder_path')
-                                                   : config_api.getConfigItem('ytdl_video_folder_path');
-
-    const ext = type === 'audio' ? '.mp3' : '.mp4';
-    let json_path = path.join(customPath, name + '.info.json');
-    let alternate_json_path = path.join(customPath, name + ext + '.info.json');
-
-    if (fs.existsSync(json_path)) fs.unlinkSync(json_path);
-    if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
-}
-
-function deleteJSONFile2(file_path, type) {
+function deleteJSONFile(file_path, type) {
     const ext = type === 'audio' ? '.mp3' : '.mp4';
 
     const file_path_no_extension = removeFileExtension(file_path);
@@ -291,7 +240,6 @@ async function removeIDFromArchive(archive_path, id) {
     const updatedData = dataArray.join('\n');
     await fs.writeFile(archive_path, updatedData);
     if (line) return line;
-    if (err) throw err;
 }
 
 function durationStringToNumber(dur_str) {
@@ -429,12 +377,9 @@ module.exports = {
     getJSON: getJSON,
     getTrueFileName: getTrueFileName,
     getDownloadedThumbnail: getDownloadedThumbnail,
-    getDownloadedThumbnail2: getDownloadedThumbnail2,
     getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
-    fixVideoMetadataPerms2: fixVideoMetadataPerms2,
     deleteJSONFile: deleteJSONFile,
-    deleteJSONFile2: deleteJSONFile2,
     removeIDFromArchive: removeIDFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
     createContainerZipFile: createContainerZipFile,
