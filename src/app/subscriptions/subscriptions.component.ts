@@ -5,6 +5,7 @@ import { SubscribeDialogComponent } from 'app/dialogs/subscribe-dialog/subscribe
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
 import { SubscriptionInfoDialogComponent } from 'app/dialogs/subscription-info-dialog/subscription-info-dialog.component';
+import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
 @Component({
   selector: 'app-subscriptions',
@@ -32,8 +33,8 @@ export class SubscriptionsComponent implements OnInit {
     });
   }
 
-  getSubscriptions() {
-    this.subscriptions_loading = true;
+  getSubscriptions(show_loading = true) {
+    if (show_loading) this.subscriptions_loading = true;
     this.subscriptions = null;
     this.postsService.getAllSubscriptions().subscribe(res => {
       this.channel_subscriptions = [];
@@ -100,6 +101,17 @@ export class SubscriptionsComponent implements OnInit {
         this.postsService.reloadSubscriptions();
       }
     })
+  }
+
+  editSubscription(sub) {
+    const dialogRef = this.dialog.open(EditSubscriptionDialogComponent, {
+      data: {
+        sub: this.postsService.getSubscriptionByID(sub.id)
+      }
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.getSubscriptions(false);
+    });
   }
 
   // snackbar helper
