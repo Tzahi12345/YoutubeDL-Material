@@ -52,8 +52,8 @@
         <div style="padding:5px">
             <div *ngIf="!loading && file_obj.thumbnailURL" class="img-div">
                 <div [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" style="position: relative">
-                    <img *ngIf="!hide_image || is_playlist" [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailPath ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
-                    <video *ngIf="elevated && !is_playlist" autoplay loop muted [muted]="true" [ngClass]="{'video-small': card_size === 'small', 'video': card_size === 'medium', 'video-large': card_size === 'large'}" [src]="streamURL">
+                    <img *ngIf="!hide_image || is_playlist || (file_obj.type === 'audio' || file_obj.isAudio)" [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailPath ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
+                    <video *ngIf="elevated && !is_playlist && !(file_obj.type === 'audio' || file_obj.isAudio)" autoplay loop muted [muted]="true" [ngClass]="{'video-small': card_size === 'small', 'video': card_size === 'medium', 'video-large': card_size === 'large'}" [src]="streamURL">
                     </video>
                     <div class="duration-time">
                         {{file_length}}
