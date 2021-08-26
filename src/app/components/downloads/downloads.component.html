@@ -78,8 +78,10 @@
                        aria-label="Select page of downloads">
         </mat-paginator>
       </div>
-      <div style="margin-top: 10px; margin-left: 5px;">
-        <button mat-stroked-button (click)="clearFinishedDownloads()"><ng-container i18n="Clear finished downloads">Clear finished downloads</ng-container></button>
+      <div class="downloads-action-button-div">
+        <button [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
+        <button style="margin-left: 10px;" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
+        <button color="warn" style="margin-left: 10px;" mat-stroked-button (click)="clearFinishedDownloads()"><ng-container i18n="Clear finished downloads">Clear finished downloads</ng-container></button>
       </div>
 </div>
 

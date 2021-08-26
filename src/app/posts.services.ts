@@ -425,8 +425,16 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
+    pauseAllDownloads() {
+        return this.http.post(this.path + 'pauseAllDownloads', {}, this.httpOptions);
+    }
+
     resumeDownload(download_uid) {
         return this.http.post(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    resumeAllDownloads() {
+        return this.http.post(this.path + 'resumeAllDownloads', {}, this.httpOptions);
     }
 
     restartDownload(download_uid) {

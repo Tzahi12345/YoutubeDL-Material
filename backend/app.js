@@ -1719,9 +1719,9 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
     if (!fs.existsSync(file_path)) {
         logger.error(`File ${file_path} could not be found! UID: ${uid}, ID: ${file_obj.id}`);
     }
-    const stat = fs.statSync(file_path)
-    const fileSize = stat.size
-    const range = req.headers.range
+    const stat = fs.statSync(file_path);
+    const fileSize = stat.size;
+    const range = req.headers.range;
     if (range) {
         const parts = range.replace(/bytes=/, "").split("-")
         const start = parseInt(parts[0], 10)
@@ -1761,7 +1761,7 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
     else res.sendStatus(404);
 });
 
-  // Downloads management
+// Downloads management
 
 app.get('/api/downloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
@@ -1799,9 +1799,29 @@ app.post('/api/pauseDownload', optionalJwt, async (req, res) => {
     res.send({success: success});
 });
 
+app.post('/api/pauseAllDownloads', optionalJwt, async (req, res) => {
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    let success = true;
+    const all_running_downloads = await db_api.getRecords('download_queue', {paused: false, finished: false, user_uid: user_uid});
+    for (let i = 0; i < all_running_downloads.length; i++) {
+        success &= await downloader_api.pauseDownload(all_running_downloads[i]['uid']);
+    }
+    res.send({success: success});
+});
+
 app.post('/api/resumeDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
     const success = await downloader_api.resumeDownload(download_uid);
+    res.send({success: success});
+});
+
+app.post('/api/resumeAllDownloads', optionalJwt, async (req, res) => {
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    let success = true;
+    const all_paused_downloads = await db_api.getRecords('download_queue', {paused: true, user_uid: user_uid, error: null});
+    for (let i = 0; i < all_paused_downloads.length; i++) {
+        success &= await downloader_api.resumeDownload(all_paused_downloads[i]['uid']);
+    }
     res.send({success: success});
 });
 

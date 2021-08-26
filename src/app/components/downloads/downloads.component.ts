@@ -48,6 +48,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   valid_sessions_length = 0;
 
+  paused_download_exists = false;
+  running_download_exists = false;
+
   STEP_INDEX_TO_LABEL = {
       0: 'Creating download',
       1: 'Getting info',
@@ -81,7 +84,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getCurrentDownloadsRecurring() {
+  getCurrentDownloadsRecurring(): void {
     if (!this.postsService.config['Extra']['enable_downloads_manager']) {
       this.router.navigate(['/home']);
       return;
@@ -108,6 +111,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
           this.dataSource = new MatTableDataSource<Download>(this.downloads);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
+
+          this.paused_download_exists = this.downloads.find(download => download['paused'] && !download['error']);
+          this.running_download_exists = this.downloads.find(download => !download['paused'] && !download['finished']);
       } else {
         // failed to get downloads
       }
@@ -142,10 +148,26 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
+  pauseAllDownloads(): void {
+    this.postsService.pauseAllDownloads().subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to pause all downloads! See server logs for more info.');
+      }
+    });
+  }
+
   resumeDownload(download_uid: string): void {
     this.postsService.resumeDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar('Failed to resume download! See server logs for more info.');
+      }
+    });
+  }
+
+  resumeAllDownloads(): void {
+    this.postsService.resumeAllDownloads().subscribe(res => {
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to resume all downloads! See server logs for more info.');
       }
     });
   }
