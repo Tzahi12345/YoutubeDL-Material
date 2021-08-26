@@ -36,6 +36,7 @@ export class UnifiedFileCardComponent implements OnInit {
   thumbnailBlobURL = null;
 
   streamURL = null;
+  hide_image = false;
 
   // input/output
   @Input() loading = true;
@@ -147,6 +148,20 @@ export class UnifiedFileCardComponent implements OnInit {
     fullLocation += '&t=,10';
 
     return fullLocation;
+  }
+
+  onMouseOver() {
+    this.elevated = true;
+    setTimeout(() => {
+      if (this.elevated) {
+        this.hide_image = true;
+      }
+    }, 500);
+  }
+
+  onMouseOut() {
+    this.elevated = false;
+    this.hide_image = false;
   }
 
 }
