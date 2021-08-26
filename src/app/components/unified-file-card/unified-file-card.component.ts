@@ -35,6 +35,8 @@ export class UnifiedFileCardComponent implements OnInit {
   // optional vars
   thumbnailBlobURL = null;
 
+  streamURL = null;
+
   // input/output
   @Input() loading = true;
   @Input() theme = null;
@@ -78,6 +80,8 @@ export class UnifiedFileCardComponent implements OnInit {
       const bloburl = URL.createObjectURL(blob);
       this.thumbnailBlobURL = this.sanitizer.bypassSecurityTrustUrl(bloburl);*/
     }
+
+    this.streamURL = this.generateStreamURL();
   }
 
   emitDeleteFile(blacklistMode = false) {
@@ -126,6 +130,23 @@ export class UnifiedFileCardComponent implements OnInit {
     this.contextMenu.menuData = { 'item': {id: 1, name: 'hi'} };
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
+  }
+
+  generateStreamURL() {
+    let baseLocation = 'stream/';
+    let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${this.file_obj['uid']}`;
+
+    if (this.jwtString) {
+      fullLocation += `&jwt=${this.jwtString}`;
+    }
+
+    if (this.file_obj['sub_id']) {
+      fullLocation += `&sub_id=${this.file_obj['sub_id']}`;
+    }
+
+    fullLocation += '&t=,10';
+
+    return fullLocation;
   }
 
 }
