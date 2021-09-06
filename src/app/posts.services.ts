@@ -413,8 +413,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getSubscriptions', {}, this.httpOptions);
     }
 
-    getCurrentDownloads() {
-        return this.http.get(this.path + 'downloads', this.httpOptions);
+    getCurrentDownloads(uids = null) {
+        return this.http.post(this.path + 'downloads', {uids: uids}, this.httpOptions);
     }
 
     getCurrentDownload(download_uid) {

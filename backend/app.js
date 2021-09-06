@@ -1763,9 +1763,13 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
 
 // Downloads management
 
-app.get('/api/downloads', optionalJwt, async (req, res) => {
+app.post('/api/downloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
-    const downloads = await db_api.getRecords('download_queue', {user_uid: user_uid});
+    const uids = req.body.uids;
+    let downloads = await db_api.getRecords('download_queue', {user_uid: user_uid});
+
+    if (uids) downloads = downloads.filter(download => uids.includes(download['uid']));
+
     res.send({downloads: downloads});
 });
 
