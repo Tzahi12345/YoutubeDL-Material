@@ -193,8 +193,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   parseFileNames() {    
     this.playlist = [];
     for (let i = 0; i < this.uids.length; i++) {
-      const uid = this.uids[i];
-
       let file_obj = null;
       if (this.playlist_id) {
         file_obj = this.db_playlist['file_objs'][i];
