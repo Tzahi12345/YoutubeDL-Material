@@ -38,7 +38,7 @@ jobs:
           Copy-Item -Path ./backend/public -Recurse -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/subscriptions -Recurse -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/video -Recurse -Destination ./build/youtubedl-material
-          New-Item -Path ./build/youtubedl-material -Name users
+          Copy-Item -Path ./backend/users -Recurse -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/*.js -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/*.json -Destination ./build/youtubedl-material
       - name: upload build artifact
