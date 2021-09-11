@@ -140,7 +140,7 @@ exports.registerUser = async function(req, res) {
 
 exports.login = async (username, password) => {
   const user = await db_api.getRecord('users', {name: username});
-  if (!user) { logger.error(`User ${username} not found`); false }
+  if (!user) { logger.error(`User ${username} not found`); return false }
   if (user.auth_method && user.auth_method !== 'internal') { return false }
   return await bcrypt.compare(password, user.passhash) ? user : false;
 }
