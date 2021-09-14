@@ -170,7 +170,7 @@
     </form>
 </div>
 <br/>
-<div class="centered big" id="bar_div" *ngIf="current_download; else nofile">
+<div class="centered big" id="bar_div" *ngIf="current_download && autoplay">
     <div class="margined">
         <div [ngClass]="(+percentDownloaded > 99)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="current_download.percent_complete && current_download.percent_complete > 1;else indeterminateprogress">
             <mat-progress-bar style="border-radius: 5px;" mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
@@ -185,9 +185,10 @@
     </div>
     <br/>
 </div>
-<ng-template #nofile>
 
-</ng-template>
+<div style="display: flex; justify-content: center;" *ngIf="downloads && downloads.length > 0 && !autoplay">
+    <app-downloads style="width: 80%; margin-bottom: 10px" [uids]="download_uids"></app-downloads>
+</div>
 
 <ng-container *ngIf="cachedFileManagerEnabled || fileManagerEnabled">
     <app-recent-videos #recentVideos></app-recent-videos>

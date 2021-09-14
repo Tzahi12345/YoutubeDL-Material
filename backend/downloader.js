@@ -308,7 +308,7 @@ async function downloadQueuedFile(download_uid) {
                     }
 
                     // renames file if necessary due to bug
-                    if (!fs.existsSync(output_json['_filename'] && fs.existsSync(output_json['_filename'] + '.webm'))) {
+                    if (!fs.existsSync(output_json['_filename']) && fs.existsSync(output_json['_filename'] + '.webm')) {
                         try {
                             fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
                             logger.info('Renamed ' + file_name + '.webm to ' + file_name);

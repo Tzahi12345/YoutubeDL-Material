@@ -82,7 +82,7 @@ export class UnifiedFileCardComponent implements OnInit {
       this.thumbnailBlobURL = this.sanitizer.bypassSecurityTrustUrl(bloburl);*/
     }
 
-    this.streamURL = this.generateStreamURL();
+    if (this.file_obj) this.streamURL = this.generateStreamURL();
   }
 
   emitDeleteFile(blacklistMode = false) {

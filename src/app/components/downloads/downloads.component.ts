@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -38,6 +38,8 @@ import { MatSort } from '@angular/material/sort';
   ],
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
+
+  @Input() uids = null;
 
   downloads_check_interval = 1000;
   downloads = [];
@@ -100,7 +102,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   getCurrentDownloads(): void {
-    this.postsService.getCurrentDownloads().subscribe(res => {
+    this.postsService.getCurrentDownloads(this.uids).subscribe(res => {
       this.downloads_retrieved = true;
       if (res['downloads'] !== null 
         && res['downloads'] !== undefined

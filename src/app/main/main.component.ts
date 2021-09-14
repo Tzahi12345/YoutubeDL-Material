@@ -95,6 +95,7 @@ export class MainComponent implements OnInit {
   playlist_thumbnails = {};
   downloading_content = {'audio': {}, 'video': {}};
   downloads: Download[] = [];
+  download_uids: string[] = [];
   current_download: Download = null;
 
   urlForm = new FormControl('', [Validators.required]);
@@ -430,7 +431,6 @@ export class MainComponent implements OnInit {
     }
 
     const type = this.audioOnly ? 'audio' : 'video';
-    this.downloadingfile = true;
 
     const customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
 
@@ -443,10 +443,12 @@ export class MainComponent implements OnInit {
       }
     }
 
+    this.downloadingfile = true;
     this.postsService.downloadFile(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
       customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
         this.current_download = res['download'];
-        this.downloadingfile = true;
+        this.downloads.push(res['download']);
+        this.download_uids.push(res['download']['uid']);
     }, error => { // can't access server
       this.downloadingfile = false;
       this.current_download = null;
@@ -454,7 +456,7 @@ export class MainComponent implements OnInit {
     });
 
     if (!this.autoplay) {
-        const download_queued_message = $localize`Download for ${this.url}:url has been queued!`;
+        const download_queued_message = $localize`Download for ${this.url}:url: has been queued!`;
         this.postsService.openSnackBar(download_queued_message);
         this.url = '';
         this.downloadingfile = false;

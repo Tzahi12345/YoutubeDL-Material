@@ -1,6 +1,6 @@
 <div [hidden]="!(downloads && downloads.length > 0)">
-    <div class="mat-elevation-z8">
-        <mat-table matSort [dataSource]="dataSource">
+    <div style="overflow: hidden;" [ngClass]="uids ? 'rounded mat-elevation-z2' : 'mat-elevation-z8'">
+        <mat-table style="overflow: hidden" [ngClass]="uids ? 'rounded-top' : null" matSort [dataSource]="dataSource">
       
           <!-- Date Column -->
           <ng-container matColumnDef="date">
@@ -69,22 +69,22 @@
             </mat-cell>
           </ng-container>
       
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-header-row [ngClass]="uids ? 'rounded-top' : null" *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
       
-        <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+        <mat-paginator [ngClass]="uids ? 'rounded-bottom' : null" [pageSizeOptions]="[5, 10, 20]"
                        showFirstLastButtons 
                        aria-label="Select page of downloads">
         </mat-paginator>
       </div>
-      <div class="downloads-action-button-div">
+      <div *ngIf="!uids" class="downloads-action-button-div">
         <button [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
         <button style="margin-left: 10px;" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
         <button color="warn" style="margin-left: 10px;" mat-stroked-button (click)="clearFinishedDownloads()"><ng-container i18n="Clear finished downloads">Clear finished downloads</ng-container></button>
       </div>
 </div>
 
-<div *ngIf="(!downloads || downloads.length === 0) && downloads_retrieved">
+<div *ngIf="(!downloads || downloads.length === 0) && downloads_retrieved && !uids">
   <h4 style="text-align: center; margin-top: 10px;" i18n="No downloads label">No downloads available!</h4>
 </div>

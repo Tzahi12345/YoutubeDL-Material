@@ -18,3 +18,15 @@ mat-header-cell, mat-cell {
     margin-top: 10px;
     margin-left: 5px;
 }
+
+.rounded-top {
+    border-radius: 16px 16px 0px 0px !important;
+}
+
+.rounded-bottom {
+    border-radius: 0px 0px 16px 16px !important;
+}
+
+.rounded {
+    border-radius: 16px 16px 16px 16px !important;
+}
