@@ -61,7 +61,8 @@
                     <button *ngIf="!element.paused" (click)="cancelDownload(element.uid)" mat-icon-button matTooltip="Cancel" i18n-matTooltip="Cancel"><mat-icon>cancel</mat-icon></button>
                   </ng-container>
                   <ng-container *ngIf="element.finished">
-                    <button (click)="watchContent(element)" mat-icon-button matTooltip="Watch content" i18n-matTooltip="Watch content"><mat-icon>smart_display</mat-icon></button>
+                    <button *ngIf="!element.error" (click)="watchContent(element)" mat-icon-button matTooltip="Watch content" i18n-matTooltip="Watch content"><mat-icon>smart_display</mat-icon></button>
+                    <button *ngIf="element.error" (click)="showError(element)" mat-icon-button matTooltip="Show error" i18n-matTooltip="Show error"><mat-icon>warning</mat-icon></button>
                     <button (click)="restartDownload(element.uid)" mat-icon-button matTooltip="Restart" i18n-matTooltip="Restart"><mat-icon>restart_alt</mat-icon></button>
                   </ng-container>
                   <button *ngIf="element.finished || element.paused" (click)="clearDownload(element.uid)" mat-icon-button matTooltip="Clear" i18n-matTooltip="Clear"><mat-icon>delete</mat-icon></button>

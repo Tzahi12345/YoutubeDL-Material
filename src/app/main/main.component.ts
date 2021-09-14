@@ -915,11 +915,15 @@ export class MainComponent implements OnInit {
         this.current_download = res['download'];
         this.percentDownloaded = this.current_download.percent_complete;
 
-        if (this.current_download['finished']) {
+        if (this.current_download['finished'] && !this.current_download['error']) {
           const container = this.current_download['container'];
           const is_playlist = this.current_download['file_uids'].length > 1;    
           this.downloadHelper(container, this.current_download['type'], is_playlist, false);
           this.current_download = null;
+        } else if (this.current_download['finished'] && this.current_download['error']) {
+          this.downloadingfile = false;
+          this.current_download = null;
+          this.openSnackBar('Download failed!', 'OK.');
         }
       } else {
         // console.log('failed to get new download');

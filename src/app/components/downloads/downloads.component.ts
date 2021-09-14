@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, EventEmitter } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
 import { MatSort } from '@angular/material/sort';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-downloads',
@@ -54,10 +55,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   running_download_exists = false;
 
   STEP_INDEX_TO_LABEL = {
-      0: 'Creating download',
-      1: 'Getting info',
-      2: 'Downloading file',
-      3: 'Complete'
+      0: $localize`Creating download`,
+      1: $localize`Getting info`,
+      2: $localize`Downloading file`,
+      3: $localize`Complete`
   }
 
   displayedColumns: string[] = ['date', 'title', 'stage', 'subscription', 'progress', 'actions'];
@@ -72,7 +73,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog) { }
+  constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog, private clipboard: Clipboard) { }
 
   ngOnInit(): void {
     if (this.postsService.initialized) {
@@ -228,6 +229,27 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
 
     return downloads_old;
+  }
+
+  showError(download) {
+    const copyToClipboardEmitter = new EventEmitter<boolean>();
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: $localize`Error for ${download['url']}:url:`,
+        dialogText: download['error'],
+        submitText: $localize`Copy to clipboard`,
+        cancelText: $localize`Close`,
+        closeOnSubmit: false,
+        onlyEmitOnDone: true,
+        doneEmitter: copyToClipboardEmitter
+      }
+    });
+    copyToClipboardEmitter.subscribe(done => {
+      if (done) {
+        this.postsService.openSnackBar($localize`Copied to clipboard!`);
+        this.clipboard.copy(download['error']);
+      }
+    });
   }
 }
 
