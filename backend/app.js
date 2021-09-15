@@ -779,7 +779,9 @@ async function autoUpdateYoutubeDL() {
         })
         .catch(err => {
             logger.error(`Failed to check ${default_downloader} version for an update.`)
-            logger.error(err)
+            logger.error(err);
+            resolve(false);
+            return false;
         });
     });
 }

@@ -42,6 +42,10 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_include_metadata',
         'path': 'YoutubeDLMaterial.Downloader.include_metadata'
     },
+    'ytdl_max_concurrent_downloads': {
+        'key': 'ytdl_max_concurrent_downloads',
+        'path': 'YoutubeDLMaterial.Downloader.max_concurrent_downloads'
+    },
     'ytdl_download_rate_limit': {
         'key': 'ytdl_download_rate_limit',
         'path': 'YoutubeDLMaterial.Downloader.download_rate_limit'

@@ -141,10 +141,6 @@ export class UnifiedFileCardComponent implements OnInit {
       fullLocation += `&jwt=${this.jwtString}`;
     }
 
-    if (this.file_obj['sub_id']) {
-      fullLocation += `&sub_id=${this.file_obj['sub_id']}`;
-    }
-
     fullLocation += '&t=,10';
 
     return fullLocation;

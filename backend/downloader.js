@@ -156,7 +156,8 @@ async function checkDownloads() {
     const waiting_downloads = downloads.filter(download => !download['paused'] && download['finished_step'] && !download['finished']);
     for (let i = 0; i < waiting_downloads.length; i++) {
         const waiting_download = waiting_downloads[i];
-        if (running_downloads_count >= 5/*config_api.getConfigItem('ytdl_max_concurrent_downloads')*/) break;
+        const max_concurrent_downloads = config_api.getConfigItem('ytdl_max_concurrent_downloads');
+        if (max_concurrent_downloads < 0 || running_downloads_count >= max_concurrent_downloads) break;
 
         if (waiting_download['finished_step'] && !waiting_download['finished']) {
             // move to next step

@@ -188,6 +188,7 @@ const DEFAULT_CONFIG = {
         "safe_download_override": false,
         "include_thumbnail": true,
         "include_metadata": true,
+        "max_concurrent_downloads": 5,
         "download_rate_limit": ""
       },
       "Extra": {
