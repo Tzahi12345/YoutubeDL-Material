@@ -1072,6 +1072,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     let sort = req.body.sort;
     let range = req.body.range;
     let text_search = req.body.text_search;
+    let file_type_filter = req.body.file_type_filter;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     const filter_obj = {user_uid: uuid};
@@ -1083,6 +1084,9 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
             filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
         }
     }
+
+    if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;
+    else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
     
     files = await db_api.getRecords('files', filter_obj, false, sort, range, text_search);
     let file_count = await db_api.getRecords('files', filter_obj, true);

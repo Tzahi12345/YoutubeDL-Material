@@ -238,8 +238,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
     }
 
-    getAllFiles(sort, range, text_search) {
-        return this.http.post(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search}, this.httpOptions);
+    getAllFiles(sort, range, text_search, file_type_filter) {
+        return this.http.post(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
     }
 
     getFullTwitchChat(id, type, uuid = null, sub = null) {

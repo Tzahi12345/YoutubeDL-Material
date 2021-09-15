@@ -52,6 +52,7 @@ export class RecentVideosComponent implements OnInit {
     }
   };
   filterProperty = this.filterProperties['upload_date'];
+  fileTypeFilter = 'both';
   
   playlists = null;
 
@@ -94,10 +95,16 @@ export class RecentVideosComponent implements OnInit {
       }
     });
 
-    // set filter property to cached
+    // set filter property to cached value
     const cached_filter_property = localStorage.getItem('filter_property');
     if (cached_filter_property && this.filterProperties[cached_filter_property]) {
       this.filterProperty = this.filterProperties[cached_filter_property];
+    }
+
+    // set file type filter to cached value
+    const cached_file_type_filter = localStorage.getItem('file_type_filter');
+    if (cached_file_type_filter) {
+      this.fileTypeFilter = cached_file_type_filter;
     }
 
     this.searchChangedSubject
@@ -131,6 +138,11 @@ export class RecentVideosComponent implements OnInit {
     this.getAllFiles();
   }
 
+  fileTypeFilterChanged(value) {
+    localStorage.setItem('file_type_filter', value);
+    this.getAllFiles();
+  }
+
   toggleModeChange() {
     this.descendingMode = !this.descendingMode;
     this.getAllFiles();
@@ -143,7 +155,7 @@ export class RecentVideosComponent implements OnInit {
     const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
     const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
     const range = [current_file_index, current_file_index + this.pageSize];
-    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null).subscribe(res => {
+    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter).subscribe(res => {
       this.file_count = res['file_count'];
       this.paged_data = res['files'];
       for (let i = 0; i < this.paged_data.length; i++) {
