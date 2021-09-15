@@ -114,8 +114,9 @@ exports.clearDownload = async (download_uid) => {
     return await db_api.removeRecord('download_queue', {uid: download_uid});
 }
 
-// questions
-// how do we want to manage queued downloads that errored in any step? do we set the index back and finished_step to true or let the manager do it?
+async function handleDownloadError(download_uid, error_message) {
+    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error_message, finished: true, running: false});
+}
 
 async function setupDownloads() {
     await fixDownloadState();
@@ -271,7 +272,7 @@ async function downloadQueuedFile(download_uid) {
             clearInterval(download_checker);
             if (err) {
                 logger.error(err.stderr);
-
+                await handleDownloadError(download_uid, err.stderr);
                 resolve(false);
                 return;
             } else if (output) {
@@ -353,7 +354,9 @@ async function downloadQueuedFile(download_uid) {
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {
-                    logger.error('Downloaded file failed to result in metadata object.');
+                    const error_message = 'Downloaded file failed to result in metadata object.';
+                    logger.error(error_message);
+                    await handleDownloadError(download_uid, error_message);
                 }
 
                 const file_uids = file_objs.map(file_obj => file_obj.uid);
@@ -546,18 +549,16 @@ async function getVideoInfoByURL(url, args = [], download_uid = null) {
                     const error = `Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`;
                     logger.error(error);
                     if (download_uid) {
-                        await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error, finished: true, running: false});
+                        await handleDownloadError(download_uid, error);
                     }
                     resolve(null);
                 }
             } else {
-                logger.error(`Error while retrieving info on video with URL ${url} with the following message: ${err}`);
-                if (err.stderr) {
-                    logger.error(`${err.stderr}`)
-                }
+                let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
+                if (err.stderr) error_message += `\n\n${err.stderr}`;
+                logger.error(error_message);
                 if (download_uid) {
-                    const error = 'Failed to get info, see server logs for specific error.';
-                    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: err.stderr ? err.stderr : error, finished: true, running: false});
+                    await handleDownloadError(download_uid, error_message);
                 }
                 resolve(null);
             }
