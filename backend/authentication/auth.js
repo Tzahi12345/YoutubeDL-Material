@@ -1,7 +1,7 @@
-const path = require('path');
 const config_api = require('../config');
 const consts = require('../consts');
-const fs = require('fs-extra');
+const logger = require('../logger');
+
 const jwt = require('jsonwebtoken');
 const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
@@ -12,15 +12,13 @@ var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // other required vars
-let logger = null;
 let db_api = null;
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function(db_api, input_logger) {
-  setLogger(input_logger)
+exports.initialize = function(db_api) {
   setDB(db_api);
 
   /*************************
@@ -51,10 +49,6 @@ exports.initialize = function(db_api, input_logger) {
         // or you could create a new account
     }
   }));
-}
-
-function setLogger(input_logger) {
-  logger = input_logger;
 }
 
 function setDB(input_db_api) {
@@ -291,17 +285,12 @@ exports.getUserVideo = async function(user_uid, file_uid, requireSharing = false
   return file;
 }
 
-exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).assign({fileNames: new_filenames});
-  return true;
-}
-
 exports.removePlaylist = async function(user_uid, playlistID) {
   await db_api.removeRecord('playlist', {playlistID: playlistID});
   return true;
 }
 
-exports.getUserPlaylists = async function(user_uid, user_files = null) {
+exports.getUserPlaylists = async function(user_uid) {
   return await db_api.getRecords('playlists', {user_uid: user_uid});
 }
 

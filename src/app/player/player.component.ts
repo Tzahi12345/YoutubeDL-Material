@@ -4,7 +4,6 @@ import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
@@ -167,18 +166,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       const subscription = res['subscription'];
       this.subscription = subscription;
       this.type === this.subscription.type;
-      subscription.videos.forEach(video => {
-        if (video['uid'] === this.uid) {
-          this.db_file = video;
-          this.postsService.incrementViewCount(this.db_file['uid'], this.sub_id, this.uuid).subscribe(res => {}, err => {
-            console.error('Failed to increment view count');
-            console.error(err);
-          });
-          this.uids = [this.db_file['uid']];
-          this.show_player = true;
-          this.parseFileNames();
-        }
-      });
+      this.uids = this.subscription.videos.map(video => video['uid']);
+      this.parseFileNames();
     }, err => {
       this.openSnackBar(`Failed to find subscription ${this.sub_id}`, 'Dismiss');
     });
@@ -204,9 +193,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   parseFileNames() {    
     this.playlist = [];
     for (let i = 0; i < this.uids.length; i++) {
-      const uid = this.uids[i];
-
-      const file_obj = this.playlist_id ? this.db_playlist['file_objs'][i] : this.db_file;
+      let file_obj = null;
+      if (this.playlist_id) {
+        file_obj = this.db_playlist['file_objs'][i];
+      } else if (this.sub_id) {
+        file_obj = this.subscription['videos'][i];
+      } else {
+        file_obj = this.db_file;
+      }
 
       const mime_type = file_obj.isAudio ? 'audio/mp3' : 'video/mp4' 
 
@@ -344,22 +338,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
    playlistChanged() {
     return JSON.stringify(this.playlist) !== this.original_playlist;
-  }
-
-  updatePlaylist() {
-    const fileNames = this.getFileNames();
-    this.playlist_updating = true;
-    this.postsService.updatePlaylistFiles(this.playlist_id, fileNames, this.type).subscribe(res => {
-    this.playlist_updating = false;
-      if (res['success']) {
-        const fileNamesEncoded = fileNames.join('|nvr|');
-        this.router.navigate(['/player', {fileNames: fileNamesEncoded, type: this.type, id: this.playlist_id}]);
-        this.openSnackBar('Successfully updated playlist.', '');
-        this.original_playlist = JSON.stringify(this.playlist);
-      } else {
-        this.openSnackBar('ERROR: Failed to update playlist.', '');
-      }
-    })
   }
 
   openShareDialog() {

@@ -40,7 +40,7 @@ const subscriptions_api = require('../subscriptions');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 
-db_api.initialize(db, users_db, logger);
+db_api.initialize(db, users_db);
 
 
 describe('Database', async function() {
@@ -286,5 +286,43 @@ describe('Multi User', async function() {
     //         assert(video_obj);
     //     });
     // });
+
+});
     
+describe('Downloader', function() {
+    const downloader_api = require('../downloader');
+    downloader_api.initialize(db_api);
+    const url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    const options = {
+        ui_uid: uuid(),
+        user: 'admin'
+    }
+
+    beforeEach(async function() {
+        await db_api.connectToDB();
+        await db_api.removeAllRecords('download_queue');
+    });
+
+    it('Get file info', async function() {
+
+    });
+
+    it('Download file', async function() {
+        this.timeout(300000); 
+        const returned_download = await downloader_api.createDownload(url, 'video', options);
+        console.log(returned_download);
+        await utils.wait(20000);
+
+    });
+
+    it('Queue file', async function() {
+        this.timeout(300000); 
+        const returned_download = await downloader_api.createDownload(url, 'video', options);
+        console.log(returned_download);
+        await utils.wait(20000);
+    });
+
+    it('Pause file', async function() {
+
+    });
 });

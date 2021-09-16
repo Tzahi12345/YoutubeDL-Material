@@ -1,4 +1,4 @@
-<div (mouseover)="elevated=true" (mouseout)="elevated=false" (contextmenu)="onRightClick($event)" style="position: relative; width: fit-content;">
+<div (mouseenter)="onMouseOver()" (mouseleave)="onMouseOut()" (contextmenu)="onRightClick($event)" style="position: relative; width: fit-content;">
     <div *ngIf="!loading" class="download-time">
         <mat-icon class="audio-video-icon">{{(file_obj.type === 'audio' || file_obj.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
         &nbsp;&nbsp;
@@ -51,8 +51,10 @@
     <mat-card [matTooltip]="null" (click)="navigateToFile($event)" matRipple class="file-mat-card" [ngClass]="{'small-mat-card': card_size === 'small', 'file-mat-card': card_size === 'medium', 'large-mat-card': card_size === 'large', 'mat-elevation-z4': !elevated, 'mat-elevation-z8': elevated}">
         <div style="padding:5px">
             <div *ngIf="!loading && file_obj.thumbnailURL" class="img-div">
-                <div style="position: relative">
-                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailPath ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
+                <div [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" style="position: relative">
+                    <img *ngIf="!hide_image || is_playlist || (file_obj.type === 'audio' || file_obj.isAudio)" [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailPath ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
+                    <video *ngIf="elevated && !is_playlist && !(file_obj.type === 'audio' || file_obj.isAudio)" autoplay loop muted [muted]="true" [ngClass]="{'video-small': card_size === 'small', 'video': card_size === 'medium', 'video-large': card_size === 'large'}" [src]="streamURL">
+                    </video>
                     <div class="duration-time">
                         {{file_length}}
                     </div>

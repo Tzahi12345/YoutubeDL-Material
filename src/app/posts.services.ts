@@ -174,7 +174,7 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, ui_uid = null, cropFileSettings = null) {
+    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
         return this.http.post(this.path + 'downloadFile', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
@@ -182,7 +182,6 @@ export class PostsService implements CanActivate {
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
                                                     youtubePassword: youtubePassword,
-                                                    ui_uid: ui_uid,
                                                     type: type,
                                                     cropFileSettings: cropFileSettings}, this.httpOptions);
     }
@@ -239,8 +238,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
     }
 
-    getAllFiles(sort, range, text_search) {
-        return this.http.post(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search}, this.httpOptions);
+    getAllFiles(sort, range, text_search, file_type_filter) {
+        return this.http.post(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
     }
 
     getFullTwitchChat(id, type, uuid = null, sub = null) {
@@ -296,8 +295,8 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
     }
 
-    getFileInfo(fileNames, type, urlMode) {
-        return this.http.post(this.path + 'getVideoInfos', {fileNames: fileNames, type: type, urlMode: urlMode}, this.httpOptions);
+    getFileFormats(url) {
+        return this.http.post(this.path + 'getFileFormats', {url: url}, this.httpOptions);
     }
 
     getLogs(lines = 50) {
@@ -343,12 +342,6 @@ export class PostsService implements CanActivate {
 
     updatePlaylist(playlist) {
         return this.http.post(this.path + 'updatePlaylist', {playlist: playlist}, this.httpOptions);
-    }
-
-    updatePlaylistFiles(playlist_id, fileNames, type) {
-        return this.http.post(this.path + 'updatePlaylistFiles', {playlist_id: playlist_id,
-                                                            fileNames: fileNames,
-                                                            type: type}, this.httpOptions);
     }
 
     addFileToPlaylist(playlist_id, file_uid) {
@@ -420,24 +413,46 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'getSubscriptions', {}, this.httpOptions);
     }
 
-    // current downloads
-    getCurrentDownloads() {
-        return this.http.get(this.path + 'downloads', this.httpOptions);
+    getCurrentDownloads(uids = null) {
+        return this.http.post(this.path + 'downloads', {uids: uids}, this.httpOptions);
     }
 
-    // current download
-    getCurrentDownload(session_id, download_id) {
-        return this.http.post(this.path + 'download', {download_id: download_id, session_id: session_id}, this.httpOptions);
+    getCurrentDownload(download_uid) {
+        return this.http.post(this.path + 'download', {download_uid: download_uid}, this.httpOptions);
     }
 
-    // clear downloads. download_id is optional, if it exists only 1 download will be cleared
-    clearDownloads(delete_all = false, session_id = null, download_id = null) {
-        return this.http.post(this.path + 'clearDownloads', {delete_all: delete_all,
-                                                            download_id: download_id,
-                                                            session_id: session_id ? session_id : this.session_id}, this.httpOptions);
+    pauseDownload(download_uid) {
+        return this.http.post(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
-    // updates the server to the latest version
+    pauseAllDownloads() {
+        return this.http.post(this.path + 'pauseAllDownloads', {}, this.httpOptions);
+    }
+
+    resumeDownload(download_uid) {
+        return this.http.post(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    resumeAllDownloads() {
+        return this.http.post(this.path + 'resumeAllDownloads', {}, this.httpOptions);
+    }
+
+    restartDownload(download_uid) {
+        return this.http.post(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    cancelDownload(download_uid) {
+        return this.http.post(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    clearDownload(download_uid) {
+        return this.http.post(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
+    }
+
+    clearFinishedDownloads() {
+        return this.http.post(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    }
+
     updateServer(tag) {
         return this.http.post(this.path + 'updateServer', {tag: tag}, this.httpOptions);
     }

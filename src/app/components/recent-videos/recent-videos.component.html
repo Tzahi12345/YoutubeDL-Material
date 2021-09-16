@@ -46,8 +46,20 @@
         </div>
     </div>
 
-    <mat-paginator class="paginator" #paginator *ngIf="paged_data && paged_data.length > 0" (page)="pageChangeEvent($event)" [length]="file_count"
-              [pageSize]="pageSize"
-              [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
-    </mat-paginator>
+    <div>
+        <div style="position: absolute; margin-left: -8px; margin-top: 5px; scale: 0.8">
+            <mat-form-field>
+                <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>
+                <mat-select color="accent" [(ngModel)]="fileTypeFilter" (selectionChange)="fileTypeFilterChanged($event.value)">
+                    <mat-option value="both"><ng-container i18n="Both">Both</ng-container></mat-option>
+                    <mat-option value="video_only"><ng-container i18n="Video only">Video only</ng-container></mat-option>
+                    <mat-option value="audio_only"><ng-container i18n="Audio only">Audio only</ng-container></mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-paginator class="paginator" #paginator *ngIf="paged_data && paged_data.length > 0" (page)="pageChangeEvent($event)" [length]="file_count"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
+        </mat-paginator>
+    </div>
 </div>

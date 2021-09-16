@@ -58,12 +58,6 @@
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-2">
-                        <mat-form-field class="text-field" color="accent">
-                            <input [(ngModel)]="new_config['Subscriptions']['download_delay']" matInput placeholder="Download delay" i18n-placeholder="Download delay input placeholder">
-                            <mat-hint><ng-container i18n="Download delay input hint">Units is seconds, will force youtube-dl to sleep between videos in a subscription by the specified number of seconds. Only include numbers.</ng-container></mat-hint>
-                        </mat-form-field>
-                    </div>
                     <div class="col-12 mt-4 mb-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['redownload_fresh_uploads']" matTooltip="Sometimes new videos are downloaded before being fully processed. This setting will mean new videos will be checked for a higher quality version the following day." i18n-matTooltip="Redownload fresh uploads tooltip"><ng-container i18n="Redownload fresh uploads">Redownload fresh uploads</ng-container></mat-checkbox>
                     </div>
@@ -185,6 +179,12 @@
                 <div class="row">
                     <div class="col-12 mt-3 mb-4">
                         <mat-form-field class="text-field" color="accent">
+                            <input type="number" [(ngModel)]="new_config['Downloader']['max_concurrent_downloads']" matInput placeholder="Max concurrent downloads" i18n-placeholder="Max concurrent downloads">
+                            <mat-hint><ng-container i18n="Max concurrent downloads input hint">Limits the amount of downloads that can be simultaneously downloaded. Use -1 for no limit.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-2 mb-4">
+                        <mat-form-field class="text-field" color="accent">
                             <input [(ngModel)]="new_config['Downloader']['download_rate_limit']" matInput placeholder="Download rate limit" i18n-placeholder="Download rate limit input placeholder">
                             <mat-hint><ng-container i18n="Download rate limit input hint">Rate limits your downloads to the specified amount. Ex: 200K</ng-container></mat-hint>
                         </mat-form-field>
@@ -225,7 +225,7 @@
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['download_only_mode']"><ng-container i18n="Download only mode setting">Download only mode</ng-container></mat-checkbox>
                     </div>
                     <div class="col-12">
-                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_multi_download_mode']"><ng-container i18n="Allow multi-download mode setting">Allow multi-download mode</ng-container></mat-checkbox>
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_autoplay']"><ng-container i18n="Allow autoplay setting">Allow autoplay</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-let CONFIG_ITEMS = {
+exports.CONFIG_ITEMS = {
     // Host
     'ytdl_url': {
         'key': 'ytdl_url',
@@ -42,6 +42,10 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_include_metadata',
         'path': 'YoutubeDLMaterial.Downloader.include_metadata'
     },
+    'ytdl_max_concurrent_downloads': {
+        'key': 'ytdl_max_concurrent_downloads',
+        'path': 'YoutubeDLMaterial.Downloader.max_concurrent_downloads'
+    },
     'ytdl_download_rate_limit': {
         'key': 'ytdl_download_rate_limit',
         'path': 'YoutubeDLMaterial.Downloader.download_rate_limit'
@@ -64,9 +68,9 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_download_only_mode',
         'path': 'YoutubeDLMaterial.Extra.download_only_mode'
     },
-    'ytdl_allow_multi_download_mode': {
-        'key': 'ytdl_allow_multi_download_mode',
-        'path': 'YoutubeDLMaterial.Extra.allow_multi_download_mode'
+    'ytdl_allow_autoplay': {
+        'key': 'ytdl_allow_autoplay',
+        'path': 'YoutubeDLMaterial.Extra.allow_autoplay'
     },
     'ytdl_enable_downloads_manager': {
         'key': 'ytdl_enable_downloads_manager',
@@ -133,14 +137,6 @@ let CONFIG_ITEMS = {
     'ytdl_subscriptions_check_interval': {
         'key': 'ytdl_subscriptions_check_interval',
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
-    },
-    'ytdl_subscriptions_check_interval': {
-        'key': 'ytdl_subscriptions_check_interval',
-        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
-    },
-    'ytdl_subscriptions_download_delay': {
-        'key': 'ytdl_subscriptions_download_delay',
-        'path': 'YoutubeDLMaterial.Subscriptions.download_delay'
     },
     'ytdl_subscriptions_redownload_fresh_uploads': {
         'key': 'ytdl_subscriptions_redownload_fresh_uploads',
@@ -210,7 +206,7 @@ let CONFIG_ITEMS = {
     }
 };
 
-AVAILABLE_PERMISSIONS = [
+exports.AVAILABLE_PERMISSIONS = [
     'filemanager',
     'settings',
     'subscriptions',
@@ -219,11 +215,6 @@ AVAILABLE_PERMISSIONS = [
     'downloads_manager'
 ];
 
-const DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
+exports.DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
 
-module.exports = {
-    CONFIG_ITEMS: CONFIG_ITEMS,
-    AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
-    CURRENT_VERSION: 'v4.2',
-    DETAILS_BIN_PATH: DETAILS_BIN_PATH
-}
+exports.CURRENT_VERSION = 'v4.2';

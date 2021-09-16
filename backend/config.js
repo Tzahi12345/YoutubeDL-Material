@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 const fs = require('fs');
 
 let CONFIG_ITEMS = require('./consts.js')['CONFIG_ITEMS'];
@@ -5,11 +7,7 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 
 let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.json';
 
-var logger = null;
-function setLogger(input_logger) { logger = input_logger; }
-
-function initialize(input_logger) {
-    setLogger(input_logger);
+function initialize() {
     ensureConfigFileExists();
     ensureConfigItemsExist();
 }
@@ -175,7 +173,7 @@ module.exports = {
     globalArgsRequiresSafeDownload: globalArgsRequiresSafeDownload
 }
 
-DEFAULT_CONFIG = {
+const DEFAULT_CONFIG = {
     "YoutubeDLMaterial": {
       "Host": {
         "url": "http://example.com",
@@ -190,6 +188,7 @@ DEFAULT_CONFIG = {
         "safe_download_override": false,
         "include_thumbnail": true,
         "include_metadata": true,
+        "max_concurrent_downloads": 5,
         "download_rate_limit": ""
       },
       "Extra": {
@@ -197,7 +196,7 @@ DEFAULT_CONFIG = {
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
-        "allow_multi_download_mode": true,
+        "allow_autoplay": true,
         "enable_downloads_manager": true,
         "allow_playlist_categorization": true
       },
@@ -219,8 +218,7 @@ DEFAULT_CONFIG = {
         "allow_subscriptions": true,
         "subscriptions_base_path": "subscriptions/",
         "subscriptions_check_interval": "86400",
-        "redownload_fresh_uploads": false,
-        "download_delay": ""
+        "redownload_fresh_uploads": false
       },
       "Users": {
         "base_path": "users/",
