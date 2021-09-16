@@ -58,7 +58,7 @@
                   <ng-container *ngIf="!element.finished">
                     <button (click)="pauseDownload(element.uid)" *ngIf="!element.paused || !element.finished_step" [disabled]="element.paused && !element.finished_step" mat-icon-button matTooltip="Pause" i18n-matTooltip="Pause"><mat-spinner [diameter]="28" *ngIf="element.paused && !element.finished_step" class="icon-button-spinner"></mat-spinner><mat-icon>pause</mat-icon></button>
                     <button (click)="resumeDownload(element.uid)" *ngIf="element.paused && element.finished_step" mat-icon-button matTooltip="Resume" i18n-matTooltip="Resume"><mat-icon>play_arrow</mat-icon></button>
-                    <button *ngIf="!element.paused" (click)="cancelDownload(element.uid)" mat-icon-button matTooltip="Cancel" i18n-matTooltip="Cancel"><mat-icon>cancel</mat-icon></button>
+                    <button *ngIf="false && !element.paused" (click)="cancelDownload(element.uid)" mat-icon-button matTooltip="Cancel" i18n-matTooltip="Cancel"><mat-icon>cancel</mat-icon></button>
                   </ng-container>
                   <ng-container *ngIf="element.finished">
                     <button *ngIf="!element.error" (click)="watchContent(element)" mat-icon-button matTooltip="Watch content" i18n-matTooltip="Watch content"><mat-icon>smart_display</mat-icon></button>
