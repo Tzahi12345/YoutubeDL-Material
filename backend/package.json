@@ -61,6 +61,7 @@
     "progress": "^2.0.3",
     "ps-node": "^0.1.6",
     "read-last-lines": "^1.7.2",
+    "rxjs": "^7.3.0",
     "shortid": "^2.2.15",
     "unzipper": "^0.10.10",
     "uuidv4": "^6.0.6",
