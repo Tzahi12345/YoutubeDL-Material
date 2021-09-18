@@ -1,4 +1,4 @@
-FROM alpine:3.12 as frontend
+FROM alpine:latest as frontend
 
 RUN apk add --no-cache \
   npm
@@ -15,7 +15,7 @@ RUN ng build --prod
 
 #--------------#
 
-FROM alpine:3.12
+FROM alpine:latest
 
 ENV UID=1000 \
   GID=1000 \
