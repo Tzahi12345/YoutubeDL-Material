@@ -190,7 +190,7 @@ async function collectInfo(download_uid) {
         options.customFileFolderPath = user_path + path.sep;
     }
 
-    let args = await generateArgs(url, type, options, download['user_uid']);
+    let args = await exports.generateArgs(url, type, options, download['user_uid']);
 
     // get video info prior to download
     let info = await getVideoInfoByURL(url, args, download_uid);
@@ -209,7 +209,7 @@ async function collectInfo(download_uid) {
     if (category && category['custom_output']) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
-        args = await generateArgs(url, type, options, download['user_uid']);
+        args = await exports.generateArgs(url, type, options, download['user_uid']);
         info = await getVideoInfoByURL(url, args, download_uid);
     }
 
@@ -369,7 +369,7 @@ async function downloadQueuedFile(download_uid) {
 
 // helper functions
 
-async function generateArgs(url, type, options, user_uid = null) {
+exports.generateArgs = async (url, type, options, user_uid = null) => {
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
 

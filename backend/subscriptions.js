@@ -543,5 +543,6 @@ module.exports = {
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
     initialize             : initialize,
-    updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple
+    updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple,
+    generateOptionsForSubscriptionDownload: generateOptionsForSubscriptionDownload
 }
