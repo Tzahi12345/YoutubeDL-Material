@@ -837,7 +837,7 @@ async function checkExistsWithTimeout(filePath, timeout) {
         fs.access(filePath, fs.constants.R_OK, function (err) {
             if (!err) {
                 clearTimeout(timer);
-                watcher.close();
+                if (watcher) watcher.close();
                 resolve();
             }
         });
@@ -847,7 +847,7 @@ async function checkExistsWithTimeout(filePath, timeout) {
         var watcher = fs.watch(dir, function (eventType, filename) {
             if (eventType === 'rename' && filename === basename) {
                 clearTimeout(timer);
-                watcher.close();
+                if (watcher) watcher.close();
                 resolve();
             }
         });
