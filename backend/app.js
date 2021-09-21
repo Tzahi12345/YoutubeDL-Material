@@ -142,6 +142,14 @@ var validDownloadingAgents = [
 
 const subscription_timeouts = {};
 
+let version_info = null;
+if (fs.existsSync('version.json')) {
+    version_info = fs.readJSONSync('version.json');
+    logger.verbose(`Version info: ${JSON.stringify(version_info, null, 2)}`);
+} else {
+    version_info = {'type': 'N/A', 'tag': 'N/A', 'commit': 'N/A', 'date': 'N/A'};
+}
+
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
 let writeConfigMode = process.env.write_ytdl_config;
@@ -930,6 +938,10 @@ app.post('/api/setConfig', optionalJwt, function(req, res) {
         logger.error('Tried to save invalid config file!')
         res.sendStatus(400);
     }
+});
+
+app.get('/api/versionInfo', (req, res) => {
+    res.send({version_info: version_info});
 });
 
 app.post('/api/restartServer', optionalJwt, (req, res) => {

@@ -118,6 +118,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     this.postsService.reloadCategories();
+
+    this.postsService.getVersionInfo().subscribe(res => {
+      this.postsService.version_info = res['version_info'];
+    });
   }
 
   // theme stuff

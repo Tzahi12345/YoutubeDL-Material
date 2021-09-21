@@ -60,6 +60,7 @@ export class PostsService implements CanActivate {
     categories = null;
     sidenav = null;
     locale = isoLangs['en'];
+    version_info = null;
 
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar, private titleService: Title) {
@@ -451,6 +452,10 @@ export class PostsService implements CanActivate {
 
     clearFinishedDownloads() {
         return this.http.post(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    }
+
+    getVersionInfo() {
+        return this.http.get(this.path + 'versionInfo', this.httpOptions);
     }
 
     updateServer(tag) {

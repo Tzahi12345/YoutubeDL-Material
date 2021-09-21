@@ -25,6 +25,23 @@ jobs:
           cd backend
           npm install
           sudo npm install -g @angular/cli
+      - name: prepare localization
+        run: |
+          sudo npm install -g xliff-to-json
+          xliff-to-json ./src/assets/i18n
+      - name: Set hash
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "version.json"
+          json: '{"type": "autobuild", "tag": "N/A", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          dir: 'backend/'
       - name: build
         run: ng build --prod
       - name: prepare artifact upload
