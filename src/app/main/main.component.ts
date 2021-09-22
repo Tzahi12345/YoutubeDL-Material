@@ -212,7 +212,7 @@ export class MainComponent implements OnInit {
     error: false
   };
 
-  argsChangedSubject: Subject<boolean> = new Subject<boolean>(false);
+  argsChangedSubject: Subject<boolean> = new Subject<boolean>();
   simulatedOutput = '';
 
   constructor(public postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
