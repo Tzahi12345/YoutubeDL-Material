@@ -175,11 +175,25 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
+    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
         return this.http.post(this.path + 'downloadFile', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
+                                                    additionalArgs: additionalArgs,
+                                                    customOutput: customOutput,
+                                                    youtubeUsername: youtubeUsername,
+                                                    youtubePassword: youtubePassword,
+                                                    type: type,
+                                                    cropFileSettings: cropFileSettings}, this.httpOptions);
+    }
+
+    generateArgs(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
+        return this.http.post(this.path + 'generateArgs', {url: url,
+                                                    selectedHeight: selectedQuality,
+                                                    customQualityConfiguration: customQualityConfiguration,
+                                                    customArgs: customArgs,
+                                                    additionalArgs: additionalArgs,
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
                                                     youtubePassword: youtubePassword,

@@ -369,7 +369,7 @@ async function downloadQueuedFile(download_uid) {
 
 // helper functions
 
-exports.generateArgs = async (url, type, options, user_uid = null) => {
+exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
 
@@ -510,7 +510,7 @@ exports.generateArgs = async (url, type, options, user_uid = null) => {
     // filter out incompatible args
     downloadConfig = filterArgs(downloadConfig, is_audio);
 
-    logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
+    if (!simulated) logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
     return downloadConfig;
 }
 

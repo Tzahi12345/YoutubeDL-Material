@@ -129,7 +129,9 @@ mat-form-field.mat-form-field {
 }
 
 .edit-button {
-    margin-left: 10px;
+    margin-left: 5px;
+    margin-top: -6px;
+    margin-bottom: -5px;
     top: -5px;
 }
 

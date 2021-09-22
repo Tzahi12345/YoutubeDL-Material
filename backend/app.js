@@ -987,8 +987,9 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
     const url = req.body.url;
     const type = req.body.type;
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
-    var options = {
+    const options = {
         customArgs: req.body.customArgs,
+        additionalArgs: req.body.additionalArgs,
         customOutput: req.body.customOutput,
         selectedHeight: req.body.selectedHeight,
         customQualityConfiguration: req.body.customQualityConfiguration,
@@ -996,7 +997,7 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
         youtubePassword: req.body.youtubePassword,
         ui_uid: req.body.ui_uid,
         cropFileSettings: req.body.cropFileSettings
-    }
+    };
 
     const download = await downloader_api.createDownload(url, type, options, user_uid);
 
@@ -1010,6 +1011,26 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
 app.post('/api/killAllDownloads', optionalJwt, async function(req, res) {
     const result_obj = await killAllDownloads();
     res.send(result_obj);
+});
+
+app.post('/api/generateArgs', optionalJwt, async function(req, res) {
+    const url = req.body.url;
+    const type = req.body.type;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const options = {
+        customArgs: req.body.customArgs,
+        additionalArgs: req.body.additionalArgs,
+        customOutput: req.body.customOutput,
+        selectedHeight: req.body.selectedHeight,
+        customQualityConfiguration: req.body.customQualityConfiguration,
+        youtubeUsername: req.body.youtubeUsername,
+        youtubePassword: req.body.youtubePassword,
+        ui_uid: req.body.ui_uid,
+        cropFileSettings: req.body.cropFileSettings
+    };
+
+    const args = await downloader_api.generateArgs(url, type, options, user_uid, true);
+    res.send({args: args});
 });
 
 // gets all download mp3s

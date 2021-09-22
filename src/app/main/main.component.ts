@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import {PostsService} from '../posts.services';
 import {FileCardComponent} from '../file-card/file-card.component';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import {FormControl, Validators} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,7 +9,6 @@ import { saveAs } from 'file-saver';
 import { YoutubeSearchService, Result } from '../youtube-search.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Platform } from '@angular/cdk/platform';
-import { v4 as uuid } from 'uuid';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { RecentVideosComponent } from 'app/components/recent-videos/recent-videos.component';
 
@@ -50,6 +49,7 @@ export class MainComponent implements OnInit {
   customArgsEnabled = false;
   customArgs = null;
   customOutputEnabled = false;
+  replaceArgs = false;
   customOutput = null;
   youtubeAuthEnabled = false;
   youtubeUsername = null;
@@ -212,6 +212,7 @@ export class MainComponent implements OnInit {
     error: false
   };
 
+  argsChangedSubject: Subject<boolean> = new Subject<boolean>(false);
   simulatedOutput = '';
 
   constructor(public postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
@@ -224,8 +225,6 @@ export class MainComponent implements OnInit {
     if (this.autoStartDownload) {
       this.downloadClicked();
     }
-
-    setInterval(() => this.getSimulatedOutput(), 1000);
   }
 
   async loadConfig() {
@@ -259,6 +258,10 @@ export class MainComponent implements OnInit {
 
       if (localStorage.getItem('customOutputEnabled') !== null) {
         this.customOutputEnabled = localStorage.getItem('customOutputEnabled') === 'true';
+      }
+
+      if (localStorage.getItem('replaceArgs') !== null) {
+        this.replaceArgs = localStorage.getItem('replaceArgs') === 'true';
       }
 
       if (localStorage.getItem('youtubeAuthEnabled') !== null) {
@@ -322,6 +325,12 @@ export class MainComponent implements OnInit {
       // set auto start flag to true
       this.autoStartDownload = true;
     }
+
+    this.argsChangedSubject
+      .debounceTime(500)
+      .subscribe((should_simulate) => {
+        if (should_simulate) this.getSimulatedOutput();
+    });
 
     this.setCols();
   }
@@ -412,7 +421,8 @@ export class MainComponent implements OnInit {
     this.urlError = false;
 
     // get common args
-    const customArgs = (this.customArgsEnabled ? this.customArgs : null);
+    const customArgs = (this.customArgsEnabled && this.replaceArgs ? this.customArgs : null);
+    const additionalArgs = (this.customArgsEnabled && !this.replaceArgs ? this.customArgs : null);
     const customOutput = (this.customOutputEnabled ? this.customOutput : null);
     const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
     const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
@@ -445,7 +455,7 @@ export class MainComponent implements OnInit {
 
     this.downloadingfile = true;
     this.postsService.downloadFile(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
-      customQualityConfiguration, customArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
+      customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
         this.current_download = res['download'];
         this.downloads.push(res['download']);
         this.download_uids.push(res['download']['uid']);
@@ -593,6 +603,7 @@ export class MainComponent implements OnInit {
       if (str !== this.last_valid_url && this.allowQualitySelect) {
         // get info
         this.getURLInfo(str);
+        this.argsChangedSubject.next(true);
       }
       this.last_valid_url = str;
     }
@@ -630,79 +641,44 @@ export class MainComponent implements OnInit {
     }
   }
 
-  getSimulatedOutput() {
-    const customArgsExists = this.customArgsEnabled && this.customArgs;
-    const globalArgsExists = this.globalCustomArgs && this.globalCustomArgs !== '';
+  argChanged(): void {
+    this.argsChangedSubject.next(true);
+  }
 
-    let full_string_array: string[] = [];
-    const base_string_array = ['youtube-dl', this.url];
+  getSimulatedOutput(): void {
+    // this function should be very similar to downloadFile()
+    const customArgs = (this.customArgsEnabled && this.replaceArgs ? this.customArgs : null);
+    const additionalArgs = (this.customArgsEnabled && !this.replaceArgs ? this.customArgs : null);
+    const customOutput = (this.customOutputEnabled ? this.customOutput : null);
+    const youtubeUsername = (this.youtubeAuthEnabled && this.youtubeUsername ? this.youtubeUsername : null);
+    const youtubePassword = (this.youtubeAuthEnabled && this.youtubePassword ? this.youtubePassword : null);
 
-    if (customArgsExists) {
-      this.simulatedOutput = base_string_array.join(' ') + ' ' + this.customArgs.split(',,').join(' ');
-      return this.simulatedOutput;
-    }
+    const type = this.audioOnly ? 'audio' : 'video';
 
-    full_string_array.push(...base_string_array);
+    const customQualityConfiguration = type === 'audio' ? this.getSelectedAudioFormat() : this.getSelectedVideoFormat();
 
-    const base_path = this.audioOnly ? this.audioFolderPath : this.videoFolderPath;
-    const ext = this.audioOnly ? '.mp3' : '.mp4';
-    // gets output
-    let output_string_array = ['-o', base_path + '%(title)s' + ext];
-    if (this.customOutputEnabled && this.customOutput) {
-      output_string_array = ['-o', base_path + this.customOutput + ext];
-    }
-    // before pushing output, should check if using an external downloader
-    if (!this.useDefaultDownloadingAgent && this.customDownloadingAgent === 'aria2c') {
-      full_string_array.push('--external-downloader', 'aria2c');
-    }
-    // pushes output
-    full_string_array.push(...output_string_array);
+    let cropFileSettings = null;
 
-    // logic splits into audio and video modes
-    if (this.audioOnly) {
-      // adds base audio string
-      const format_array = [];
-      const audio_format = this.getSelectedAudioFormat();
-      if (audio_format) {
-        format_array.push('-f', audio_format);
-      } else if (this.selectedQuality) {
-        format_array.push('--audio-quality', this.selectedQuality['format_id']);
+    if (this.cropFile) {
+      cropFileSettings = {
+        cropFileStart: this.cropFileStart,
+        cropFileEnd: this.cropFileEnd
       }
-
-      // pushes formats
-      full_string_array.splice(2, 0, ...format_array);
-
-      const additional_params = ['-x', '--audio-format', 'mp3', '--write-info-json', '--print-json'];
-
-      full_string_array.push(...additional_params);
-    } else {
-      // adds base video string
-      let format_array = ['-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'];
-      const video_format = this.getSelectedVideoFormat();
-      if (video_format) {
-        format_array = ['-f', video_format];
-      } else if (this.selectedQuality) {
-        format_array = [`bestvideo[height=${this.selectedQuality['format_id']}]+bestaudio/best[height=${this.selectedQuality}]`];
-      }
-
-      // pushes formats
-      full_string_array.splice(2, 0, ...format_array);
-
-      const additional_params = ['--write-info-json', '--print-json'];
-
-      full_string_array.push(...additional_params);
     }
 
-    if (this.use_youtubedl_archive) {
-      full_string_array.push('--download-archive', 'archive.txt');
-    }
-
-    if (globalArgsExists) {
-      full_string_array = full_string_array.concat(this.globalCustomArgs.split(',,'));
-    }
-
-    this.simulatedOutput = full_string_array.join(' ');
-    return this.simulatedOutput;
+    this.postsService.generateArgs(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
+      customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
+        const simulated_args = res['args'];
+        if (simulated_args) {
+          // hide password if needed
+          const passwordIndex = simulated_args.indexOf('--password');
+          console.log(passwordIndex);
+          if (passwordIndex !== -1 && passwordIndex !== simulated_args.length - 1) {
+            simulated_args[passwordIndex + 1] = simulated_args[passwordIndex + 1].replace(/./g, '*');
+          }
+          this.simulatedOutput = `youtube-dl ${this.url} ${simulated_args.join(' ')}`;
+        }
+    });
   }
 
   errorFormats(url) {
@@ -746,6 +722,7 @@ export class MainComponent implements OnInit {
   videoModeChanged(new_val) {
     this.selectedQuality = '';
     localStorage.setItem('audioOnly', new_val.checked.toString());
+    this.argsChangedSubject.next(true);
   }
 
   autoplayChanged(new_val) {
@@ -754,29 +731,22 @@ export class MainComponent implements OnInit {
 
   customArgsEnabledChanged(new_val) {
     localStorage.setItem('customArgsEnabled', new_val.checked.toString());
-    if (new_val.checked === true && this.customOutputEnabled) {
-      this.customOutputEnabled = false;
-      localStorage.setItem('customOutputEnabled', 'false');
+    this.argsChangedSubject.next(true);
+  }
 
-      this.youtubeAuthEnabled = false;
-      localStorage.setItem('youtubeAuthEnabled', 'false');
-    }
+  replaceArgsChanged(new_val) {
+    localStorage.setItem('replaceArgs', new_val.checked.toString());
+    this.argsChangedSubject.next(true);
   }
 
   customOutputEnabledChanged(new_val) {
     localStorage.setItem('customOutputEnabled', new_val.checked.toString());
-    if (new_val.checked === true && this.customArgsEnabled) {
-      this.customArgsEnabled = false;
-      localStorage.setItem('customArgsEnabled', 'false');
-    }
+    this.argsChangedSubject.next(true);
   }
 
   youtubeAuthEnabledChanged(new_val) {
     localStorage.setItem('youtubeAuthEnabled', new_val.checked.toString());
-    if (new_val.checked === true && this.customArgsEnabled) {
-      this.customArgsEnabled = false;
-      localStorage.setItem('customArgsEnabled', 'false');
-    }
+    this.argsChangedSubject.next(true);
   }
 
   getAudioAndVideoFormats(formats) {
