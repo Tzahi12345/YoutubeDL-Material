@@ -202,7 +202,7 @@ export class RecentVideosComponent implements OnInit {
       } else {
         // normal subscriptions
         !new_tab ? this.router.navigate(['/player', {uid: file.uid,
-                                          type: file.isAudio ? 'audio' : 'video', sub_id: sub.id}]) 
+                                          type: file.isAudio ? 'audio' : 'video'}]) 
                  : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
       }
     } else {
