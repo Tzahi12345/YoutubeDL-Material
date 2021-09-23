@@ -1622,6 +1622,14 @@
         </context-group>
         <note priority="1" from="description">Crop video checkbox</note>
       </trans-unit>
+      <trans-unit id="7220285196408439810" datatype="html">
+        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
+        <target>¡La descarga de <x id="url" equiv-text="d, cropF"/> se ha puesto en cola!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">469</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
