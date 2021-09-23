@@ -45,8 +45,7 @@ async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
             files.push(jsonobj);
             continue;
         }
-        var upload_date = jsonobj.upload_date;
-        upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : null;
+        var upload_date = formatDateString(jsonobj.upload_date);
 
         var isaudio = type === 'audio';
         var file_obj = new File(id, jsonobj.title, jsonobj.thumbnail, isaudio, jsonobj.duration, jsonobj.webpage_url, jsonobj.uploader,
@@ -295,6 +294,10 @@ function removeFileExtension(filename) {
     return filename_parts.join('.');
 }
 
+function formatDateString(date_string) {
+    return date_string ? `${date_string.substring(0, 4)}-${date_string.substring(4, 6)}-${date_string.substring(6, 8)}` : 'N/A';
+}
+
 function createEdgeNGrams(str) {
     if (str && str.length > 3) {
         const minGram = 3
@@ -389,6 +392,7 @@ module.exports = {
     getCurrentDownloader: getCurrentDownloader,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
+    formatDateString: formatDateString,
     cropFile: cropFile,
     createEdgeNGrams: createEdgeNGrams,
     wait: wait,

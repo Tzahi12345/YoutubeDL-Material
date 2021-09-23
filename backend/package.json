@@ -66,6 +66,7 @@
     "unzipper": "^0.10.10",
     "uuidv4": "^6.0.6",
     "winston": "^3.2.1",
+    "xmlbuilder2": "^3.0.2",
     "youtube-dl": "^3.0.2"
   }
 }

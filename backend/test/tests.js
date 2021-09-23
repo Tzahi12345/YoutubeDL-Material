@@ -339,4 +339,14 @@ describe('Downloader', function() {
         const args = await downloader_api.generateArgs(url, 'video', sub_options, 'admin');
         console.log(args);
     });
+
+    it('Generate kodi NFO file', async function() {
+        const nfo_file_path = './test/sample.nfo';
+        if (fs.existsSync(nfo_file_path)) {
+            fs.unlinkSync(nfo_file_path);
+        }
+        const sample_json = fs.readJSONSync('./test/sample.info.json');
+        downloader_api.generateNFOFile(sample_json, nfo_file_path);
+        assert(fs.existsSync(nfo_file_path), true);
+    });
 });
