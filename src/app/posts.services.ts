@@ -60,6 +60,7 @@ export class PostsService implements CanActivate {
     categories = null;
     sidenav = null;
     locale = isoLangs['en'];
+    version_info = null;
 
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
                 public snackBar: MatSnackBar, private titleService: Title) {
@@ -174,11 +175,25 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
+    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
         return this.http.post(this.path + 'downloadFile', {url: url,
                                                     selectedHeight: selectedQuality,
                                                     customQualityConfiguration: customQualityConfiguration,
                                                     customArgs: customArgs,
+                                                    additionalArgs: additionalArgs,
+                                                    customOutput: customOutput,
+                                                    youtubeUsername: youtubeUsername,
+                                                    youtubePassword: youtubePassword,
+                                                    type: type,
+                                                    cropFileSettings: cropFileSettings}, this.httpOptions);
+    }
+
+    generateArgs(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
+        return this.http.post(this.path + 'generateArgs', {url: url,
+                                                    selectedHeight: selectedQuality,
+                                                    customQualityConfiguration: customQualityConfiguration,
+                                                    customArgs: customArgs,
+                                                    additionalArgs: additionalArgs,
                                                     customOutput: customOutput,
                                                     youtubeUsername: youtubeUsername,
                                                     youtubePassword: youtubePassword,
@@ -451,6 +466,10 @@ export class PostsService implements CanActivate {
 
     clearFinishedDownloads() {
         return this.http.post(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    }
+
+    getVersionInfo() {
+        return this.http.get(this.path + 'versionInfo', this.httpOptions);
     }
 
     updateServer(tag) {

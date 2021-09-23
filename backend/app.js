@@ -142,6 +142,14 @@ var validDownloadingAgents = [
 
 const subscription_timeouts = {};
 
+let version_info = null;
+if (fs.existsSync('version.json')) {
+    version_info = fs.readJSONSync('version.json');
+    logger.verbose(`Version info: ${JSON.stringify(version_info, null, 2)}`);
+} else {
+    version_info = {'type': 'N/A', 'tag': 'N/A', 'commit': 'N/A', 'date': 'N/A'};
+}
+
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
 let writeConfigMode = process.env.write_ytdl_config;
@@ -837,7 +845,7 @@ async function checkExistsWithTimeout(filePath, timeout) {
         fs.access(filePath, fs.constants.R_OK, function (err) {
             if (!err) {
                 clearTimeout(timer);
-                watcher.close();
+                if (watcher) watcher.close();
                 resolve();
             }
         });
@@ -847,7 +855,7 @@ async function checkExistsWithTimeout(filePath, timeout) {
         var watcher = fs.watch(dir, function (eventType, filename) {
             if (eventType === 'rename' && filename === basename) {
                 clearTimeout(timer);
-                watcher.close();
+                if (watcher) watcher.close();
                 resolve();
             }
         });
@@ -932,6 +940,10 @@ app.post('/api/setConfig', optionalJwt, function(req, res) {
     }
 });
 
+app.get('/api/versionInfo', (req, res) => {
+    res.send({version_info: version_info});
+});
+
 app.post('/api/restartServer', optionalJwt, (req, res) => {
     // delayed by a little bit so that the client gets a response
     setTimeout(() => {restartServer()}, 100);
@@ -975,8 +987,9 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
     const url = req.body.url;
     const type = req.body.type;
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
-    var options = {
+    const options = {
         customArgs: req.body.customArgs,
+        additionalArgs: req.body.additionalArgs,
         customOutput: req.body.customOutput,
         selectedHeight: req.body.selectedHeight,
         customQualityConfiguration: req.body.customQualityConfiguration,
@@ -984,7 +997,7 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
         youtubePassword: req.body.youtubePassword,
         ui_uid: req.body.ui_uid,
         cropFileSettings: req.body.cropFileSettings
-    }
+    };
 
     const download = await downloader_api.createDownload(url, type, options, user_uid);
 
@@ -998,6 +1011,26 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
 app.post('/api/killAllDownloads', optionalJwt, async function(req, res) {
     const result_obj = await killAllDownloads();
     res.send(result_obj);
+});
+
+app.post('/api/generateArgs', optionalJwt, async function(req, res) {
+    const url = req.body.url;
+    const type = req.body.type;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const options = {
+        customArgs: req.body.customArgs,
+        additionalArgs: req.body.additionalArgs,
+        customOutput: req.body.customOutput,
+        selectedHeight: req.body.selectedHeight,
+        customQualityConfiguration: req.body.customQualityConfiguration,
+        youtubeUsername: req.body.youtubeUsername,
+        youtubePassword: req.body.youtubePassword,
+        ui_uid: req.body.ui_uid,
+        cropFileSettings: req.body.cropFileSettings
+    };
+
+    const args = await downloader_api.generateArgs(url, type, options, user_uid, true);
+    res.send({args: args});
 });
 
 // gets all download mp3s

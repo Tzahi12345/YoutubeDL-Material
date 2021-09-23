@@ -217,8 +217,7 @@ function generateFileObject(file_path, type) {
     var title = jsonobj.title;
     var url = jsonobj.webpage_url;
     var uploader = jsonobj.uploader;
-    var upload_date = jsonobj.upload_date;
-    upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : 'N/A';
+    var upload_date = utils.formatDateString(jsonobj.upload_date);
 
     var size = stats.size;
 

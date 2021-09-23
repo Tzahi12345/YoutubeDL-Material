@@ -13,6 +13,23 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
+      - name: prepare localization
+        run: |
+          sudo npm install -g xliff-to-json
+          xliff-to-json ./src/assets/i18n
+      - name: Set hash
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "version.json"
+          json: '{"type": "docker", "tag": "latest", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          dir: 'backend/'
       - name: setup platform emulator
         uses: docker/setup-qemu-action@v1
       - name: setup multi-arch docker build

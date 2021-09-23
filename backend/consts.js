@@ -114,6 +114,11 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_use_sponsorblock_api',
         'path': 'YoutubeDLMaterial.API.use_sponsorblock_API'
     },
+    'ytdl_generate_nfo_files': {
+        'key': 'ytdl_generate_nfo_files',
+        'path': 'YoutubeDLMaterial.API.generate_NFO_files'
+    },
+
 
     // Themes
     'ytdl_default_theme': {

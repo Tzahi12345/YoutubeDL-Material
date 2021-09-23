@@ -107,6 +107,12 @@ export class RecentVideosComponent implements OnInit {
       this.fileTypeFilter = cached_file_type_filter;
     }
 
+    const sort_order = localStorage.getItem('recent_videos_sort_order');
+
+    if (sort_order) {
+      this.descendingMode = sort_order === 'descending';
+    }
+
     this.searchChangedSubject
       .debounceTime(500)
       .pipe(distinctUntilChanged()
@@ -145,6 +151,7 @@ export class RecentVideosComponent implements OnInit {
 
   toggleModeChange() {
     this.descendingMode = !this.descendingMode;
+    localStorage.setItem('recent_videos_sort_order', this.descendingMode ? 'descending' : 'ascending');
     this.getAllFiles();
   }
 
@@ -195,7 +202,7 @@ export class RecentVideosComponent implements OnInit {
       } else {
         // normal subscriptions
         !new_tab ? this.router.navigate(['/player', {uid: file.uid,
-                                          type: file.isAudio ? 'audio' : 'video', sub_id: sub.id}]) 
+                                          type: file.isAudio ? 'audio' : 'video'}]) 
                  : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
       }
     } else {

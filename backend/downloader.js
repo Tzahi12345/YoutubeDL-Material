@@ -11,6 +11,7 @@ const youtubedl = require('youtube-dl');
 const logger = require('./logger');
 const config_api = require('./config');
 const twitch_api = require('./twitch');
+const { create } = require('xmlbuilder2');
 const categories_api = require('./categories');
 const utils = require('./utils');
 
@@ -190,7 +191,7 @@ async function collectInfo(download_uid) {
         options.customFileFolderPath = user_path + path.sep;
     }
 
-    let args = await generateArgs(url, type, options, download['user_uid']);
+    let args = await exports.generateArgs(url, type, options, download['user_uid']);
 
     // get video info prior to download
     let info = await getVideoInfoByURL(url, args, download_uid);
@@ -209,7 +210,7 @@ async function collectInfo(download_uid) {
     if (category && category['custom_output']) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
-        args = await generateArgs(url, type, options, download['user_uid']);
+        args = await exports.generateArgs(url, type, options, download['user_uid']);
         info = await getVideoInfoByURL(url, args, download_uid);
     }
 
@@ -328,6 +329,10 @@ async function downloadQueuedFile(download_uid) {
                         if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
                     }
 
+                    if (config_api.getConfigItem('ytdl_generate_nfo_files')) {
+                        exports.generateNFOFile(output_json, `${filepath_no_extension}.nfo`);
+                    }
+
                     if (options.cropFileSettings) {
                         await utils.cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
                     }
@@ -369,7 +374,7 @@ async function downloadQueuedFile(download_uid) {
 
 // helper functions
 
-async function generateArgs(url, type, options, user_uid = null) {
+exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
 
@@ -510,7 +515,7 @@ async function generateArgs(url, type, options, user_uid = null) {
     // filter out incompatible args
     downloadConfig = filterArgs(downloadConfig, is_audio);
 
-    logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
+    if (!simulated) logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
     return downloadConfig;
 }
 
@@ -603,4 +608,19 @@ async function checkDownloadPercent(download_uid) {
         const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
         await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
     });
+}
+
+exports.generateNFOFile = (info, output_path) => {
+    const nfo_obj = {
+        episodedetails: {
+            title: info['fulltitle'],
+            episode: info['playlist_index'] ? info['playlist_index'] : undefined,
+            premiered: utils.formatDateString(info['upload_date']),
+            plot: `${info['uploader_url']}\n${info['description']}\n${info['playlist_title'] ? info['playlist_title'] : ''}`,
+            director: info['artist'] ? info['artist'] : info['uploader']
+        }
+    };
+    const doc = create(nfo_obj);
+    const xml = doc.end({ prettyPrint: true });
+    fs.writeFileSync(output_path, xml);
 }

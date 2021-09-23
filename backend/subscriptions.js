@@ -329,7 +329,8 @@ function generateOptionsForSubscriptionDownload(sub, user_uid) {
         selectedHeight: sub.maxQuality && sub.maxQuality !== 'best' ? sub.maxQuality : null,
         customFileFolderPath: getAppendedBasePath(sub, basePath),
         customOutput: sub.custom_output ? `${sub.custom_output}` : `${default_output}`,
-        customArchivePath: path.join(__dirname, basePath, 'archives', sub.name)
+        customArchivePath: path.join(__dirname, basePath, 'archives', sub.name),
+        additionalArgs: sub.custom_args
     }
 
     return base_download_options;
@@ -542,5 +543,6 @@ module.exports = {
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
     initialize             : initialize,
-    updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple
+    updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple,
+    generateOptionsForSubscriptionDownload: generateOptionsForSubscriptionDownload
 }

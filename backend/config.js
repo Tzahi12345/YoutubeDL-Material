@@ -208,7 +208,8 @@ const DEFAULT_CONFIG = {
         "use_twitch_API": false,
         "twitch_API_key": "",
         "twitch_auto_download_chat": false,
-        "use_sponsorblock_API": false
+        "use_sponsorblock_API": false,
+        "generate_NFO_files": false
       },
       "Themes": {
         "default_theme": "default",

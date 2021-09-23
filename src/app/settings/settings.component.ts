@@ -12,6 +12,7 @@ import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialo
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/edit-category-dialog.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -20,7 +21,7 @@ import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/ed
 })
 export class SettingsComponent implements OnInit {
   all_locales = isoLangs;
-  supported_locales = ['en', 'es', 'de', 'fr', 'nl', 'pt', 'it', 'ca', 'cs', 'nb', 'ru', 'zh', 'id', 'en-GB'];
+  supported_locales = ['en', 'es', 'de', 'fr', 'nl', 'pt', 'it', 'ca', 'cs', 'nb', 'ru', 'zh', 'ko', 'id', 'en-GB'];
   initialLocale = localStorage.getItem('locale');
 
   initial_config = null;
@@ -38,17 +39,28 @@ export class SettingsComponent implements OnInit {
   latestGithubRelease = null;
   CURRENT_VERSION = CURRENT_VERSION
 
-  get settingsAreTheSame() {
+  tabs = ['main', 'downloader', 'extra', 'database', 'advanced', 'users', 'logs'];
+  tabIndex = 0;
+  
+  INDEX_TO_TAB = Object.assign({}, this.tabs);
+  TAB_TO_INDEX = {};
+  
+  usersTabDisabledTooltip = $localize`You must enable multi-user mode to access this tab.`;
+
+  get settingsAreTheSame(): boolean {
     this._settingsSame = this.settingsSame()
     return this._settingsSame;
   }
 
-  set settingsAreTheSame(val) {
+  set settingsAreTheSame(val: boolean) {
     this._settingsSame = val;
   }
 
   constructor(public postsService: PostsService, private snackBar: MatSnackBar, private sanitizer: DomSanitizer,
-    private dialog: MatDialog) { }
+    private dialog: MatDialog, private router: Router, private route: ActivatedRoute) {
+      // invert index to tab
+      Object.keys(this.INDEX_TO_TAB).forEach(key => { this.TAB_TO_INDEX[this.INDEX_TO_TAB[key]] = key; });
+    }
 
   ngOnInit() {
     if (this.postsService.initialized) {
@@ -66,6 +78,9 @@ export class SettingsComponent implements OnInit {
     this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());
 
     this.getLatestGithubRelease();
+
+    const tab = this.route.snapshot.paramMap.get('tab');
+    this.tabIndex = tab && this.TAB_TO_INDEX[tab] ? this.TAB_TO_INDEX[tab] : 0;
   }
 
   getConfig() {
@@ -96,6 +111,11 @@ export class SettingsComponent implements OnInit {
 
   cancelSettings() {
     this.new_config = JSON.parse(JSON.stringify(this.initial_config));
+  }
+
+  tabChanged(event) {
+    const index = event['index'];
+    this.router.navigate(['/settings', {tab: this.INDEX_TO_TAB[index]}]);
   }
 
   dropCategory(event: CdkDragDrop<string[]>) {

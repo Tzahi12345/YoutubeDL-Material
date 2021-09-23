@@ -77,6 +77,10 @@ Alternatively, you can port forward the port specified in the config (defaults t
 
 ## Docker
 
+### Host-specific instructions
+
+If you're on a Synology NAS, unRAID or any other possible special case you can check if there's known issues or instructions both in the issue tracker and in the [Wiki!](https://github.com/Tzahi12345/YoutubeDL-Material/wiki#environment-specific-guideshelp)
+
 ### Setup
 
 If you are looking to setup YoutubeDL-Material with Docker, this section is for you. And you're in luck! Docker setup is quite simple.

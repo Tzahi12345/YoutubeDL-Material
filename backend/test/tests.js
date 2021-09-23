@@ -293,6 +293,7 @@ describe('Downloader', function() {
     const downloader_api = require('../downloader');
     downloader_api.initialize(db_api);
     const url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    const sub_id = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
     const options = {
         ui_uid: uuid(),
         user: 'admin'
@@ -324,5 +325,28 @@ describe('Downloader', function() {
 
     it('Pause file', async function() {
 
+    });
+
+    it('Generate args', async function() {
+        const args = await downloader_api.generateArgs(url, 'video', options);
+        console.log(args);
+    });
+
+    it('Generate args - subscription', async function() {
+        subscriptions_api.initialize(db_api, logger);
+        const sub = await subscriptions_api.getSubscription(sub_id);
+        const sub_options = subscriptions_api.generateOptionsForSubscriptionDownload(sub, 'admin');
+        const args = await downloader_api.generateArgs(url, 'video', sub_options, 'admin');
+        console.log(args);
+    });
+
+    it('Generate kodi NFO file', async function() {
+        const nfo_file_path = './test/sample.nfo';
+        if (fs.existsSync(nfo_file_path)) {
+            fs.unlinkSync(nfo_file_path);
+        }
+        const sample_json = fs.readJSONSync('./test/sample.info.json');
+        downloader_api.generateNFOFile(sample_json, nfo_file_path);
+        assert(fs.existsSync(nfo_file_path), true);
     });
 });
