@@ -92,7 +92,7 @@
       </trans-unit>
       <trans-unit id="4a9889d36910edc8323d7bab60858ab3da6d91df" datatype="html">
         <source>Only Audio</source>
-        <target>오디오만</target>
+        <target>오디오만 다운로드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">65,66</context>
@@ -2777,7 +2777,7 @@
       </trans-unit>
       <trans-unit id="72c341bca7ebacc66e8a13f1a527d500619e89ff" datatype="html">
         <source>Stage</source>
-        <target>스테이지</target>
+        <target>상태</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">36</context>
