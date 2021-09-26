@@ -22,7 +22,6 @@ ENV UID=1000 \
   USER=youtube
 
 ENV NO_UPDATE_NOTIFIER=true
-ENV FOREVER_ROOT=/app/.forever
 
 RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
@@ -37,7 +36,7 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
-RUN npm install forever -g
+RUN npm install pm2 -g
 RUN npm install && chown -R $UID:$GID ./
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
@@ -45,4 +44,4 @@ COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "forever", "app.js" ]
+CMD [ "pm2-runtime", "ecosystem.config.js" ]
