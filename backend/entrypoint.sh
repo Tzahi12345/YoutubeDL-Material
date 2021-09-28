@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CMD="pm2-runtime ecosystem.config.js"
+CMD="pm2-runtime pm2.config.js"
 
 # if the first arg starts with "-" pass it to program
 if [ "${1#-}" != "$1" ]; then
