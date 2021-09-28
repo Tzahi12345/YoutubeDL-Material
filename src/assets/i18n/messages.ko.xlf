@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="44d007f6f8a2b19f12d85f9e49647b4ac02d7cbe" datatype="html">
         <source>Crop from (seconds)</source>
-        <target>자르기 시작지점 (초)</target>
+        <target>자르기 시작 지점 (초)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">159</context>
@@ -281,7 +281,7 @@
       </trans-unit>
       <trans-unit id="661206c3ab91fa81e9d8b40afb29f1866b78432f" datatype="html">
         <source>Crop to (seconds)</source>
-        <target>자르기 마무리지점 (초)</target>
+        <target>자르기 끝 지점 (초)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">164</context>
@@ -409,7 +409,7 @@
       </trans-unit>
       <trans-unit id="a9806cf78ce00eb2613eeca11354a97e033377b8" datatype="html">
         <source>Subscribe to playlist or channel</source>
-        <target>재생목록이나 채널 구독</target>
+        <target>채널 혹은 재생목록 구독</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -431,7 +431,7 @@
       </trans-unit>
       <trans-unit id="93efc99ae087fc116de708ecd3ace86ca237cf30" datatype="html">
         <source>The playlist or channel URL</source>
-        <target>재생목록이나 채널 URL</target>
+        <target>채널 혹은 재생목록 URL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -440,7 +440,7 @@
       </trans-unit>
       <trans-unit id="08f5d0ef937ae17feb1b04aff15ad88911e87baf" datatype="html">
         <source>Custom name</source>
-        <target>사용자 지정 이름</target>
+        <target>표시될 이름</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">19</context>
@@ -449,7 +449,7 @@
       </trans-unit>
       <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html">
         <source>Download all uploads</source>
-        <target>모든 업로드 된 파일 다운로드</target>
+        <target>업로드 된 모든 파일 다운로드</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">23</context>
@@ -945,7 +945,7 @@
       </trans-unit>
       <trans-unit id="cba36d610ddba59b6dd6fbec77199eabf0ff2de3" datatype="html">
         <source>Randomize order when playing</source>
-        <target>재생할 때 재생목록 섞기</target>
+        <target>재생시 랜덤 재생</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
           <context context-type="linenumber">13</context>
@@ -963,7 +963,7 @@
       </trans-unit>
       <trans-unit id="33026f57ea65cd9c8a5d917a08083f71a718933a" datatype="html">
         <source>Normal order</source>
-        <target>기본 순서</target>
+        <target>순서 일반</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1016,7 +1016,7 @@
       </trans-unit>
       <trans-unit id="3697f8583ea42868aa269489ad366103d94aece7" datatype="html">
         <source>Editing</source>
-        <target>수정중</target>
+        <target>수정 :</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1025,7 +1025,7 @@
       </trans-unit>
       <trans-unit id="07db550ae114d9faad3a0cbb68bcc16ab6cd31fc" datatype="html">
         <source>Paused</source>
-        <target>일시정지됨</target>
+        <target>구독 일시정지</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">7</context>
@@ -2877,7 +2877,7 @@
       </trans-unit>
       <trans-unit id="7724483709075923163" datatype="html">
         <source>Downloading file</source>
-        <target>다운로드중인 파일</target>
+        <target>파일 다운로드 중</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -3053,7 +3053,7 @@
       </trans-unit>
       <trans-unit id="87fd779c638aa5d04e006cd61890b0584c2da385" datatype="html">
         <source>Replace args</source>
-        <target>인수 교체</target>
+        <target>전체 인수 교체</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">116,117</context>
