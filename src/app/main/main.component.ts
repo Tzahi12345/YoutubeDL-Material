@@ -406,24 +406,28 @@ export class MainComponent implements OnInit {
 
     const selected_quality = this.selectedQuality;
     this.selectedQuality = '';
-
     this.downloadingfile = true;
-    this.postsService.downloadFile(this.url, type, (selected_quality === '' ? null : selected_quality),
-      customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
-        this.current_download = res['download'];
-        this.downloads.push(res['download']);
-        this.download_uids.push(res['download']['uid']);
-    }, () => { // can't access server
-      this.downloadingfile = false;
-      this.current_download = null;
-      this.postsService.openSnackBar('Download failed!', 'OK.');
-    });
 
-    if (!this.autoplay) {
-        const download_queued_message = $localize`Download for ${this.url}:url: has been queued!`;
-        this.postsService.openSnackBar(download_queued_message);
-        this.url = '';
+    const urls = this.getURLArray(this.url);
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i];
+      this.postsService.downloadFile(url, type, (selected_quality === '' ? null : selected_quality),
+        customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
+          this.current_download = res['download'];
+          this.downloads.push(res['download']);
+          this.download_uids.push(res['download']['uid']);
+      }, () => { // can't access server
         this.downloadingfile = false;
+        this.current_download = null;
+        this.postsService.openSnackBar('Download failed!', 'OK.');
+      });
+
+      if (!this.autoplay && urls.length === 1) {
+          const download_queued_message = $localize`Download for ${url}:url: has been queued!`;
+          this.postsService.openSnackBar(download_queued_message);
+          this.url = '';
+          this.downloadingfile = false;
+      }
     }
   }
 
@@ -540,6 +544,13 @@ export class MainComponent implements OnInit {
 
   // checks if url is a valid URL
   ValidURL(str: string): boolean {
+    // mark multiple urls as valid but don't get additional info
+    const urls = this.getURLArray(str);
+    if (urls.length > 1) {
+      this.autoplay = false;
+      return true;
+    }
+    
     // tslint:disable-next-line: max-line-length
     const strRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     const re = new RegExp(strRegex);
@@ -587,6 +598,9 @@ export class MainComponent implements OnInit {
   }
 
   getSimulatedOutput(): void {
+    const urls = this.getURLArray(this.url);
+    if (urls.length > 1) return;
+
     // this function should be very similar to downloadClicked()
     const customArgs = (this.customArgsEnabled && this.replaceArgs ? this.customArgs : null);
     const additionalArgs = (this.customArgsEnabled && !this.replaceArgs ? this.customArgs : null);
@@ -806,5 +820,11 @@ export class MainComponent implements OnInit {
 
   reloadRecentVideos(): void {
     this.postsService.files_changed.next(true);
+  }
+
+  getURLArray(url_str: string): Array<string> {
+    let lines = url_str.split('\n');
+    lines = lines.filter(line => line);
+    return lines;
   }
 }

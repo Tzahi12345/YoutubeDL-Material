@@ -30,6 +30,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -175,6 +176,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatChipsModule,
     DragDropModule,
     ClipboardModule,
+    TextFieldModule,
     NgxFileDropModule,
     AvatarModule,
     ContentLoaderModule,
