@@ -34,7 +34,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
-import { FileCardComponent } from './file-card/file-card.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
@@ -98,7 +97,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
 @NgModule({
   declarations: [
     AppComponent,
-    FileCardComponent,
     MainComponent,
     PlayerComponent,
     InputDialogComponent,
