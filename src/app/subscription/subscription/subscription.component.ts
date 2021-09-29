@@ -1,16 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
-import { FileType } from '../../../api-types';
 
 @Component({
   selector: 'app-subscription',
   templateUrl: './subscription.component.html',
   styleUrls: ['./subscription.component.scss']
 })
-export class SubscriptionComponent implements OnInit {
+export class SubscriptionComponent implements OnInit, OnDestroy {
 
   id = null;
   subscription = null;
@@ -45,22 +44,11 @@ export class SubscriptionComponent implements OnInit {
   };
   filterProperty = this.filterProperties['upload_date'];
   downloading = false;
-
-  initialized = false;
+  sub_interval = null;
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.id = params.get('id');
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.initialized = true;
-          this.getConfig();
-          this.getSubscription();
-        }
-      });
-    });
     if (this.route.snapshot.paramMap.get('id')) {
       this.id = this.route.snapshot.paramMap.get('id');
 
@@ -68,6 +56,7 @@ export class SubscriptionComponent implements OnInit {
         if (init) {
           this.getConfig();
           this.getSubscription();
+          this.sub_interval = setInterval(() => this.getSubscription(true), 1000);
         }
       });
     }
@@ -79,12 +68,25 @@ export class SubscriptionComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    // prevents subscription getter from running in the background
+    if (this.sub_interval) {
+      clearInterval(this.sub_interval);
+    }
+  }
+
   goBack() {
     this.router.navigate(['/subscriptions']);
   }
 
-  getSubscription() {
+  getSubscription(low_cost = false) {
     this.postsService.getSubscription(this.id).subscribe(res => {
+      if (low_cost && res['subscription'].videos.length === this.subscription?.videos.length) {
+        if (res['subscription']['downloading'] !== this.subscription['downloading']) {
+          this.subscription['downloading'] = res['subscription']['downloading'];
+        }
+        return;
+      }
       this.subscription = res['subscription'];
       this.files = res['files'];
       if (this.search_mode) {
@@ -101,15 +103,13 @@ export class SubscriptionComponent implements OnInit {
   }
 
   goToFile(emit_obj) {
-    const name = emit_obj['name'];
+    const uid = emit_obj['uid'];
     const url = emit_obj['url'];
     localStorage.setItem('player_navigator', this.router.url);
     if (this.subscription.streamingOnly) {
-      this.router.navigate(['/player', {name: name, url: url}]);
+      this.router.navigate(['/player', {uid: uid, url: url}]);
     } else {
-      this.router.navigate(['/player', {fileNames: name,
-        type: this.subscription.type ? this.subscription.type : 'video', subscriptionName: this.subscription.name,
-        subPlaylist: this.subscription.isPlaylist}]);
+      this.router.navigate(['/player', {uid: uid}]);
     }
   }
 
@@ -152,7 +152,7 @@ export class SubscriptionComponent implements OnInit {
     }
 
     this.downloading = true;
-    this.postsService.downloadFileFromServer(fileNames, 'video' as FileType, {outputName: this.subscription.name, fullPathProvided: true}).subscribe(res => {
+    this.postsService.downloadSubFromServer(this.subscription.id).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, this.subscription.name + '.zip');
@@ -165,9 +165,13 @@ export class SubscriptionComponent implements OnInit {
   editSubscription() {
     this.dialog.open(EditSubscriptionDialogComponent, {
       data: {
-        sub: this.subscription
+        sub: this.postsService.getSubscriptionByID(this.subscription.id)
       }
     });
+  }
+
+  watchSubscription() {
+    this.router.navigate(['/player', {sub_id: this.subscription.id}])
   }
 
 }

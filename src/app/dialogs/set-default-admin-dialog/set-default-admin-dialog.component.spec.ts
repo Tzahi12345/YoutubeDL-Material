@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SetDefaultAdminDialogComponent } from './set-default-admin-dialog.component';
 
@@ -6,7 +6,7 @@ describe('SetDefaultAdminDialogComponent', () => {
   let component: SetDefaultAdminDialogComponent;
   let fixture: ComponentFixture<SetDefaultAdminDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SetDefaultAdminDialogComponent ]
     })

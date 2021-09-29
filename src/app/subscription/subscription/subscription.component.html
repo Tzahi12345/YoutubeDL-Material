@@ -2,8 +2,9 @@
     <button class="back-button" (click)="goBack()" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
     <div style="margin-bottom: 15px;">
         <h2 style="text-align: center;" *ngIf="subscription">
-            {{subscription.name}}
+            {{subscription.name}}&nbsp;<ng-container *ngIf="subscription.paused" i18n="Paused suffix">(Paused)</ng-container>
         </h2>
+        <mat-progress-bar style="width: 80%; margin: 0 auto; margin-top: 15px;" *ngIf="subscription && subscription.downloading" mode="indeterminate"></mat-progress-bar>
     </div>
     <mat-divider style="width: 80%; margin: 0 auto"></mat-divider>
     <br/>
@@ -43,5 +44,6 @@
         </div>
     </div>
     <button class="edit-button" color="primary" (click)="editSubscription()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">edit</mat-icon></button>
+    <button class="watch-button" color="primary" (click)="watchSubscription()" mat-fab><mat-icon class="save-icon">video_library</mat-icon></button>
     <button class="save-button" color="primary" (click)="downloadContent()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
 </div>

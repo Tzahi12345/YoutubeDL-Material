@@ -24,11 +24,18 @@ export class CustomPlaylistsComponent implements OnInit {
         this.getAllPlaylists();
       }
     });
+
+    this.postsService.playlists_changed.subscribe(changed => {
+      if (changed) {
+        this.getAllPlaylists();
+      }
+    });
   }
 
   getAllPlaylists() {
     this.playlists_received = false;
-    this.postsService.getAllFiles().subscribe(res => {
+    // must call getAllFiles as we need to get category playlists as well
+    this.postsService.getPlaylists().subscribe(res => {
       this.playlists = res['playlists'];
       this.playlists_received = true;
     });
@@ -53,16 +60,15 @@ export class CustomPlaylistsComponent implements OnInit {
   goToPlaylist(info_obj) {
     const playlist = info_obj.file;
     const playlistID = playlist.id;
-    const type = playlist.type;
 
     if (playlist) {
       if (this.postsService.config['Extra']['download_only_mode']) {
-        this.downloading_content[type][playlistID] = true;
-        this.downloadPlaylist(playlist.fileNames, type, playlist.name, playlistID);
+        this.downloadPlaylist(playlist.id, playlist.name);
       } else {
         localStorage.setItem('player_navigator', this.router.url);
-        const fileNames = playlist.fileNames;
-        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID, uid: playlistID}]);
+        const routeParams = {playlist_id: playlistID};
+        if (playlist.auto) { routeParams['auto'] =  playlist.auto; }
+        this.router.navigate(['/player', routeParams]);
       }
     } else {
       // playlist not found
@@ -70,11 +76,12 @@ export class CustomPlaylistsComponent implements OnInit {
     }
   }
 
-  downloadPlaylist(fileNames, type, zipName = null, playlistID = null) {
-    this.postsService.downloadFileFromServer(fileNames, type, {outputName: zipName}).subscribe(res => {
-      if (playlistID) { this.downloading_content[type][playlistID] = false };
-      const blob: Blob = res;
-      saveAs(blob, zipName + '.zip');
+  downloadPlaylist(playlist_id, playlist_name) {
+    this.downloading_content[playlist_id] = true;
+    this.postsService.downloadPlaylistFromServer(playlist_id).subscribe(res => {
+      this.downloading_content[playlist_id] = false;
+      const blob: any = res;
+      saveAs(blob, playlist_name + '.zip');
     });
 
   }
@@ -97,7 +104,7 @@ export class CustomPlaylistsComponent implements OnInit {
     const index = args.index;
     const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
       data: {
-        playlist: playlist,
+        playlist_id: playlist.id,
         width: '65vw'
       }
     });

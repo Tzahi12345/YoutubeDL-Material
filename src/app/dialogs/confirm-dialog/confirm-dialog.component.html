@@ -6,10 +6,13 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-  <button color="primary" mat-flat-button type="submit" (click)="confirmClicked()">{{submitText}}</button>
+  <button [color]="warnSubmitColor ? 'warn' : 'primary'" mat-flat-button type="submit" (click)="confirmClicked()">{{submitText}}</button>
   <div class="mat-spinner" *ngIf="submitClicked">
     <mat-spinner [diameter]="25"></mat-spinner>
   </div>
   <span class="spacer"></span>
-  <button style="float: right;" mat-stroked-button mat-dialog-close>Cancel</button>
+  <button style="float: right;" mat-stroked-button mat-dialog-close>
+    <ng-container *ngIf="cancelText">{{cancelText}}</ng-container>
+    <ng-container *ngIf="!cancelText" i18n="Cancel">Cancel</ng-container>
+  </button>
 </mat-dialog-actions>

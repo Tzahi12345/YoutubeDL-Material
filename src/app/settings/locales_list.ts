@@ -105,7 +105,7 @@ export const isoLangs = {
        'nativeName': 'ဗမာစာ'
    },
    'ca': {
-       'name': 'Catalan; Valencian',
+       'name': 'Catalan',
        'nativeName': 'Català'
    },
    'ch': {
@@ -122,7 +122,8 @@ export const isoLangs = {
    },
    'zh': {
        'name': 'Chinese',
-       'nativeName': '中文 (Zhōngwén), 汉语, 漢語'
+       'nativeName': '中文 (Zhōngwén), 汉语, 漢語',
+       'ngID': 'zh'
    },
    'cv': {
        'name': 'Chuvash',
@@ -158,12 +159,18 @@ export const isoLangs = {
    },
    'nl': {
        'name': 'Dutch',
-       'nativeName': 'Nederlands, Vlaams'
+       'nativeName': 'Nederlands'
    },
    'en': {
        'name': 'English',
-       'nativeName': 'English'
+       'nativeName': 'English',
+       'ngID': 'en-US'
    },
+   'en-GB': {
+        'name': 'British English',
+        'nativeName': 'British English',
+        'ngID': 'en-GB'
+    },
    'eo': {
        'name': 'Esperanto',
        'nativeName': 'Esperanto'
@@ -190,7 +197,8 @@ export const isoLangs = {
    },
    'fr': {
        'name': 'French',
-       'nativeName': 'français'
+       'nativeName': 'français',
+       'ngID': 'fr'
    },
    'ff': {
        'name': 'Fula; Fulah; Pulaar; Pular',
@@ -206,7 +214,8 @@ export const isoLangs = {
    },
    'de': {
        'name': 'German',
-       'nativeName': 'Deutsch'
+       'nativeName': 'Deutsch',
+       'ngID': 'de'
    },
    'el': {
        'name': 'Greek, Modern',
@@ -438,7 +447,8 @@ export const isoLangs = {
    },
    'nb': {
        'name': 'Norwegian Bokmål',
-       'nativeName': 'Norsk bokmål'
+       'nativeName': 'Norsk bokmål',
+       'ngID': 'nb'
    },
    'nd': {
        'name': 'North Ndebele',
@@ -594,7 +604,8 @@ export const isoLangs = {
    },
    'es': {
        'name': 'Spanish; Castilian',
-       'nativeName': 'español'
+       'nativeName': 'español',
+       'ngID': 'es'
    },
    'su': {
        'name': 'Sundanese',

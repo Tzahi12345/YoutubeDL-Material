@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileCardComponent } from './file-card.component';
+import { SeeMoreComponent } from './see-more.component';
 
-describe('FileCardComponent', () => {
-  let component: FileCardComponent;
-  let fixture: ComponentFixture<FileCardComponent>;
+describe('SeeMoreComponent', () => {
+  let component: SeeMoreComponent;
+  let fixture: ComponentFixture<SeeMoreComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FileCardComponent ]
+      declarations: [ SeeMoreComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FileCardComponent);
+    fixture = TestBed.createComponent(SeeMoreComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

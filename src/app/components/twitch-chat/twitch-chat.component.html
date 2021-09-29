@@ -1,0 +1,12 @@
+<div class="chat-container" #scrollContainer *ngIf="visible_chat">
+    <div style="width: 250px; text-align: center;"><strong>Twitch Chat</strong></div>
+    <div #chat style="max-width: 250px" *ngFor="let chat of visible_chat; let last = last">
+        {{chat.timestamp_str}} - <strong [style.color]="chat.user_color ? chat.user_color : null">{{chat.name}}</strong>: {{chat.message}}
+        {{last ? scrollToBottom() : ''}}
+    </div>
+</div>
+
+<ng-container *ngIf="chat_response_received && !full_chat">
+    <button [disabled]="downloading_chat" (click)="downloadTwitchChat()" class="download-button" mat-raised-button color="accent"><ng-container i18n="Download Twitch Chat button">Download Twitch Chat</ng-container></button>
+    <mat-spinner *ngIf="downloading_chat" class="downloading-spinner" [diameter]="30"></mat-spinner>
+</ng-container>

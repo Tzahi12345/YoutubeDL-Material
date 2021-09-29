@@ -1,13 +1,5 @@
-<h4 i18n="Settings title" mat-dialog-title>Settings</h4>
-<!-- <ng-container i18n="Allow subscriptions setting"></ng-container> -->
-<mat-dialog-content>
-
-<!-- Language
-<div style="margin-bottom: 10px;">
-
-</div> -->
-
-<mat-tab-group>
+<h4 class="settings-title" i18n="Settings title">Settings</h4>
+<mat-tab-group style="height: 76vh" mat-align-tabs="center" [selectedIndex]="tabIndex" (selectedTabChange)="tabChanged($event)">
     <!-- Server -->
     <mat-tab label="Main" i18n-label="Main settings label">
         <ng-template matTabContent style="padding: 15px;">
@@ -53,11 +45,14 @@
                             <mat-hint><ng-container i18n="Subscriptions base path setting input hint">Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-5 mb-3">
+                    <div class="col-12 mt-4">
                         <mat-form-field class="text-field" color="accent">
                             <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_check_interval']" matInput placeholder="Check interval" i18n-placeholder="Check interval input setting placeholder">
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
                         </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-4 mb-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['redownload_fresh_uploads']" matTooltip="Sometimes new videos are downloaded before being fully processed. This setting will mean new videos will be checked for a higher quality version the following day." i18n-matTooltip="Redownload fresh uploads tooltip"><ng-container i18n="Redownload fresh uploads">Redownload fresh uploads</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>
@@ -108,22 +103,58 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-5">
+                    <div class="col-12 mt-3">
                         <mat-form-field class="text-field" color="accent">
                             <input matInput [(ngModel)]="new_config['Downloader']['path-video']" placeholder="Video folder path" i18n-placeholder="Video folder path input placeholder" required>
                             <mat-hint><ng-container i18n="Video path setting input hint">Path for video downloads. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-4">
+                    <div class="col-12 mt-3">
+                        <mat-form-field class="text-field" color="accent">
+                            <input matInput [(ngModel)]="new_config['Downloader']['default_file_output']" matInput placeholder="Default file output" i18n-placeholder="Default file output placeholder">
+                            <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+                                <ng-container i18n="Youtube-dl output template documentation link">Documentation</ng-container></a>.
+                                <ng-container i18n="Custom Output input hint">Path is relative to the above download paths. Don't include extension.</ng-container>
+                            </mat-hint>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-12 mt-3 mb-4">
                         <mat-form-field class="text-field" style="margin-right: 12px;" color="accent">
-                            <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Custom args" i18n-placeholder="Custom args input placeholder"></textarea>
+                            <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Global custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                             <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</ng-container></mat-hint>
                             <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                         </mat-form-field>
                     </div>
-
-                    <div class="col-12 mt-5">
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <h6 i18n="Categories">Categories</h6>
+                        <div *ngIf="postsService.categories && postsService.categories.length > 0" kDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
+                            <div class="category-box" *ngFor="let category of postsService.categories" cdkDrag>
+                                <div class="category-custom-placeholder" *cdkDragPlaceholder></div>
+                                {{category['name']}}
+                                <span style="float: right">
+                                    <button mat-icon-button (click)="openEditCategoryDialog(category)"><mat-icon>edit</mat-icon></button>
+                                    <button mat-icon-button (click)="deleteCategory(category)"><mat-icon>cancel</mat-icon></button>
+                                </span>
+                            </div>
+                        </div>
+                        <button style="margin-top: 10px;" mat-mini-fab (click)="openAddCategoryDialog()"><mat-icon>add</mat-icon></button>
+                    </div>
+                    <div class="col-12 mt-2 mb-2">
+                        <mat-checkbox [(ngModel)]="new_config['Extra']['allow_playlist_categorization']" matTooltip="With this setting enabled, if a single video matches a category, the entire playlist will receive that category." i18n-matTooltip="Allow playlist categorization setting tooltip"><ng-container i18n="Allow playlist categorization setting label">Allow playlist categorization</ng-container></mat-checkbox>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['use_youtubedl_archive']"><ng-container i18n="Use youtubedl archive setting">Use youtube-dl archive</ng-container></mat-checkbox>
                     </div>
 
@@ -131,11 +162,32 @@
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['include_thumbnail']"><ng-container i18n="Include thumbnail setting">Include thumbnail</ng-container></mat-checkbox>
                     </div>
 
-                    <div class="col-12 mt-2">
+                    <div class="col-12 mt-2 mb-2">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Downloader']['include_metadata']"><ng-container i18n="Include metadata setting">Include metadata</ng-container></mat-checkbox>
                     </div>
-
-                    <div class="col-12 mt-2">
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3 mb-4">
+                        <mat-form-field class="text-field" color="accent">
+                            <input type="number" [(ngModel)]="new_config['Downloader']['max_concurrent_downloads']" matInput placeholder="Max concurrent downloads" i18n-placeholder="Max concurrent downloads">
+                            <mat-hint><ng-container i18n="Max concurrent downloads input hint">Limits the amount of downloads that can be simultaneously downloaded. Use -1 for no limit.</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-2 mb-4">
+                        <mat-form-field class="text-field" color="accent">
+                            <input [(ngModel)]="new_config['Downloader']['download_rate_limit']" matInput placeholder="Download rate limit" i18n-placeholder="Download rate limit input placeholder">
+                            <mat-hint><ng-container i18n="Download rate limit input hint">Rate limits your downloads to the specified amount. Ex: 200K</ng-container></mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
                         <button (click)="killAllDownloads()" mat-stroked-button color="warn"><ng-container i18n="Kill all downloads button">Kill all downloads</ng-container></button>
                     </div>
                 </div>
@@ -166,7 +218,7 @@
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['download_only_mode']"><ng-container i18n="Download only mode setting">Download only mode</ng-container></mat-checkbox>
                     </div>
                     <div class="col-12">
-                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_multi_download_mode']"><ng-container i18n="Allow multi-download mode setting">Allow multi-download mode</ng-container></mat-checkbox>
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_autoplay']"><ng-container i18n="Allow autoplay setting">Allow autoplay</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>
@@ -180,7 +232,7 @@
                         <div class="enable-api-key-div">
                             <mat-form-field class="text-field" color="accent">
                                 <input [disabled]="!new_config['API']['use_API_key']" [(ngModel)]="new_config['API']['API_key']" matInput placeholder="Public API Key" i18n-placeholder="Public API Key setting placeholder" required>
-                                <mat-hint><a target="_blank" href="https://stoplight.io/p/docs/gh/tzahi12345/youtubedl-material"><ng-container i18n="View API docs setting hint">View documentation</ng-container></a></mat-hint>
+                                <mat-hint><a target="_blank" href="https://youtubedl-material.stoplight.io/docs/youtubedl-material/Public%20API%20v1.yaml"><ng-container i18n="View API docs setting hint">View documentation</ng-container></a></mat-hint>
                             </mat-form-field>
                         </div>
                         <div class="api-key-div">
@@ -195,11 +247,29 @@
                     <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_youtube_API']"><ng-container i18n="Use YouTube API setting">Use YouTube API</ng-container></mat-checkbox>
                     </div>
-                    <div class="col-12 mb-3">
+                    <div class="col-12 mb-2">
                         <mat-form-field class="text-field" color="accent">
                             <input [disabled]="!new_config['API']['use_youtube_API']" [(ngModel)]="new_config['API']['youtube_API_key']" matInput placeholder="Youtube API Key" i18n-placeholder="Youtube API Key setting placeholder" required>
                             <mat-hint><a target="_blank" href="https://developers.google.com/youtube/v3/getting-started"><ng-container i18n="Youtube API Key setting hint">Generating a key is easy!</ng-container></a></mat-hint>
                         </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_twitch_API']"><ng-container i18n="Use Twitch API setting">Use Twitch API</ng-container></mat-checkbox>
+                    </div>
+                    <div *ngIf="new_config['API']['use_twitch_API']" class="col-12 mt-1">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['API']['twitch_auto_download_chat']"><ng-container i18n="Auto download Twitch Chat setting">Auto-download Twitch Chat</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field class="text-field" color="accent">
+                            <input [disabled]="!new_config['API']['use_twitch_API']" [(ngModel)]="new_config['API']['twitch_API_key']" matInput placeholder="Twitch API Key" i18n-placeholder="Twitch API Key setting placeholder" required>
+                            <mat-hint><ng-container i18n="Twitch API Key setting hint AKA preamble">Also known as a Client ID.</ng-container>&nbsp;<a target="_blank" href="https://dev.twitch.tv/docs/api/"><ng-container i18n="Twitch API Key setting hint">Generating a key is easy!</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_sponsorblock_API']" matTooltip="Enables a button to skip ads when viewing supported videos." i18n-matTooltip="SponsorBlock API tooltip"><ng-container i18n="Use SponsorBlock API setting">Use SponsorBlock API</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mt-2 mb-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['API']['generate_NFO_files']" matTooltip="Generates NFO files with every download, primarily used by Kodi." i18n-matTooltip="Generate NFO files tooltip"><ng-container i18n="Generate NFO files setting">Generate NFO files</ng-container></mat-checkbox>
                     </div>
                 </div>
             </div>
@@ -229,17 +299,63 @@
             </div>
         </ng-template>
     </mat-tab>
+    <!-- Database -->
+    <mat-tab label="Database" i18n-label="Database settings label">
+        <ng-template matTabContent>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <div *ngIf="db_info">
+                            <p><ng-container i18n="Database location label">Database location:</ng-container>&nbsp;<strong>{{db_info['using_local_db'] ? 'Local' : 'MongoDB'}}</strong></p>
+                            <h6 i18n="Records per table label">Records per table</h6>
+                            <mat-list style="padding-top: 0px">
+                                <mat-list-item style="height: 28px" *ngFor="let table_stats of db_info['stats_by_table'] | keyvalue">
+                                    {{table_stats.key}}: {{table_stats.value.records_count}}
+                                </mat-list-item>
+                            </mat-list>
+
+                            <mat-form-field style="width: 100%; margin-top: 15px; margin-bottom: 10px" color="accent">
+                                <input [(ngModel)]="new_config['Database']['mongodb_connection_string']" matInput placeholder="MongoDB Connection String" i18n-placeholder="MongoDB Connection String" required>
+                                <mat-hint><ng-container i18n="MongoDB Connection String setting hint AKA preamble">Example:</ng-container>&nbsp;mongodb://127.0.0.1:27017/?compressors=zlib<br>Docker: mongodb://&lt;container name&gt;:27017/?compressors=zlib</mat-hint>
+                            </mat-form-field>
+
+                            <div class="test-connection-div">
+                                <button (click)="testConnectionString(new_config['Database']['mongodb_connection_string'])" [disabled]="testing_connection_string" mat-flat-button color="accent"><ng-container i18n="Test connection string button">Test connection string</ng-container></button>
+                            </div>
+
+                            <div class="transfer-db-div">
+                                <button [disabled]="db_transferring" color="accent" (click)="transferDB()" mat-raised-button><ng-container i18n="Transfer DB button">Transfer DB to </ng-container>{{db_info['using_local_db'] ? 'MongoDB' : 'Local'}}</button>
+                            </div>
+                        </div>
+                        <div *ngIf="!db_info">
+                            <ng-container i18n="Database info not retrieved error message">Database information could not be retrieved. Check the server logs for more information.</ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </mat-tab>
     <!-- Advanced -->
     <mat-tab label="Advanced" i18n-label="Host settings label">
         <ng-template matTabContent>
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
                     <div class="col-12 mt-3">
+                        <mat-form-field>
+                            <mat-label><ng-container i18n="Default downloader select label">Select a downloader</ng-container></mat-label>
+                            <mat-select color="accent" [(ngModel)]="new_config['Advanced']['default_downloader']">
+                                <mat-option value="youtube-dl">youtube-dl</mat-option>
+                                <mat-option value="youtube-dlc">youtube-dlc</mat-option>
+                                <mat-option value="yt-dlp">yt-dlp</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-1">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['use_default_downloading_agent']"><ng-container i18n="Use default downloading agent setting">Use default downloading agent</ng-container></mat-checkbox>
                     </div>
                     <div class="col-12">
                         <mat-form-field>
-                            <mat-label><ng-container i18n="Custom downloader select label">Select a downloader</ng-container></mat-label>
+                            <mat-label><ng-container i18n="Custom downloader select label">Select a download agent</ng-container></mat-label>
                             <mat-select [disabled]="new_config['Advanced']['use_default_downloading_agent']" color="accent" [(ngModel)]="new_config['Advanced']['custom_downloading_agent']">
                                 <mat-option value="aria2c">aria2c</mat-option>
                                 <mat-option value="avconv">avconv</mat-option>
@@ -251,7 +367,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-2 mb-1">
+                    <div class="col-12 mt-2">
                         <mat-form-field>
                             <mat-label><ng-container i18n="Log Level label">Log Level</ng-container></mat-label>
                             <mat-select color="accent" [(ngModel)]="new_config['Advanced']['logger_level']">
@@ -263,7 +379,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-2 mb-1">
+                    <div class="col-12 mb-1">
                         <mat-form-field>
                             <mat-label><ng-container i18n="Login expiration select label">Login expiration</ng-container></mat-label>
                             <mat-select color="accent" [(ngModel)]="new_config['Advanced']['jwt_expiration']">
@@ -293,73 +409,85 @@
             <div *ngIf="new_config" class="container-fluid mt-1">
                 <app-updater></app-updater>
             </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-4">
+                        <button (click)="restartServer()" mat-stroked-button color="warn"><ng-container i18n="Restart server button">Restart server</ng-container></button>
+                    </div>
+                </div>
+            </div>
         </ng-template>
     </mat-tab>
-    <mat-tab *ngIf="postsService.config && postsService.config.Advanced.multi_user_mode" label="Users" i18n-label="Users settings label">
-        
-        <div style="margin-left: 48px; margin-top: 24px; margin-bottom: -25px;">
-            <div>
-                <mat-checkbox color="accent" [(ngModel)]="new_config['Users']['allow_registration']"><ng-container i18n="Allow registration setting">Allow user registration</ng-container></mat-checkbox>
+    <mat-tab [disabled]="!postsService.config?.Advanced.multi_user_mode">
+        <ng-template mat-tab-label>
+            <div [matTooltip]="!postsService.config?.Advanced.multi_user_mode ? usersTabDisabledTooltip : null">
+                <ng-container i18n="Users settings label">Users</ng-container>
             </div>
-            <mat-divider></mat-divider>
-            <mat-form-field style="margin-top: 15px;">
-                <mat-select [(ngModel)]="new_config['Users']['auth_method']" placeholder="Auth method" i18n-placeholder="Auth method select">
-                    <mat-option value="internal">
-                        <ng-container i18n="Internal auth method">Internal</ng-container>
-                    </mat-option>
-                    <mat-option value="ldap">
-                        <ng-container i18n="LDAP auth method">LDAP</ng-container>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <div *ngIf="new_config['Users']['auth_method'] === 'ldap'">
+        </ng-template>
+        <ng-container *ngIf="postsService.config?.Advanced.multi_user_mode">
+            <div *ngIf="new_config" style="margin-top: 24px; margin-bottom: -25px;">
                 <div>
-                    <mat-form-field>
-                        <input matInput i18n-placeholder="LDAP URL" placeholder="LDAP URL" [(ngModel)]="new_config['Users']['ldap_config']['url']">
-                    </mat-form-field>
+                    <mat-checkbox color="accent" [(ngModel)]="new_config['Users']['allow_registration']"><ng-container i18n="Allow registration setting">Allow user registration</ng-container></mat-checkbox>
                 </div>
-                <div>
-                    <mat-form-field>
-                        <input matInput i18n-placeholder="Bind DN" placeholder="Bind DN" [(ngModel)]="new_config['Users']['ldap_config']['bindDN']">
-                    </mat-form-field>
+                <mat-divider></mat-divider>
+                <mat-form-field style="margin-top: 15px;">
+                    <mat-select [(ngModel)]="new_config['Users']['auth_method']" placeholder="Auth method" i18n-placeholder="Auth method select">
+                        <mat-option value="internal">
+                            <ng-container i18n="Internal auth method">Internal</ng-container>
+                        </mat-option>
+                        <mat-option value="ldap">
+                            <ng-container i18n="LDAP auth method">LDAP</ng-container>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div *ngIf="new_config['Users']['auth_method'] === 'ldap'">
+                    <div>
+                        <mat-form-field>
+                            <input matInput i18n-placeholder="LDAP URL" placeholder="LDAP URL" [(ngModel)]="new_config['Users']['ldap_config']['url']">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <input matInput i18n-placeholder="Bind DN" placeholder="Bind DN" [(ngModel)]="new_config['Users']['ldap_config']['bindDN']">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <input matInput i18n-placeholder="Bind Credentials" placeholder="Bind Credentials" [(ngModel)]="new_config['Users']['ldap_config']['bindCredentials']">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <input matInput i18n-placeholder="Search Base" placeholder="Search Base" [(ngModel)]="new_config['Users']['ldap_config']['searchBase']">
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <input matInput i18n-placeholder="Search Filter" placeholder="Search Filter" [(ngModel)]="new_config['Users']['ldap_config']['searchFilter']">
+                        </mat-form-field>
+                    </div>
                 </div>
-                <div>
-                    <mat-form-field>
-                        <input matInput i18n-placeholder="Bind Credentials" placeholder="Bind Credentials" [(ngModel)]="new_config['Users']['ldap_config']['bindCredentials']">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field>
-                        <input matInput i18n-placeholder="Search Base" placeholder="Search Base" [(ngModel)]="new_config['Users']['ldap_config']['searchBase']">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field>
-                        <input matInput i18n-placeholder="Search Filter" placeholder="Search Filter" [(ngModel)]="new_config['Users']['ldap_config']['searchFilter']">
-                    </mat-form-field>
-                </div>
+                <mat-divider></mat-divider>
             </div>
-            <mat-divider></mat-divider>
-        </div>
-        <app-modify-users></app-modify-users>
+            <app-modify-users *ngIf="new_config"></app-modify-users>
+        </ng-container>
     </mat-tab>
     <mat-tab *ngIf="postsService.config" label="Logs" i18n-label="Logs settings label">
         <ng-template matTabContent>
-            <div style="margin-left: 48px; margin-top: 24px; height: 340px">
+            <div style="margin-top: 15px; height: 84%;">
                 <app-logs-viewer></app-logs-viewer>
             </div>
         </ng-template>
     </mat-tab>
 </mat-tab-group>
-</mat-dialog-content>
 
-<mat-dialog-actions>
-    <div style="margin-bottom: 10px;">
-        <button color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;
-            <ng-container i18n="Settings save button">Save</ng-container>
-        </button>
-        <button mat-flat-button [mat-dialog-close]="false"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;
-            <span i18n="Settings cancel and close button">{settingsAreTheSame + "", select, true {Close} false {Cancel} other {otha}}</span>
-        </button>
-    </div>
-</mat-dialog-actions>
+<div class="action-buttons">
+    <button style="margin-left: 10px; height: 37.3px" color="accent" (click)="saveSettings()" [disabled]="settingsSame()" mat-raised-button><mat-icon>done</mat-icon>&nbsp;&nbsp;
+        <ng-container i18n="Settings save button">Save</ng-container>
+    </button>
+    <button style="margin-left: 10px;" mat-flat-button (click)="cancelSettings()" [disabled]="settingsSame()"><mat-icon>cancel</mat-icon>&nbsp;&nbsp;
+        <span i18n="Settings cancel button">Cancel</span>
+    </button>
+</div>
+

@@ -1,0 +1,111 @@
+name: continuous integration
+
+on:
+  push:
+    branches: [master, feat/*]
+    tags:
+      - v*
+  pull_request:
+      branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+          cache: 'npm'
+      - name: install dependencies
+        run: |
+          npm install
+          cd backend
+          npm install
+          sudo npm install -g @angular/cli
+      - name: Set hash
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "version.json"
+          json: '{"type": "autobuild", "tag": "N/A", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          dir: 'backend/'
+      - name: build
+        run: npm run build
+      - name: prepare artifact upload
+        shell: pwsh
+        run: |
+          New-Item -Name build -ItemType Directory
+          New-Item -Path build -Name youtubedl-material -ItemType Directory
+          Copy-Item -Path ./backend/appdata -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/audio -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/authentication -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/public -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/subscriptions -Recurse -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/video -Recurse -Destination ./build/youtubedl-material
+          New-Item -Path ./build/youtubedl-material -Name users -ItemType Directory
+          Copy-Item -Path ./backend/*.js -Destination ./build/youtubedl-material
+          Copy-Item -Path ./backend/*.json -Destination ./build/youtubedl-material
+      - name: upload build artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: youtubedl-material
+          path: build
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: contains(github.ref, '/tags/v')
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: YoutubeDL-Material ${{ github.ref }}
+          body: |
+            # New features
+            # Minor additions
+            # Bug fixes
+          draft: true
+          prerelease: false
+      - name: download build artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: youtubedl-material
+          path: ${{runner.temp}}/youtubedl-material
+      - name: extract tag name
+        id: tag_name
+        run: echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/}
+      - name: prepare release asset
+        shell: pwsh
+        run: Compress-Archive -Path ${{runner.temp}}/youtubedl-material -DestinationPath youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
+      - name: upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
+          asset_name: youtubedl-material-${{ steps.tag_name.outputs.tag_name }}.zip
+          asset_content_type: application/zip
+      - name: upload docker-compose asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./docker-compose.yml
+          asset_name: docker-compose.yml
+          asset_content_type: text/plain

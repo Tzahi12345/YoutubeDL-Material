@@ -30,16 +30,19 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
-import { FileCardComponent } from './file-card/file-card.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
 import { PlayerComponent } from './player/player.component';
-import { VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule } from 'ngx-videogular';
+import { VgControlsModule } from '@videogular/ngx-videogular/controls';
+import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
+import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
+import { VgCoreModule } from '@videogular/ngx-videogular/core';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
@@ -79,6 +82,12 @@ import { UnifiedFileCardComponent } from './components/unified-file-card/unified
 import { RecentVideosComponent } from './components/recent-videos/recent-videos.component';
 import { EditSubscriptionDialogComponent } from './dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 import { CustomPlaylistsComponent } from './components/custom-playlists/custom-playlists.component';
+import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit-category-dialog.component';
+import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
+import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
+import { H401Interceptor } from './http.interceptor';
+import { ConcurrentStreamComponent } from './components/concurrent-stream/concurrent-stream.component';
+import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
 
 registerLocaleData(es, 'es');
 
@@ -89,7 +98,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
 @NgModule({
   declarations: [
     AppComponent,
-    FileCardComponent,
     MainComponent,
     PlayerComponent,
     InputDialogComponent,
@@ -105,6 +113,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     VideoInfoDialogComponent,
     ArgModifierDialogComponent,
     HighlightPipe,
+    LinkifyPipe,
     UpdaterComponent,
     UpdateProgressDialogComponent,
     ShareMediaDialogComponent,
@@ -123,7 +132,12 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     UnifiedFileCardComponent,
     RecentVideosComponent,
     EditSubscriptionDialogComponent,
-    CustomPlaylistsComponent
+    CustomPlaylistsComponent,
+    EditCategoryDialogComponent,
+    TwitchChatComponent,
+    SeeMoreComponent,
+    ConcurrentStreamComponent,
+    SkipAdButtonComponent
   ],
   imports: [
     CommonModule,
@@ -162,6 +176,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatChipsModule,
     DragDropModule,
     ClipboardModule,
+    TextFieldModule,
     NgxFileDropModule,
     AvatarModule,
     ContentLoaderModule,
@@ -181,10 +196,12 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     SettingsComponent
   ],
   providers: [
-    PostsService
+    PostsService,
+    { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true }
   ],
   exports: [
-    HighlightPipe
+    HighlightPipe,
+    LinkifyPipe
   ],
   bootstrap: [AppComponent]
 })

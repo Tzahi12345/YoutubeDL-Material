@@ -282,12 +282,12 @@ paths:
                 $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
-  /api/getAllSubscriptions:
+  /api/getSubscriptions:
     post:
       tags:
         - subscriptions
       summary: Get all subscriptions
-      operationId: post-api-getAllSubscriptions
+      operationId: post-api-getSubscriptions
       requestBody:
         content:
           application/json:

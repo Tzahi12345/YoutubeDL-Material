@@ -22,6 +22,36 @@ export class EditSubscriptionDialogComponent implements OnInit {
   audioOnlyMode = null;
   download_all = null;
 
+  available_qualities = [
+    {
+      'label': 'Best',
+      'value': 'best'
+    },
+    {
+      'label': '4K',
+      'value': '2160'
+    },
+    {
+      'label': '1440p',
+      'value': '1440'
+    },
+    {
+      'label': '1080p',
+      'value': '1080'
+    },
+    {
+      'label': '720p',
+      'value': '720'
+    },
+    {
+      'label': '480p',
+      'value': '480'
+    },
+    {
+      'label': '360p',
+      'value': '360'
+    }
+  ];
 
   time_units = [
     'day',
@@ -31,24 +61,24 @@ export class EditSubscriptionDialogComponent implements OnInit {
   ];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialog, private postsService: PostsService) {
-    this.sub = this.data.sub;
+    this.sub = JSON.parse(JSON.stringify(this.data.sub));
     this.new_sub = JSON.parse(JSON.stringify(this.sub));
+
+    // ignore videos to keep requests small
+    delete this.sub['videos'];
+    delete this.new_sub['videos'];
 
     this.audioOnlyMode = this.sub.type === 'audio';
     this.download_all = !this.sub.timerange;
 
     if (this.sub.timerange) {
       const timerange_str = this.sub.timerange.split('-')[1];
-      console.log(timerange_str);
       const number = timerange_str.replace(/\D/g,'');
       let units = timerange_str.replace(/[0-9]/g, '');
 
-      console.log(units);
-
-      // // remove plural on units
-      // if (units[units.length-1] === 's') {
-      //   units = units.substring(0, units.length-1);
-      // }
+      if (+number === 1) {
+        units = units.replace('s', '');
+      }
 
       this.timerange_amount = parseInt(number);
       this.timerange_unit = units;
@@ -71,9 +101,10 @@ export class EditSubscriptionDialogComponent implements OnInit {
   }
 
   saveSubscription() {
-    this.postsService.updateSubscription(this.sub).subscribe(res => {
+    this.postsService.updateSubscription(this.new_sub).subscribe(res => {
       this.sub = this.new_sub;
       this.new_sub = JSON.parse(JSON.stringify(this.sub));
+      this.postsService.reloadSubscriptions();
     })
   }
 
@@ -85,12 +116,16 @@ export class EditSubscriptionDialogComponent implements OnInit {
   }
 
   timerangeChanged(value, select_changed) {
-    console.log(this.timerange_amount);
-    console.log(this.timerange_unit);
+    if (+this.timerange_amount === 1) {
+      this.timerange_unit = this.timerange_unit.replace('s', '');
+    } else {
+      if (!this.timerange_unit.includes('s')) {
+        this.timerange_unit += 's';
+      }
+    }
 
     if (this.timerange_amount && this.timerange_unit && !this.download_all) {
       this.new_sub.timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
-      console.log(this.new_sub.timerange);
     } else {
       this.new_sub.timerange = null;
     }

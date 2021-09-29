@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SubscriptionFileCardComponent } from './subscription-file-card.component';
 
@@ -6,7 +6,7 @@ describe('SubscriptionFileCardComponent', () => {
   let component: SubscriptionFileCardComponent;
   let fixture: ComponentFixture<SubscriptionFileCardComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SubscriptionFileCardComponent ]
     })
