@@ -1,6 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import {PostsService} from '../posts.services';
-import {FileCardComponent} from '../file-card/file-card.component';
 import { Observable, Subject } from 'rxjs';
 import {FormControl, Validators} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -90,7 +89,6 @@ export class MainComponent implements OnInit {
 
   mp3s: any[] = [];
   mp4s: any[] = [];
-  files_cols = null;
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
   downloading_content = {'audio': {}, 'video': {}};
@@ -197,8 +195,6 @@ export class MainComponent implements OnInit {
 
   @ViewChild('urlinput', { read: ElementRef }) urlInput: ElementRef;
   @ViewChild('recentVideos') recentVideos: RecentVideosComponent;
-  @ViewChildren('audiofilecard') audioFileCards: QueryList<FileCardComponent>;
-  @ViewChildren('videofilecard') videoFileCards: QueryList<FileCardComponent>;
   last_valid_url = '';
   last_url_check = 0;
 
@@ -220,14 +216,14 @@ export class MainComponent implements OnInit {
     this.audioOnly = false;
   }
 
-  async configLoad() {
+  async configLoad(): Promise<void> {
     await this.loadConfig();
     if (this.autoStartDownload) {
       this.downloadClicked();
     }
   }
 
-  async loadConfig() {
+  async loadConfig(): Promise<boolean> {
     // loading config
     this.fileManagerEnabled = this.postsService.config['Extra']['file_manager_enabled']
                               && this.postsService.hasPermission('filemanager');
@@ -289,7 +285,7 @@ export class MainComponent implements OnInit {
   }
 
   // app initialization.
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.postsService.initialized) {
       this.configLoad();
     } else {
@@ -331,62 +327,17 @@ export class MainComponent implements OnInit {
       .subscribe((should_simulate) => {
         if (should_simulate) this.getSimulatedOutput();
     });
-
-    this.setCols();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     if (this.youtubeSearchEnabled && this.youtubeAPIKey) {
       this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
       this.attachToInput();
     }
   }
 
-  public setCols() {
-    if (window.innerWidth <= 350) {
-      this.files_cols = 1;
-    } else if (window.innerWidth <= 500) {
-      this.files_cols = 2;
-    } else if (window.innerWidth <= 750) {
-      this.files_cols = 3
-    } else {
-      this.files_cols = 4;
-    }
-  }
-
-  public goToFile(container, isAudio, uid) {
-    this.downloadHelper(container, isAudio ? 'audio' : 'video', false, false, true);
-  }
-
-  public goToPlaylist(playlistID, type) {
-    const playlist = this.getPlaylistObjectByID(playlistID, type);
-    if (playlist) {
-      if (this.downloadOnlyMode) {
-        this.downloading_content[type][playlistID] = true;
-        this.downloadPlaylist(playlist);
-      } else {
-        localStorage.setItem('player_navigator', this.router.url);
-        const fileNames = playlist.fileNames;
-        this.router.navigate(['/player', {fileNames: fileNames.join('|nvr|'), type: type, id: playlistID, uid: playlistID}]);
-      }
-    } else {
-      // playlist not found
-      console.error(`Playlist with ID ${playlistID} not found!`);
-    }
-  }
-
-  getPlaylistObjectByID(playlistID, type) {
-    for (let i = 0; i < this.playlists[type].length; i++) {
-      const playlist = this.playlists[type][i];
-      if (playlist.id === playlistID) {
-        return playlist;
-      }
-    }
-    return null;
-  }
-
   // download helpers
-  downloadHelper(container, type, is_playlist = false, force_view = false, navigate_mode = false) {
+  downloadHelper(container, type: string, is_playlist = false, force_view = false, navigate_mode = false): void {
     this.downloadingfile = false;
     if (!this.autoplay && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
@@ -412,7 +363,7 @@ export class MainComponent implements OnInit {
   }
 
   // download click handler
-  downloadClicked() {
+  downloadClicked(): void {
     if (!this.ValidURL(this.url)) {
       this.urlError = true;
       return;
@@ -453,16 +404,19 @@ export class MainComponent implements OnInit {
       }
     }
 
+    const selected_quality = this.selectedQuality;
+    this.selectedQuality = '';
+
     this.downloadingfile = true;
-    this.postsService.downloadFile(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
+    this.postsService.downloadFile(this.url, type, (selected_quality === '' ? null : selected_quality),
       customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
         this.current_download = res['download'];
         this.downloads.push(res['download']);
         this.download_uids.push(res['download']['uid']);
-    }, error => { // can't access server
+    }, () => { // can't access server
       this.downloadingfile = false;
       this.current_download = null;
-      this.openSnackBar('Download failed!', 'OK.');
+      this.postsService.openSnackBar('Download failed!', 'OK.');
     });
 
     if (!this.autoplay) {
@@ -474,7 +428,7 @@ export class MainComponent implements OnInit {
   }
 
   // download canceled handler
-  cancelDownload(download_to_cancel = null) {
+  cancelDownload(download_to_cancel = null): void {
     // if one is provided, cancel that one. otherwise, remove the current one
     if (download_to_cancel) {
       this.removeDownloadFromCurrentDownloads(download_to_cancel)
@@ -485,33 +439,32 @@ export class MainComponent implements OnInit {
     this.current_download = null;
   }
 
-  getSelectedAudioFormat() {
+  getSelectedAudioFormat(): string {
     if (this.selectedQuality === '') { return null; }
     const cachedFormatsExists = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
     if (cachedFormatsExists) {
-      const audio_formats = this.cachedAvailableFormats[this.url]['formats']['audio'];
       return this.selectedQuality['format_id'];
     } else {
       return null;
     }
   }
 
-  getSelectedVideoFormat() {
+  getSelectedVideoFormat(): string {
     if (this.selectedQuality === '') { return null; }
     const cachedFormats = this.cachedAvailableFormats[this.url] && this.cachedAvailableFormats[this.url]['formats'];
     if (cachedFormats) {
-      const video_formats = cachedFormats['video'];
       if (this.selectedQuality) {
         let selected_video_format = this.selectedQuality['format_id'];
         // add in audio format if necessary
-        if (!this.selectedQuality['acodec'] && cachedFormats['best_audio_format']) selected_video_format += `+${cachedFormats['best_audio_format']}`;
+        const audio_missing = !this.selectedQuality['acodec'] || this.selectedQuality['acodec'] === 'none';
+        if (audio_missing && cachedFormats['best_audio_format']) selected_video_format += `+${cachedFormats['best_audio_format']}`;
         return selected_video_format;
       }
     }
     return null;
   }
 
-  getDownloadByUID(uid) {
+  getDownloadByUID(uid: string) {
     const index = this.downloads.findIndex(download => download.uid === uid);
     if (index !== -1) {
       return this.downloads[index];
@@ -520,7 +473,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  removeDownloadFromCurrentDownloads(download_to_remove) {
+  removeDownloadFromCurrentDownloads(download_to_remove): boolean {
     if (this.current_download === download_to_remove) {
       this.current_download = null;
     }
@@ -533,7 +486,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadFileFromServer(file, type) {
+  downloadFileFromServer(file, type: string): void {
     const ext = type === 'audio' ? 'mp3' : 'mp4'
     this.downloading_content[type][file.id] = true;
     this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
@@ -543,13 +496,12 @@ export class MainComponent implements OnInit {
 
       if (!this.fileManagerEnabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(file.uid).subscribe(delRes => {
-        });
+        this.postsService.deleteFile(file.uid).subscribe(() => {});
       }
     });
   }
 
-  downloadPlaylist(playlist) {
+  downloadPlaylist(playlist): void {
     this.postsService.downloadPlaylistFromServer(playlist.id).subscribe(res => {
       if (playlist.id) { this.downloading_content[playlist.type][playlist.id] = false };
       const blob: Blob = res;
@@ -558,25 +510,25 @@ export class MainComponent implements OnInit {
 
   }
 
-  clearInput() {
+  clearInput(): void {
     this.url = '';
     this.results_showing = false;
   }
 
-  onInputBlur() {
+  onInputBlur(): void {
     this.results_showing = false;
   }
 
-  visitURL(url) {
+  visitURL(url: string): void {
     window.open(url);
   }
 
-  useURL(url) {
+  useURL(url: string): void {
     this.results_showing = false;
     this.url = url;
   }
 
-  inputChanged(new_val) {
+  inputChanged(new_val: string): void {
     if (new_val === '' || !new_val) {
       this.results_showing = false;
     } else {
@@ -587,7 +539,7 @@ export class MainComponent implements OnInit {
   }
 
   // checks if url is a valid URL
-  ValidURL(str) {
+  ValidURL(str: string): boolean {
     // tslint:disable-next-line: max-line-length
     const strRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     const re = new RegExp(strRegex);
@@ -603,21 +555,14 @@ export class MainComponent implements OnInit {
       if (str !== this.last_valid_url && this.allowQualitySelect) {
         // get info
         this.getURLInfo(str);
-        this.argsChangedSubject.next(true);
+        this.argsChanged();
       }
       this.last_valid_url = str;
     }
     return valid;
   }
 
-  // snackbar helper
-  public openSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 2000,
-    });
-  }
-
-  getURLInfo(url) {
+  getURLInfo(url: string): void {
     // if url is a youtube playlist, skip getting url info
     if (url.includes('playlist')) {
       return;
@@ -635,18 +580,14 @@ export class MainComponent implements OnInit {
           return;
         }
         this.cachedAvailableFormats[url]['formats'] = this.getAudioAndVideoFormats(infos.formats);
-      }, err => {
+      }, () => {
         this.errorFormats(url);
       });
     }
   }
 
-  argChanged(): void {
-    this.argsChangedSubject.next(true);
-  }
-
   getSimulatedOutput(): void {
-    // this function should be very similar to downloadFile()
+    // this function should be very similar to downloadClicked()
     const customArgs = (this.customArgsEnabled && this.replaceArgs ? this.customArgs : null);
     const additionalArgs = (this.customArgsEnabled && !this.replaceArgs ? this.customArgs : null);
     const customOutput = (this.customOutputEnabled ? this.customOutput : null);
@@ -681,12 +622,12 @@ export class MainComponent implements OnInit {
     });
   }
 
-  errorFormats(url) {
+  errorFormats(url: string): void {
     this.cachedAvailableFormats[url]['formats_loading'] = false;
     console.error('Could not load formats for url ' + url);
   }
 
-  attachToInput() {
+  attachToInput(): void {
     Observable.fromEvent(this.urlInput.nativeElement, 'keyup')
       .map((e: any) => e.target.value)           // extract the value of input
       .filter((text: string) => text.length > 1) // filter out if empty
@@ -715,41 +656,41 @@ export class MainComponent implements OnInit {
       );
   }
 
-  onResize(event) {
-    this.setCols();
-  }
-
-  videoModeChanged(new_val) {
-    this.selectedQuality = '';
-    localStorage.setItem('audioOnly', new_val.checked.toString());
+  argsChanged(): void {
     this.argsChangedSubject.next(true);
   }
 
-  autoplayChanged(new_val) {
+  videoModeChanged(new_val): void {
+    this.selectedQuality = '';
+    localStorage.setItem('audioOnly', new_val.checked.toString());
+    this.argsChanged();
+  }
+
+  autoplayChanged(new_val): void {
     localStorage.setItem('autoplay', new_val.checked.toString());
   }
 
-  customArgsEnabledChanged(new_val) {
+  customArgsEnabledChanged(new_val): void {
     localStorage.setItem('customArgsEnabled', new_val.checked.toString());
-    this.argsChangedSubject.next(true);
+    this.argsChanged();
   }
 
-  replaceArgsChanged(new_val) {
+  replaceArgsChanged(new_val): void {
     localStorage.setItem('replaceArgs', new_val.checked.toString());
-    this.argsChangedSubject.next(true);
+    this.argsChanged();
   }
 
-  customOutputEnabledChanged(new_val) {
+  customOutputEnabledChanged(new_val): void {
     localStorage.setItem('customOutputEnabled', new_val.checked.toString());
-    this.argsChangedSubject.next(true);
+    this.argsChanged();
   }
 
-  youtubeAuthEnabledChanged(new_val) {
+  youtubeAuthEnabledChanged(new_val): void {
     localStorage.setItem('youtubeAuthEnabled', new_val.checked.toString());
-    this.argsChangedSubject.next(true);
+    this.argsChanged();
   }
 
-  getAudioAndVideoFormats(formats) {
+  getAudioAndVideoFormats(formats): void {
     const audio_formats: any = {};
     const video_formats: any = {};
 
@@ -808,7 +749,7 @@ export class MainComponent implements OnInit {
     return parsed_formats;
   }
 
-  getBestAudioFormatForMp4(audio_formats) {
+  getBestAudioFormatForMp4(audio_formats): void {
     let best_audio_format_for_mp4 = null;
     let best_audio_format_bitrate = 0;
     const available_audio_format_keys = Object.keys(audio_formats);
@@ -824,46 +765,8 @@ export class MainComponent implements OnInit {
     return best_audio_format_for_mp4;
   }
 
-  accordionEntered(type) {
-    if (type === 'audio') {
-      audioFilesMouseHovering = true;
-      this.audioFileCards.forEach(filecard => {
-        filecard.onHoverResponse();
-      });
-    } else if (type === 'video') {
-      videoFilesMouseHovering = true;
-      this.videoFileCards.forEach(filecard => {
-        filecard.onHoverResponse();
-      });
-    }
-  }
-
-  accordionLeft(type) {
-    if (type === 'audio') {
-      audioFilesMouseHovering = false;
-    } else if (type === 'video') {
-      videoFilesMouseHovering = false;
-    }
-  }
-
-  accordionOpened(type) {
-    if (type === 'audio') {
-      audioFilesOpened = true;
-    } else if (type === 'video') {
-      videoFilesOpened = true;
-    }
-  }
-
-  accordionClosed(type) {
-    if (type === 'audio') {
-      audioFilesOpened = false;
-    } else if (type === 'video') {
-      videoFilesOpened = false;
-    }
-  }
-
   // modify custom args
-  openArgsModifierDialog() {
+  openArgsModifierDialog(): void {
     const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
       data: {
        initial_args: this.customArgs
@@ -876,7 +779,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-  getCurrentDownload() {
+  getCurrentDownload(): void {
     if (!this.current_download) {
       return;
     }
@@ -893,7 +796,7 @@ export class MainComponent implements OnInit {
         } else if (this.current_download['finished'] && this.current_download['error']) {
           this.downloadingfile = false;
           this.current_download = null;
-          this.openSnackBar('Download failed!', 'OK.');
+          this.postsService.openSnackBar('Download failed!', 'OK.');
         }
       } else {
         // console.log('failed to get new download');
@@ -901,7 +804,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-  reloadRecentVideos() {
+  reloadRecentVideos(): void {
     this.postsService.files_changed.next(true);
   }
 }
