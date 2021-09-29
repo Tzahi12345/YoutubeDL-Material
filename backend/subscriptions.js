@@ -431,7 +431,7 @@ async function getFilesToDownload(sub, output_jsons) {
     const files_to_download = [];
     for (let i = 0; i < output_jsons.length; i++) {
         const output_json = output_jsons[i];
-        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']})) && !(await db_api.getRecord('download_queue', {sub_id: sub.id, url: output_json['webpage_url'], error: null}));
+        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']})) && !(await db_api.getRecord('download_queue', {sub_id: sub.id, url: output_json['webpage_url'], error: null, finished: false}));
         if (file_missing) {
             const file_with_path_exists = await db_api.getRecord('files', {sub_id: sub.id, path: output_json['_filename']});
             if (file_with_path_exists) {

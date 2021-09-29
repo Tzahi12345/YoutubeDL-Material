@@ -279,7 +279,9 @@ async function downloadQueuedFile(download_uid) {
             } else if (output) {
                 if (output.length === 0 || output[0].length === 0) {
                     // ERROR!
-                    logger.warn(`No output received for video download, check if it exists in your archive.`)
+                    const error_message = `No output received for video download, check if it exists in your archive.`;
+                    await handleDownloadError(download_uid, error_message);
+                    logger.warn(error_message);
                     resolve(false);
                     return;
                 }
@@ -344,9 +346,10 @@ async function downloadQueuedFile(download_uid) {
                 }
 
                 if (options.merged_string !== null && options.merged_string !== undefined) {
-                    let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
-                    let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = download['user_uid'] ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                    const archive_folder = getArchiveFolder(fileFolderPath, options, download['user_uid']);
+                    const current_merged_archive = fs.readFileSync(path.join(archive_folder, `merged_${type}.txt`), 'utf8');
+                    const diff = current_merged_archive.replace(options.merged_string, '');
+                    const archive_path = path.join(archive_folder, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -455,23 +458,16 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            let archive_folder = null;
-            if (options.customArchivePath) {
-                archive_folder = path.join(options.customArchivePath);
-            } else if (user_uid) {
-                archive_folder = path.join(fileFolderPath, 'archives');
-            } else {
-                archive_folder = path.join(archivePath);
-            }
+            const archive_folder = getArchiveFolder(fileFolderPath, options, user_uid);
             const archive_path = path.join(archive_folder, `archive_${type}.txt`);
 
             await fs.ensureDir(archive_folder);
             await fs.ensureFile(archive_path);
 
-            let blacklist_path = path.join(archive_folder, `blacklist_${type}.txt`);
+            const blacklist_path = path.join(archive_folder, `blacklist_${type}.txt`);
             await fs.ensureFile(blacklist_path);
 
-            let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
+            const merged_path = path.join(archive_folder, `merged_${type}.txt`);
             await fs.ensureFile(merged_path);
             // merges blacklist and regular archive
             let inputPathList = [archive_path, blacklist_path];
@@ -623,4 +619,14 @@ exports.generateNFOFile = (info, output_path) => {
     const doc = create(nfo_obj);
     const xml = doc.end({ prettyPrint: true });
     fs.writeFileSync(output_path, xml);
+}
+
+function getArchiveFolder(fileFolderPath, options, user_uid) {
+    if (options.customArchivePath) {
+        return path.join(options.customArchivePath);
+    } else if (user_uid) {
+        return path.join(fileFolderPath, 'archives');
+    } else {
+        return path.join(archivePath);
+    }
 }
