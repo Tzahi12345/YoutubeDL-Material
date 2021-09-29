@@ -233,6 +233,10 @@ export class PostsService implements CanActivate {
         return this.http.get(`./assets/${name}`);
     }
 
+    getSupportedLocales() {
+        return this.http.get('./assets/i18n/supported_locales.json');
+    }
+
     setConfig(config) {
         return this.http.post(this.path + 'setConfig', {new_config_file: config}, this.httpOptions);
     }

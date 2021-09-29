@@ -66,3 +66,4 @@ backend/appdata/users.json
 backend/users/*
 backend/appdata/cookies.txt
 backend/public
+src/assets/i18n/*.json

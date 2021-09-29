@@ -11,7 +11,7 @@ RUN npm install
 
 COPY [ "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
-RUN ng build --prod
+RUN npm run build
 
 #--------------#
 

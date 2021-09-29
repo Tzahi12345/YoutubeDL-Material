@@ -10,10 +10,6 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
-      - name: prepare localization
-        run: |
-          sudo npm install -g xliff-to-json
-          xliff-to-json ./src/assets/i18n
       - name: Set hash
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"

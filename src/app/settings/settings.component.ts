@@ -81,6 +81,13 @@ export class SettingsComponent implements OnInit {
 
     const tab = this.route.snapshot.paramMap.get('tab');
     this.tabIndex = tab && this.TAB_TO_INDEX[tab] ? this.TAB_TO_INDEX[tab] : 0;
+
+    this.postsService.getSupportedLocales().subscribe(res => {
+      if (res && res['supported_locales']) {
+        this.supported_locales = ['en', 'en-GB']; // required
+        this.supported_locales = this.supported_locales.concat(res['supported_locales']);
+      }
+    });
   }
 
   getConfig() {
