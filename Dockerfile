@@ -36,6 +36,7 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
+ENV PM2_HOME=/app/pm2
 RUN npm install pm2 -g
 RUN npm install && chown -R $UID:$GID ./
 
