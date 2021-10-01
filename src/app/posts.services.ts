@@ -529,7 +529,7 @@ export class PostsService implements CanActivate {
     }
 
     getAllSubscriptions() {
-        return this.http.post<GetAllSubscriptionsResponse>(this.path + 'getAllSubscriptions', {}, this.httpOptions);
+        return this.http.post<GetAllSubscriptionsResponse>(this.path + 'getSubscriptions', {}, this.httpOptions);
     }
 
     getCurrentDownloads(uids: Array<string> = null) {
