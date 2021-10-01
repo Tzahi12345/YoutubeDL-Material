@@ -5,8 +5,8 @@
 
 export interface UpdateUserRequest {
     change_object: {
-        uid: string,
-        name?: string,
-        role?: string,
-    };
+uid: string,
+name?: string,
+role?: string,
+};
 }

@@ -8,4 +8,8 @@ export interface GetSubscriptionRequest {
      * Subscription ID
      */
     id: string;
+    /**
+     * Subscription name
+     */
+    name?: string;
 }

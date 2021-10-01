@@ -6,11 +6,11 @@ import { UserPermission } from './UserPermission';
 
 export interface GetRolesResponse {
     roles: {
-        admin?: {
-            permissions?: Array<UserPermission>,
-        },
-        user?: {
-            permissions?: Array<UserPermission>,
-        },
-    };
+admin?: {
+permissions?: Array<UserPermission>,
+},
+user?: {
+permissions?: Array<UserPermission>,
+},
+};
 }

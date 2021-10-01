@@ -5,6 +5,6 @@
 
 export interface DownloadArchiveRequest {
     sub: {
-        archive_dir: string,
-    };
+archive_dir: string,
+};
 }

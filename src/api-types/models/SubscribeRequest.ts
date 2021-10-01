@@ -7,8 +7,8 @@ export interface SubscribeRequest {
     name: string;
     url: string;
     timerange?: string;
-    streamingOnly: boolean;
     audioOnly?: boolean;
     customArgs?: string;
     customFileOutput?: string;
+    maxQuality?: string;
 }

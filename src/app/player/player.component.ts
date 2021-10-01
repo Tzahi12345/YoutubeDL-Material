@@ -157,7 +157,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       // regular video/audio file (not playlist)
       this.uids = [this.db_file['uid']];
-      this.type = this.db_file['isAudio'] ? 'audio' : 'video' as FileType;
+      this.type = this.db_file['isAudio'] ? 'audio' as FileType : 'video' as FileType;
       this.parseFileNames();
     });
   }

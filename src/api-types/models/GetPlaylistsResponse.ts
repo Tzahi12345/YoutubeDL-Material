@@ -4,6 +4,6 @@
 
 import { Playlist } from './Playlist';
 
-export interface UpdatePlaylistRequest {
-    playlist: Playlist;
+export interface GetPlaylistsResponse {
+    playlists: Array<Playlist>;
 }

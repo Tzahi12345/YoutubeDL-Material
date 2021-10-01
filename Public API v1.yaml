@@ -6,34 +6,7 @@ info:
 servers:
   - url: 'http://localhost:17442'
 paths:
-  /api/tomp3:
-    post:
-      tags:
-        - downloader
-      summary: Download audio file
-      description: |-
-        Downloads an audio file with the given URL. Will include global args if they exist.
-
-
-        HTTP requests will return once the audio file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
-      operationId: post-tomp3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Mp3DownloadRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Mp3DownloadResponse'
-        '500':
-          description: Server download error
-      security:
-        - Auth query parameter: []
-  /api/tomp4:
+  /api/downloadFile:
     post:
       tags:
         - downloader
@@ -48,14 +21,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Mp4DownloadRequest'
+              $ref: '#/components/schemas/DownloadRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mp4DownloadResponse'
+                $ref: '#/components/schemas/DownloadResponse'
         '500':
           description: Server download error
       security:
@@ -365,27 +338,6 @@ paths:
                 $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
-  /api/updatePlaylistFiles:
-    post:
-      tags:
-        - playlists
-      summary: Update playlist files
-      description: Updates the list of filenames in the playlist object
-      operationId: post-api-updatePlaylistFiles
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePlaylistFilesRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessObject'
-      security:
-        - Auth query parameter: []
   /api/deletePlaylist:
     post:
       tags:
@@ -429,7 +381,7 @@ paths:
                 description: Whether the operation succeeded
       security:
         - Auth query parameter: []
-  /api/downloadFile:
+  /api/downloadFileFromServer:
     post:
       tags:
         - files
@@ -451,13 +403,13 @@ paths:
     post:
       tags:
         - files
-      summary: Delete downloaded file (unused)
+      summary: Delete downloaded file
       operationId: post-api-deleteFile
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteFileRequest'
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
       responses:
         '200':
           description: OK
@@ -861,6 +813,16 @@ components:
       enum:
         - audio
         - video
+    CropFileSettings:
+      type: object
+      required:
+        - cropFileStart
+        - cropFileEnd
+      properties:
+        cropFileStart:
+          type: number
+        cropFileEnd:
+          type: number
     Config:
       required:
         - YoutubeDLMaterial
@@ -868,7 +830,7 @@ components:
       properties:
         YoutubeDLMaterial:
           type: object
-    BaseDownloadRequest:
+    DownloadRequest:
       required:
         - url
       type: object
@@ -881,7 +843,10 @@ components:
           example: '251'
         customArgs:
           type: string
-          description: Custom command-line arguments for youtubedl. Overrides all other options, except url.
+          description: Custom command-line arguments for youtube-dl. Overrides all other options, except url.
+        additionalArgs:
+          type: string
+          description: Additional command-line arguments for youtube-dl. Added to whatever args would normally be used.
         customOutput:
           type: string
           description: Custom output filename template.
@@ -891,67 +856,31 @@ components:
         youtubePassword:
           type: string
           description: Account password
-        ui_uid:
+        selectedHeight:
           type: string
-          nullable: true
-    Mp3DownloadRequest:
-      allOf:
-        - $ref: '#/components/schemas/BaseDownloadRequest'
-        - type: object
-          properties:
-            maxBitrate:
-              type: string
-              description: Specify ffmpeg/avconv audio quality
-              example: '160'
-    Mp4DownloadRequest:
-      allOf:
-        - $ref: '#/components/schemas/BaseDownloadRequest'
-        - type: object
-          properties:
-            selectedHeight:
-              type: string
-              description: Height of the video, if known
-              example: '1080'
-    BaseDownloadResponse:
-      required:
-        - uid
+          description: Height of the video, if known
+          example: '1080'
+        maxBitrate:
+          type: string
+          description: Specify ffmpeg/avconv audio quality
+          example: '160'      
+        type:
+          $ref: '#/components/schemas/FileType'
+        cropFileSettings:
+          $ref: '#/components/schemas/CropFileSettings'
+    DownloadResponse:
       type: object
       properties:
-        uid:
-          type: string
-        file_names:
+        download:
+          $ref: '#/components/schemas/Download'
           nullable: true
-          type: array
-          items:
-            type: string
-    Mp3DownloadResponse:
-      allOf:
-        - $ref: '#/components/schemas/BaseDownloadResponse'
-        - type: object
-          required:
-            - audiopathEncoded
-          properties:
-            audiopathEncoded:
-              type: string
-    Mp4DownloadResponse:
-      allOf:
-        - $ref: '#/components/schemas/BaseDownloadResponse'
-        - type: object
-          required:
-            - videopathEncoded
-          properties:
-            videopathEncoded:
-              type: string
     GetDownloadRequest:
       type: object
       properties:
-        session_id:
-          type: string
-        download_id:
+        download_uid:
           type: string
       required:
-        - session_id
-        - download_id
+        - download_uid
     GetDownloadResponse:
       type: object
       properties:
@@ -962,13 +891,9 @@ components:
       type: object
       properties:
         downloads:
-          type: object
-          description: Map of Session ID to inner map
-          additionalProperties:
-            type: object
-            description: Map of Download UID to downoad
-            additionalProperties:
-              $ref: '#/components/schemas/Download'
+          type: array
+          items:
+            $ref: '#/components/schemas/Download'
     GetMp3sResponse:
       required:
         - mp3s
@@ -1038,14 +963,11 @@ components:
           $ref: '#/components/schemas/DatabaseFile'
     SharingToggle:
       required:
-        - type
         - uid
       type: object
       properties:
         uid:
           type: string
-        type:
-          $ref: '#/components/schemas/FileType'
         is_playlist:
           type: boolean
     SubscribeRequest:
@@ -1061,13 +983,13 @@ components:
           type: string
         timerange:
           type: string
-        streamingOnly:
-          type: boolean
         audioOnly:
           type: boolean
         customArgs:
           type: string
         customFileOutput:
+          type: string
+        maxQuality:
           type: string
     SubscribeResponse:
       required:
@@ -1120,6 +1042,9 @@ components:
         id:
           type: string
           description: Subscription ID
+        name:
+          type: string
+          description: Subscription name
     GetSubscriptionResponse:
       required:
         - files
@@ -1150,16 +1075,15 @@ components:
             $ref: '#/components/schemas/Subscription'
     CreatePlaylistRequest:
       required:
-        - fileNames
+        - uids
         - playlistName
         - thumbnailURL
         - type
-        - duration
       type: object
       properties:
         playlistName:
           type: string
-        fileNames:
+        uids:
           type: array
           items:
             type: string
@@ -1167,8 +1091,6 @@ components:
           $ref: '#/components/schemas/FileType'
         thumbnailURL:
           type: string
-        duration:
-          type: number
     CreatePlaylistResponse:
       required:
         - new_playlist
@@ -1181,15 +1103,17 @@ components:
           type: boolean
     GetPlaylistRequest:
       required:
-        - playlistID
+        - playlist_id
       type: object
       properties:
-        playlistID:
+        playlist_id:
           type: string
         type:
           $ref: '#/components/schemas/FileType'
         uuid:
           type: string
+        include_file_metadata:
+          type: boolean
     GetPlaylistResponse:
       required:
         - playlist
@@ -1203,6 +1127,20 @@ components:
           $ref: '#/components/schemas/FileType'
         success:
           type: boolean
+    GetPlaylistsRequest:
+      type: object
+      properties:
+        include_categories:
+          type: boolean
+    GetPlaylistsResponse:
+      required:
+        - playlists
+      type: object
+      properties:
+        playlists:
+          type: array
+          items:
+            $ref: '#/components/schemas/Playlist'
     UpdatePlaylistRequest:
       required:
         - playlist
@@ -1210,74 +1148,30 @@ components:
       properties:
         playlist:
           $ref: '#/components/schemas/Playlist'
-    UpdatePlaylistFilesRequest:
-      required:
-        - fileNames
-        - playlistID
-        - type
-      type: object
-      properties:
-        playlistID:
-          type: string
-        fileNames:
-          type: array
-          items:
-            type: string
-        type:
-          $ref: '#/components/schemas/FileType'
     DeletePlaylistRequest:
       required:
-        - playlistID
+        - playlist_id
         - type
       type: object
       properties:
-        playlistID:
+        playlist_id:
           type: string
         type:
           $ref: '#/components/schemas/FileType'
     DownloadFileRequest:
       required:
-        - fileNames
-        - type
+        - uid
       type: object
       properties:
-        fileNames:
-          oneOf:
-            - type: string
-            - type: array
-              description: Array of 1 or more files to download
-              items:
-                type: string
-        zip_mode:
-          type: boolean
-        type:
-          $ref: '#/components/schemas/FileType'
-        outputName:
-          type: string
-        fullPathProvided:
-          type: boolean
-        uuid:
-          type: string
         uid:
           type: string
-        id:
+        uuid:
           type: string
-        subscriptionName:
+        sub_id:
           type: string
-          description: Only used for subscriptions
-        subPlaylist:
+        is_playlist:
           type: boolean
           description: Only used for subscriptions
-    DeleteFileRequest:
-      required:
-        - fileName
-        - type
-      type: object
-      properties:
-        fileName:
-          type: string
-        type:
-          $ref: '#/components/schemas/FileType'
     DownloadArchiveRequest:
       required:
         - sub
@@ -1406,7 +1300,7 @@ components:
           type: boolean
     Playlist:
       required:
-        - fileNames
+        - uids
         - id
         - name
         - thumbnailURL
@@ -1417,7 +1311,7 @@ components:
       properties:
         name:
           type: string
-        fileNames:
+        uids:
           type: array
           items:
             type: string
@@ -1431,16 +1325,22 @@ components:
           type: number
         duration:
           type: number
+        user_uid:
+          type: string
     Download:
       required:
-        - uid
-        - ui_uid
-        - downloading
-        - complete
         - url
         - type
+        - title
+        - type
+        - options
+        - uid
+        - step_index
+        - paused
+        - running
+        - finished_step
         - percent_complete
-        - is_playlist
+        - finished
         - timestamp_start
       type: object
       properties:
@@ -1448,32 +1348,36 @@ components:
           type: string
         ui_uid:
           type: string
-        downloading:
+        running:
           type: boolean
-        complete:
+        finished:
+          type: boolean
+        paused:
+          type: boolean
+        finished_step:
           type: boolean
         url:
           type: string
         type:
           type: string
+        title:
+          type: string
+        step_index:
+          type: number
         percent_complete:
           type: number
-        is_playlist:
-          type: boolean
         timestamp_start:
           type: number
-        timestamp_end:
-          type: number
-        filesize:
-          type: number
-          nullable: true
         error:
           type: string
           description: Error text, set if download fails.
-        fileNames:
-          type: array
-          items:
-            type: string
+          nullable: true
+        user_uid:
+          type: string
+        sub_id:
+          type: string
+        sub_name:
+          type: string
     SubscriptionRequestData:
       required:
         - id

@@ -5,6 +5,6 @@
 import { FileType } from './FileType';
 
 export interface DeletePlaylistRequest {
-    playlistID: string;
+    playlist_id: string;
     type: FileType;
 }

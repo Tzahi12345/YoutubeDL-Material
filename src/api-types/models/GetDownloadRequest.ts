@@ -4,6 +4,5 @@
 
 
 export interface GetDownloadRequest {
-    session_id: string;
-    download_id: string;
+    download_uid: string;
 }

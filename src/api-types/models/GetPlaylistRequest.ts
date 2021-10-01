@@ -5,7 +5,8 @@
 import { FileType } from './FileType';
 
 export interface GetPlaylistRequest {
-    playlistID: string;
+    playlist_id: string;
     type?: FileType;
     uuid?: string;
+    include_file_metadata?: boolean;
 }

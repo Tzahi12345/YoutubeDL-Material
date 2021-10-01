@@ -16,6 +16,7 @@ import {
     ConfigResponse,
     CreatePlaylistRequest,
     CreatePlaylistResponse,
+    CropFileSettings,
     DeleteMp3Mp4Request,
     DeletePlaylistRequest,
     DeleteSubscriptionFileRequest,
@@ -41,10 +42,8 @@ import {
     GetUsersResponse,
     LoginRequest,
     LoginResponse,
-    Mp3DownloadRequest,
-    Mp3DownloadResponse,
-    Mp4DownloadRequest,
-    Mp4DownloadResponse,
+    DownloadRequest,
+    DownloadResponse,
     Playlist,
     RegisterRequest,
     RegisterResponse,
@@ -57,7 +56,6 @@ import {
     UpdaterStatus,
     UnsubscribeRequest,
     UnsubscribeResponse,
-    UpdatePlaylistFilesRequest,
     UpdatePlaylistRequest,
     UpdateServerRequest,
     UpdateUserRequest,
@@ -231,7 +229,7 @@ export class PostsService implements CanActivate {
 
     // tslint:disable-next-line: max-line-length
     // tslint:disable-next-line: max-line-length
-    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings: CropFileSettings = null) {
+    downloadFile(url: string, type: FileType, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings: CropFileSettings = null) {
         const body: DownloadRequest = {url: url,
             selectedHeight: selectedQuality,
             customQualityConfiguration: customQualityConfiguration,
@@ -299,7 +297,7 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'setConfig', body, this.httpOptions);
     }
 
-    deleteFile(uid: string, isAudio: boolean, blacklistMode = false) {
+    deleteFile(uid: string, blacklistMode = false) {
         const body: DeleteMp3Mp4Request = {uid: uid, blacklistMode: blacklistMode}
         return this.http.post(this.path + 'deleteFile', body, this.httpOptions);
     }
@@ -392,12 +390,12 @@ export class PostsService implements CanActivate {
         return this.http.post<GenerateNewApiKeyResponse>(this.path + 'generateNewAPIKey', {}, this.httpOptions);
     }
 
-    enableSharing(uid: string, type: FileType, is_playlist: boolean) {
+    enableSharing(uid: string, is_playlist: boolean) {
         const body: SharingToggle = {uid: uid, is_playlist: is_playlist};
         return this.http.post<SuccessObject>(this.path + 'enableSharing', body, this.httpOptions);
     }
 
-    disableSharing(uid: string, type: FileType, is_playlist: boolean) {
+    disableSharing(uid: string, is_playlist: boolean) {
         const body: SharingToggle = {uid: uid, is_playlist: is_playlist};
         return this.http.post<SuccessObject>(this.path + 'disableSharing', body, this.httpOptions);
     }
@@ -434,10 +432,9 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'deletePlaylist', body, this.httpOptions);
     }
 
-    createSubscription(url, name, timerange = null, streamingOnly = false, maxQuality = 'best', audioOnly = false, customArgs: string = null, customFileOutput: string = null) {
+    createSubscription(url, name, timerange = null, maxQuality = 'best', audioOnly = false, customArgs: string = null, customFileOutput: string = null) {
         const body: SubscribeRequest = {url: url, name: name, timerange: timerange, maxQuality: maxQuality,
-            streamingOnly: streamingOnly, audioOnly: audioOnly, customArgs: customArgs,
-            customFileOutput: customFileOutput};
+            audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput};
         return this.http.post<SubscribeResponse>(this.path + 'subscribe', body, this.httpOptions);
     }
     

@@ -4,6 +4,6 @@
 
 import { Download } from './Download';
 
-export interface GetDownloadResponse {
+export interface DownloadResponse {
     download?: Download | null;
 }

@@ -6,10 +6,11 @@ import { FileType } from './FileType';
 
 export interface Playlist {
     name: string;
-    fileNames: Array<string>;
+    uids: Array<string>;
     id: string;
     thumbnailURL: string;
     type: FileType;
     registered: number;
     duration: number;
+    user_uid?: string;
 }

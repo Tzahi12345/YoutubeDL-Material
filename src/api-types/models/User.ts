@@ -10,13 +10,13 @@ export interface User {
     name?: string;
     passhash?: string;
     files?: {
-        audio?: Array<File>,
-        video?: Array<File>,
-    };
+audio?: Array<File>,
+video?: Array<File>,
+};
     playlists?: {
-        audio?: Array<File>,
-        video?: Array<File>,
-    };
+audio?: Array<File>,
+video?: Array<File>,
+};
     subscriptions?: Array<Subscription>;
     created?: number;
     role?: string;
