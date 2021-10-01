@@ -47,7 +47,6 @@ import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
-import { DownloadItemComponent } from './download-item/download-item.component';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
@@ -102,7 +101,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     PlayerComponent,
     InputDialogComponent,
     CreatePlaylistComponent,
-    DownloadItemComponent,
     SubscriptionsComponent,
     SubscribeDialogComponent,
     SubscriptionComponent,

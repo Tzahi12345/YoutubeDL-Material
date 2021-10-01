@@ -10,25 +10,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Platform } from '@angular/cdk/platform';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { RecentVideosComponent } from 'app/components/recent-videos/recent-videos.component';
+import { Download, FileType } from 'api-types';
 
 export let audioFilesMouseHovering = false;
 export let videoFilesMouseHovering = false;
 export let audioFilesOpened = false;
 export let videoFilesOpened = false;
-
-export interface Download {
-  uid: string;
-  type: string;
-  url: string;
-  percent_complete: number;
-  downloading: boolean;
-  is_playlist: boolean;
-  error: boolean | string;
-  fileNames?: string[];
-  complete?: boolean;
-  timestamp_start?: number;
-  timestamp_end?: number;
-}
 
 @Component({
   selector: 'app-root',
@@ -57,7 +44,7 @@ export class MainComponent implements OnInit {
   cropFileStart = null;
   cropFileEnd = null;
   urlError = false;
-  path = '';
+  path: string | string[] = '';
   url = '';
   exists = '';
   percentDownloaded: number;
@@ -197,16 +184,6 @@ export class MainComponent implements OnInit {
   @ViewChild('recentVideos') recentVideos: RecentVideosComponent;
   last_valid_url = '';
   last_url_check = 0;
-
-  test_download: Download = {
-    uid: null,
-    type: 'audio',
-    percent_complete: 0,
-    url: 'http://youtube.com/watch?v=17848rufj',
-    downloading: true,
-    is_playlist: false,
-    error: false
-  };
 
   argsChangedSubject: Subject<boolean> = new Subject<boolean>();
   simulatedOutput = '';
@@ -411,7 +388,7 @@ export class MainComponent implements OnInit {
     const urls = this.getURLArray(this.url);
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i];
-      this.postsService.downloadFile(url, type, (selected_quality === '' ? null : selected_quality),
+      this.postsService.downloadFile(url, type as FileType, (selected_quality === '' ? null : selected_quality),
         customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
           this.current_download = res['download'];
           this.downloads.push(res['download']);
@@ -439,7 +416,6 @@ export class MainComponent implements OnInit {
       return;
     }
     this.downloadingfile = false;
-    this.current_download.downloading = false;
     this.current_download = null;
   }
 
@@ -621,7 +597,7 @@ export class MainComponent implements OnInit {
       }
     }
 
-    this.postsService.generateArgs(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
+    this.postsService.generateArgs(this.url, type as FileType, (this.selectedQuality === '' ? null : this.selectedQuality),
       customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
         const simulated_args = res['args'];
         if (simulated_args) {

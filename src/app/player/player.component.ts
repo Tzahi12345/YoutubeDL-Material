@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
+import { FileType } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
@@ -37,7 +38,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // params
   uids: string[];
-  type: string;
+  type: FileType;
   playlist_id = null; // used for playlists (not subscription)
   uid = null; // used for non-subscription files (audio, video, playlist)
   subscription = null;
@@ -156,7 +157,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       // regular video/audio file (not playlist)
       this.uids = [this.db_file['uid']];
-      this.type = this.db_file['isAudio'] ? 'audio' : 'video';
+      this.type = this.db_file['isAudio'] ? 'audio' as FileType : 'video' as FileType;
       this.parseFileNames();
     });
   }

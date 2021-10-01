@@ -8,9 +8,89 @@ import { THEMES_CONFIG } from '../themes';
 import { Router, CanActivate } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
-import { v4 as uuid } from 'uuid';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
+import {
+    ChangeRolePermissionsRequest,
+    ChangeUserPermissionsRequest,
+    ConfigResponse,
+    CreatePlaylistRequest,
+    CreatePlaylistResponse,
+    CropFileSettings,
+    DeleteMp3Mp4Request,
+    DeletePlaylistRequest,
+    DeleteSubscriptionFileRequest,
+    DeleteUserRequest,
+    DownloadArchiveRequest,
+    DownloadFileRequest,
+    FileType,
+    GenerateNewApiKeyResponse,
+    GetAllDownloadsResponse,
+    GetAllFilesResponse,
+    GetAllSubscriptionsResponse,
+    GetDownloadResponse,
+    GetDownloadRequest,
+    GetFileRequest,
+    GetFileResponse,
+    GetMp3sResponse,
+    GetMp4sResponse,
+    GetPlaylistRequest,
+    GetPlaylistResponse,
+    GetRolesResponse,
+    GetSubscriptionRequest,
+    GetSubscriptionResponse,
+    GetUsersResponse,
+    LoginRequest,
+    LoginResponse,
+    DownloadRequest,
+    DownloadResponse,
+    Playlist,
+    RegisterRequest,
+    RegisterResponse,
+    SetConfigRequest,
+    SharingToggle,
+    SubscribeRequest,
+    SubscribeResponse,
+    SubscriptionRequestData,
+    SuccessObject,
+    UpdaterStatus,
+    UnsubscribeRequest,
+    UnsubscribeResponse,
+    UpdatePlaylistRequest,
+    UpdateServerRequest,
+    UpdateUserRequest,
+    UserPermission,
+    YesNo,
+    GenerateArgsResponse,
+    GetPlaylistsRequest,
+    UpdateCategoryRequest,
+    UpdateCategoriesRequest,
+    DeleteCategoryRequest,
+    CreateCategoryRequest,
+    CreateCategoryResponse,
+    GetAllCategoriesResponse,
+    AddFileToPlaylistRequest,
+    IncrementViewCountRequest,
+    GetLogsRequest,
+    GetLogsResponse,
+    UpdateConcurrentStreamResponse,
+    UpdateConcurrentStreamRequest,
+    CheckConcurrentStreamRequest,
+    CheckConcurrentStreamResponse,
+    DownloadTwitchChatByVODIDRequest,
+    DownloadTwitchChatByVODIDResponse,
+    GetFullTwitchChatRequest,
+    GetFullTwitchChatResponse,
+    GetAllDownloadsRequest,
+    TestConnectionStringRequest,
+    TestConnectionStringResponse,
+    TransferDBRequest,
+    TransferDBResponse,
+    VersionInfoResponse,
+    DBInfoResponse,
+    GetFileFormatsRequest,
+    GetFileFormatsResponse,
+} from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
 
@@ -27,7 +107,9 @@ export class PostsService implements CanActivate {
     // auth
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
     session_id = null;
-    httpOptions = null;
+    httpOptions: {
+        params: HttpParams
+    };
     http_params: string = null;
     unauthorized = false;
 
@@ -175,57 +257,62 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    downloadFile(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
-        return this.http.post(this.path + 'downloadFile', {url: url,
-                                                    selectedHeight: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration,
-                                                    customArgs: customArgs,
-                                                    additionalArgs: additionalArgs,
-                                                    customOutput: customOutput,
-                                                    youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword,
-                                                    type: type,
-                                                    cropFileSettings: cropFileSettings}, this.httpOptions);
+    // tslint:disable-next-line: max-line-length
+    downloadFile(url: string, type: FileType, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings: CropFileSettings = null) {
+        const body: DownloadRequest = {url: url,
+            selectedHeight: selectedQuality,
+            customQualityConfiguration: customQualityConfiguration,
+            customArgs: customArgs,
+            additionalArgs: additionalArgs,
+            customOutput: customOutput,
+            youtubeUsername: youtubeUsername,
+            youtubePassword: youtubePassword,
+            type: type,
+            cropFileSettings: cropFileSettings}
+        return this.http.post<DownloadResponse>(this.path + 'downloadFile', body, this.httpOptions);
     }
 
-    generateArgs(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
-        return this.http.post(this.path + 'generateArgs', {url: url,
-                                                    selectedHeight: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration,
-                                                    customArgs: customArgs,
-                                                    additionalArgs: additionalArgs,
-                                                    customOutput: customOutput,
-                                                    youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword,
-                                                    type: type,
-                                                    cropFileSettings: cropFileSettings}, this.httpOptions);
+    generateArgs(url: string, type: FileType, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
+        const body: DownloadRequest = {url: url,
+            selectedHeight: selectedQuality,
+            customQualityConfiguration: customQualityConfiguration,
+            customArgs: customArgs,
+            additionalArgs: additionalArgs,
+            customOutput: customOutput,
+            youtubeUsername: youtubeUsername,
+            youtubePassword: youtubePassword,
+            type: type,
+            cropFileSettings: cropFileSettings}
+        return this.http.post<GenerateArgsResponse>(this.path + 'generateArgs', body, this.httpOptions);
     }
 
     getDBInfo() {
-        return this.http.post(this.path + 'getDBInfo', {}, this.httpOptions);
+        return this.http.get<DBInfoResponse>(this.path + 'getDBInfo', this.httpOptions);
     }
 
     transferDB(local_to_remote) {
-        return this.http.post(this.path + 'transferDB', {local_to_remote: local_to_remote}, this.httpOptions);
+        const body: TransferDBRequest = {local_to_remote: local_to_remote};
+        return this.http.post<TransferDBResponse>(this.path + 'transferDB', body, this.httpOptions);
     }
 
-    testConnectionString(connection_string) {
-        return this.http.post(this.path + 'testConnectionString', {connection_string: connection_string}, this.httpOptions);
+    testConnectionString(connection_string: string) {
+        const body: TestConnectionStringRequest = {connection_string: connection_string};
+        return this.http.post<TestConnectionStringResponse>(this.path + 'testConnectionString', body, this.httpOptions);
     }
 
     killAllDownloads() {
-        return this.http.post(this.path + 'killAllDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'killAllDownloads', {}, this.httpOptions);
     }
 
     restartServer() {
-        return this.http.post(this.path + 'restartServer', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'restartServer', {}, this.httpOptions);
     }
 
     loadNavItems() {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');
         } else {
-            return this.http.get(this.path + 'config', this.httpOptions);
+            return this.http.get<ConfigResponse>(this.path + 'config', this.httpOptions);
         }
     }
 
@@ -238,161 +325,180 @@ export class PostsService implements CanActivate {
     }
 
     setConfig(config) {
-        return this.http.post(this.path + 'setConfig', {new_config_file: config}, this.httpOptions);
+        const body: SetConfigRequest = {new_config_file: config};
+        return this.http.post<SuccessObject>(this.path + 'setConfig', body, this.httpOptions);
     }
 
     deleteFile(uid: string, blacklistMode = false) {
-        return this.http.post(this.path + 'deleteFile', {uid: uid, blacklistMode: blacklistMode}, this.httpOptions);
+        const body: DeleteMp3Mp4Request = {uid: uid, blacklistMode: blacklistMode}
+        return this.http.post(this.path + 'deleteFile', body, this.httpOptions);
     }
 
     getMp3s() {
-        return this.http.get(this.path + 'getMp3s', this.httpOptions);
+        return this.http.get<GetMp3sResponse>(this.path + 'getMp3s', this.httpOptions);
     }
 
     getMp4s() {
-        return this.http.get(this.path + 'getMp4s', this.httpOptions);
+        return this.http.get<GetMp4sResponse>(this.path + 'getMp4s', this.httpOptions);
     }
 
-    getFile(uid, type, uuid = null) {
-        return this.http.post(this.path + 'getFile', {uid: uid, type: type, uuid: uuid}, this.httpOptions);
+    getFile(uid: string, type: FileType, uuid: string = null) {
+        const body: GetFileRequest = {uid: uid, type: type, uuid: uuid};
+        return this.http.post<GetFileResponse>(this.path + 'getFile', body, this.httpOptions);
     }
 
     getAllFiles(sort, range, text_search, file_type_filter) {
-        return this.http.post(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
+        return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
+    }
+
+    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null) {
+        const body: DownloadFileRequest = {
+            uid: uid,
+            uuid: uuid,
+            sub_id: sub_id
+        };
+        return this.http.post(this.path + 'downloadFile', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFullTwitchChat(id, type, uuid = null, sub = null) {
-        return this.http.post(this.path + 'getFullTwitchChat', {id: id, type: type, uuid: uuid, sub: sub}, this.httpOptions);
+        const body: GetFullTwitchChatRequest = {id: id, type: type, uuid: uuid, sub: sub};
+        return this.http.post<GetFullTwitchChatResponse>(this.path + 'getFullTwitchChat', body, this.httpOptions);
     }
 
     downloadTwitchChat(id, type, vodId, uuid = null, sub = null) {
-        return this.http.post(this.path + 'downloadTwitchChatByVODID', {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub}, this.httpOptions);
-    }
-
-    downloadFileFromServer(uid, uuid = null, sub_id = null, is_playlist = null) {
-        return this.http.post(this.path + 'downloadFileFromServer', {
-                                                            uid: uid,
-                                                            uuid: uuid,
-                                                            sub_id: sub_id,
-                                                            is_playlist: is_playlist
-                                                            },
-                                                          {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadTwitchChatByVODIDRequest = {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub};
+        return this.http.post<DownloadTwitchChatByVODIDResponse>(this.path + 'downloadTwitchChatByVODID', body, this.httpOptions);
     }
 
     downloadPlaylistFromServer(playlist_id, uuid = null) {
-        return this.http.post(this.path + 'downloadFileFromServer', {
-                                                            uuid: uuid,
-                                                            playlist_id: playlist_id
-                                                            },
-                                                          {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadFileRequest = {uuid: uuid, playlist_id: playlist_id};
+        return this.http.post(this.path + 'downloadFileFromServer', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     downloadSubFromServer(sub_id, uuid = null) {
-        return this.http.post(this.path + 'downloadFileFromServer', {
-                                                            uuid: uuid,
-                                                            sub_id: sub_id
-                                                            },
-                                                          {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadFileRequest = {uuid: uuid, sub_id: sub_id};
+        return this.http.post(this.path + 'downloadFileFromServer', body, {responseType: 'blob', params: this.httpOptions.params});
+
     }
 
     checkConcurrentStream(uid) {
-        return this.http.post(this.path + 'checkConcurrentStream', {uid: uid}, this.httpOptions);
+        const body: CheckConcurrentStreamRequest = {uid: uid};
+        return this.http.post<CheckConcurrentStreamResponse>(this.path + 'checkConcurrentStream', body, this.httpOptions);
     }
 
     updateConcurrentStream(uid, playback_timestamp, unix_timestamp, playing) {
-        return this.http.post(this.path + 'updateConcurrentStream', {uid: uid,
-                                                                    playback_timestamp: playback_timestamp,
-                                                                    unix_timestamp: unix_timestamp,
-                                                                    playing: playing}, this.httpOptions);
+        const body: UpdateConcurrentStreamRequest = {uid: uid,
+            playback_timestamp: playback_timestamp,
+            unix_timestamp: unix_timestamp,
+            playing: playing};
+        return this.http.post<UpdateConcurrentStreamResponse>(this.path + 'updateConcurrentStream', body, this.httpOptions);
     }
 
     uploadCookiesFile(fileFormData) {
-        return this.http.post(this.path + 'uploadCookies', fileFormData, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'uploadCookies', fileFormData, this.httpOptions);
     }
 
     downloadArchive(sub) {
-        return this.http.post(this.path + 'downloadArchive', {sub: sub}, {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadArchiveRequest = {sub: sub};
+        return this.http.post(this.path + 'downloadArchive', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFileFormats(url) {
-        return this.http.post(this.path + 'getFileFormats', {url: url}, this.httpOptions);
+        const body: GetFileFormatsRequest = {url: url};
+        return this.http.post<GetFileFormatsResponse>(this.path + 'getFileFormats', body, this.httpOptions);
     }
 
     getLogs(lines = 50) {
-        return this.http.post(this.path + 'logs', {lines: lines}, this.httpOptions);
+        const body: GetLogsRequest = {lines: lines};
+        return this.http.post<GetLogsResponse>(this.path + 'logs', body, this.httpOptions);
     }
 
     clearAllLogs() {
-        return this.http.post(this.path + 'clearAllLogs', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'clearAllLogs', {}, this.httpOptions);
     }
 
     generateNewAPIKey() {
-        return this.http.post(this.path + 'generateNewAPIKey', {}, this.httpOptions);
+        return this.http.post<GenerateNewApiKeyResponse>(this.path + 'generateNewAPIKey', {}, this.httpOptions);
     }
 
-    enableSharing(uid, is_playlist) {
-        return this.http.post(this.path + 'enableSharing', {uid: uid, is_playlist: is_playlist}, this.httpOptions);
+    enableSharing(uid: string, is_playlist: boolean) {
+        const body: SharingToggle = {uid: uid, is_playlist: is_playlist};
+        return this.http.post<SuccessObject>(this.path + 'enableSharing', body, this.httpOptions);
     }
 
-    disableSharing(uid, is_playlist) {
-        return this.http.post(this.path + 'disableSharing', {uid: uid, is_playlist: is_playlist}, this.httpOptions);
+    disableSharing(uid: string, is_playlist: boolean) {
+        const body: SharingToggle = {uid: uid, is_playlist: is_playlist};
+        return this.http.post<SuccessObject>(this.path + 'disableSharing', body, this.httpOptions);
+    }
+
+    createPlaylist(playlistName: string, uids: string[], type: FileType, thumbnailURL: string) {
+        const body: CreatePlaylistRequest = {playlistName: playlistName,
+            uids: uids,
+            type: type,
+            thumbnailURL: thumbnailURL};
+        return this.http.post<CreatePlaylistResponse>(this.path + 'createPlaylist', body, this.httpOptions);
+    }
+
+    getPlaylist(playlist_id: string, uuid: string = null, include_file_metadata: boolean = false) {
+        const body: GetPlaylistRequest = {playlist_id: playlist_id,
+            include_file_metadata: include_file_metadata, uuid: uuid};
+        return this.http.post<GetPlaylistResponse>(this.path + 'getPlaylist', body, this.httpOptions);
     }
 
     incrementViewCount(file_uid, sub_id, uuid) {
-        return this.http.post(this.path + 'incrementViewCount', {file_uid: file_uid, sub_id: sub_id, uuid: uuid}, this.httpOptions);
-    }
-
-    createPlaylist(playlistName, uids, type, thumbnailURL) {
-        return this.http.post(this.path + 'createPlaylist', {playlistName: playlistName,
-                                                            uids: uids,
-                                                            type: type,
-                                                            thumbnailURL: thumbnailURL}, this.httpOptions);
-    }
-
-    getPlaylist(playlist_id, uuid = null, include_file_metadata = false) {
-        return this.http.post(this.path + 'getPlaylist', {playlist_id: playlist_id,
-                                                            uuid: uuid,
-                                                            include_file_metadata: include_file_metadata}, this.httpOptions);
+        const body: IncrementViewCountRequest = {file_uid: file_uid, sub_id: sub_id, uuid: uuid};
+        return this.http.post<SuccessObject>(this.path + 'incrementViewCount', body, this.httpOptions);
     }
 
     getPlaylists() {
-        return this.http.post(this.path + 'getPlaylists', {}, this.httpOptions);
+        return this.http.post<GetPlaylistsRequest>(this.path + 'getPlaylists', {}, this.httpOptions);
     }
 
-    updatePlaylist(playlist) {
-        return this.http.post(this.path + 'updatePlaylist', {playlist: playlist}, this.httpOptions);
+    updatePlaylist(playlist: Playlist) {
+        const body: UpdatePlaylistRequest = {playlist: playlist};
+        return this.http.post<SuccessObject>(this.path + 'updatePlaylist', body, this.httpOptions);
     }
 
+    removePlaylist(playlist_id: string, type: FileType) {
+        const body: DeletePlaylistRequest = {playlist_id: playlist_id, type: type};
+        return this.http.post<SuccessObject>(this.path + 'deletePlaylist', body, this.httpOptions);
+    }
+
+    createSubscription(url, name, timerange = null, maxQuality = 'best', audioOnly = false, customArgs: string = null, customFileOutput: string = null) {
+        const body: SubscribeRequest = {url: url, name: name, timerange: timerange, maxQuality: maxQuality,
+            audioOnly: audioOnly, customArgs: customArgs, customFileOutput: customFileOutput};
+        return this.http.post<SubscribeResponse>(this.path + 'subscribe', body, this.httpOptions);
+    }
+    
     addFileToPlaylist(playlist_id, file_uid) {
-        return this.http.post(this.path + 'addFileToPlaylist', {playlist_id: playlist_id,
-                                                                file_uid: file_uid},
-                                                                this.httpOptions);
-    }
-
-    removePlaylist(playlist_id, type) {
-        return this.http.post(this.path + 'deletePlaylist', {playlist_id: playlist_id, type: type}, this.httpOptions);
+        const body: AddFileToPlaylistRequest = {playlist_id: playlist_id, file_uid: file_uid}
+        return this.http.post<SuccessObject>(this.path + 'addFileToPlaylist', body, this.httpOptions);
     }
 
     // categories
 
     getAllCategories() {
-        return this.http.post(this.path + 'getAllCategories', {}, this.httpOptions);
+        return this.http.post<GetAllCategoriesResponse>(this.path + 'getAllCategories', {}, this.httpOptions);
     }
 
     createCategory(name) {
-        return this.http.post(this.path + 'createCategory', {name: name}, this.httpOptions);
+        const body: CreateCategoryRequest = {name: name};
+        return this.http.post<CreateCategoryResponse>(this.path + 'createCategory', body, this.httpOptions);
     }
 
     deleteCategory(category_uid) {
-        return this.http.post(this.path + 'deleteCategory', {category_uid: category_uid}, this.httpOptions);
+        const body: DeleteCategoryRequest = {category_uid: category_uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteCategory', body, this.httpOptions);
     }
 
     updateCategory(category) {
-        return this.http.post(this.path + 'updateCategory', {category: category}, this.httpOptions);
+        const body: UpdateCategoryRequest = {category: category};
+        return this.http.post<SuccessObject>(this.path + 'updateCategory', body, this.httpOptions);
     }
 
     updateCategories(categories) {
-        return this.http.post(this.path + 'updateCategories', {categories: categories}, this.httpOptions);
+        const body: UpdateCategoriesRequest = {categories: categories};
+        return this.http.post<SuccessObject>(this.path + 'updateCategories', body, this.httpOptions);
     }
 
     reloadCategories() {
@@ -401,87 +507,84 @@ export class PostsService implements CanActivate {
         });
     }
 
-    createSubscription(url, name, timerange = null, streamingOnly = false, maxQuality = 'best', audioOnly = false,
-                       customArgs = null, customFileOutput = null) {
-        return this.http.post(this.path + 'subscribe', {url: url, name: name, timerange: timerange, maxQuality: maxQuality,
-                                streamingOnly: streamingOnly, audioOnly: audioOnly, customArgs: customArgs,
-                                customFileOutput: customFileOutput}, this.httpOptions);
-    }
-
     updateSubscription(subscription) {
         delete subscription['videos'];
-        return this.http.post(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
     }
 
-    unsubscribe(sub, deleteMode = false) {
-        delete sub['videos'];
-        return this.http.post(this.path + 'unsubscribe', {sub: sub, deleteMode: deleteMode}, this.httpOptions)
+    unsubscribe(sub: SubscriptionRequestData, deleteMode = false) {
+        const body: UnsubscribeRequest = {sub: sub, deleteMode: deleteMode};
+        return this.http.post<UnsubscribeResponse>(this.path + 'unsubscribe', body, this.httpOptions)
     }
 
-    deleteSubscriptionFile(sub, file, deleteForever, file_uid) {
-        delete sub['videos'];
-        return this.http.post(this.path + 'deleteSubscriptionFile', {sub: sub, file: file, deleteForever: deleteForever,
-                                                                    file_uid: file_uid}, this.httpOptions)
+    deleteSubscriptionFile(sub: SubscriptionRequestData, file: string, deleteForever: boolean, file_uid: string) {
+        const body: DeleteSubscriptionFileRequest = {sub: sub, file: file, deleteForever: deleteForever,
+            file_uid: file_uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteSubscriptionFile', body, this.httpOptions)
     }
 
-    getSubscription(id, name = null) {
-        return this.http.post(this.path + 'getSubscription', {id: id, name: name}, this.httpOptions);
+    getSubscription(id: string, name: string = null) {
+        const body: GetSubscriptionRequest = {id: id, name: name};
+        return this.http.post<GetSubscriptionResponse>(this.path + 'getSubscription', body, this.httpOptions);
     }
 
     getAllSubscriptions() {
-        return this.http.post(this.path + 'getSubscriptions', {}, this.httpOptions);
+        return this.http.post<GetAllSubscriptionsResponse>(this.path + 'getAllSubscriptions', {}, this.httpOptions);
     }
 
-    getCurrentDownloads(uids = null) {
-        return this.http.post(this.path + 'downloads', {uids: uids}, this.httpOptions);
+    getCurrentDownloads(uids: Array<string> = null) {
+        const body: GetAllDownloadsRequest = {uids: uids};
+        return this.http.post<GetAllDownloadsResponse>(this.path + 'downloads', body, this.httpOptions);
     }
 
-    getCurrentDownload(download_uid) {
-        return this.http.post(this.path + 'download', {download_uid: download_uid}, this.httpOptions);
+    getCurrentDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<GetDownloadResponse>(this.path + 'download', body, this.httpOptions);
     }
 
     pauseDownload(download_uid) {
-        return this.http.post(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     pauseAllDownloads() {
-        return this.http.post(this.path + 'pauseAllDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'pauseAllDownloads', {}, this.httpOptions);
     }
 
     resumeDownload(download_uid) {
-        return this.http.post(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     resumeAllDownloads() {
-        return this.http.post(this.path + 'resumeAllDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'resumeAllDownloads', {}, this.httpOptions);
     }
 
     restartDownload(download_uid) {
-        return this.http.post(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     cancelDownload(download_uid) {
-        return this.http.post(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     clearDownload(download_uid) {
-        return this.http.post(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     clearFinishedDownloads() {
-        return this.http.post(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
     }
 
     getVersionInfo() {
-        return this.http.get(this.path + 'versionInfo', this.httpOptions);
+        return this.http.get<VersionInfoResponse>(this.path + 'versionInfo', this.httpOptions);
     }
 
-    updateServer(tag) {
-        return this.http.post(this.path + 'updateServer', {tag: tag}, this.httpOptions);
+    updateServer(tag: string) {
+        const body: UpdateServerRequest = {tag: tag};
+        return this.http.post<SuccessObject>(this.path + 'updateServer', body, this.httpOptions);
     }
 
     getUpdaterStatus() {
-        return this.http.get(this.path + 'updaterStatus', this.httpOptions);
+        return this.http.get<UpdaterStatus>(this.path + 'updaterStatus', this.httpOptions);
     }
 
     // gets tag of the latest version of youtubedl-material
@@ -513,9 +616,9 @@ export class PostsService implements CanActivate {
     }
 
     // user methods
-    login(username, password) {
-        const call = this.http.post(this.path + 'auth/login', {username: username, password: password}, this.httpOptions);
-        return call;
+    login(username: string, password: string) {
+        const body: LoginRequest = {username: username, password: password};
+        return this.http.post<LoginResponse>(this.path + 'auth/login', body, this.httpOptions);
     }
 
     // user methods
@@ -556,10 +659,11 @@ export class PostsService implements CanActivate {
     }
 
     // user methods
-    register(username, password) {
-        const call = this.http.post(this.path + 'auth/register', {userid: username,
-                                                                username: username,
-                                                                password: password}, this.httpOptions);
+    register(username: string, password: string) {
+        const body: RegisterRequest = {userid: username,
+            username: username,
+            password: password}
+        const call = this.http.post<RegisterResponse>(this.path + 'auth/register', body, this.httpOptions);
         return call;
     }
 
@@ -604,10 +708,11 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'auth/adminExists', {}, this.httpOptions);
     }
 
-    createAdminAccount(password) {
-        return this.http.post(this.path + 'auth/register', {userid: 'admin',
-            username: 'admin',
-            password: password}, this.httpOptions);
+    createAdminAccount(password: string) {
+        const body: RegisterRequest = {userid: 'admin',
+        username: 'admin',
+        password: password};
+        return this.http.post<RegisterResponse>(this.path + 'auth/register', body, this.httpOptions);
     }
 
     checkAdminCreationStatus(force_show = false) {
@@ -622,12 +727,14 @@ export class PostsService implements CanActivate {
         });
     }
 
-    changeUser(change_obj) {
-        return this.http.post(this.path + 'updateUser', {change_object: change_obj}, this.httpOptions);
+    changeUser(change_obj: UpdateUserRequest['change_object']) {
+        const body: UpdateUserRequest = {change_object: change_obj};
+        return this.http.post<SuccessObject>(this.path + 'updateUser', body, this.httpOptions);
     }
 
-    deleteUser(uid) {
-        return this.http.post(this.path + 'deleteUser', {uid: uid}, this.httpOptions);
+    deleteUser(uid: string) {
+        const body: DeleteUserRequest = {uid: uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteUser', body, this.httpOptions);
     }
 
     changeUserPassword(user_uid, new_password) {
@@ -635,20 +742,22 @@ export class PostsService implements CanActivate {
     }
 
     getUsers() {
-        return this.http.post(this.path + 'getUsers', {}, this.httpOptions);
+        return this.http.post<GetUsersResponse>(this.path + 'getUsers', {}, this.httpOptions);
     }
 
     getRoles() {
-        return this.http.post(this.path + 'getRoles', {}, this.httpOptions);
+        return this.http.post<GetRolesResponse>(this.path + 'getRoles', {}, this.httpOptions);
     }
 
-    setUserPermission(user_uid, permission, new_value) {
-        return this.http.post(this.path + 'changeUserPermissions', {user_uid: user_uid, permission: permission, new_value: new_value},
+    setUserPermission(user_uid: string, permission: UserPermission, new_value: YesNo) {
+        const body: ChangeUserPermissionsRequest = {user_uid: user_uid, permission: permission, new_value: new_value};
+        return this.http.post<SuccessObject>(this.path + 'changeUserPermissions', body,
                                                                     this.httpOptions);
     }
 
-    setRolePermission(role_name, permission, new_value) {
-        return this.http.post(this.path + 'changeRolePermissions', {role: role_name, permission: permission, new_value: new_value},
+    setRolePermission(role_name: string, permission: UserPermission, new_value: YesNo) {
+        const body: ChangeRolePermissionsRequest = {role: role_name, permission: permission, new_value: new_value};
+        return this.http.post<SuccessObject>(this.path + 'changeRolePermissions', body,
                                                                     this.httpOptions);
     }
 

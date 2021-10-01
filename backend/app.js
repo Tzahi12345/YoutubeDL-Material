@@ -950,7 +950,7 @@ app.post('/api/restartServer', optionalJwt, (req, res) => {
     res.send({success: true});
 });
 
-app.post('/api/getDBInfo', optionalJwt, async (req, res) => {
+app.get('/api/getDBInfo', optionalJwt, async (req, res) => {
     const db_info = await db_api.getDBStats();
     res.send({db_info: db_info});
 });
@@ -1348,7 +1348,6 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
     let url = req.body.url;
     let maxQuality = req.body.maxQuality;
     let timerange = req.body.timerange;
-    let streamingOnly = req.body.streamingOnly;
     let audioOnly = req.body.audioOnly;
     let customArgs = req.body.customArgs;
     let customOutput = req.body.customFileOutput;
@@ -1358,7 +1357,6 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
                         url: url,
                         maxQuality: maxQuality,
                         id: uuid(),
-                        streamingOnly: streamingOnly,
                         user_uid: user_uid,
                         type: audioOnly ? 'audio' : 'video'
                     };
@@ -1554,7 +1552,7 @@ app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
     const uuid = req.isAuthenticated() ? req.user.uid : null;
     const include_categories = req.body.include_categories;
 
-    const playlists = await db_api.getRecords('playlists', {user_uid: uuid});
+    let playlists = await db_api.getRecords('playlists', {user_uid: uuid});
     if (include_categories) {
         const categories = await categories_api.getCategoriesAsPlaylists(files);
         if (categories) {
