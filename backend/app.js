@@ -950,7 +950,7 @@ app.post('/api/restartServer', optionalJwt, (req, res) => {
     res.send({success: true});
 });
 
-app.post('/api/getDBInfo', optionalJwt, async (req, res) => {
+app.get('/api/getDBInfo', optionalJwt, async (req, res) => {
     const db_info = await db_api.getDBStats();
     res.send({db_info: db_info});
 });

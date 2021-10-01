@@ -33,6 +33,27 @@ paths:
           description: Server download error
       security:
         - Auth query parameter: []
+  /api/generateArgs:
+    post:
+      tags:
+        - downloader
+      summary: Download video file
+      description: Generates args, used for checking what args would run if you ran downloadFile
+      operationId: post-generateArgs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateArgsResponse'
+      security:
+        - Auth query parameter: []
   /api/getMp3s:
     get:
       tags:
@@ -146,6 +167,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/incrementViewCount:
+    post:
+      summary: Increments a file's view count
+      tags:
+        - files
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncrementViewCountRequest'
+      operationId: post-api-incrementViewCount
+      description: Increments a file's view count
       security:
         - Auth query parameter: []
   /api/subscribe:
@@ -359,6 +401,27 @@ paths:
                 $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
+  /api/addFileToPlaylist:
+    post:
+      tags:
+        - playlists
+      summary: Adds a file to a playlist
+      description: Adds a file to a playlist
+      operationId: post-api-addFileToPlaylist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFileToPlaylistRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
   /api/deleteMp4:
     post:
       tags:
@@ -487,48 +550,6 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_15'
       security:
         - Auth query parameter: []
-  /api/checkPin:
-    post:
-      tags:
-        - security
-      summary: Check if pin is correct
-      description: Checks the pin against an inputted one. Will return true if they match
-      operationId: post-api-checkPin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_19'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessObject'
-      security:
-        - Auth query parameter: []
-  /api/setPin:
-    post:
-      tags:
-        - security
-      summary: Set pin
-      operationId: post-api-setPin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_20'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessObject'
-      security:
-        - Auth query parameter: []
-      description: ''
   /api/generateNewAPIKey:
     post:
       tags:
@@ -604,7 +625,7 @@ paths:
       security:
         - Auth query parameter: []
   /api/downloads:
-    get:
+    post:
       summary: Get info for all downloads
       tags:
         - downloader
@@ -615,7 +636,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllDownloadsResponse'
-      operationId: get-api-downloads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAllDownloadsRequest'
+      operationId: post-api-downloads
       description: Retrieves all downloads recorded by the server and their status.
       security:
         - Auth query parameter: []
@@ -799,6 +825,299 @@ paths:
         - Auth query parameter: []
       tags:
         - multi-user mode
+    /api/versionInfo:
+      get:
+        tags:
+          - server
+        summary: Gets server version info
+        operationId: get-api-versionInfo
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/VersionInfoResponse'
+        security:
+          - Auth query parameter: []
+  /api/getLogs:
+    post:
+      summary: Gets logs from server
+      tags:
+        - server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLogsRequest'
+      operationId: post-api-getLogs
+      description: Gets logs from server
+      security:
+        - Auth query parameter: []
+  /api/clearAllLogs:
+    post:
+      summary: Clears the log file
+      tags:
+        - server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      operationId: post-api-clearAllLogs
+      description: Clears the log file
+      security:
+        - Auth query parameter: []
+    /api/getDBInfo:
+      get:
+        tags:
+          - db
+        summary: Gets information on the DB
+        operationId: get-api-getDBInfo
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/DBInfoResponse'
+        security:
+          - Auth query parameter: []
+  /api/transferDB:
+    post:
+      summary: Transfers DB between Local and MongoDB
+      tags:
+        - db
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferDBResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferDBRequest'
+      operationId: post-api-transferDB
+      description: Initiates a transfer between Local and MongoDB. Connection string must be set.
+      security:
+        - Auth query parameter: []
+  /api/testConnectionString:
+    post:
+      summary: Tests a MongoDB connection string
+      tags:
+        - db
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestConnectionStringResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestConnectionStringRequest'
+      operationId: post-api-testConnectionString
+      description: Tests a MongoDB connection string and returns an error if one exists.
+      security:
+        - Auth query parameter: []
+  /api/getFullTwitchChat:
+    post:
+      summary: Gets the downloaded Twitch Chat (VODs only)
+      tags:
+        - twitch
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFullTwitchChatResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetFullTwitchChatRequest'
+      operationId: post-api-getFullTwitchChat
+      description: Gets the downloaded Twitch Chat (VODs only)
+      security:
+        - Auth query parameter: []
+  /api/downloadTwitchChatByVODID:
+    post:
+      summary: Downloads Twitch Chat for a VOD
+      tags:
+        - twitch
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadTwitchChatByVODIDResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadTwitchChatByVODIDRequest'
+      operationId: post-api-downloadTwitchChatByVODID
+      description: Downloads Twitch Chat for a VOD
+      security:
+        - Auth query parameter: []
+  /api/checkConcurrentStream:
+    post:
+      summary: Checks status of a concurrent stream
+      tags:
+        - player
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckConcurrentStreamResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckConcurrentStreamRequest'
+      operationId: post-api-checkConcurrentStream
+      description: Checks status of a concurrent stream
+      security:
+        - Auth query parameter: []
+  /api/updateConcurrentStream:
+    post:
+      summary: Updates a concurrent stream
+      tags:
+        - player
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateConcurrentStreamResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateConcurrentStreamRequest'
+      operationId: post-api-updateConcurrentStream
+      description: Updates a concurrent stream
+      security:
+        - Auth query parameter: []
+  /api/getAllCategories:
+    post:
+      summary: Gets all categories
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllCategoriesResponse'
+      operationId: post-api-getAllCategories
+      description: Gets all categories
+      security:
+        - Auth query parameter: []
+  /api/createCategory:
+    post:
+      summary: Creates a category
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCategoryResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      operationId: post-api-createCategory
+      description: Creates a category
+      security:
+        - Auth query parameter: []
+  /api/deleteCategory:
+    post:
+      summary: Deletes a category
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCategoryRequest'
+      operationId: post-api-deleteCategory
+      description: Deletes a category
+      security:
+        - Auth query parameter: []
+  /api/updateCategory:
+    post:
+      summary: Updates a category
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      operationId: post-api-updateCategory
+      description: Updates a category
+      security:
+        - Auth query parameter: []
+  /api/updateCategories:
+    post:
+      summary: Updates all categories
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoriesRequest'
+      operationId: post-api-updateCategories
+      description: Updates all categories
+      security:
+        - Auth query parameter: []
 components:
   schemas:
     SuccessObject:
@@ -874,6 +1193,13 @@ components:
         download:
           $ref: '#/components/schemas/Download'
           nullable: true
+    GenerateArgsResponse:
+      type: object
+      properties:
+        args:
+          type: array
+          items:
+            type: string
     GetDownloadRequest:
       type: object
       properties:
@@ -886,6 +1212,15 @@ components:
       properties:
         download:
           $ref: '#/components/schemas/Download'
+          nullable: true
+    GetAllDownloadsRequest:
+      type: object
+      properties:
+        uids:
+          type: array
+          items:
+            type: string
+          description: Filters downloads with the array
           nullable: true
     GetAllDownloadsResponse:
       type: object
@@ -1159,8 +1494,6 @@ components:
         type:
           $ref: '#/components/schemas/FileType'
     DownloadFileRequest:
-      required:
-        - uid
       type: object
       properties:
         uid:
@@ -1169,9 +1502,8 @@ components:
           type: string
         sub_id:
           type: string
-        is_playlist:
-          type: boolean
-          description: Only used for subscriptions
+        playlist_id:
+          type: string
     DownloadArchiveRequest:
       required:
         - sub
@@ -1203,6 +1535,264 @@ components:
       properties:
         tag:
           type: string
+    DBInfoResponse:
+      required:
+        - db_info
+      type: object
+      properties:
+        using_local_db:
+          type: boolean
+        stats_by_table:
+          type: object
+          properties:
+            files:
+              $ref: '#/components/schemas/TableInfo'
+            playlists:
+              $ref: '#/components/schemas/TableInfo'
+            categories:
+              $ref: '#/components/schemas/TableInfo'
+            subscriptions:
+              $ref: '#/components/schemas/TableInfo'
+            users:
+              $ref: '#/components/schemas/TableInfo'
+            roles:
+              $ref: '#/components/schemas/TableInfo'
+            download_queue:
+              $ref: '#/components/schemas/TableInfo'
+    TransferDBResponse:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    TransferDBRequest:
+      required:
+        - local_to_remote
+      type: object
+      properties:
+        local_to_remote:
+          description: True if transfering DB from Local to MongoDB, false if transferring DB from MongoDB to Local
+          type: boolean
+    TestConnectionStringResponse:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    TestConnectionStringRequest:
+      required:
+        - connection_string
+      type: object
+      properties:
+        connection_string:
+          description: MongoDB connection string
+          type: string
+    GetFullTwitchChatResponse:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    GetFullTwitchChatRequest:
+      required:
+        - id
+        - type
+      type: object
+      properties:
+        id:
+          description: File ID
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
+          description: User UID
+          type: string
+        sub:
+          description: Subscription
+          $ref: '#/components/schemas/Subscription'
+    DownloadTwitchChatByVODIDResponse:
+      required:
+        - chat
+      type: object
+      properties:
+        chat:
+          type: array
+          items:
+            $ref: '#/components/schemas/TwitchChatMessage'
+    DownloadTwitchChatByVODIDRequest:
+      required:
+        - id
+        - type
+        - vodId
+      type: object
+      properties:
+        id:
+          description: File ID
+          type: string
+        vodId:
+          description: ID of the VOD
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
+          description: User UID
+          type: string
+        sub:
+          description: Subscription
+          $ref: '#/components/schemas/Subscription'
+    CheckConcurrentStreamResponse:
+      required:
+        - stream
+      type: object
+      properties:
+        stream:
+          $ref: '#/components/schemas/ConcurrentStream'
+    CheckConcurrentStreamRequest:
+      required:
+        - uid
+      type: object
+      properties:
+        uid:
+          description: UID of the concurrent stream
+          type: string
+    UpdateConcurrentStreamResponse:
+      required:
+        - stream
+      type: object
+      properties:
+        stream:
+          $ref: '#/components/schemas/ConcurrentStream'
+    UpdateConcurrentStreamRequest:
+      allOf:
+        - $ref: '#/components/schemas/ConcurrentStream'
+        - type: object
+          properties:
+            uid:
+              type: string
+              description: Concurrent stream UID
+          required:
+            - uid
+    GetLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: string
+          description: Number of lines to retrieve from the bottom
+        success:
+          type: boolean
+    GetLogsRequest:
+      required:
+        - connection_string
+      type: object
+      properties:
+        lines:
+          type: number
+    GetFileFormatsRequest:
+      type: object
+      properties:
+        url:
+          type: string
+    GetFileFormatsResponse:
+      required:
+        - result
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        result:
+          allOf:
+          - $ref: '#/components/schemas/file'
+          - type: object
+            properties:
+              formats:
+                type: array
+                items:
+                  type: object
+    IncrementViewCountRequest:
+      required:
+        - file_uid
+      type: object
+      properties:
+        file_uid:
+          type: string
+        sub_id:
+          type: string
+        uuid:
+          type: string
+          description: User UID
+    AddFileToPlaylistRequest:
+      required:
+        - playlist_id
+        - file_uid
+      type: object
+      properties:
+        file_uid:
+          type: string
+        playlist_id:
+          type: string
+    GetAllCategoriesResponse:
+      required:
+        - categories
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    CreateCategoryResponse:
+      type: object
+      properties:
+        new_category:
+          $ref: '#/components/schemas/Category'
+        success:
+          type: boolean
+    CreateCategoryRequest:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+    DeleteCategoryRequest:
+      required:
+        - category_uid
+      type: object
+      properties:
+        category_uid:
+          type: string
+    UpdateCategoryRequest:
+      required:
+        - category
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/Category'
+    UpdateCategoriesRequest:
+      required:
+        - categories
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    VersionInfoResponse:
+      required:
+        - version_info
+      type: object
+      properties:
+        version_info:
+          $ref: '#/components/schemas/Version'
     inline_response_200_15:
       required:
         - is_set
@@ -1495,6 +2085,83 @@ components:
       enum:
         - 'yes'
         - 'no'
+    TableInfo:
+      type: object
+      properties:
+        records_count:
+          type: number
+    TwitchChatMessage:
+      type: object
+      properties:
+        created_at:
+          type: string
+        content_offset_seconds:
+          type: number
+        commenter:
+          type: object
+          properties:
+            name:
+              type: string
+            _id:
+              type: string
+            created_at:
+              type: string
+        message:
+          type: object
+          properties:
+            body:
+              type: string
+            user_color:
+              type: string
+    ConcurrentStream:
+      type: object
+      properties:
+        playback_timestamp:
+          type: number
+        unix_timestamp:
+          type: number
+        playing:
+          type: boolean
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        uid:
+          type: string
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryRule'
+        custom_output:
+          type: string
+          description: Overrides file output for downloaded files in category
+    CategoryRule:
+      type: object
+      properties:
+        preceding_operator:
+          type: string
+          enum:
+            - 'or'
+            - 'and'
+        comparator:
+          type: string
+          enum:
+            - 'includes'
+            - 'not_includes'
+            - 'equals'
+            - 'not_equals'
+    Version:
+      type: object
+      properties:
+        type:
+          type: string
+        tag:
+          type: string
+        commit:
+          type: string
+        date:
+          type: string
     BaseChangePermissionsRequest:
       required:
         - permission

@@ -61,6 +61,35 @@ import {
     UpdateUserRequest,
     UserPermission,
     YesNo,
+    GenerateArgsResponse,
+    GetPlaylistsRequest,
+    UpdateCategoryRequest,
+    UpdateCategoriesRequest,
+    DeleteCategoryRequest,
+    CreateCategoryRequest,
+    CreateCategoryResponse,
+    GetAllCategoriesResponse,
+    AddFileToPlaylistRequest,
+    IncrementViewCountRequest,
+    GetLogsRequest,
+    GetLogsResponse,
+    UpdateConcurrentStreamResponse,
+    UpdateConcurrentStreamRequest,
+    CheckConcurrentStreamRequest,
+    CheckConcurrentStreamResponse,
+    DownloadTwitchChatByVODIDRequest,
+    DownloadTwitchChatByVODIDResponse,
+    GetFullTwitchChatRequest,
+    GetFullTwitchChatResponse,
+    GetAllDownloadsRequest,
+    TestConnectionStringRequest,
+    TestConnectionStringResponse,
+    TransferDBRequest,
+    TransferDBResponse,
+    VersionInfoResponse,
+    DBInfoResponse,
+    GetFileFormatsRequest,
+    GetFileFormatsResponse,
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -243,37 +272,40 @@ export class PostsService implements CanActivate {
         return this.http.post<DownloadResponse>(this.path + 'downloadFile', body, this.httpOptions);
     }
 
-    generateArgs(url: string, type: string, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
-        return this.http.post(this.path + 'generateArgs', {url: url,
-                                                    selectedHeight: selectedQuality,
-                                                    customQualityConfiguration: customQualityConfiguration,
-                                                    customArgs: customArgs,
-                                                    additionalArgs: additionalArgs,
-                                                    customOutput: customOutput,
-                                                    youtubeUsername: youtubeUsername,
-                                                    youtubePassword: youtubePassword,
-                                                    type: type,
-                                                    cropFileSettings: cropFileSettings}, this.httpOptions);
+    generateArgs(url: string, type: FileType, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
+        const body: DownloadRequest = {url: url,
+            selectedHeight: selectedQuality,
+            customQualityConfiguration: customQualityConfiguration,
+            customArgs: customArgs,
+            additionalArgs: additionalArgs,
+            customOutput: customOutput,
+            youtubeUsername: youtubeUsername,
+            youtubePassword: youtubePassword,
+            type: type,
+            cropFileSettings: cropFileSettings}
+        return this.http.post<GenerateArgsResponse>(this.path + 'generateArgs', body, this.httpOptions);
     }
 
     getDBInfo() {
-        return this.http.post(this.path + 'getDBInfo', {}, this.httpOptions);
+        return this.http.get<DBInfoResponse>(this.path + 'getDBInfo', this.httpOptions);
     }
 
     transferDB(local_to_remote) {
-        return this.http.post(this.path + 'transferDB', {local_to_remote: local_to_remote}, this.httpOptions);
+        const body: TransferDBRequest = {local_to_remote: local_to_remote};
+        return this.http.post<TransferDBResponse>(this.path + 'transferDB', body, this.httpOptions);
     }
 
-    testConnectionString(connection_string) {
-        return this.http.post(this.path + 'testConnectionString', {connection_string: connection_string}, this.httpOptions);
+    testConnectionString(connection_string: string) {
+        const body: TestConnectionStringRequest = {connection_string: connection_string};
+        return this.http.post<TestConnectionStringResponse>(this.path + 'testConnectionString', body, this.httpOptions);
     }
 
     killAllDownloads() {
-        return this.http.post(this.path + 'killAllDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'killAllDownloads', {}, this.httpOptions);
     }
 
     restartServer() {
-        return this.http.post(this.path + 'restartServer', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'restartServer', {}, this.httpOptions);
     }
 
     loadNavItems() {
@@ -319,54 +351,51 @@ export class PostsService implements CanActivate {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
     }
 
-    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null, is_playlist: boolean = null) {
+    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null) {
         const body: DownloadFileRequest = {
             uid: uid,
             uuid: uuid,
-            sub_id: sub_id,
-            is_playlist: is_playlist
+            sub_id: sub_id
         };
         return this.http.post(this.path + 'downloadFile', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFullTwitchChat(id, type, uuid = null, sub = null) {
-        return this.http.post(this.path + 'getFullTwitchChat', {id: id, type: type, uuid: uuid, sub: sub}, this.httpOptions);
+        const body: GetFullTwitchChatRequest = {id: id, type: type, uuid: uuid, sub: sub};
+        return this.http.post<GetFullTwitchChatResponse>(this.path + 'getFullTwitchChat', body, this.httpOptions);
     }
 
     downloadTwitchChat(id, type, vodId, uuid = null, sub = null) {
-        return this.http.post(this.path + 'downloadTwitchChatByVODID', {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub}, this.httpOptions);
+        const body: DownloadTwitchChatByVODIDRequest = {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub};
+        return this.http.post<DownloadTwitchChatByVODIDResponse>(this.path + 'downloadTwitchChatByVODID', body, this.httpOptions);
     }
 
     downloadPlaylistFromServer(playlist_id, uuid = null) {
-        return this.http.post(this.path + 'downloadFileFromServer', {
-                                                            uuid: uuid,
-                                                            playlist_id: playlist_id
-                                                            },
-                                                          {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadFileRequest = {uuid: uuid, playlist_id: playlist_id};
+        return this.http.post(this.path + 'downloadFileFromServer', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     downloadSubFromServer(sub_id, uuid = null) {
-        return this.http.post(this.path + 'downloadFileFromServer', {
-                                                            uuid: uuid,
-                                                            sub_id: sub_id
-                                                            },
-                                                          {responseType: 'blob', params: this.httpOptions.params});
+        const body: DownloadFileRequest = {uuid: uuid, sub_id: sub_id};
+        return this.http.post(this.path + 'downloadFileFromServer', body, {responseType: 'blob', params: this.httpOptions.params});
 
     }
 
     checkConcurrentStream(uid) {
-        return this.http.post(this.path + 'checkConcurrentStream', {uid: uid}, this.httpOptions);
+        const body: CheckConcurrentStreamRequest = {uid: uid};
+        return this.http.post<CheckConcurrentStreamResponse>(this.path + 'checkConcurrentStream', body, this.httpOptions);
     }
 
     updateConcurrentStream(uid, playback_timestamp, unix_timestamp, playing) {
-        return this.http.post(this.path + 'updateConcurrentStream', {uid: uid,
-                                                                    playback_timestamp: playback_timestamp,
-                                                                    unix_timestamp: unix_timestamp,
-                                                                    playing: playing}, this.httpOptions);
+        const body: UpdateConcurrentStreamRequest = {uid: uid,
+            playback_timestamp: playback_timestamp,
+            unix_timestamp: unix_timestamp,
+            playing: playing};
+        return this.http.post<UpdateConcurrentStreamResponse>(this.path + 'updateConcurrentStream', body, this.httpOptions);
     }
 
     uploadCookiesFile(fileFormData) {
-        return this.http.post(this.path + 'uploadCookies', fileFormData, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'uploadCookies', fileFormData, this.httpOptions);
     }
 
     downloadArchive(sub) {
@@ -375,15 +404,17 @@ export class PostsService implements CanActivate {
     }
 
     getFileFormats(url) {
-        return this.http.post(this.path + 'getFileFormats', {url: url}, this.httpOptions);
+        const body: GetFileFormatsRequest = {url: url};
+        return this.http.post<GetFileFormatsResponse>(this.path + 'getFileFormats', body, this.httpOptions);
     }
 
     getLogs(lines = 50) {
-        return this.http.post(this.path + 'logs', {lines: lines}, this.httpOptions);
+        const body: GetLogsRequest = {lines: lines};
+        return this.http.post<GetLogsResponse>(this.path + 'logs', body, this.httpOptions);
     }
 
     clearAllLogs() {
-        return this.http.post(this.path + 'clearAllLogs', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'clearAllLogs', {}, this.httpOptions);
     }
 
     generateNewAPIKey() {
@@ -415,11 +446,12 @@ export class PostsService implements CanActivate {
     }
 
     incrementViewCount(file_uid, sub_id, uuid) {
-        return this.http.post(this.path + 'incrementViewCount', {file_uid: file_uid, sub_id: sub_id, uuid: uuid}, this.httpOptions);
+        const body: IncrementViewCountRequest = {file_uid: file_uid, sub_id: sub_id, uuid: uuid};
+        return this.http.post<SuccessObject>(this.path + 'incrementViewCount', body, this.httpOptions);
     }
 
     getPlaylists() {
-        return this.http.post(this.path + 'getPlaylists', {}, this.httpOptions);
+        return this.http.post<GetPlaylistsRequest>(this.path + 'getPlaylists', {}, this.httpOptions);
     }
 
     updatePlaylist(playlist: Playlist) {
@@ -439,31 +471,34 @@ export class PostsService implements CanActivate {
     }
     
     addFileToPlaylist(playlist_id, file_uid) {
-        return this.http.post(this.path + 'addFileToPlaylist', {playlist_id: playlist_id,
-                                                                file_uid: file_uid},
-                                                                this.httpOptions);
+        const body: AddFileToPlaylistRequest = {playlist_id: playlist_id, file_uid: file_uid}
+        return this.http.post<SuccessObject>(this.path + 'addFileToPlaylist', body, this.httpOptions);
     }
 
     // categories
 
     getAllCategories() {
-        return this.http.post(this.path + 'getAllCategories', {}, this.httpOptions);
+        return this.http.post<GetAllCategoriesResponse>(this.path + 'getAllCategories', {}, this.httpOptions);
     }
 
     createCategory(name) {
-        return this.http.post(this.path + 'createCategory', {name: name}, this.httpOptions);
+        const body: CreateCategoryRequest = {name: name};
+        return this.http.post<CreateCategoryResponse>(this.path + 'createCategory', body, this.httpOptions);
     }
 
     deleteCategory(category_uid) {
-        return this.http.post(this.path + 'deleteCategory', {category_uid: category_uid}, this.httpOptions);
+        const body: DeleteCategoryRequest = {category_uid: category_uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteCategory', body, this.httpOptions);
     }
 
     updateCategory(category) {
-        return this.http.post(this.path + 'updateCategory', {category: category}, this.httpOptions);
+        const body: UpdateCategoryRequest = {category: category};
+        return this.http.post<SuccessObject>(this.path + 'updateCategory', body, this.httpOptions);
     }
 
     updateCategories(categories) {
-        return this.http.post(this.path + 'updateCategories', {categories: categories}, this.httpOptions);
+        const body: UpdateCategoriesRequest = {categories: categories};
+        return this.http.post<SuccessObject>(this.path + 'updateCategories', body, this.httpOptions);
     }
 
     reloadCategories() {
@@ -474,7 +509,7 @@ export class PostsService implements CanActivate {
 
     updateSubscription(subscription) {
         delete subscription['videos'];
-        return this.http.post(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
     }
 
     unsubscribe(sub: SubscriptionRequestData, deleteMode = false) {
@@ -498,7 +533,8 @@ export class PostsService implements CanActivate {
     }
 
     getCurrentDownloads(uids: Array<string> = null) {
-        return this.http.post<GetAllDownloadsResponse>(this.path + 'downloads', {uids: uids}, this.httpOptions);
+        const body: GetAllDownloadsRequest = {uids: uids};
+        return this.http.post<GetAllDownloadsResponse>(this.path + 'downloads', body, this.httpOptions);
     }
 
     getCurrentDownload(download_uid: string) {
@@ -507,39 +543,39 @@ export class PostsService implements CanActivate {
     }
 
     pauseDownload(download_uid) {
-        return this.http.post(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     pauseAllDownloads() {
-        return this.http.post(this.path + 'pauseAllDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'pauseAllDownloads', {}, this.httpOptions);
     }
 
     resumeDownload(download_uid) {
-        return this.http.post(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     resumeAllDownloads() {
-        return this.http.post(this.path + 'resumeAllDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'resumeAllDownloads', {}, this.httpOptions);
     }
 
     restartDownload(download_uid) {
-        return this.http.post(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     cancelDownload(download_uid) {
-        return this.http.post(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     clearDownload(download_uid) {
-        return this.http.post(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
     }
 
     clearFinishedDownloads() {
-        return this.http.post(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+        return this.http.post<SuccessObject>(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
     }
 
     getVersionInfo() {
-        return this.http.get(this.path + 'versionInfo', this.httpOptions);
+        return this.http.get<VersionInfoResponse>(this.path + 'versionInfo', this.httpOptions);
     }
 
     updateServer(tag: string) {

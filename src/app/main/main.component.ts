@@ -597,7 +597,7 @@ export class MainComponent implements OnInit {
       }
     }
 
-    this.postsService.generateArgs(this.url, type, (this.selectedQuality === '' ? null : this.selectedQuality),
+    this.postsService.generateArgs(this.url, type as FileType, (this.selectedQuality === '' ? null : this.selectedQuality),
       customQualityConfiguration, customArgs, additionalArgs, customOutput, youtubeUsername, youtubePassword, cropFileSettings).subscribe(res => {
         const simulated_args = res['args'];
         if (simulated_args) {
