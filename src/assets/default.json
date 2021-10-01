@@ -11,7 +11,10 @@
       "custom_args": "",
       "safe_download_override": false,
       "include_thumbnail": false,
-      "include_metadata": true
+      "include_metadata": true,
+      "default_file_output": "",
+      "max_concurrent_downloads": 5,
+      "download_rate_limit": ""
     },
     "Extra": {
       "title_top": "YoutubeDL-Material",
@@ -21,7 +24,8 @@
       "allow_multi_download_mode": true,
       "settings_pin_required": false,
       "enable_downloads_manager": true,
-      "allow_playlist_categorization": true
+      "allow_playlist_categorization": true,
+      "allow_autoplay": true
     },
     "API": {
       "use_API_key": false,
@@ -30,7 +34,9 @@
       "youtube_API_key": "",
       "use_twitch_API": false,
       "twitch_API_key": "",
-      "twitch_auto_download_chat": true
+      "twitch_auto_download_chat": true,
+      "use_sponsorblock_API": false,
+      "generate_NFO_files": false
     },
     "Themes": {
       "default_theme": "default",
@@ -40,7 +46,8 @@
       "allow_subscriptions": true,
       "subscriptions_base_path": "subscriptions/",
       "subscriptions_check_interval": "86400",
-      "subscriptions_use_youtubedl_archive": true
+      "subscriptions_use_youtubedl_archive": true,
+      "redownload_fresh_uploads": false
     },
     "Users": {
       "base_path": "users/",
