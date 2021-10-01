@@ -3,6 +3,10 @@ info:
   title: YoutubeDL-Material API Docs - Official
   version: '1.0'
   description: "Welcome to the official docs for YoutubeDL-Material.\n\n\nYou can check out all the available endpoints. Remember to authenticate with your API key using the \"apiKey\" query parameter with your requests.\n\n\nTo do so, simply add this to the end of your API call:\n\n\n`?apiKey=API_KEY`\n\n\nReplce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.\n\n### Multi-user mode\n\nWhen using multi-user mode, you will need to supply a JWT token to authenticate requests through that user. This lets the server know which user to run the task for, like downloading a video for a specific user. \n\nTo do this, you must use the `/api/auth/login` endpoint to login using a user's username and password. This will result in an object containing a `token`. Supply this along with your API key like so:\n\n`?apiKey=API_KEY&jwt=JWT_TOKEN`\n\nNotice the `&` between the `API_KEY` and `jwt`."
+  contact:
+    name: Isaac Abadi
+    url: https://github.com/Tzahi12345/YoutubeDL-Material
+    email: IsaacMGrynsztein@gmail.com
 servers:
   - url: 'http://localhost:17442'
 paths:
@@ -825,21 +829,21 @@ paths:
         - Auth query parameter: []
       tags:
         - multi-user mode
-    /api/versionInfo:
-      get:
-        tags:
-          - server
-        summary: Gets server version info
-        operationId: get-api-versionInfo
-        responses:
-          '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/VersionInfoResponse'
-        security:
-          - Auth query parameter: []
+  /api/versionInfo:
+    get:
+      tags:
+        - server
+      summary: Gets server version info
+      operationId: get-api-versionInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionInfoResponse'
+      security:
+        - Auth query parameter: []
   /api/getLogs:
     post:
       summary: Gets logs from server
@@ -877,21 +881,21 @@ paths:
       description: Clears the log file
       security:
         - Auth query parameter: []
-    /api/getDBInfo:
-      get:
-        tags:
-          - db
-        summary: Gets information on the DB
-        operationId: get-api-getDBInfo
-        responses:
-          '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/DBInfoResponse'
-        security:
-          - Auth query parameter: []
+  /api/getDBInfo:
+    get:
+      tags:
+        - db
+      summary: Gets information on the DB
+      operationId: get-api-getDBInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DBInfoResponse'
+      security:
+        - Auth query parameter: []
   /api/transferDB:
     post:
       summary: Transfers DB between Local and MongoDB
@@ -1192,7 +1196,6 @@ components:
       properties:
         download:
           $ref: '#/components/schemas/Download'
-          nullable: true
     GenerateArgsResponse:
       type: object
       properties:
@@ -1212,7 +1215,6 @@ components:
       properties:
         download:
           $ref: '#/components/schemas/Download'
-          nullable: true
     GetAllDownloadsRequest:
       type: object
       properties:
@@ -1617,7 +1619,6 @@ components:
           description: User UID
           type: string
         sub:
-          description: Subscription
           $ref: '#/components/schemas/Subscription'
     DownloadTwitchChatByVODIDResponse:
       required:
@@ -1647,7 +1648,6 @@ components:
           description: User UID
           type: string
         sub:
-          description: Subscription
           $ref: '#/components/schemas/Subscription'
     CheckConcurrentStreamResponse:
       required:
@@ -1922,7 +1922,6 @@ components:
         - url
         - type
         - title
-        - type
         - options
         - uid
         - step_index

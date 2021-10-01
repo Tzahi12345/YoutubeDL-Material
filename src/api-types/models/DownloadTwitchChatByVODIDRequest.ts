@@ -19,8 +19,5 @@ export interface DownloadTwitchChatByVODIDRequest {
      * User UID
      */
     uuid?: string;
-    /**
-     * Subscription
-     */
     sub?: Subscription;
 }

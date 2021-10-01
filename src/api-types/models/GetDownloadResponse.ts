@@ -5,5 +5,5 @@
 import { Download } from './Download';
 
 export interface GetDownloadResponse {
-    download?: Download | null;
+    download?: Download;
 }
