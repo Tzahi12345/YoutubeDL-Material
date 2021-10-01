@@ -1125,7 +1125,7 @@
       </trans-unit>
       <trans-unit id="4d8a18b04a1f785ecd8021ac824e0dfd5881dbfc" datatype="html">
         <source>The download was successful</source>
-        <target>La descàrrega ha estat correcta</target>
+        <target>La baixada ha estat correcta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/download-item/download-item.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1138,7 +1138,7 @@
       </trans-unit>
       <trans-unit id="348cc5d553b18e862eb1c1770e5636f6b05ba130" datatype="html">
         <source>An error has occurred</source>
-        <target>S'ha produït un error</target>
+        <target>S’ha produït un error</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/download-item/download-item.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1232,7 +1232,7 @@
       </trans-unit>
       <trans-unit id="4636cd4a1379c50d471e98786098c4d39e1e82ad" datatype="html">
         <source>You have no channel subscriptions.</source>
-        <target>No tens cap subscripció al canal.</target>
+        <target>No teniu cap subscripció a canals.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
           <context context-type="linenumber">24</context>
@@ -1250,7 +1250,7 @@
       </trans-unit>
       <trans-unit id="587b57ced54965d8874c3fd0e9dfedb987e5df04" datatype="html">
         <source>You have no playlist subscriptions.</source>
-        <target>No tens cap subscripció a la llista de reproducció.</target>
+        <target>No teniu cap subscripció a llistes de reproducció.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1268,7 +1268,7 @@
       </trans-unit>
       <trans-unit id="0ba25ad86a240576c4f20a2fada4722ebba77b1e" datatype="html">
         <source>Downloader</source>
-        <target>Descarregador</target>
+        <target>Baixador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">102</context>
@@ -1492,7 +1492,7 @@
       </trans-unit>
       <trans-unit id="c2c89cdf45d46ea64d2ed2f9ac15dfa4d77e26ca" datatype="html">
         <source>Path for audio only downloads. It is relative to YTDL-Material's root folder.</source>
-        <target>Ruta de descàrregues de només d'àudio. És relatiu a la carpeta arrel de YTDL-Material.</target>
+        <target>Camí de baixades només d’àudio. És relatiu a la carpeta arrel del YTDL-Material.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">110</context>
@@ -1501,7 +1501,7 @@
       </trans-unit>
       <trans-unit id="46826331da1949bd6fb74624447057099c9d20cd" datatype="html">
         <source>Video folder path</source>
-        <target>Ruta de la carpeta de vídeo</target>
+        <target>Camí de la carpeta de vídeo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">116</context>
@@ -1510,7 +1510,7 @@
       </trans-unit>
       <trans-unit id="17c92e6d47a213fa95b5aa344b3f258147123f93" datatype="html">
         <source>Path for video downloads. It is relative to YTDL-Material's root folder.</source>
-        <target>Ruta de descàrregues de vídeo. És relatiu a la carpeta arrel de YTDL-Material.</target>
+        <target>Camí de baixades de vídeo. És relatiu a la carpeta arrel del YTDL-Material.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">117</context>
@@ -1591,7 +1591,7 @@
       </trans-unit>
       <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html">
         <source>Kill all downloads</source>
-        <target>Mata totes les descàrregues</target>
+        <target>Finalitza totes les baixades</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">175</context>
@@ -1681,7 +1681,7 @@
       </trans-unit>
       <trans-unit id="00a94f58d9eb2e3aa561440eabea616d0c937fa2" datatype="html">
         <source>This will delete your old API key!</source>
-        <target>Això suprimirà la vostra clau de l’API anterior!</target>
+        <target>Això suprimirà la vostra clau de l’API anterior.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">223</context>
@@ -1837,7 +1837,7 @@
       </trans-unit>
       <trans-unit id="c505d6c5de63cc700f0aaf8a4b31fae9e18024e5" datatype="html">
         <source>Generate 'audio only' bookmarklet</source>
-        <target>Genereu el marcador 'només àudio'</target>
+        <target>Genera una miniaplicació «només d’àudio»</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">272</context>
@@ -1855,7 +1855,7 @@
       </trans-unit>
       <trans-unit id="5fab47f146b0a4b809dcebf3db9da94df6299ea1" datatype="html">
         <source>Use default downloading agent</source>
-        <target>Utilitzeu l'agent de descàrrega predeterminat</target>
+        <target>Utilitza l’agent de baixada per defecte</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">295</context>
@@ -1864,7 +1864,7 @@
       </trans-unit>
       <trans-unit id="c776eb4992b6c98f58cd89b20c1ea8ac37888521" datatype="html">
         <source>Select a download agent</source>
-        <target>Seleccioneu un agent de descàrrega</target>
+        <target>Seleccioneu un agent de baixada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">299</context>
@@ -1891,7 +1891,7 @@
       </trans-unit>
       <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html">
         <source>Allow advanced download</source>
-        <target>Permet la descàrrega avançada</target>
+        <target>Permet la baixada avançada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">336</context>
@@ -1918,7 +1918,7 @@
       </trans-unit>
       <trans-unit id="37224420db54d4bc7696f157b779a7225f03ca9d" datatype="html">
         <source>Allow user registration</source>
-        <target>Permetre el registre d’usuari</target>
+        <target>Permet el registre d’usuaris</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">359</context>
@@ -2008,7 +2008,7 @@
       </trans-unit>
       <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
-        <target>és un descarregador de YouTube de codi obert construït segons les especificacions de Material Design de Google. Podeu descarregar sense problemes els vostres vídeos preferits com a fitxers de vídeo o àudio i, fins i tot, subscriure-us als vostres canals i llistes de reproducció preferits per estar al dia amb els nous vídeos.</target>
+        <target>és un baixador de YouTube de codi obert construït segons les especificacions Material Design de Google. Podeu baixar sense problemes els vostres vídeos preferits com a fitxers de vídeo o àudio i, fins i tot, subscriure-us als vostres canals i llistes de reproducció preferits per a estar al dia amb les novetats.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2044,7 +2044,7 @@
       </trans-unit>
       <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html">
         <source>to create an issue!</source>
-        <target>per crear un report de problema!</target>
+        <target>per a crear un informe d’error.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2179,7 +2179,7 @@
       </trans-unit>
       <trans-unit id="7117fc42f860e86d983bfccfcf2654e5750f3406" datatype="html">
         <source>No downloads available!</source>
-        <target>No hi ha cap descàrrega disponible!</target>
+        <target>No hi ha cap baixada disponible.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2188,7 +2188,7 @@
       </trans-unit>
       <trans-unit id="42ff677ec14f111e88bd6cdd30145378e994d1bf" datatype="html">
         <source>Your Profile</source>
-        <target>El teu perfil</target>
+        <target>El vostre perfil</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2197,7 +2197,7 @@
       </trans-unit>
       <trans-unit id="bb694b49d408265c91c62799c2b3a7e3151c824d" datatype="html">
         <source>Logout</source>
-        <target>Tancar sessió</target>
+        <target>Finalitza la sessió</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2233,7 +2233,7 @@
       </trans-unit>
       <trans-unit id="a1dbca87b9f36d2b06a5cbcffb5814c4ae9b798a" datatype="html">
         <source>Create admin account</source>
-        <target>Crea un compte d'administrador</target>
+        <target>Crea un compte administratiu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2242,7 +2242,7 @@
       </trans-unit>
       <trans-unit id="2d2adf3ca26a676bca2269295b7455a26fd26980" datatype="html">
         <source>No default admin account detected. This will create and set the password for an admin account with the user name as 'admin'.</source>
-        <target>No s'ha detectat cap compte d'administrador predeterminat. Això crearà i definirà la contrasenya d'un compte d'administrador amb el nom d'usuari 'admin'.</target>
+        <target>No s’ha detectat cap compte administratiu per defecte. Això crearà i definirà la contrasenya d’un compte administratiu amb el nom d’usuari «admin».</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2305,7 +2305,7 @@
       </trans-unit>
       <trans-unit id="2bd201aea09e43fbfd3cd15ec0499b6755302329" datatype="html">
         <source>Manage user</source>
-        <target>Gestiona l'usuari</target>
+        <target>Gestiona l’usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">70</context>
@@ -2318,7 +2318,7 @@
       </trans-unit>
       <trans-unit id="95b95a9c79e4fd9ed41f6855e37b3b06af25bcab" datatype="html">
         <source>Delete user</source>
-        <target>Suprimeix l'usuari</target>
+        <target>Suprimeix l’usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">73</context>
@@ -2327,7 +2327,7 @@
       </trans-unit>
       <trans-unit id="632e8b20c98e8eec4059a605a4b011bb476137af" datatype="html">
         <source>Edit user</source>
-        <target>Edita l'usuari</target>
+        <target>Edita l’usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">66</context>
@@ -2336,7 +2336,7 @@
       </trans-unit>
       <trans-unit id="29c97c8e76763bb15b6d515648fa5bd1eb0f7510" datatype="html">
         <source>User UID:</source>
-        <target>UID d'usuari:</target>
+        <target>UID de l’usuari:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">4</context>
@@ -2345,7 +2345,7 @@
       </trans-unit>
       <trans-unit id="e70e209561583f360b1e9cefd2cbb1fe434b6229" datatype="html">
         <source>New password</source>
-        <target>Nova contrasenya</target>
+        <target>Contrasenya nova</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2354,7 +2354,7 @@
       </trans-unit>
       <trans-unit id="6498fa1b8f563988f769654a75411bb8060134b9" datatype="html">
         <source>Set new password</source>
-        <target>Establir una contrasenya nova</target>
+        <target>Defineix una contrasenya nova</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">10</context>
@@ -2434,7 +2434,7 @@
       </trans-unit>
       <trans-unit id="ccf5ea825526ac490974336cb5c24352886abc07" datatype="html">
         <source>Open file</source>
-        <target>Obrir fitxer</target>
+        <target>Obre el fitxer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">18</context>
@@ -2452,7 +2452,7 @@
       </trans-unit>
       <trans-unit id="a0720c36ee1057e5c54a86591b722485c62d7b1a" datatype="html">
         <source>Go to subscription</source>
-        <target>Anar a la subscripció</target>
+        <target>Vés a la subscripció</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2461,7 +2461,7 @@
       </trans-unit>
       <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
         <source>Delete and redownload</source>
-        <target>Suprimeix i torna a descarregar</target>
+        <target>Suprimeix i torna a baixar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2474,7 +2474,7 @@
       </trans-unit>
       <trans-unit id="2031adb51e07a41844e8ba7704b054e98345c9c1" datatype="html">
         <source>Delete forever</source>
-        <target>Esborra per sempre</target>
+        <target>Suprimeix per sempre</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">31</context>
@@ -2487,7 +2487,7 @@
       </trans-unit>
       <trans-unit id="ddc31f2885b1b33a7651963254b0c197f2a64086" datatype="html">
         <source>See more.</source>
-        <target>Veure més.</target>
+        <target>Mostra’n més.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -2496,7 +2496,7 @@
       </trans-unit>
       <trans-unit id="56a2a773fbd5a6b9ac2e6b89d29d70a2ed0f3227" datatype="html">
         <source>See less.</source>
-        <target>Veure menys.</target>
+        <target>Mostra’n menys.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2505,12 +2505,156 @@
       </trans-unit>
       <trans-unit id="2054791b822475aeaea95c0119113de3200f5e1c" datatype="html">
         <source>Length:</source>
-        <target>Llargada:</target>
+        <target>Durada:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">Video duration label</note>
+      </trans-unit>
+      <trans-unit id="98e94c9bdac1ca8beb29d73b2e6f7a9e5e035aec" datatype="html">
+        <source>Transfer DB to</source>
+        <target>Transfereix la BD a</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">308</context>
+        </context-group>
+        <note priority="1" from="description">Transfer DB button</note>
+      </trans-unit>
+      <trans-unit id="d54142de169844b014ae913a4056c31495f4a305" datatype="html">
+        <source>Test connection string</source>
+        <target>Prova la cadena de connexió</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">304</context>
+        </context-group>
+        <note priority="1" from="description">Test connection string button</note>
+      </trans-unit>
+      <trans-unit id="3913164a51898aac444bf6c7150e46ad5a8a18ad" datatype="html">
+        <source>MongoDB Connection String</source>
+        <target>Cadena de connexió del MongoDB</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">299</context>
+        </context-group>
+        <note priority="1" from="description">MongoDB Connection String</note>
+      </trans-unit>
+      <trans-unit id="1f6d3986a970af27f16f8a95ce0dc3033cc90a83" datatype="html">
+        <source>With this setting enabled, if a single video matches a category, the entire playlist will receive that category.</source>
+        <target>Amb aquest paràmetre activat, si un sol vídeo coincideix amb alguna categoria, tota la llista de reproducció s’hi classificarà.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <note priority="1" from="description">Allow playlist categorization setting tooltip</note>
+      </trans-unit>
+      <trans-unit id="b1c08387975e6feada407c9b5f5f564261b8192b" datatype="html">
+        <source>Database information could not be retrieved. Check the server logs for more information.</source>
+        <target>No s’ha pogut recuperar la informació de la base de dades. Comproveu els registres del servidor per a conéixer-ne més detalls.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">312</context>
+        </context-group>
+        <note priority="1" from="description">Database info not retrieved error message</note>
+      </trans-unit>
+      <trans-unit id="cba36d610ddba59b6dd6fbec77199eabf0ff2de3" datatype="html">
+        <source>Randomize order when playing</source>
+        <target>Aleatoritza l’ordre en reproduir</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">Randomize order when playing checkbox label</note>
+      </trans-unit>
+      <trans-unit id="635285fa5624d50a408feb7eb564c0db0d3f1ce1" datatype="html">
+        <source>Restart server</source>
+        <target>Reinicia el servidor</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">397</context>
+        </context-group>
+        <note priority="1" from="description">Restart server button</note>
+      </trans-unit>
+      <trans-unit id="5473e36f5102e2ae22ce4c6620cacc40cc98da95" datatype="html">
+        <source>Example:</source>
+        <target>Exemple:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">300</context>
+        </context-group>
+        <note priority="1" from="description">MongoDB Connection String setting hint AKA preamble</note>
+      </trans-unit>
+      <trans-unit id="9f8de81d44ec2a9a58b97e589b9e3154b3966c60" datatype="html">
+        <source>Records per table</source>
+        <target>Registres per taula</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">291</context>
+        </context-group>
+        <note priority="1" from="description">Records per table label</note>
+      </trans-unit>
+      <trans-unit id="47955e2cc6986625528b4352034858180d675281" datatype="html">
+        <source>Database location:</source>
+        <target>Ubicació de la base de dades:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+        <note priority="1" from="description">Database location label</note>
+      </trans-unit>
+      <trans-unit id="5da94ccb2301f586af26916e921bdad6d673ab58" datatype="html">
+        <source>Allow playlist categorization</source>
+        <target>Permet la categorització de les llistes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <note priority="1" from="description">Allow playlist categorization setting label</note>
+      </trans-unit>
+      <trans-unit id="fb324ec7da611c6283caa6fc6257c39a56d6aaf7" datatype="html">
+        <source>Database</source>
+        <target>Base de dades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">284</context>
+        </context-group>
+        <note priority="1" from="description">Database settings label</note>
+      </trans-unit>
+      <trans-unit id="94e2674467c7a08a291f9bd97ce694d4e47ffd62" datatype="html">
+        <source>Share file</source>
+        <target>Compartició del fitxer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">Share video dialog title</note>
+      </trans-unit>
+      <trans-unit id="661206c3ab91fa81e9d8b40afb29f1866b78432f" datatype="html">
+        <source>Crop to (seconds)</source>
+        <target>Escapça fins a (segons)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note priority="1" from="description">Crop to placeholder</note>
+      </trans-unit>
+      <trans-unit id="44d007f6f8a2b19f12d85f9e49647b4ac02d7cbe" datatype="html">
+        <source>Crop from (seconds)</source>
+        <target>Escapça des de (segons)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">159</context>
+        </context-group>
+        <note priority="1" from="description">Crop from placeholder</note>
+      </trans-unit>
+      <trans-unit id="4e1291cb1d579e7b7a1b802e6a8fd16ef7a557fa" datatype="html">
+        <source>Crop file</source>
+        <target>Escapça el fitxer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">155,156</context>
+        </context-group>
+        <note priority="1" from="description">Crop video checkbox</note>
       </trans-unit>
     </body>
   </file>
