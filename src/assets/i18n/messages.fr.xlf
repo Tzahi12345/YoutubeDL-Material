@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="fr">
     <body>
@@ -1262,7 +1262,7 @@
       </trans-unit>
       <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
         <source>About YoutubeDL-Material</source>
-        <target>Sobre YoutubeDL-Material</target>
+        <target>A propos de YoutubeDL-Material</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2840,6 +2840,42 @@
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">469</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="b1c08387975e6feada407c9b5f5f564261b8192b" datatype="html">
+        <source>Database information could not be retrieved. Check the server logs for more information.</source>
+        <target>Les informations de la base de données n'ont pas pu être récupérées. Consultez les journaux du serveur pour plus d'informations.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">331</context>
+        </context-group>
+        <note priority="1" from="description">Database info not retrieved error message</note>
+      </trans-unit>
+      <trans-unit id="635285fa5624d50a408feb7eb564c0db0d3f1ce1" datatype="html">
+        <source>Restart server</source>
+        <target>Redémarrer le serveur</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">416</context>
+        </context-group>
+        <note priority="1" from="description">Restart server button</note>
+      </trans-unit>
+      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html">
+        <source>Installation type:</source>
+        <target>Type d'installation :</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">Installation type</note>
+      </trans-unit>
+      <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html">
+        <source>Build date:</source>
+        <target>Date de construction:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <note priority="1" from="description">Build date</note>
       </trans-unit>
     </body>
   </file>
