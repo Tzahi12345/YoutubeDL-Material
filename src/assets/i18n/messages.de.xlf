@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="de-DE">
     <body>
@@ -2697,6 +2697,121 @@
           <context context-type="linenumber">155,156</context>
         </context-group>
         <note priority="1" from="description">Crop video checkbox</note>
+      </trans-unit>
+      <trans-unit id="742202f9ba533bc9a92a1aec2862b0485c5f601b" datatype="html">
+        <source>Audio only</source>
+        <target>Nur Audio</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <note priority="1" from="description">Audio only</note>
+      </trans-unit>
+      <trans-unit id="7220285196408439810" datatype="html">
+        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
+        <target>Download für <x id="url" equiv-text="d, cropF"/> in Warteschlange eingereiht!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">469</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html">
+        <source>Autoplay</source>
+        <target>Automatisches abspielen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">70,71</context>
+        </context-group>
+        <note priority="1" from="description">Autoplay checkbox</note>
+      </trans-unit>
+      <trans-unit id="87fd779c638aa5d04e006cd61890b0584c2da385" datatype="html">
+        <source>Replace args</source>
+        <target>Argumente ersetzen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+        <note priority="1" from="description">Replace args</note>
+      </trans-unit>
+      <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
+        <source>File type</source>
+        <target>Dateityp</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <note priority="1" from="description">File type</note>
+      </trans-unit>
+      <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
+        <source>Both</source>
+        <target>Beide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="description">Both</note>
+      </trans-unit>
+      <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html">
+        <source>Video only</source>
+        <target>Nur Video</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Video only</note>
+      </trans-unit>
+      <trans-unit id="7307570005283604795" datatype="html">
+        <source>You must enable multi-user mode to access this tab.</source>
+        <target>Für den Zugriff auf diesen Reiter "Multi-User" Modus aktivieren.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6c2714fbfa525868fea90cc7a8f8de62458fbecf" datatype="html">
+        <source>Max concurrent downloads</source>
+        <target>Maximale gleichzeitige Downloads</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">175</context>
+        </context-group>
+        <note priority="1" from="description">Max concurrent downloads</note>
+      </trans-unit>
+      <trans-unit id="4f9f174dc9939283b3192acc9e87d6c1e4cca118" datatype="html">
+        <source>Limits the amount of downloads that can be simultaneously downloaded. Use -1 for no limit.</source>
+        <target>Limitiert die Anzahl simultaner Downloads. Nutze -1 für kein Limit.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">176</context>
+        </context-group>
+        <note priority="1" from="description">Max concurrent downloads input hint</note>
+      </trans-unit>
+      <trans-unit id="a30fc9944a494022ba67b3046ad3d27c62dd7fee" datatype="html">
+        <source>Download rate limit</source>
+        <target>Downloadrate Limit</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+        <note priority="1" from="description">Download rate limit input placeholder</note>
+      </trans-unit>
+      <trans-unit id="0af5ee1867be592a6cd35a94faba8833b52c740f" datatype="html">
+        <source>Rate limits your downloads to the specified amount. Ex: 200K</source>
+        <target>Legt die maximale Downloadrate fest. Z.B. 200K</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">182</context>
+        </context-group>
+        <note priority="1" from="description">Download rate limit input hint</note>
+      </trans-unit>
+      <trans-unit id="4920978fc336333b5cda11b1dedf172c3183d2da" datatype="html">
+        <source>Allow autoplay</source>
+        <target>Automatisches Abspielen erlauben</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">221</context>
+        </context-group>
+        <note priority="1" from="description">Allow autoplay setting</note>
       </trans-unit>
     </body>
   </file>
