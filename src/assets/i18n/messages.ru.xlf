@@ -3098,6 +3098,75 @@
         </context-group>
         <note priority="1" from="description">Pause all downloads</note>
       </trans-unit>
+      <trans-unit id="c55604d30653e3d8310190d8d26761226132a901" datatype="html">
+        <source>Enables a button to skip ads when viewing supported videos.</source>
+        <target>Включает кнопку для пропуска рекламы при просмотре поддерживаемых видео.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">269</context>
+        </context-group>
+        <note priority="1" from="description">SponsorBlock API tooltip</note>
+      </trans-unit>
+      <trans-unit id="e243d8408e1a3d2ef6501b85899d02374ea34880" datatype="html">
+        <source>Generates NFO files with every download, primarily used by Kodi.</source>
+        <target>Генерирует файлы NFO при каждой загрузке, в основном используется Kodi.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">272</context>
+        </context-group>
+        <note priority="1" from="description">Generate NFO files tooltip</note>
+      </trans-unit>
+      <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html">
+        <source>Docker tag:</source>
+        <target>Тег Docker:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">Docker tag</note>
+      </trans-unit>
+      <trans-unit id="8738732372986673558" datatype="html">
+        <source>Copy to clipboard</source>
+        <target>Скопировать в буфер обмена</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">240</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3795459839164395144" datatype="html">
+        <source>Copied to clipboard!</source>
+        <target>Скопировано в буфер обмена!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">249</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4027175717527633324" datatype="html">
+        <source>Getting info</source>
+        <target>Получение информации</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="50e85c3b33fb74c0d3c0f97182611f6c1d9cf10e" datatype="html">
+        <source>Add to playlist</source>
+        <target>Добавить в плейлист</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">Add to playlist menu item</note>
+      </trans-unit>
+      <trans-unit id="82dbc50a84e5c0865aa27479b8ce82da3a85d29b" datatype="html">
+        <source>Skip ad</source>
+        <target>Пропустить рекламу</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/skip-ad-button/skip-ad-button.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">Skip ad button</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
