@@ -482,6 +482,26 @@ paths:
           description: OK
       security:
         - Auth query parameter: []
+  /api/deleteAllFiles:
+    post:
+      tags:
+        - files
+      summary: Delete all downloaded files
+      operationId: post-api-deleteAllFiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAllFilesResponse'
+      security:
+        - Auth query parameter: []
   /api/downloadArchive:
     post:
       tags:
@@ -1356,6 +1376,15 @@ components:
           type: boolean
         error:
           type: string
+    DeleteAllFilesResponse:
+      type: object
+      properties:
+        file_count:
+          type: number
+          description: Number of files found matching search parameters
+        delete_count:
+          type: number
+          description: Number of files removed
     DeleteSubscriptionFileRequest:
       required:
         - file

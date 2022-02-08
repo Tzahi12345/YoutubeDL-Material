@@ -1616,6 +1616,46 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     res.send(wasDeleted);
 });
 
+app.post('/api/deleteAllFiles', optionalJwt, async (req, res) => {
+    const blacklistMode = false;
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+
+    let files = null;
+    let text_search = req.body.text_search;
+    let file_type_filter = req.body.file_type_filter;
+
+    const filter_obj = {user_uid: uuid};
+    const regex = true;
+    if (text_search) {
+        if (regex) {
+            filter_obj['title'] = {$regex: `.*${text_search}.*`, $options: 'i'};
+        } else {
+            filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
+        }
+    }
+
+    if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;
+    else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
+    
+    files = await db_api.getRecords('files', filter_obj);
+
+    let file_count = await db_api.getRecords('files', filter_obj, true);
+    let delete_count = 0;
+
+    for (let i = 0; i < files.length; i++) {    
+        let wasDeleted = false;
+        wasDeleted = await db_api.deleteFile(files[i].uid, uuid, blacklistMode);
+        if (wasDeleted) {
+            delete_count++;
+        }
+    }
+
+    res.send({
+        file_count: file_count,
+        delete_count: delete_count
+    });
+});
+
 app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
     let uid = req.body.uid;
     let uuid = req.body.uuid;
