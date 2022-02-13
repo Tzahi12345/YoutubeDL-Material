@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="nb-NO">
     <body>
@@ -189,8 +189,8 @@
         <note priority="1" from="description">Custom args placeholder</note>
       </trans-unit>
       <trans-unit id="a6911c2157f1b775284bbe9654ce5eb30cf45d7f" datatype="html">
-        <source> No need to include URL, just everything after. Args are delimited using two commas like so: ,, </source>
-        <target/>
+        <source>No need to include URL, just everything after. Args are delimited using two commas like so: ,,</source>
+        <target>Du trenger ikke å inkludere nettadressen, kun alt etter. Argumenter inndeles med to komma, slik: ,,</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">118,119</context>
@@ -198,8 +198,8 @@
         <note priority="1" from="description">Custom Args input hint</note>
       </trans-unit>
       <trans-unit id="3a92a3443c65a52f37ca7efb8f453b35dbefbf29" datatype="html">
-        <source> Use custom output </source>
-        <target/>
+        <source>Use custom output</source>
+        <target state="needs-translation">Bruk egendefinert utdata</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">126,127</context>
@@ -208,7 +208,7 @@
       </trans-unit>
       <trans-unit id="d9c02face477f2f9cdaae318ccee5f89856851fb" datatype="html">
         <source>Custom output</source>
-        <target/>
+        <target state="needs-translation">Egendefinert utdata</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">130</context>
@@ -680,7 +680,7 @@
       </trans-unit>
       <trans-unit id="303e45ffae995c9817e510e38cb969e6bb3adcbf" datatype="html">
         <source>(Paused)</source>
-        <target/>
+        <target>(Pauset)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -772,7 +772,7 @@
       </trans-unit>
       <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40" datatype="html">
         <source>Modify youtube-dl args</source>
-        <target/>
+        <target>Endre youtube-dl-argumenter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -799,7 +799,7 @@
       </trans-unit>
       <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23" datatype="html">
         <source>Search by category</source>
-        <target/>
+        <target>Søk etter kategori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">60</context>
@@ -808,7 +808,7 @@
       </trans-unit>
       <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377" datatype="html">
         <source>Use arg value</source>
-        <target/>
+        <target>Bruk argument-verdi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">64</context>
@@ -817,7 +817,7 @@
       </trans-unit>
       <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b" datatype="html">
         <source>Add arg</source>
-        <target/>
+        <target>Legg til argument</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">73</context>
@@ -826,7 +826,7 @@
       </trans-unit>
       <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html">
         <source>Modify</source>
-        <target/>
+        <target>Endre</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">85</context>
@@ -835,7 +835,7 @@
       </trans-unit>
       <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd" datatype="html">
         <source>Arg value</source>
-        <target/>
+        <target>Argument-verdi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1025,7 +1025,7 @@
       </trans-unit>
       <trans-unit id="07db550ae114d9faad3a0cbb68bcc16ab6cd31fc" datatype="html">
         <source>Paused</source>
-        <target/>
+        <target>Pauset</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1034,7 +1034,7 @@
       </trans-unit>
       <trans-unit id="c3b0b86523f1d10e84a71f9b188d54913a11af3b" datatype="html">
         <source>Editing category</source>
-        <target/>
+        <target>Redigerer kategori</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1061,7 +1061,7 @@
       </trans-unit>
       <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html">
         <source>Download Twitch Chat</source>
-        <target/>
+        <target>Last ned Twitch-sludring</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1165,7 +1165,7 @@
       </trans-unit>
       <trans-unit id="348cc5d553b18e862eb1c1770e5636f6b05ba130" datatype="html">
         <source>An error has occurred</source>
-        <target/>
+        <target>En feil oppstod</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/download-item/download-item.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1187,7 +1187,7 @@
       </trans-unit>
       <trans-unit id="e9aff8e6df2e2bf6299ea27bb2894c70bc48bd4d" datatype="html">
         <source>An error has occurred:</source>
-        <target/>
+        <target>En feil har oppstått:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/download-item/download-item.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1591,7 +1591,7 @@
       </trans-unit>
       <trans-unit id="04201f9d27abd7d6f58a4328ab98063ce1072006" datatype="html">
         <source>Categories</source>
-        <target/>
+        <target>Kategorier</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">144</context>
@@ -1618,7 +1618,7 @@
       </trans-unit>
       <trans-unit id="78e49b7339b4fa7184dd21bcaae107ce9b7076f6" datatype="html">
         <source>Use youtube-dl archive</source>
-        <target/>
+        <target>Bruk youtube-dl-arkivet</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">166</context>
@@ -1645,7 +1645,7 @@
       </trans-unit>
       <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html">
         <source>Kill all downloads</source>
-        <target/>
+        <target>Drep alle nedlastinger</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">178</context>
@@ -1708,7 +1708,7 @@
       </trans-unit>
       <trans-unit id="1c4dbce56d96b8974aac24a02f7ab2ee81415014" datatype="html">
         <source>Enable Public API</source>
-        <target/>
+        <target>Skru på offentlig API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">216</context>
@@ -1717,7 +1717,7 @@
       </trans-unit>
       <trans-unit id="23bd81dcc30b74d06279a26d7a42e8901c1b124e" datatype="html">
         <source>Public API Key</source>
-        <target/>
+        <target>Nøkkel for offentlig API</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">221</context>
@@ -1735,7 +1735,7 @@
       </trans-unit>
       <trans-unit id="00a94f58d9eb2e3aa561440eabea616d0c937fa2" datatype="html">
         <source>This will delete your old API key!</source>
-        <target/>
+        <target>Dette vil slette din gamle API-nøkkel.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">226</context>
@@ -1771,7 +1771,7 @@
       </trans-unit>
       <trans-unit id="8602e313cdfa7c4cc475ccbe86459fce3c3fd986" datatype="html">
         <source>Generating a key is easy!</source>
-        <target/>
+        <target>Generering av nøkkel er enkelt.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">240</context>
@@ -1802,7 +1802,7 @@
       </trans-unit>
       <trans-unit id="84ffcebac2709ca0785f4a1d5ba274433b5beabc" datatype="html">
         <source>Also known as a Client ID.</source>
-        <target/>
+        <target state="needs-translation">Også kjent som «klient-ID».</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">252</context>
@@ -1927,7 +1927,7 @@
       </trans-unit>
       <trans-unit id="5473e36f5102e2ae22ce4c6620cacc40cc98da95" datatype="html">
         <source>Example:</source>
-        <target/>
+        <target>Eksempel:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">300</context>
@@ -1944,8 +1944,8 @@
         <note priority="1" from="description">Test connection string button</note>
       </trans-unit>
       <trans-unit id="98e94c9bdac1ca8beb29d73b2e6f7a9e5e035aec" datatype="html">
-        <source>Transfer DB to </source>
-        <target/>
+        <source>Transfer DB to</source>
+        <target>Overfør database til</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">308</context>
@@ -1963,7 +1963,7 @@
       </trans-unit>
       <trans-unit id="ec71e08aee647ea4a71fd6b7510c54d84a797ca6" datatype="html">
         <source>Select a downloader</source>
-        <target/>
+        <target>Velg en nedlaster</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">326</context>
@@ -1972,7 +1972,7 @@
       </trans-unit>
       <trans-unit id="5fab47f146b0a4b809dcebf3db9da94df6299ea1" datatype="html">
         <source>Use default downloading agent</source>
-        <target/>
+        <target>Bruk forvalgt nedlastingsagent</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">335</context>
@@ -1981,7 +1981,7 @@
       </trans-unit>
       <trans-unit id="c776eb4992b6c98f58cd89b20c1ea8ac37888521" datatype="html">
         <source>Select a download agent</source>
-        <target/>
+        <target>Velg en nedlastingsagent</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">339</context>
@@ -1990,7 +1990,7 @@
       </trans-unit>
       <trans-unit id="0c43af932e6a4ee85500e28f01b3538b4eb27bc4" datatype="html">
         <source>Log Level</source>
-        <target/>
+        <target>Loggføringsnivå</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">353</context>
@@ -1999,7 +1999,7 @@
       </trans-unit>
       <trans-unit id="db6c192032f4cab809aad35215f0aa4765761897" datatype="html">
         <source>Login expiration</source>
-        <target/>
+        <target>Innloggingsutløp</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">365</context>
@@ -2008,7 +2008,7 @@
       </trans-unit>
       <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html">
         <source>Allow advanced download</source>
-        <target/>
+        <target>Tillat avansert nedlasting</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">376</context>
@@ -2026,7 +2026,7 @@
       </trans-unit>
       <trans-unit id="80651a7ad1229ea6613557d3559f702cfa5aecf5" datatype="html">
         <source>Set Cookies</source>
-        <target/>
+        <target>Sett kaker</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">385</context>
@@ -2053,7 +2053,7 @@
       </trans-unit>
       <trans-unit id="fa548cee6ea11c160a416cac3e6bdec0363883dc" datatype="html">
         <source>Auth method</source>
-        <target/>
+        <target>Identitetbekreftelsesmetode</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">411</context>
@@ -2062,7 +2062,7 @@
       </trans-unit>
       <trans-unit id="4f56ced9d6b85aeb1d4346433361d47ea72dac1a" datatype="html">
         <source>Internal</source>
-        <target/>
+        <target>Intern</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">413</context>
@@ -2152,7 +2152,7 @@
       </trans-unit>
       <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
         <source>Installed version:</source>
-        <target/>
+        <target>Installert versjon:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2480,7 +2480,7 @@
       </trans-unit>
       <trans-unit id="544e09cdc99a8978f48521d45f62db0da6dcf742" datatype="html">
         <source>Use role default</source>
-        <target/>
+        <target state="needs-translation">Bruk folleforvalg</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2628,6 +2628,261 @@
           <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">Video duration label</note>
+      </trans-unit>
+      <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html">
+        <source>Autoplay</source>
+        <target>Spill automatisk</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">70,71</context>
+        </context-group>
+        <note priority="1" from="description">Autoplay checkbox</note>
+      </trans-unit>
+      <trans-unit id="87fd779c638aa5d04e006cd61890b0584c2da385" datatype="html">
+        <source>Replace args</source>
+        <target>Erstatt argumenter</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+        <note priority="1" from="description">Replace args</note>
+      </trans-unit>
+      <trans-unit id="6c2714fbfa525868fea90cc7a8f8de62458fbecf" datatype="html">
+        <source>Max concurrent downloads</source>
+        <target>Maks. samtidige nedlastinger</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">175</context>
+        </context-group>
+        <note priority="1" from="description">Max concurrent downloads</note>
+      </trans-unit>
+      <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
+        <source>Date</source>
+        <target>Dato</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">Date</note>
+      </trans-unit>
+      <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html">
+        <source>Subscription</source>
+        <target>Abonnement</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">Subscription</note>
+      </trans-unit>
+      <trans-unit id="15793f4cbc261bedbc60f7105533dde536a3f42b" datatype="html">
+        <source>Progress</source>
+        <target>Framdrift</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">Progress</note>
+      </trans-unit>
+      <trans-unit id="030b4423b92167200e39519599f9b863b4f7c62c" datatype="html">
+        <source>Actions</source>
+        <target>Handlinger</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Actions</note>
+      </trans-unit>
+      <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
+        <source>Clear</source>
+        <target>Tøm</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <note priority="1" from="description">Clear</note>
+      </trans-unit>
+      <trans-unit id="b2838c6165a9672a17db188f4dd9676574353dd8" datatype="html">
+        <source>Pause</source>
+        <target>Pause</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <note priority="1" from="description">Pause</note>
+      </trans-unit>
+      <trans-unit id="4cd979821c89535df23df1c8ac8f260673610d90" datatype="html">
+        <source>Resume</source>
+        <target>Fortsett</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <note priority="1" from="description">Resume</note>
+      </trans-unit>
+      <trans-unit id="50e85c3b33fb74c0d3c0f97182611f6c1d9cf10e" datatype="html">
+        <source>Add to playlist</source>
+        <target>Legg til i spilleliste</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">Add to playlist menu item</note>
+      </trans-unit>
+      <trans-unit id="9b2084f9aea764292cf0978cb083907d8be51bf7" datatype="html">
+        <source>Resume all downloads</source>
+        <target>Fortsett alle nedlastinger</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <note priority="1" from="description">Resume all downloads</note>
+      </trans-unit>
+      <trans-unit id="7220285196408439810" datatype="html">
+        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
+        <target>Nedlasting for <x id="url" equiv-text="d, cropF"/> har blitt lagt i kø.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">469</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
+        <source>Both</source>
+        <target>Begge</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="description">Both</note>
+      </trans-unit>
+      <trans-unit id="82dbc50a84e5c0865aa27479b8ce82da3a85d29b" datatype="html">
+        <source>Skip ad</source>
+        <target>Hopp over reklame</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/skip-ad-button/skip-ad-button.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">Skip ad button</note>
+      </trans-unit>
+      <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html">
+        <source>Video only</source>
+        <target>Kun video</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Video only</note>
+      </trans-unit>
+      <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
+        <source>File type</source>
+        <target state="needs-translation">Filtype</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <note priority="1" from="description">File type</note>
+      </trans-unit>
+      <trans-unit id="742202f9ba533bc9a92a1aec2862b0485c5f601b" datatype="html">
+        <source>Audio only</source>
+        <target>Kun lyd</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <note priority="1" from="description">Audio only</note>
+      </trans-unit>
+      <trans-unit id="54cb4c7c3a0da911ebda5a07666b448868020308" datatype="html">
+        <source>Show error</source>
+        <target>Vis feil</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+        <note priority="1" from="description">Show error</note>
+      </trans-unit>
+      <trans-unit id="4920978fc336333b5cda11b1dedf172c3183d2da" datatype="html">
+        <source>Allow autoplay</source>
+        <target>Tillat automatisk avspilling</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">221</context>
+        </context-group>
+        <note priority="1" from="description">Allow autoplay setting</note>
+      </trans-unit>
+      <trans-unit id="7819314041543176992" datatype="html">
+        <source>Close</source>
+        <target>Lukk</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">241</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html">
+        <source>Installation type:</source>
+        <target>Installasjonstype:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">Installation type</note>
+      </trans-unit>
+      <trans-unit id="8738732372986673558" datatype="html">
+        <source>Copy to clipboard</source>
+        <target>Kopier til utklippstavle</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">240</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="601a28988581b5398ca6471027487e098d236e0e" datatype="html">
+        <source>Clear finished downloads</source>
+        <target>Tøm fullførte nedlastinger</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <note priority="1" from="description">Clear finished downloads</note>
+      </trans-unit>
+      <trans-unit id="3795459839164395144" datatype="html">
+        <source>Copied to clipboard!</source>
+        <target>Kopiert til utklippstavlen.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">249</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b36b7458192b833592e13029fa8a0b3555e0d9bd" datatype="html">
+        <source>Pause all downloads</source>
+        <target>Sett alle nedlastinger på pause</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <note priority="1" from="description">Pause all downloads</note>
+      </trans-unit>
+      <trans-unit id="b6d79c6ff771d7b86ce572306867a1705200f957" datatype="html">
+        <source>Restart</source>
+        <target>Omstart</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <note priority="1" from="description">Restart</note>
       </trans-unit>
     </body>
   </file>
