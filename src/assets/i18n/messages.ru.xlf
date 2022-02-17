@@ -744,8 +744,8 @@
         <note priority="1" from="description">Allow subscriptions setting</note>
       </trans-unit>
       <trans-unit id="4bee2a4bef2d26d37c9b353c278e24e5cd309ce3" datatype="html">
-        <source>Subscriptions base path</source>
-        <target>Базовый путь подписки</target>
+        <source>Base bath for subscriptions</source>
+        <target>Базовый путь для подписок</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">72</context>
@@ -3166,6 +3166,15 @@
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Skip ad button</note>
+      </trans-unit>
+      <trans-unit id="682ca154aba791fe87aa293b29c921247e12da9c" datatype="html">
+        <source>Commit hash:</source>
+        <target>Хэш коммита:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <note priority="1" from="description">Commit hash</note>
       </trans-unit>
     </body>
   </file>
