@@ -8,4 +8,6 @@ export interface DownloadFileRequest {
     uuid?: string;
     sub_id?: string;
     playlist_id?: string;
+    url?: string;
+    type?: string;
 }

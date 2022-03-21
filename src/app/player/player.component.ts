@@ -9,6 +9,7 @@ import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-m
 import { FileType } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 export interface IMedia {
   title: string;
@@ -109,10 +110,9 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
-              public snackBar: MatSnackBar, private cdr: ChangeDetectorRef) {
+              public snackBar: MatSnackBar, private cdr: ChangeDetectorRef, private http: HttpClient) {
 
   }
-
   processConfig() {
     this.baseStreamPath = this.postsService.path;
     this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
@@ -315,8 +315,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   downloadFile() {
     const filename = this.playlist[0].title;
     const ext = (this.playlist[0].type === 'audio/mp3') ? '.mp3' : '.mp4';
+    const type = this.playlist[0].type;
+    const url = this.playlist[0].url;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(this.uid, this.uuid, this.sub_id).subscribe(res => {
+    this.postsService.downloadFileFromServer(this.uid, this.uuid, this.sub_id, url, type).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);
@@ -324,6 +326,24 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log(err);
       this.downloading = false;
     });
+  }
+
+  downloadVideo() {
+    const filename = this.currentItem.label;
+    const ext = (this.currentItem.type === 'audio/mp3') ? '.mp3' : '.mp4';
+    // const type = this.currentItem.type;
+    const url = this.currentItem.src;
+    this.downloading = true;
+    this.http.get(url, {
+      responseType: 'blob'
+    }).subscribe(res => {
+      const blob: Blob = res;
+      this.downloading = false;
+      saveAs(blob, filename + ext);
+    }, err => {
+      console.log(err);
+      this.downloading = false;
+    })
   }
 
   playlistPostCreationHandler(playlistID) {
