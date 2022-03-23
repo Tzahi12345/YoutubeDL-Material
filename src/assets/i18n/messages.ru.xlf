@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="ru">
     <body>
@@ -744,8 +744,8 @@
         <note priority="1" from="description">Allow subscriptions setting</note>
       </trans-unit>
       <trans-unit id="4bee2a4bef2d26d37c9b353c278e24e5cd309ce3" datatype="html">
-        <source>Subscriptions base path</source>
-        <target>Базовый путь подписки</target>
+        <source>Base bath for subscriptions</source>
+        <target>Базовый путь для подписок</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">72</context>
@@ -2727,6 +2727,454 @@
           <context context-type="linenumber">155,156</context>
         </context-group>
         <note priority="1" from="description">Crop video checkbox</note>
+      </trans-unit>
+      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html">
+        <source>Installation type:</source>
+        <target>Тип установки:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">Installation type</note>
+      </trans-unit>
+      <trans-unit id="73a7ade062c611e4bc92f3a4c672bee29b8aae9d" datatype="html">
+        <source>Watch content</source>
+        <target>Смотреть контент</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <note priority="1" from="description">Watch content</note>
+      </trans-unit>
+      <trans-unit id="0af5ee1867be592a6cd35a94faba8833b52c740f" datatype="html">
+        <source>Rate limits your downloads to the specified amount. Ex: 200K</source>
+        <target>Ограничить скорость загрузки, например 200К</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">182</context>
+        </context-group>
+        <note priority="1" from="description">Download rate limit input hint</note>
+      </trans-unit>
+      <trans-unit id="7220285196408439810" datatype="html">
+        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
+        <target>Загрузка для <x id="url" equiv-text="d, cropF"/> выла добавлена в очередь!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">469</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="87fd779c638aa5d04e006cd61890b0584c2da385" datatype="html">
+        <source>Replace args</source>
+        <target>Поменять аргументы</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+        <note priority="1" from="description">Replace args</note>
+      </trans-unit>
+      <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html">
+        <source>Autoplay</source>
+        <target>Автопроигрывание</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">70,71</context>
+        </context-group>
+        <note priority="1" from="description">Autoplay checkbox</note>
+      </trans-unit>
+      <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
+        <source>Both</source>
+        <target>Обa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="description">Both</note>
+      </trans-unit>
+      <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
+        <source>File type</source>
+        <target>Тип файла</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <note priority="1" from="description">File type</note>
+      </trans-unit>
+      <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html">
+        <source>Video only</source>
+        <target>Только видео</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Video only</note>
+      </trans-unit>
+      <trans-unit id="742202f9ba533bc9a92a1aec2862b0485c5f601b" datatype="html">
+        <source>Audio only</source>
+        <target>Только аудио</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <note priority="1" from="description">Audio only</note>
+      </trans-unit>
+      <trans-unit id="7307570005283604795" datatype="html">
+        <source>You must enable multi-user mode to access this tab.</source>
+        <target>Вы должны включить многопользовательский режим для доступа к этой вкладке.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4c8f776635ead63103de9d21b28e95eceaf5ab53" datatype="html">
+        <source>Use SponsorBlock API</source>
+        <target>Использовать SponsorBlock API</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">269</context>
+        </context-group>
+        <note priority="1" from="description">Use SponsorBlock API setting</note>
+      </trans-unit>
+      <trans-unit id="a30fc9944a494022ba67b3046ad3d27c62dd7fee" datatype="html">
+        <source>Download rate limit</source>
+        <target>Ограничение скорости загрузки</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+        <note priority="1" from="description">Download rate limit input placeholder</note>
+      </trans-unit>
+      <trans-unit id="6c2714fbfa525868fea90cc7a8f8de62458fbecf" datatype="html">
+        <source>Max concurrent downloads</source>
+        <target>Максимальное количество одновременных загрузок</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">175</context>
+        </context-group>
+        <note priority="1" from="description">Max concurrent downloads</note>
+      </trans-unit>
+      <trans-unit id="4f9f174dc9939283b3192acc9e87d6c1e4cca118" datatype="html">
+        <source>Limits the amount of downloads that can be simultaneously downloaded. Use -1 for no limit.</source>
+        <target>Ограничивает количество одновременных загрузок. Используйте -1 для безлимитной загрузки.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">176</context>
+        </context-group>
+        <note priority="1" from="description">Max concurrent downloads input hint</note>
+      </trans-unit>
+      <trans-unit id="e65fce85d6177d3582b376f9d622daebca5ee0da" datatype="html">
+        <source>Generate NFO files</source>
+        <target>Генерировать файлы NFO</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">272</context>
+        </context-group>
+        <note priority="1" from="description">Generate NFO files setting</note>
+      </trans-unit>
+      <trans-unit id="4920978fc336333b5cda11b1dedf172c3183d2da" datatype="html">
+        <source>Allow autoplay</source>
+        <target>Разрешить автопроигрывание</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">221</context>
+        </context-group>
+        <note priority="1" from="description">Allow autoplay setting</note>
+      </trans-unit>
+      <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html">
+        <source>Build date:</source>
+        <target>Дата постройки:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <note priority="1" from="description">Build date</note>
+      </trans-unit>
+      <trans-unit id="8700121026680200191" datatype="html">
+        <source>Clear</source>
+        <target>Стереть</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8384225360105280028" datatype="html">
+        <source>Complete</source>
+        <target>Закончено</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7180002287537831534" datatype="html">
+        <source>Clear finished downloads</source>
+        <target>Очистить законченны загрузки</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8007838850199625121" datatype="html">
+        <source>Would you like to clear your finished downloads?</source>
+        <target>Хотите ли вы очистить завершённые загрузки?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7724483709075923163" datatype="html">
+        <source>Downloading file</source>
+        <target>Загружается файл</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2827589726081052618" datatype="html">
+        <source>Creating download</source>
+        <target>Готовится загрузка</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
+        <source>Date</source>
+        <target>Дата</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">Date</note>
+      </trans-unit>
+      <trans-unit id="fdf7cbdc140d0aab0f0b6c06065a0fd448ed6a2e" datatype="html">
+        <source>Title</source>
+        <target>Название</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">Title</note>
+      </trans-unit>
+      <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
+        <source>Clear</source>
+        <target>Стереть</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+        <note priority="1" from="description">Clear</note>
+      </trans-unit>
+      <trans-unit id="7819314041543176992" datatype="html">
+        <source>Close</source>
+        <target>Закрыть</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">241</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b2838c6165a9672a17db188f4dd9676574353dd8" datatype="html">
+        <source>Pause</source>
+        <target>Пауза</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <note priority="1" from="description">Pause</note>
+      </trans-unit>
+      <trans-unit id="54cb4c7c3a0da911ebda5a07666b448868020308" datatype="html">
+        <source>Show error</source>
+        <target>Показать ошибку</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+        <note priority="1" from="description">Show error</note>
+      </trans-unit>
+      <trans-unit id="601a28988581b5398ca6471027487e098d236e0e" datatype="html">
+        <source>Clear finished downloads</source>
+        <target>Очистить законченные загрузки</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <note priority="1" from="description">Clear finished downloads</note>
+      </trans-unit>
+      <trans-unit id="b6d79c6ff771d7b86ce572306867a1705200f957" datatype="html">
+        <source>Restart</source>
+        <target>Перезапустить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <note priority="1" from="description">Restart</note>
+      </trans-unit>
+      <trans-unit id="15793f4cbc261bedbc60f7105533dde536a3f42b" datatype="html">
+        <source>Progress</source>
+        <target>Прогресс</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">Progress</note>
+      </trans-unit>
+      <trans-unit id="2560364143605631750" datatype="html">
+        <source>Error for <x id="url" equiv-text="});      retu"/></source>
+        <target>Ошибка для <x id="url" equiv-text="});      retu"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html">
+        <source>Subscription</source>
+        <target>Подписка</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">Subscription</note>
+      </trans-unit>
+      <trans-unit id="72c341bca7ebacc66e8a13f1a527d500619e89ff" datatype="html">
+        <source>Stage</source>
+        <target>Этап</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <note priority="1" from="description">Stage</note>
+      </trans-unit>
+      <trans-unit id="030b4423b92167200e39519599f9b863b4f7c62c" datatype="html">
+        <source>Actions</source>
+        <target>Действия</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Actions</note>
+      </trans-unit>
+      <trans-unit id="4cd979821c89535df23df1c8ac8f260673610d90" datatype="html">
+        <source>Resume</source>
+        <target>Возобновить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <note priority="1" from="description">Resume</note>
+      </trans-unit>
+      <trans-unit id="9b2084f9aea764292cf0978cb083907d8be51bf7" datatype="html">
+        <source>Resume all downloads</source>
+        <target>Возобновить все загрузки</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <note priority="1" from="description">Resume all downloads</note>
+      </trans-unit>
+      <trans-unit id="b36b7458192b833592e13029fa8a0b3555e0d9bd" datatype="html">
+        <source>Pause all downloads</source>
+        <target>Приостановить все загрузки</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <note priority="1" from="description">Pause all downloads</note>
+      </trans-unit>
+      <trans-unit id="c55604d30653e3d8310190d8d26761226132a901" datatype="html">
+        <source>Enables a button to skip ads when viewing supported videos.</source>
+        <target>Включает кнопку для пропуска рекламы при просмотре поддерживаемых видео.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">269</context>
+        </context-group>
+        <note priority="1" from="description">SponsorBlock API tooltip</note>
+      </trans-unit>
+      <trans-unit id="e243d8408e1a3d2ef6501b85899d02374ea34880" datatype="html">
+        <source>Generates NFO files with every download, primarily used by Kodi.</source>
+        <target>Генерирует файлы NFO при каждой загрузке, в основном используется Kodi.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">272</context>
+        </context-group>
+        <note priority="1" from="description">Generate NFO files tooltip</note>
+      </trans-unit>
+      <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html">
+        <source>Docker tag:</source>
+        <target>Тег Docker:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">Docker tag</note>
+      </trans-unit>
+      <trans-unit id="8738732372986673558" datatype="html">
+        <source>Copy to clipboard</source>
+        <target>Скопировать в буфер обмена</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">240</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3795459839164395144" datatype="html">
+        <source>Copied to clipboard!</source>
+        <target>Скопировано в буфер обмена!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">249</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4027175717527633324" datatype="html">
+        <source>Getting info</source>
+        <target>Получение информации</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="50e85c3b33fb74c0d3c0f97182611f6c1d9cf10e" datatype="html">
+        <source>Add to playlist</source>
+        <target>Добавить в плейлист</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">Add to playlist menu item</note>
+      </trans-unit>
+      <trans-unit id="82dbc50a84e5c0865aa27479b8ce82da3a85d29b" datatype="html">
+        <source>Skip ad</source>
+        <target>Пропустить рекламу</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/skip-ad-button/skip-ad-button.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">Skip ad button</note>
+      </trans-unit>
+      <trans-unit id="682ca154aba791fe87aa293b29c921247e12da9c" datatype="html">
+        <source>Commit hash:</source>
+        <target>Хэш коммита:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <note priority="1" from="description">Commit hash</note>
       </trans-unit>
     </body>
   </file>

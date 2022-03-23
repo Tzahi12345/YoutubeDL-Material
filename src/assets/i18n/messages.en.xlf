@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="en">
     <body>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
@@ -234,7 +234,7 @@
         <note priority="1" from="description">Youtube-dl output template documentation link</note>
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
-        <source>Path is relative to the config download path. Don&apos;t include extension.</source>
+        <source>Path is relative to the config download path. Don't include extension.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">138</context>
@@ -1349,7 +1349,8 @@
         <note priority="1" from="description">Allow subscriptions setting</note>
       </trans-unit>
       <trans-unit id="4bee2a4bef2d26d37c9b353c278e24e5cd309ce3" datatype="html">
-        <source>Subscriptions base path</source>
+        <source>Base bath for subscriptions</source>
+        <target>Base bath for subscriptions</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">44</context>
@@ -1357,7 +1358,7 @@
         <note priority="1" from="description">Subscriptions base path input setting placeholder</note>
       </trans-unit>
       <trans-unit id="bc9892814ee2d119ae94378c905ea440a249b84a" datatype="html">
-        <source>Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material&apos;s root folder.</source>
+        <source>Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">45</context>
@@ -1437,7 +1438,7 @@
         <note priority="1" from="description">Audio folder path input placeholder</note>
       </trans-unit>
       <trans-unit id="c2c89cdf45d46ea64d2ed2f9ac15dfa4d77e26ca" datatype="html">
-        <source>Path for audio only downloads. It is relative to YTDL-Material&apos;s root folder.</source>
+        <source>Path for audio only downloads. It is relative to YTDL-Material's root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">102</context>
@@ -1453,7 +1454,7 @@
         <note priority="1" from="description">Video folder path input placeholder</note>
       </trans-unit>
       <trans-unit id="17c92e6d47a213fa95b5aa344b3f258147123f93" datatype="html">
-        <source>Path for video downloads. It is relative to YTDL-Material&apos;s root folder.</source>
+        <source>Path for video downloads. It is relative to YTDL-Material's root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">109</context>
@@ -1469,7 +1470,7 @@
         <note priority="1" from="description">Default file output placeholder</note>
       </trans-unit>
       <trans-unit id="1148fd45287ff09955b938756bc302042bcb29c7" datatype="html">
-        <source>Path is relative to the above download paths. Don&apos;t include extension.</source>
+        <source>Path is relative to the above download paths. Don't include extension.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">118</context>
@@ -1785,7 +1786,7 @@
         <note priority="1" from="description">Chrome click here suffix</note>
       </trans-unit>
       <trans-unit id="5b5296423906ab3371fdb2b5a5aaa83acaa2ee52" datatype="html">
-        <source>You must manually load the extension and modify the extension&apos;s settings to set the frontend URL.</source>
+        <source>You must manually load the extension and modify the extension's settings to set the frontend URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">282</context>
@@ -1809,7 +1810,7 @@
         <note priority="1" from="description">Firefox setup prefix link</note>
       </trans-unit>
       <trans-unit id="cb17ff8fe3961cf90f44bee97c88a3f3347a7e55" datatype="html">
-        <source>Not much is required other than changing the extension&apos;s settings to set the frontend URL.</source>
+        <source>Not much is required other than changing the extension's settings to set the frontend URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">288</context>
@@ -1817,7 +1818,7 @@
         <note priority="1" from="description">Firefox setup suffix</note>
       </trans-unit>
       <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2" datatype="html">
-        <source>Drag the link below to your bookmarks, and you&apos;re good to go! Just navigate to the YouTube video you&apos;d like to download, and click the bookmark.</source>
+        <source>Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">293</context>
@@ -1825,7 +1826,7 @@
         <note priority="1" from="description">Bookmarklet instructions</note>
       </trans-unit>
       <trans-unit id="c505d6c5de63cc700f0aaf8a4b31fae9e18024e5" datatype="html">
-        <source>Generate &apos;audio only&apos; bookmarklet</source>
+        <source>Generate 'audio only' bookmarklet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">294</context>
@@ -2049,7 +2050,7 @@
         <note priority="1" from="description">About dialog title</note>
       </trans-unit>
       <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
-        <source>is an open-source YouTube downloader built under Google&apos;s Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
+        <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2250,9 +2251,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="});
-
-    retu"/></source>
+        <source>Error for <x id="url" equiv-text="});      retu"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
@@ -2476,7 +2475,7 @@
         <note priority="1" from="description">Create admin account dialog title</note>
       </trans-unit>
       <trans-unit id="2d2adf3ca26a676bca2269295b7455a26fd26980" datatype="html">
-        <source>No default admin account detected. This will create and set the password for an admin account with the user name as &apos;admin&apos;.</source>
+        <source>No default admin account detected. This will create and set the password for an admin account with the user name as 'admin'.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">5</context>
