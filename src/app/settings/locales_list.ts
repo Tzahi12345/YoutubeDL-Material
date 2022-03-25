@@ -105,7 +105,7 @@ export const isoLangs = {
        'nativeName': 'ဗမာစာ'
    },
    'ca': {
-       'name': 'Catalan; Valencian',
+       'name': 'Catalan',
        'nativeName': 'Català'
    },
    'ch': {

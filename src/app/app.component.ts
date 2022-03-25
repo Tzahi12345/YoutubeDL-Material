@@ -1,9 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, HostBinding, AfterViewInit } from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 import {PostsService} from './posts.services';
-import {FileCardComponent} from './file-card/file-card.component';
-import { Observable } from 'rxjs/Observable';
-import {FormControl, Validators} from '@angular/forms';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,7 +13,6 @@ import 'rxjs/add/operator/filter'
 import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/do'
 import 'rxjs/add/operator/switch'
-import { YoutubeSearchService, Result } from './youtube-search.service';
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
@@ -28,7 +24,11 @@ import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dial
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: [{
+    provide: MatDialogRef,
+    useValue: {}
+  }]
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
@@ -118,6 +118,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     this.postsService.reloadCategories();
+
+    this.postsService.getVersionInfo().subscribe(res => {
+      this.postsService.version_info = res['version_info'];
+    });
   }
 
   // theme stuff

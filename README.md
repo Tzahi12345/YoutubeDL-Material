@@ -29,7 +29,7 @@ NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker
 Debian/Ubuntu:
 
 ```bash
-sudo apt-get install nodejs youtube-dl ffmpeg
+sudo apt-get install nodejs youtube-dl ffmpeg unzip python npm
 ```
 
 CentOS 7:
@@ -67,7 +67,7 @@ If you'd like to install YoutubeDL-Material, go to the Installation section. If 
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `npm build`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
 
 The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
 
@@ -76,6 +76,10 @@ Finally, if you want your instance to be available from outside your network, yo
 Alternatively, you can port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
 
 ## Docker
+
+### Host-specific instructions
+
+If you're on a Synology NAS, unRAID or any other possible special case you can check if there's known issues or instructions both in the issue tracker and in the [Wiki!](https://github.com/Tzahi12345/YoutubeDL-Material/wiki#environment-specific-guideshelp)
 
 ### Setup
 
@@ -106,6 +110,12 @@ To get started, go to the settings menu and enable the public API from the *Extr
 
 Once you have enabled the API and have the key, you can start sending requests by adding the query param `apiKey=API_KEY`. Replace `API_KEY` with your actual API key, and you should be good to go! Nearly all of the backend should be at your disposal. View available endpoints in the link above.
 
+## iOS Shortcut 
+
+If you are using iOS, try YoutubeDL-Material more conveniently with a Shortcut. With this Shorcut, you can easily start downloading YouTube video with just two taps! (Or maybe three?)
+
+You can download Shortcut [here.](https://routinehub.co/shortcut/10283/)
+
 ## Contributing
 
 If you're interested in contributing, first: awesome! Second, please refer to the guidelines/setup information located in the [Contributing](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Contributing) wiki page, it's a helpful way to get you on your feet and coding away.
@@ -124,7 +134,7 @@ Official translators:
 * German - UnlimitedCookies
 * Chinese - TyRoyal
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/Tzahi12345/YoutubeDL-Material/graphs/contributors) who participated in this project.
 
 ## License
 

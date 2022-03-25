@@ -1,6 +1,33 @@
 .login-card {
-    max-width: 600px;
+    max-width: 400px;
     width: 80%;
     margin: 0 auto;
     margin-top: 20px;
+    padding-top: 8px;
+}
+
+.login-div {
+    height: calc(100% - 170px);
+    overflow-y: auto;
+}
+
+.login-button-div {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: -16px;
+    margin-right: -16px;
+    bottom: 0px;
+    width: 100%;
+    position: absolute;
+}
+
+.login-button-div > button {
+    width: 100%;
+    border-radius: 0px 0px 4px 4px !important;
+}
+
+.login-progress-bar {
+    position: absolute;
+    bottom: 0px;
+    border-radius: 0px 0px 4px 4px;
 }

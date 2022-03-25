@@ -1,4 +1,4 @@
-<div (mouseover)="elevated=true" (mouseout)="elevated=false" (contextmenu)="onRightClick($event)" style="position: relative; width: fit-content;">
+<div (mouseenter)="onMouseOver()" (mouseleave)="onMouseOut()" (contextmenu)="onRightClick($event)" style="position: relative; width: fit-content;">
     <div *ngIf="!loading" class="download-time">
         <mat-icon class="audio-video-icon">{{(file_obj.type === 'audio' || file_obj.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
         &nbsp;&nbsp;
@@ -23,6 +23,12 @@
         <ng-container *ngIf="!is_playlist && !loading">
             <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
             <button (click)="navigateToSubscription()" mat-menu-item *ngIf="file_obj.sub_id"><mat-icon>{{file_obj.isAudio ? 'library_music' : 'video_library'}}</mat-icon>&nbsp;<ng-container i18n="Go to subscription menu item">Go to subscription</ng-container></button>
+            <button *ngIf="availablePlaylists" [matMenuTriggerFor]="addtoplaylist" mat-menu-item><mat-icon>playlist_add</mat-icon>&nbsp;<ng-container i18n="Add to playlist menu item">Add to playlist</ng-container></button>
+            <mat-menu #addtoplaylist="matMenu">
+                <ng-container *ngFor="let playlist of availablePlaylists">
+                    <button *ngIf="(playlist.type === 'audio') === file_obj.isAudio" [disabled]="playlist.uids?.includes(file_obj.uid)" (click)="emitAddFileToPlaylist(playlist.id)" mat-menu-item>{{playlist.name}}</button>
+                </ng-container>
+            </mat-menu>
             <mat-divider></mat-divider>
             <button *ngIf="file_obj.sub_id" (click)="emitDeleteFile()" mat-menu-item>
                 <mat-icon>restore</mat-icon><ng-container i18n="Delete and redownload subscription video button">Delete and redownload</ng-container>
@@ -45,8 +51,10 @@
     <mat-card [matTooltip]="null" (click)="navigateToFile($event)" matRipple class="file-mat-card" [ngClass]="{'small-mat-card': card_size === 'small', 'file-mat-card': card_size === 'medium', 'large-mat-card': card_size === 'large', 'mat-elevation-z4': !elevated, 'mat-elevation-z8': elevated}">
         <div style="padding:5px">
             <div *ngIf="!loading && file_obj.thumbnailURL" class="img-div">
-                <div style="position: relative">
-                    <img [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailPath ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
+                <div [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" style="position: relative">
+                    <img *ngIf="!hide_image || is_playlist || (file_obj.type === 'audio' || file_obj.isAudio)" [ngClass]="{'image-small': card_size === 'small', 'image': card_size === 'medium', 'image-large': card_size === 'large'}" [src]="file_obj.thumbnailPath ? thumbnailBlobURL : file_obj.thumbnailURL" alt="Thumbnail">
+                    <video *ngIf="elevated && !is_playlist && !(file_obj.type === 'audio' || file_obj.isAudio)" autoplay loop muted [muted]="true" [ngClass]="{'video-small': card_size === 'small', 'video': card_size === 'medium', 'video-large': card_size === 'large'}" [src]="streamURL">
+                    </video>
                     <div class="duration-time">
                         {{file_length}}
                     </div>

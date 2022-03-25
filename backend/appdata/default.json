@@ -12,14 +12,16 @@
       "custom_args": "",
       "safe_download_override": false,
       "include_thumbnail": true,
-      "include_metadata": true
+      "include_metadata": true,
+      "max_concurrent_downloads": 5,
+      "download_rate_limit": ""
     },
     "Extra": {
       "title_top": "YoutubeDL-Material",
       "file_manager_enabled": true,
       "allow_quality_select": true,
       "download_only_mode": false,
-      "allow_multi_download_mode": true,
+      "allow_autoplay": true,
       "enable_downloads_manager": true,
       "allow_playlist_categorization": true
     },
@@ -30,7 +32,9 @@
       "youtube_API_key": "",
       "use_twitch_API": false,
       "twitch_API_key": "",
-      "twitch_auto_download_chat": false
+      "twitch_auto_download_chat": false,
+      "use_sponsorblock_API": false,
+      "generate_NFO_files": false
     },
     "Themes": {
       "default_theme": "default",
@@ -54,6 +58,10 @@
         "searchFilter": "(uid={{username}})"
       }
     },
+    "Database": {
+      "use_local_db": true,
+      "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib"
+    },
     "Advanced": {
       "default_downloader": "youtube-dl",
       "use_default_downloading_agent": true,
@@ -61,7 +69,7 @@
       "multi_user_mode": false,
       "allow_advanced_download": false,
       "use_cookies": false,
-      "jwt_expiration": 86400, 
+      "jwt_expiration": 86400,
       "logger_level": "info"
     }
   }

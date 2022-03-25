@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 const fs = require('fs');
 
 let CONFIG_ITEMS = require('./consts.js')['CONFIG_ITEMS'];
@@ -5,11 +7,7 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 
 let configPath = debugMode ? '../src/assets/default.json' : 'appdata/default.json';
 
-var logger = null;
-function setLogger(input_logger) { logger = input_logger; }
-
-function initialize(input_logger) {
-    setLogger(input_logger);
+function initialize() {
     ensureConfigFileExists();
     ensureConfigItemsExist();
 }
@@ -97,13 +95,13 @@ function getConfigItem(key) {
     }
     let path = CONFIG_ITEMS[key]['path'];
     const val = Object.byString(config_json, path);
-    if (val === undefined && Object.byString(DEFAULT_CONFIG, path)) {
+    if (val === undefined && Object.byString(DEFAULT_CONFIG, path) !== undefined) {
         logger.warn(`Cannot find config with key '${key}'. Creating one with the default value...`);
         setConfigItem(key, Object.byString(DEFAULT_CONFIG, path));
         return Object.byString(DEFAULT_CONFIG, path);
     }
     return Object.byString(config_json, path);
-};
+}
 
 function setConfigItem(key, value) {
     let success = false;
@@ -175,7 +173,7 @@ module.exports = {
     globalArgsRequiresSafeDownload: globalArgsRequiresSafeDownload
 }
 
-DEFAULT_CONFIG = {
+const DEFAULT_CONFIG = {
     "YoutubeDLMaterial": {
       "Host": {
         "url": "http://example.com",
@@ -189,14 +187,16 @@ DEFAULT_CONFIG = {
         "custom_args": "",
         "safe_download_override": false,
         "include_thumbnail": true,
-        "include_metadata": true
+        "include_metadata": true,
+        "max_concurrent_downloads": 5,
+        "download_rate_limit": ""
       },
       "Extra": {
         "title_top": "YoutubeDL-Material",
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
-        "allow_multi_download_mode": true,
+        "allow_autoplay": true,
         "enable_downloads_manager": true,
         "allow_playlist_categorization": true
       },
@@ -207,7 +207,9 @@ DEFAULT_CONFIG = {
         "youtube_API_key": "",
         "use_twitch_API": false,
         "twitch_API_key": "",
-        "twitch_auto_download_chat": false
+        "twitch_auto_download_chat": false,
+        "use_sponsorblock_API": false,
+        "generate_NFO_files": false
       },
       "Themes": {
         "default_theme": "default",
@@ -216,7 +218,7 @@ DEFAULT_CONFIG = {
       "Subscriptions": {
         "allow_subscriptions": true,
         "subscriptions_base_path": "subscriptions/",
-        "subscriptions_check_interval": "300",
+        "subscriptions_check_interval": "86400",
         "redownload_fresh_uploads": false
       },
       "Users": {
@@ -230,6 +232,10 @@ DEFAULT_CONFIG = {
             "searchBase": "ou=passport-ldapauth",
             "searchFilter": "(uid={{username}})"
         }
+      },
+      "Database": {
+        "use_local_db": true,
+        "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib"
       },
       "Advanced": {
         "default_downloader": "youtube-dl",

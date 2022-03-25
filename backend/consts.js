@@ -1,4 +1,4 @@
-let CONFIG_ITEMS = {
+exports.CONFIG_ITEMS = {
     // Host
     'ytdl_url': {
         'key': 'ytdl_url',
@@ -42,6 +42,14 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_include_metadata',
         'path': 'YoutubeDLMaterial.Downloader.include_metadata'
     },
+    'ytdl_max_concurrent_downloads': {
+        'key': 'ytdl_max_concurrent_downloads',
+        'path': 'YoutubeDLMaterial.Downloader.max_concurrent_downloads'
+    },
+    'ytdl_download_rate_limit': {
+        'key': 'ytdl_download_rate_limit',
+        'path': 'YoutubeDLMaterial.Downloader.download_rate_limit'
+    },
 
     // Extra
     'ytdl_title_top': {
@@ -60,9 +68,9 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_download_only_mode',
         'path': 'YoutubeDLMaterial.Extra.download_only_mode'
     },
-    'ytdl_allow_multi_download_mode': {
-        'key': 'ytdl_allow_multi_download_mode',
-        'path': 'YoutubeDLMaterial.Extra.allow_multi_download_mode'
+    'ytdl_allow_autoplay': {
+        'key': 'ytdl_allow_autoplay',
+        'path': 'YoutubeDLMaterial.Extra.allow_autoplay'
     },
     'ytdl_enable_downloads_manager': {
         'key': 'ytdl_enable_downloads_manager',
@@ -102,6 +110,15 @@ let CONFIG_ITEMS = {
         'key': 'ytdl_twitch_auto_download_chat',
         'path': 'YoutubeDLMaterial.API.twitch_auto_download_chat'
     },
+    'ytdl_use_sponsorblock_api': {
+        'key': 'ytdl_use_sponsorblock_api',
+        'path': 'YoutubeDLMaterial.API.use_sponsorblock_API'
+    },
+    'ytdl_generate_nfo_files': {
+        'key': 'ytdl_generate_nfo_files',
+        'path': 'YoutubeDLMaterial.API.generate_NFO_files'
+    },
+
 
     // Themes
     'ytdl_default_theme': {
@@ -121,10 +138,6 @@ let CONFIG_ITEMS = {
     'ytdl_subscriptions_base_path': {
         'key': 'ytdl_subscriptions_base_path',
         'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_base_path'
-    },
-    'ytdl_subscriptions_check_interval': {
-        'key': 'ytdl_subscriptions_check_interval',
-        'path': 'YoutubeDLMaterial.Subscriptions.subscriptions_check_interval'
     },
     'ytdl_subscriptions_check_interval': {
         'key': 'ytdl_subscriptions_check_interval',
@@ -151,6 +164,16 @@ let CONFIG_ITEMS = {
     'ytdl_ldap_config': {
         'key': 'ytdl_ldap_config',
         'path': 'YoutubeDLMaterial.Users.ldap_config'
+    },
+
+    // Database
+    'ytdl_use_local_db': {
+        'key': 'ytdl_use_local_db',
+        'path': 'YoutubeDLMaterial.Database.use_local_db'
+    },
+    'ytdl_mongodb_connection_string': {
+        'key': 'ytdl_mongodb_connection_string',
+        'path': 'YoutubeDLMaterial.Database.mongodb_connection_string'
     },
 
     // Advanced
@@ -188,7 +211,7 @@ let CONFIG_ITEMS = {
     }
 };
 
-AVAILABLE_PERMISSIONS = [
+exports.AVAILABLE_PERMISSIONS = [
     'filemanager',
     'settings',
     'subscriptions',
@@ -197,8 +220,6 @@ AVAILABLE_PERMISSIONS = [
     'downloads_manager'
 ];
 
-module.exports = {
-    CONFIG_ITEMS: CONFIG_ITEMS,
-    AVAILABLE_PERMISSIONS: AVAILABLE_PERMISSIONS,
-    CURRENT_VERSION: 'v4.2'
-}
+exports.DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
+
+exports.CURRENT_VERSION = 'v4.2';

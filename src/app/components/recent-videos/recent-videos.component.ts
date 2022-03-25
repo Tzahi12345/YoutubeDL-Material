@@ -1,7 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
+import { FileType } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
+import { Subject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recent-videos',
@@ -15,8 +18,8 @@ export class RecentVideosComponent implements OnInit {
 
   normal_files_received = false;
   subscription_files_received = false;
-  files: any[] = null;
-  filtered_files: any[] = null;
+  file_count = 10;
+  searchChangedSubject: Subject<string> = new Subject<string>();
   downloading_content = {'video': {}, 'audio': {}};
   search_mode = false;
   search_text = '';
@@ -50,6 +53,9 @@ export class RecentVideosComponent implements OnInit {
     }
   };
   filterProperty = this.filterProperties['upload_date'];
+  fileTypeFilter = 'both';
+  
+  playlists = null;
 
   pageSize = 10;
   paged_data = null;
@@ -68,83 +74,108 @@ export class RecentVideosComponent implements OnInit {
   ngOnInit(): void {
     if (this.postsService.initialized) {
       this.getAllFiles();
+      this.getAllPlaylists();
     }
 
     this.postsService.service_initialized.subscribe(init => {
       if (init) {
         this.getAllFiles();
+        this.getAllPlaylists();
       }
     });
 
+    this.postsService.files_changed.subscribe(changed => {
+      if (changed) {
+        this.getAllFiles();
+      }
+    });
 
-    // set filter property to cached
+    this.postsService.playlists_changed.subscribe(changed => {
+      if (changed) {
+        this.getAllPlaylists();
+      }
+    });
+
+    // set filter property to cached value
     const cached_filter_property = localStorage.getItem('filter_property');
     if (cached_filter_property && this.filterProperties[cached_filter_property]) {
       this.filterProperty = this.filterProperties[cached_filter_property];
     }
+
+    // set file type filter to cached value
+    const cached_file_type_filter = localStorage.getItem('file_type_filter');
+    if (cached_file_type_filter) {
+      this.fileTypeFilter = cached_file_type_filter;
+    }
+
+    const sort_order = localStorage.getItem('recent_videos_sort_order');
+
+    if (sort_order) {
+      this.descendingMode = sort_order === 'descending';
+    }
+
+    this.searchChangedSubject
+      .debounceTime(500)
+      .pipe(distinctUntilChanged()
+      ).subscribe(model => {
+        if (model.length > 0) {
+          this.search_mode = true;
+        } else {
+          this.search_mode = false;
+        }
+        this.getAllFiles();
+      });
+  }
+
+  getAllPlaylists() {
+    this.postsService.getPlaylists().subscribe(res => {
+      this.playlists = res['playlists'];
+    });
   }
 
   // search
 
   onSearchInputChanged(newvalue) {
-    if (newvalue.length > 0) {
-      this.search_mode = true;
-      this.filterFiles(newvalue);
-    } else {
-      this.search_mode = false;
-      this.filtered_files = this.files;
-    }
-  }
-
-  private filterFiles(value: string) {
-    const filterValue = value.toLowerCase();
-    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue) || option.category?.name?.toLowerCase().includes(filterValue));
-    this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex});
-  }
-
-  filterByProperty(prop) {
-    if (this.descendingMode) {
-      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? -1 : 1));
-    } else {
-      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? 1 : -1));
-    }
-    if (this.paginator) { this.pageChangeEvent({pageSize: this.pageSize, pageIndex: this.paginator.pageIndex}) };
+    this.normal_files_received = false;
+    this.searchChangedSubject.next(newvalue);
   }
 
   filterOptionChanged(value) {
-    this.filterByProperty(value['property']);
     localStorage.setItem('filter_property', value['key']);
+    this.getAllFiles();
+  }
+
+  fileTypeFilterChanged(value) {
+    localStorage.setItem('file_type_filter', value);
+    this.getAllFiles();
   }
 
   toggleModeChange() {
     this.descendingMode = !this.descendingMode;
-    this.filterByProperty(this.filterProperty['property']);
+    localStorage.setItem('recent_videos_sort_order', this.descendingMode ? 'descending' : 'ascending');
+    this.getAllFiles();
   }
 
   // get files
 
-  getAllFiles() {
-    this.normal_files_received = false;
-    this.postsService.getAllFiles().subscribe(res => {
-      this.files = res['files'];
-      this.files.sort(this.sortFiles);
-      for (let i = 0; i < this.files.length; i++) {
-        const file = this.files[i];
+  getAllFiles(cache_mode = false) {
+    this.normal_files_received = cache_mode;
+    const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
+    const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
+    const range = [current_file_index, current_file_index + this.pageSize];
+    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter).subscribe(res => {
+      this.file_count = res['file_count'];
+      this.paged_data = res['files'];
+      for (let i = 0; i < this.paged_data.length; i++) {
+        const file = this.paged_data[i];
         file.duration = typeof file.duration !== 'string' ? file.duration : this.durationStringToNumber(file.duration);
       }
-      if (this.search_mode) {
-        this.filterFiles(this.search_text);
-      } else {
-        this.filtered_files = this.files;
-      }
-      this.filterByProperty(this.filterProperty['property']);
 
       // set cached file count for future use, note that we convert the amount of files to a string
-      localStorage.setItem('cached_file_count', '' + this.files.length);
+      localStorage.setItem('cached_file_count', '' + this.file_count);
 
       this.normal_files_received = true;
 
-      this.paged_data = this.filtered_files.slice(0, 10);
     });
   }
 
@@ -166,15 +197,14 @@ export class RecentVideosComponent implements OnInit {
       const sub = this.postsService.getSubscriptionByID(file.sub_id);
       if (sub.streamingOnly) {
         // streaming only mode subscriptions
-        !new_tab ? this.router.navigate(['/player', {name: file.id,
-                                          url: file.requested_formats ? file.requested_formats[0].url : file.url}])
-                : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
+        // !new_tab ? this.router.navigate(['/player', {name: file.id,
+        //                                   url: file.requested_formats ? file.requested_formats[0].url : file.url}])
+        //         : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
       } else {
         // normal subscriptions
-        !new_tab ? this.router.navigate(['/player', {fileNames: file.id,
-                                          type: file.isAudio ? 'audio' : 'video', subscriptionName: sub.name,
-                                          subPlaylist: sub.isPlaylist}]) 
-                 : window.open(`/#/player;fileNames=${file.id};type=${file.isAudio ? 'audio' : 'video'};subscriptionName=${sub.name};subPlaylist=${sub.isPlaylist}`);
+        !new_tab ? this.router.navigate(['/player', {uid: file.uid,
+                                          type: file.isAudio ? 'audio' : 'video'}]) 
+                 : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
       }
     } else {
       // normal files
@@ -198,11 +228,10 @@ export class RecentVideosComponent implements OnInit {
   }
 
   downloadSubscriptionFile(file) {
-    const type = file.isAudio ? 'audio' : 'video';
+    const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.downloadFileFromServer(file.id, type, null, null, sub.name, sub.isPlaylist,
-      this.postsService.user ? this.postsService.user.uid : null, null).subscribe(res => {
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
           const blob: Blob = res;
           saveAs(blob, file.id + ext);
         }, err => {
@@ -211,18 +240,18 @@ export class RecentVideosComponent implements OnInit {
   }
 
   downloadNormalFile(file) {
-    const type = file.isAudio ? 'audio' : 'video';
+    const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const name = file.id;
     this.downloading_content[type][name] = true;
-    this.postsService.downloadFileFromServer(name, type).subscribe(res => {
+    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
       this.downloading_content[type][name] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(name) + ext);
 
       if (!this.postsService.config.Extra.file_manager_enabled) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(name, type).subscribe(delRes => {
+        this.postsService.deleteFile(file.uid).subscribe(delRes => {
           // reload mp4s
           this.getAllFiles();
         });
@@ -245,7 +274,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   deleteNormalFile(file, blacklistMode = false) {
-    this.postsService.deleteFile(file.uid, file.isAudio ? 'audio' : 'video', blacklistMode).subscribe(result => {
+    this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar('Delete success!', 'OK.');
         this.removeFileCard(file);
@@ -282,12 +311,26 @@ export class RecentVideosComponent implements OnInit {
   }
 
   removeFileCard(file_to_remove) {
-    const index = this.files.map(e => e.uid).indexOf(file_to_remove.uid);
-    this.files.splice(index, 1);
-    if (this.search_mode) {
-      this.filterFiles(this.search_text);
-    }
-    this.filterByProperty(this.filterProperty['property']);
+    const index = this.paged_data.map(e => e.uid).indexOf(file_to_remove.uid);
+    this.paged_data.splice(index, 1);
+    this.getAllFiles(true);
+  }
+
+  addFileToPlaylist(info_obj) {
+    const file = info_obj['file'];
+    const playlist_id = info_obj['playlist_id'];
+    const playlist = this.playlists.find(potential_playlist => potential_playlist['id'] === playlist_id);
+    this.postsService.addFileToPlaylist(playlist_id, file['uid']).subscribe(res => {
+      if (res['success']) {
+        this.postsService.openSnackBar(`Successfully added ${file.title} to ${playlist.title}!`);
+        this.postsService.playlists_changed.next(true);
+      } else {
+        this.postsService.openSnackBar(`Failed to add ${file.title} to ${playlist.title}! Unknown error.`);
+      }
+    }, err => {
+      console.error(err);
+      this.postsService.openSnackBar(`Failed to add ${file.title} to ${playlist.title}! See browser console for error.`);
+    });
   }
 
   // sorting and filtering
@@ -308,7 +351,8 @@ export class RecentVideosComponent implements OnInit {
   }
 
   pageChangeEvent(event) {
-    const offset = ((event.pageIndex + 1) - 1) * event.pageSize;
-    this.paged_data = this.filtered_files.slice(offset).slice(0, event.pageSize);
+    this.pageSize = event.pageSize;
+    this.loading_files = Array(this.pageSize).fill(0);
+    this.getAllFiles();
   }
 }

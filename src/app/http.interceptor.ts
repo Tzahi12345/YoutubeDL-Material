@@ -14,7 +14,7 @@ export class H401Interceptor implements HttpInterceptor {
         return next.handle(request).pipe(catchError(err => {
             if (err.status === 401) {
                 localStorage.setItem('jwt_token', null);
-                if (this.router.url !== '/login') {
+                if (this.router.url !== '/login' && !this.router.url.includes('player')) {
                     this.router.navigate(['/login']).then(() => {
                         this.openSnackBar('Login expired, please login again.');
                     });

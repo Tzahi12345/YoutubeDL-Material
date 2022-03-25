@@ -28,13 +28,13 @@
     </div>
 </div>
 <div>
-    <div class="container">
+    <div class="container" style="margin-bottom: 16px">
         <div class="row justify-content-center">
             <ng-container *ngIf="normal_files_received && paged_data">
                 <div *ngFor="let file of paged_data; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
-                    <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? '?jwt=' + this.postsService.token : ''"></app-unified-file-card>
+                    <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [availablePlaylists]="playlists" (addFileToPlaylist)="addFileToPlaylist($event)" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? this.postsService.token : ''"></app-unified-file-card>
                 </div>
-                <div *ngIf="filtered_files.length === 0">
+                <div *ngIf="paged_data.length === 0">
                     <ng-container i18n="No videos found">No videos found.</ng-container>
                 </div>
             </ng-container>
@@ -46,8 +46,20 @@
         </div>
     </div>
 
-    <mat-paginator class="paginator" #paginator *ngIf="filtered_files && filtered_files.length > 0" (page)="pageChangeEvent($event)" [length]="filtered_files.length"
-              [pageSize]="pageSize"
-              [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
-    </mat-paginator>
+    <div>
+        <div style="position: absolute; margin-left: 8px; margin-top: 5px; scale: 0.8">
+            <mat-form-field>
+                <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>
+                <mat-select color="accent" [(ngModel)]="fileTypeFilter" (selectionChange)="fileTypeFilterChanged($event.value)">
+                    <mat-option value="both"><ng-container i18n="Both">Both</ng-container></mat-option>
+                    <mat-option value="video_only"><ng-container i18n="Video only">Video only</ng-container></mat-option>
+                    <mat-option value="audio_only"><ng-container i18n="Audio only">Audio only</ng-container></mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-paginator class="paginator" #paginator *ngIf="paged_data && paged_data.length > 0" (page)="pageChangeEvent($event)" [length]="file_count"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
+        </mat-paginator>
+    </div>
 </div>

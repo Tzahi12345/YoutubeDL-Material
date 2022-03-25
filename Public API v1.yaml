@@ -3,35 +3,14 @@ info:
   title: YoutubeDL-Material API Docs - Official
   version: '1.0'
   description: "Welcome to the official docs for YoutubeDL-Material.\n\n\nYou can check out all the available endpoints. Remember to authenticate with your API key using the \"apiKey\" query parameter with your requests.\n\n\nTo do so, simply add this to the end of your API call:\n\n\n`?apiKey=API_KEY`\n\n\nReplce API_KEY with the API key in the settings menu. If one doesn't exist, click generate to create one.\n\n### Multi-user mode\n\nWhen using multi-user mode, you will need to supply a JWT token to authenticate requests through that user. This lets the server know which user to run the task for, like downloading a video for a specific user. \n\nTo do this, you must use the `/api/auth/login` endpoint to login using a user's username and password. This will result in an object containing a `token`. Supply this along with your API key like so:\n\n`?apiKey=API_KEY&jwt=JWT_TOKEN`\n\nNotice the `&` between the `API_KEY` and `jwt`."
+  contact:
+    name: Isaac Abadi
+    url: https://github.com/Tzahi12345/YoutubeDL-Material
+    email: IsaacMGrynsztein@gmail.com
 servers:
   - url: 'http://localhost:17442'
 paths:
-  /api/tomp3:
-    post:
-      tags:
-        - downloader
-      summary: Download audio file
-      description: |-
-        Downloads an audio file with the given URL. Will include global args if they exist.
-
-
-        HTTP requests will return once the audio file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
-      operationId: post-tomp3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200'
-      security:
-        - Auth query parameter: []
-  /api/tomp4:
+  /api/downloadFile:
     post:
       tags:
         - downloader
@@ -46,14 +25,37 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_1'
+              $ref: '#/components/schemas/DownloadRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/DownloadResponse'
+        '500':
+          description: Server download error
+      security:
+        - Auth query parameter: []
+  /api/generateArgs:
+    post:
+      tags:
+        - downloader
+      summary: Download video file
+      description: Generates args, used for checking what args would run if you ran downloadFile
+      operationId: post-generateArgs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateArgsResponse'
       security:
         - Auth query parameter: []
   /api/getMp3s:
@@ -69,8 +71,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
-      requestBody: {}
+                $ref: '#/components/schemas/GetMp3sResponse'
       security:
         - Auth query parameter: []
   /api/getMp4s:
@@ -86,7 +87,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_3'
+                $ref: '#/components/schemas/GetMp4sResponse'
+      security:
+        - Auth query parameter: []
+  /api/getAllFiles:
+    post:
+      tags:
+        - files
+      summary: Get all files
+      description: Gets all files and playlists stored in the db
+      operationId: get-getAllFiles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllFilesResponse'
       security:
         - Auth query parameter: []
   /api/getFile:
@@ -100,14 +117,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_2'
+              $ref: '#/components/schemas/GetFileRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_4'
+                $ref: '#/components/schemas/GetFileResponse'
+        '401':
+          description: User is not authorized to view the file.
       security:
         - Auth query parameter: []
   /api/enableSharing:
@@ -122,14 +141,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_3'
+              $ref: '#/components/schemas/SharingToggle'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/disableSharing:
@@ -144,14 +163,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_4'
+              $ref: '#/components/schemas/SharingToggle'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/incrementViewCount:
+    post:
+      summary: Increments a file's view count
+      tags:
+        - files
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncrementViewCountRequest'
+      operationId: post-api-incrementViewCount
+      description: Increments a file's view count
       security:
         - Auth query parameter: []
   /api/subscribe:
@@ -165,14 +205,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_5'
+              $ref: '#/components/schemas/SubscribeRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_6'
+                $ref: '#/components/schemas/SubscribeResponse'
       security:
         - Auth query parameter: []
   /api/unsubscribe:
@@ -186,14 +226,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_6'
+              $ref: '#/components/schemas/UnsubscribeRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_7'
+                $ref: '#/components/schemas/UnsubscribeResponse'
       security:
         - Auth query parameter: []
   /api/deleteSubscriptionFile:
@@ -207,14 +247,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_7'
+              $ref: '#/components/schemas/DeleteSubscriptionFileRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_8'
+                $ref: '#/components/schemas/SuccessObject'
         '500':
           description: Internal Server Error
       security:
@@ -230,14 +270,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_8'
+              $ref: '#/components/schemas/GetSubscriptionRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_9'
+                $ref: '#/components/schemas/GetSubscriptionResponse'
       security:
         - Auth query parameter: []
   /api/downloadVideosForSubscription:
@@ -251,14 +291,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_9'
+              $ref: '#/components/schemas/DownloadVideosForSubscriptionRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_10'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/getSubscriptions:
@@ -278,7 +318,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_11'
+                $ref: '#/components/schemas/GetAllSubscriptionsResponse'
       security:
         - Auth query parameter: []
   /api/createPlaylist:
@@ -292,14 +332,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_10'
+              $ref: '#/components/schemas/CreatePlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_12'
+                $ref: '#/components/schemas/CreatePlaylistResponse'
       security:
         - Auth query parameter: []
   /api/getPlaylist:
@@ -313,35 +353,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_11'
+              $ref: '#/components/schemas/GetPlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_13'
+                $ref: '#/components/schemas/GetPlaylistResponse'
       security:
         - Auth query parameter: []
   /api/updatePlaylist:
     post:
       tags:
         - playlists
-      summary: Update playlist files
-      description: Updates the list of filenames in the playlist object
+      summary: Update playlist
+      description: Updates the playlist object
       operationId: post-api-updatePlaylist
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_12'
+              $ref: '#/components/schemas/UpdatePlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/deletePlaylist:
@@ -355,14 +395,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_13'
+              $ref: '#/components/schemas/DeletePlaylistRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/addFileToPlaylist:
+    post:
+      tags:
+        - playlists
+      summary: Adds a file to a playlist
+      description: Adds a file to a playlist
+      operationId: post-api-addFileToPlaylist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFileToPlaylistRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/deleteMp4:
@@ -376,7 +437,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_14'
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
       responses:
         '200':
           description: OK
@@ -387,7 +448,7 @@ paths:
                 description: Whether the operation succeeded
       security:
         - Auth query parameter: []
-  /api/downloadFile:
+  /api/downloadFileFromServer:
     post:
       tags:
         - files
@@ -397,27 +458,25 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties: {}
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/body_15'
+              $ref: '#/components/schemas/DownloadFileRequest'
       responses:
         '200':
           description: 'The file itself is in the response, as well as an options object.'
+        '401':
+          description: User is not authorized to view the file.
       security:
         - Auth query parameter: []
   /api/deleteFile:
     post:
       tags:
         - files
-      summary: Delete downloaded file (unused)
+      summary: Delete downloaded file
       operationId: post-api-deleteFile
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_16'
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
       responses:
         '200':
           description: OK
@@ -434,10 +493,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_17'
+              $ref: '#/components/schemas/DownloadArchiveRequest'
       responses:
         '200':
           description: The archive text file is sent as a response
+        '404':
+          description: If the archive dir is not found, 404 is sent as a response
       security:
         - Auth query parameter: []
   /api/updaterStatus:
@@ -453,7 +514,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_14'
+                $ref: '#/components/schemas/UpdaterStatus'
       security:
         - Auth query parameter: []
   /api/updateServer:
@@ -467,14 +528,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_18'
+              $ref: '#/components/schemas/UpdateServerRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/isPinSet:
@@ -493,48 +554,6 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_15'
       security:
         - Auth query parameter: []
-  /api/checkPin:
-    post:
-      tags:
-        - security
-      summary: Check if pin is correct
-      description: Checks the pin against an inputted one. Will return true if they match
-      operationId: post-api-checkPin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_19'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_5'
-      security:
-        - Auth query parameter: []
-  /api/setPin:
-    post:
-      tags:
-        - security
-      summary: Set pin
-      operationId: post-api-setPin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_20'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_5'
-      security:
-        - Auth query parameter: []
-      description: ''
   /api/generateNewAPIKey:
     post:
       tags:
@@ -548,7 +567,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_16'
+                $ref: '#/components/schemas/GenerateNewApiKeyResponse'
       security:
         - Auth query parameter: []
   /api/deleteMp3:
@@ -562,7 +581,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_21'
+              $ref: '#/components/schemas/DeleteMp3Mp4Request'
       responses:
         '200':
           description: OK
@@ -585,7 +604,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_17'
+                $ref: '#/components/schemas/ConfigResponse'
       security:
         - Auth query parameter: []
   /api/setConfig:
@@ -597,18 +616,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/body_22'
+              $ref: '#/components/schemas/SetConfigRequest'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/SuccessObject'
+        '404':
+          description: Tried to save invalid config file.
       security:
         - Auth query parameter: []
   /api/downloads:
-    get:
+    post:
       summary: Get info for all downloads
       tags:
         - downloader
@@ -618,34 +639,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  downloads:
-                    type: object
-                    properties:
-                      uid:
-                        type: string
-                      downloading:
-                        type: boolean
-                      complete:
-                        type: boolean
-                      url:
-                        type: string
-                      type:
-                        type: string
-                      percent_complete:
-                        type: string
-                      is_playlist:
-                        type: boolean
-                      timestamp_start:
-                        type: number
-                      timestamp_end:
-                        type: number
-                      fileNames:
-                        type: array
-                        items:
-                          type: string
-      operationId: get-api-downloads
+                $ref: '#/components/schemas/GetAllDownloadsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAllDownloadsRequest'
+      operationId: post-api-downloads
       description: Retrieves all downloads recorded by the server and their status.
       security:
         - Auth query parameter: []
@@ -659,46 +659,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  download:
-                    type: object
-                    properties:
-                      uid:
-                        type: string
-                      downloading:
-                        type: boolean
-                      complete:
-                        type: boolean
-                      url:
-                        type: string
-                      type:
-                        type: string
-                      percent_complete:
-                        type: string
-                      is_playlist:
-                        type: boolean
-                      timestamp_start:
-                        type: number
-                      timestamp_end:
-                        type: number
-                      fileNames:
-                        type: array
-                        items:
-                          type: string
+                $ref: '#/components/schemas/GetDownloadResponse'
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                session_id:
-                  type: string
-                download_id:
-                  type: string
-              required:
-                - session_id
-                - download_id
+              $ref: '#/components/schemas/GetDownloadRequest'
         description: ''
       description: "Gets a single download using its download_id and session_id. session_id is the device fingerprint. If none was provided at the time of download, then set session_id is 'undeclared'."
       security:
@@ -715,35 +681,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  user:
-                    $ref: '#/components/schemas/user'
-                  token:
-                    type: string
-                  permissions:
-                    type: array
-                    items:
-                      type: string
-                  available_permissions:
-                    type: array
-                    items:
-                      type: string
+                $ref: '#/components/schemas/LoginResponse'
       description: Use this method to log into a user using their username and password and receive a jwt auth token so you can send per-user requests.
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userid:
-                  type: string
-                  description: 'This is the username, not the user uid'
-                password:
-                  type: string
-              required:
-                - userid
-                - password
+              $ref: '#/components/schemas/LoginRequest'
       security:
         - Auth query parameter: []
       tags:
@@ -758,27 +702,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  user:
-                    $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/RegisterResponse'
       description: Use this endpoint to register a user. It will only work if registration is enabled.
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userid:
-                  type: string
-                username:
-                  type: string
-                password:
-                  type: string
-              required:
-                - userid
-                - username
-                - password
+              $ref: '#/components/schemas/RegisterRequest'
       security:
         - Auth query parameter: []
       tags:
@@ -790,21 +720,15 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                change_object:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    role:
-                      type: string
-              required:
-                - change_object
+              $ref: '#/components/schemas/UpdateUserRequest'
       description: Updates certain properties for a user. Only two are possible right now.
       security:
         - Auth query parameter: []
@@ -820,21 +744,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: '#/components/schemas/SuccessObject'
       description: Deletes a user by its uid.
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                uid:
-                  type: string
-              required:
-                - uid
+              $ref: '#/components/schemas/DeleteUserRequest'
       security:
         - Auth query parameter: []
       tags:
@@ -849,25 +765,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  roles:
-                    type: object
-                    properties:
-                      admin:
-                        type: object
-                        properties:
-                          permissions:
-                            type: array
-                            items:
-                              type: string
-                      user:
-                        type: object
-                        properties:
-                          permissions:
-                            type: array
-                            items:
-                              type: string
+                $ref: '#/components/schemas/GetRolesResponse'
       description: Gets the available roles and their permissions
       security:
         - Auth query parameter: []
@@ -883,10 +781,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: '#/components/schemas/SuccessObject'
       description: "Changes the permissions for a user. Available values for each permission are: `default`, `yes`, and `no`. `default` will use the user's role's default permission."
       security:
         - Auth query parameter: []
@@ -894,18 +789,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                user_uid:
-                  type: string
-                permission:
-                  type: string
-                new_value:
-                  type: string
-              required:
-                - user_uid
-                - permission
-                - new_value
+              $ref: '#/components/schemas/ChangeUserPermissionsRequest'
       tags:
         - multi-user mode
   /api/changeRolePermissions:
@@ -918,26 +802,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
+                $ref: '#/components/schemas/SuccessObject'
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                role:
-                  type: string
-                permission:
-                  type: string
-                new_value:
-                  type: string
-              required:
-                - role
-                - permission
-                - new_value
+              $ref: '#/components/schemas/ChangeRolePermissionsRequest'
       description: 'Changes the permissions for a role. Available values for each permission are: `yes`, and `no`.'
       security:
         - Auth query parameter: []
@@ -953,20 +823,337 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/GetUsersResponse'
       description: 'Gets all users, returns a list of the user objects including their user permissions, videos, playlists, subscriptions, etc.'
       security:
         - Auth query parameter: []
       tags:
         - multi-user mode
+  /api/versionInfo:
+    get:
+      tags:
+        - server
+      summary: Gets server version info
+      operationId: get-api-versionInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionInfoResponse'
+      security:
+        - Auth query parameter: []
+  /api/getLogs:
+    post:
+      summary: Gets logs from server
+      tags:
+        - server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLogsRequest'
+      operationId: post-api-getLogs
+      description: Gets logs from server
+      security:
+        - Auth query parameter: []
+  /api/clearAllLogs:
+    post:
+      summary: Clears the log file
+      tags:
+        - server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      operationId: post-api-clearAllLogs
+      description: Clears the log file
+      security:
+        - Auth query parameter: []
+  /api/getDBInfo:
+    get:
+      tags:
+        - db
+      summary: Gets information on the DB
+      operationId: get-api-getDBInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DBInfoResponse'
+      security:
+        - Auth query parameter: []
+  /api/transferDB:
+    post:
+      summary: Transfers DB between Local and MongoDB
+      tags:
+        - db
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferDBResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferDBRequest'
+      operationId: post-api-transferDB
+      description: Initiates a transfer between Local and MongoDB. Connection string must be set.
+      security:
+        - Auth query parameter: []
+  /api/testConnectionString:
+    post:
+      summary: Tests a MongoDB connection string
+      tags:
+        - db
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestConnectionStringResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestConnectionStringRequest'
+      operationId: post-api-testConnectionString
+      description: Tests a MongoDB connection string and returns an error if one exists.
+      security:
+        - Auth query parameter: []
+  /api/getFullTwitchChat:
+    post:
+      summary: Gets the downloaded Twitch Chat (VODs only)
+      tags:
+        - twitch
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFullTwitchChatResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetFullTwitchChatRequest'
+      operationId: post-api-getFullTwitchChat
+      description: Gets the downloaded Twitch Chat (VODs only)
+      security:
+        - Auth query parameter: []
+  /api/downloadTwitchChatByVODID:
+    post:
+      summary: Downloads Twitch Chat for a VOD
+      tags:
+        - twitch
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadTwitchChatByVODIDResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadTwitchChatByVODIDRequest'
+      operationId: post-api-downloadTwitchChatByVODID
+      description: Downloads Twitch Chat for a VOD
+      security:
+        - Auth query parameter: []
+  /api/checkConcurrentStream:
+    post:
+      summary: Checks status of a concurrent stream
+      tags:
+        - player
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckConcurrentStreamResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckConcurrentStreamRequest'
+      operationId: post-api-checkConcurrentStream
+      description: Checks status of a concurrent stream
+      security:
+        - Auth query parameter: []
+  /api/updateConcurrentStream:
+    post:
+      summary: Updates a concurrent stream
+      tags:
+        - player
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateConcurrentStreamResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateConcurrentStreamRequest'
+      operationId: post-api-updateConcurrentStream
+      description: Updates a concurrent stream
+      security:
+        - Auth query parameter: []
+  /api/getAllCategories:
+    post:
+      summary: Gets all categories
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllCategoriesResponse'
+      operationId: post-api-getAllCategories
+      description: Gets all categories
+      security:
+        - Auth query parameter: []
+  /api/createCategory:
+    post:
+      summary: Creates a category
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCategoryResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      operationId: post-api-createCategory
+      description: Creates a category
+      security:
+        - Auth query parameter: []
+  /api/deleteCategory:
+    post:
+      summary: Deletes a category
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCategoryRequest'
+      operationId: post-api-deleteCategory
+      description: Deletes a category
+      security:
+        - Auth query parameter: []
+  /api/updateCategory:
+    post:
+      summary: Updates a category
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      operationId: post-api-updateCategory
+      description: Updates a category
+      security:
+        - Auth query parameter: []
+  /api/updateCategories:
+    post:
+      summary: Updates all categories
+      tags:
+        - categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoriesRequest'
+      operationId: post-api-updateCategories
+      description: Updates all categories
+      security:
+        - Auth query parameter: []
 components:
   schemas:
-    body:
+    SuccessObject:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+    FileType:
+      type: string
+      enum:
+        - audio
+        - video
+    CropFileSettings:
+      type: object
+      required:
+        - cropFileStart
+        - cropFileEnd
+      properties:
+        cropFileStart:
+          type: number
+        cropFileEnd:
+          type: number
+    Config:
+      required:
+        - YoutubeDLMaterial
+      type: object
+      properties:
+        YoutubeDLMaterial:
+          type: object
+    DownloadRequest:
       required:
         - url
       type: object
@@ -975,64 +1162,76 @@ components:
           type: string
         customQualityConfiguration:
           type: string
+          description: Video format code. Overrides other quality options.
           example: '251'
-        maxBitrate:
-          type: string
-          example: '160'
         customArgs:
           type: string
+          description: Custom command-line arguments for youtube-dl. Overrides all other options, except url.
+        additionalArgs:
+          type: string
+          description: Additional command-line arguments for youtube-dl. Added to whatever args would normally be used.
         customOutput:
           type: string
+          description: Custom output filename template.
         youtubeUsername:
           type: string
+          description: Login with this account ID
         youtubePassword:
           type: string
-    inline_response_200:
-      required:
-        - audiopathEncoded
-        - uid
-      type: object
-      properties:
-        uid:
-          type: string
-        file_names:
-          type: string
-        audiopathEncoded:
-          type: string
-    body_1:
-      required:
-        - url
-      type: object
-      properties:
-        url:
-          type: string
-        customQualityConfiguration:
-          type: string
-          example: 242+251
+          description: Account password
         selectedHeight:
           type: string
+          description: Height of the video, if known
           example: '1080'
-        customArgs:
+        maxBitrate:
           type: string
-        customOutput:
-          type: string
-        youtubeUsername:
-          type: string
-        youtubePassword:
-          type: string
-    inline_response_200_1:
-      required:
-        - uid
-        - videopathEncoded
+          description: Specify ffmpeg/avconv audio quality
+          example: '160'      
+        type:
+          $ref: '#/components/schemas/FileType'
+        cropFileSettings:
+          $ref: '#/components/schemas/CropFileSettings'
+    DownloadResponse:
       type: object
       properties:
-        uid:
+        download:
+          $ref: '#/components/schemas/Download'
+    GenerateArgsResponse:
+      type: object
+      properties:
+        args:
+          type: array
+          items:
+            type: string
+    GetDownloadRequest:
+      type: object
+      properties:
+        download_uid:
           type: string
-        file_names:
-          type: string
-        videopathEncoded:
-          type: string
-    inline_response_200_2:
+      required:
+        - download_uid
+    GetDownloadResponse:
+      type: object
+      properties:
+        download:
+          $ref: '#/components/schemas/Download'
+    GetAllDownloadsRequest:
+      type: object
+      properties:
+        uids:
+          type: array
+          items:
+            type: string
+          description: Filters downloads with the array
+          nullable: true
+    GetAllDownloadsResponse:
+      type: object
+      properties:
+        downloads:
+          type: array
+          items:
+            $ref: '#/components/schemas/Download'
+    GetMp3sResponse:
       required:
         - mp3s
         - playlists
@@ -1041,81 +1240,78 @@ components:
         mp3s:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_2_mp3s'
+            $ref: '#/components/schemas/DatabaseFile'
         playlists:
           type: array
           description: All audio playlists
           items:
-            $ref: '#/components/schemas/inline_response_200_2_playlists'
-    inline_response_200_3:
+            $ref: '#/components/schemas/Playlist'
+    GetMp4sResponse:
       required:
         - mp4s
+        - playlists
       type: object
       properties:
         mp4s:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_3_mp4s'
+            $ref: '#/components/schemas/DatabaseFile'
         playlists:
           type: array
           description: All video playlists
           items:
-            type: object
-    body_2:
+            $ref: '#/components/schemas/Playlist'
+    GetAllFilesResponse:
+      required:
+        - files
+        - playlists
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseFile'
+        playlists:
+          type: array
+          description: All video playlists
+          items:
+            $ref: '#/components/schemas/Playlist'
+    GetFileRequest:
       required:
         - uid
       type: object
       properties:
         uid:
           type: string
+          description: Video UID
         type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
           type: string
-    inline_response_200_4:
+          description: User UID
+    GetFileResponse:
       required:
-        - file
         - success
       type: object
       properties:
         success:
-          type: string
+          type: boolean
         file:
-          $ref: '#/components/schemas/inline_response_200_2_mp3s'
-    body_3:
+          $ref: '#/components/schemas/DatabaseFile'
+    SharingToggle:
       required:
-        - is_playlist
-        - type
         - uid
       type: object
       properties:
         uid:
           type: string
-        type:
-          type: string
         is_playlist:
           type: boolean
-    inline_response_200_5:
+    SubscribeRequest:
       required:
-        - success
-      type: object
-      properties:
-        success:
-          type: boolean
-    body_4:
-      required:
-        - type
-        - uid
-      type: object
-      properties:
-        type:
-          type: string
-        uid:
-          type: string
-          description: uid is either the video uid or the playlist ID
-        is_playlist:
-          type: boolean
-    body_5:
-      required:
+        - name
         - url
+        - streamingOnly
       type: object
       properties:
         name:
@@ -1124,48 +1320,34 @@ components:
           type: string
         timerange:
           type: string
-        streamingOnly:
+        audioOnly:
           type: boolean
-    inline_response_200_6:
+        customArgs:
+          type: string
+        customFileOutput:
+          type: string
+        maxQuality:
+          type: string
+    SubscribeResponse:
       required:
         - new_sub
       type: object
       properties:
         new_sub:
-          $ref: '#/components/schemas/inline_response_200_6_new_sub'
+          $ref: '#/components/schemas/Subscription'
         error:
           type: string
-    apiunsubscribe_sub:
-      required:
-        - id
-        - name
-        - url
-        - videos
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        videos:
-          type: array
-          items:
-            type: object
-    body_6:
+    UnsubscribeRequest:
       required:
         - sub
       type: object
       properties:
         sub:
-          $ref: '#/components/schemas/apiunsubscribe_sub'
+          $ref: '#/components/schemas/SubscriptionRequestData'
         deleteMode:
           type: boolean
           description: Defaults to false
-    inline_response_200_7:
+    UnsubscribeResponse:
       required:
         - success
       type: object
@@ -1174,30 +1356,7 @@ components:
           type: boolean
         error:
           type: string
-    apideleteSubscriptionFile_sub:
-      required:
-        - id
-        - isPlaylist
-        - name
-        - url
-        - videos
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        isPlaylist:
-          type: boolean
-        videos:
-          type: array
-          items:
-            type: object
-    body_7:
+    DeleteSubscriptionFileRequest:
       required:
         - file
         - sub
@@ -1205,50 +1364,44 @@ components:
       properties:
         file:
           type: string
+        file_uid:
+          type: string
         sub:
-          $ref: '#/components/schemas/apideleteSubscriptionFile_sub'
+          $ref: '#/components/schemas/SubscriptionRequestData'
         deleteForever:
           type: boolean
           description: 'If true, does not remove id from archive. Only valid if youtube-dl archive is enabled in settings.'
-    inline_response_200_8:
-      type: object
-      properties:
-        success:
-          type: boolean
-    body_8:
+    GetSubscriptionRequest:
       required:
-        - subID
+        - id
       type: object
       properties:
-        subID:
+        id:
           type: string
-    inline_response_200_9:
+          description: Subscription ID
+        name:
+          type: string
+          description: Subscription name
+    GetSubscriptionResponse:
       required:
         - files
         - subscription
       type: object
       properties:
         subscription:
-          $ref: '#/components/schemas/inline_response_200_9_subscription'
+          $ref: '#/components/schemas/Subscription'
         files:
           type: array
           items:
             type: object
-    body_9:
+    DownloadVideosForSubscriptionRequest:
       required:
         - subID
       type: object
       properties:
         subID:
           type: string
-    inline_response_200_10:
-      required:
-        - success
-      type: object
-      properties:
-        success:
-          type: number
-    inline_response_200_11:
+    GetAllSubscriptionsResponse:
       required:
         - subscriptions
       type: object
@@ -1256,10 +1409,10 @@ components:
         subscriptions:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_11_subscriptions'
-    body_10:
+            $ref: '#/components/schemas/Subscription'
+    CreatePlaylistRequest:
       required:
-        - fileNames
+        - uids
         - playlistName
         - thumbnailURL
         - type
@@ -1267,35 +1420,38 @@ components:
       properties:
         playlistName:
           type: string
-        fileNames:
+        uids:
           type: array
           items:
             type: string
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
         thumbnailURL:
           type: string
-    inline_response_200_12:
+    CreatePlaylistResponse:
       required:
         - new_playlist
         - success
       type: object
       properties:
         new_playlist:
-          $ref: '#/components/schemas/inline_response_200_12_new_playlist'
+          $ref: '#/components/schemas/Playlist'
         success:
           type: boolean
-    body_11:
+    GetPlaylistRequest:
       required:
-        - playlistID
-        - type
+        - playlist_id
       type: object
       properties:
-        playlistID:
+        playlist_id:
           type: string
         type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
           type: string
-    inline_response_200_13:
+        include_file_metadata:
+          type: boolean
+    GetPlaylistResponse:
       required:
         - playlist
         - success
@@ -1303,93 +1459,66 @@ components:
       type: object
       properties:
         playlist:
-          $ref: '#/components/schemas/inline_response_200_2_playlists'
+          $ref: '#/components/schemas/Playlist'
         type:
-          type: string
+          $ref: '#/components/schemas/FileType'
         success:
           type: boolean
-    body_12:
-      required:
-        - fileNames
-        - playlistID
-        - type
+    GetPlaylistsRequest:
       type: object
       properties:
-        playlistID:
-          type: string
-        fileNames:
+        include_categories:
+          type: boolean
+    GetPlaylistsResponse:
+      required:
+        - playlists
+      type: object
+      properties:
+        playlists:
           type: array
           items:
-            type: string
-        type:
-          type: string
-    body_13:
+            $ref: '#/components/schemas/Playlist'
+    UpdatePlaylistRequest:
       required:
-        - playlistID
+        - playlist
+      type: object
+      properties:
+        playlist:
+          $ref: '#/components/schemas/Playlist'
+    DeletePlaylistRequest:
+      required:
+        - playlist_id
         - type
       type: object
       properties:
-        playlistID:
+        playlist_id:
           type: string
         type:
-          type: string
-    body_14:
-      required:
-        - uid
+          $ref: '#/components/schemas/FileType'
+    DownloadFileRequest:
       type: object
       properties:
         uid:
           type: string
-    body_15:
-      required:
-        - fileNames
-        - type
-      type: object
-      properties:
-        fileNames:
-          type: array
-          description: Array of 1 or more files to download
-          items:
-            type: string
-        zip_mode:
-          type: boolean
-        type:
+        uuid:
           type: string
-        outputName:
+        sub_id:
           type: string
-        fullPathProvided:
+        playlist_id:
           type: string
-        subscriptionName:
-          type: boolean
-          description: Only used for subscriptions
-        subscriptionPlaylist:
-          type: boolean
-          description: Only used for subscriptions
-    body_16:
-      required:
-        - fileName
-        - type
-      type: object
-      properties:
-        fileName:
-          type: string
-        type:
-          type: string
-    apidownloadArchive_sub:
-      required:
-        - archive_dir
-      type: object
-      properties:
-        archive_dir:
-          type: string
-    body_17:
+    DownloadArchiveRequest:
       required:
         - sub
       type: object
       properties:
         sub:
-          $ref: '#/components/schemas/apidownloadArchive_sub'
-    inline_response_200_14:
+          required:
+            - archive_dir
+          type: object
+          properties:
+            archive_dir:
+              type: string
+    UpdaterStatus:
       required:
         - details
         - updating
@@ -1399,11 +1528,271 @@ components:
           type: boolean
         details:
           type: string
-    body_18:
+        error:
+          type: boolean
+    UpdateServerRequest:
+      required:
+        - tag
       type: object
       properties:
         tag:
           type: string
+    DBInfoResponse:
+      required:
+        - db_info
+      type: object
+      properties:
+        using_local_db:
+          type: boolean
+        stats_by_table:
+          type: object
+          properties:
+            files:
+              $ref: '#/components/schemas/TableInfo'
+            playlists:
+              $ref: '#/components/schemas/TableInfo'
+            categories:
+              $ref: '#/components/schemas/TableInfo'
+            subscriptions:
+              $ref: '#/components/schemas/TableInfo'
+            users:
+              $ref: '#/components/schemas/TableInfo'
+            roles:
+              $ref: '#/components/schemas/TableInfo'
+            download_queue:
+              $ref: '#/components/schemas/TableInfo'
+    TransferDBResponse:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    TransferDBRequest:
+      required:
+        - local_to_remote
+      type: object
+      properties:
+        local_to_remote:
+          description: True if transfering DB from Local to MongoDB, false if transferring DB from MongoDB to Local
+          type: boolean
+    TestConnectionStringResponse:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    TestConnectionStringRequest:
+      required:
+        - connection_string
+      type: object
+      properties:
+        connection_string:
+          description: MongoDB connection string
+          type: string
+    GetFullTwitchChatResponse:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    GetFullTwitchChatRequest:
+      required:
+        - id
+        - type
+      type: object
+      properties:
+        id:
+          description: File ID
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
+          description: User UID
+          type: string
+        sub:
+          $ref: '#/components/schemas/Subscription'
+    DownloadTwitchChatByVODIDResponse:
+      required:
+        - chat
+      type: object
+      properties:
+        chat:
+          type: array
+          items:
+            $ref: '#/components/schemas/TwitchChatMessage'
+    DownloadTwitchChatByVODIDRequest:
+      required:
+        - id
+        - type
+        - vodId
+      type: object
+      properties:
+        id:
+          description: File ID
+          type: string
+        vodId:
+          description: ID of the VOD
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        uuid:
+          description: User UID
+          type: string
+        sub:
+          $ref: '#/components/schemas/Subscription'
+    CheckConcurrentStreamResponse:
+      required:
+        - stream
+      type: object
+      properties:
+        stream:
+          $ref: '#/components/schemas/ConcurrentStream'
+    CheckConcurrentStreamRequest:
+      required:
+        - uid
+      type: object
+      properties:
+        uid:
+          description: UID of the concurrent stream
+          type: string
+    UpdateConcurrentStreamResponse:
+      required:
+        - stream
+      type: object
+      properties:
+        stream:
+          $ref: '#/components/schemas/ConcurrentStream'
+    UpdateConcurrentStreamRequest:
+      allOf:
+        - $ref: '#/components/schemas/ConcurrentStream'
+        - type: object
+          properties:
+            uid:
+              type: string
+              description: Concurrent stream UID
+          required:
+            - uid
+    GetLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: string
+          description: Number of lines to retrieve from the bottom
+        success:
+          type: boolean
+    GetLogsRequest:
+      required:
+        - connection_string
+      type: object
+      properties:
+        lines:
+          type: number
+    GetFileFormatsRequest:
+      type: object
+      properties:
+        url:
+          type: string
+    GetFileFormatsResponse:
+      required:
+        - result
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+        result:
+          allOf:
+          - $ref: '#/components/schemas/file'
+          - type: object
+            properties:
+              formats:
+                type: array
+                items:
+                  type: object
+    IncrementViewCountRequest:
+      required:
+        - file_uid
+      type: object
+      properties:
+        file_uid:
+          type: string
+        sub_id:
+          type: string
+        uuid:
+          type: string
+          description: User UID
+    AddFileToPlaylistRequest:
+      required:
+        - playlist_id
+        - file_uid
+      type: object
+      properties:
+        file_uid:
+          type: string
+        playlist_id:
+          type: string
+    GetAllCategoriesResponse:
+      required:
+        - categories
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    CreateCategoryResponse:
+      type: object
+      properties:
+        new_category:
+          $ref: '#/components/schemas/Category'
+        success:
+          type: boolean
+    CreateCategoryRequest:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+    DeleteCategoryRequest:
+      required:
+        - category_uid
+      type: object
+      properties:
+        category_uid:
+          type: string
+    UpdateCategoryRequest:
+      required:
+        - category
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/Category'
+    UpdateCategoriesRequest:
+      required:
+        - categories
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    VersionInfoResponse:
+      required:
+        - version_info
+      type: object
+      properties:
+        version_info:
+          $ref: '#/components/schemas/Version'
     inline_response_200_15:
       required:
         - is_set
@@ -1425,7 +1814,7 @@ components:
       properties:
         unhashed_pin:
           type: string
-    inline_response_200_16:
+    GenerateNewApiKeyResponse:
       required:
         - new_api_key
       type: object
@@ -1433,31 +1822,33 @@ components:
         new_api_key:
           type: string
           example: 4241b401-7236-493e-92b5-b72696b9d853
-    body_21:
+    DeleteMp3Mp4Request:
       required:
         - uid
       type: object
       properties:
         uid:
           type: string
-    inline_response_200_17:
+        blacklistMode:
+          type: boolean
+    ConfigResponse:
       required:
         - config_file
         - success
       type: object
       properties:
         config_file:
-          type: object
+          $ref: '#/components/schemas/Config'
         success:
           type: boolean
-    body_22:
+    SetConfigRequest:
       required:
         - new_config_file
       type: object
       properties:
         new_config_file:
-          type: object
-    inline_response_200_2_mp3s:
+          $ref: '#/components/schemas/Config'
+    DatabaseFile:
       required:
         - duration
         - id
@@ -1497,17 +1888,20 @@ components:
           type: string
         sharingEnabled:
           type: boolean
-    inline_response_200_2_playlists:
+    Playlist:
       required:
-        - fileNames
+        - uids
         - id
         - name
         - thumbnailURL
+        - type
+        - registered
+        - duration
       type: object
       properties:
         name:
           type: string
-        fileNames:
+        uids:
           type: array
           items:
             type: string
@@ -1515,125 +1909,120 @@ components:
           type: string
         thumbnailURL:
           type: string
-    inline_response_200_3_mp4s:
-      required:
-        - duration
-        - id
-        - isAudio
-        - path
-        - size
-        - thumbnailURL
-        - title
-        - uid
-        - upload_date
-        - uploader
-        - url
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        thumbnailURL:
-          type: string
-        isAudio:
-          type: boolean
+        type:
+          $ref: '#/components/schemas/FileType'
+        registered:
+          type: number
         duration:
           type: number
-        url:
+        user_uid:
           type: string
-        uploader:
-          type: string
-        size:
-          type: number
-        path:
-          type: string
-        upload_date:
-          type: string
+    Download:
+      required:
+        - url
+        - type
+        - title
+        - options
+        - uid
+        - step_index
+        - paused
+        - running
+        - finished_step
+        - percent_complete
+        - finished
+        - timestamp_start
+      type: object
+      properties:
         uid:
           type: string
-        sharingEnabled:
-          type: boolean
-    inline_response_200_6_new_sub:
-      required:
-        - id
-        - name
-        - url
-      type: object
-      properties:
-        name:
+        ui_uid:
           type: string
+        running:
+          type: boolean
+        finished:
+          type: boolean
+        paused:
+          type: boolean
+        finished_step:
+          type: boolean
         url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        timerange:
-          type: string
-    inline_response_200_9_subscription:
-      required:
-        - archive
-        - id
-        - isPlaylist
-        - name
-        - url
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        isPlaylist:
-          type: boolean
-        archive:
-          type: string
-    inline_response_200_11_subscriptions:
-      required:
-        - archive
-        - id
-        - isPlaylist
-        - name
-        - streamingOnly
-        - url
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        id:
-          type: string
-        streamingOnly:
-          type: boolean
-        isPlaylist:
-          type: boolean
-        archive:
-          type: string
-    inline_response_200_12_new_playlist:
-      required:
-        - fileNames
-        - id
-        - name
-        - thumbnailURL
-        - type
-      type: object
-      properties:
-        name:
-          type: string
-        fileNames:
-          type: string
-        id:
-          type: string
-        thumbnailURL:
           type: string
         type:
           type: string
-    user:
+        title:
+          type: string
+        step_index:
+          type: number
+        percent_complete:
+          type: number
+        timestamp_start:
+          type: number
+        error:
+          type: string
+          description: Error text, set if download fails.
+          nullable: true
+        user_uid:
+          type: string
+        sub_id:
+          type: string
+        sub_name:
+          type: string
+    SubscriptionRequestData:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        isPlaylist:
+          type: boolean
+        archive:
+          type: string
+    Subscription:
+      required:
+        - id
+        - name
+        - url
+        - type
+        - user_uid
+        - streamingOnly
+        - isPlaylist
+        - videos
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        user_uid:
+          type: string
+          nullable: true
+        streamingOnly:
+          type: boolean
+        isPlaylist:
+          type: boolean
+        archive:
+          type: string
+        timerange:
+          type: string
+        custom_args:
+          type: string
+        custom_output:
+          type: string
+        videos:
+          type: array
+          items:
+            type: object
+    User:
       title: user
       type: object
       properties:
@@ -1668,7 +2057,7 @@ components:
         subscriptions:
           type: array
           items:
-            $ref: '#/components/schemas/inline_response_200_9_subscription'
+            $ref: '#/components/schemas/Subscription'
         created:
           type: number
         role:
@@ -1676,17 +2065,233 @@ components:
         permissions:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UserPermission'
         permission_overrides:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/UserPermission'
+    UserPermission:
+      type: string
+      enum:
+        - filemanager
+        - settings
+        - subscriptions
+        - sharing
+        - advanced_download
+        - downloads_manager
+    YesNo:
+      type: string
+      enum:
+        - 'yes'
+        - 'no'
+    TableInfo:
+      type: object
+      properties:
+        records_count:
+          type: number
+    TwitchChatMessage:
+      type: object
+      properties:
+        created_at:
+          type: string
+        content_offset_seconds:
+          type: number
+        commenter:
+          type: object
+          properties:
+            name:
+              type: string
+            _id:
+              type: string
+            created_at:
+              type: string
+        message:
+          type: object
+          properties:
+            body:
+              type: string
+            user_color:
+              type: string
+    ConcurrentStream:
+      type: object
+      properties:
+        playback_timestamp:
+          type: number
+        unix_timestamp:
+          type: number
+        playing:
+          type: boolean
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        uid:
+          type: string
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryRule'
+        custom_output:
+          type: string
+          description: Overrides file output for downloaded files in category
+    CategoryRule:
+      type: object
+      properties:
+        preceding_operator:
+          type: string
+          enum:
+            - 'or'
+            - 'and'
+        comparator:
+          type: string
+          enum:
+            - 'includes'
+            - 'not_includes'
+            - 'equals'
+            - 'not_equals'
+    Version:
+      type: object
+      properties:
+        type:
+          type: string
+        tag:
+          type: string
+        commit:
+          type: string
+        date:
+          type: string
+    BaseChangePermissionsRequest:
+      required:
+        - permission
+        - new_value
+      type: object
+      properties:
+        permission:
+          $ref: '#/components/schemas/UserPermission'
+        new_value:
+          $ref: '#/components/schemas/YesNo'
+    ChangeUserPermissionsRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseChangePermissionsRequest'
+        - type: object
+          properties:
+            user_uid:
+              type: string
+          required:
+            - user_uid
+    ChangeRolePermissionsRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseChangePermissionsRequest'
+        - type: object
+          properties:
+            role:
+              type: string
+          required:
+            - role
     file:
       title: file
       type: object
       properties:
         id:
           type: string
+    RegisterRequest:
+      required:
+        - userid
+        - username
+        - password
+      type: object
+      properties:
+        userid:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    RegisterResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+    LoginRequest:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPermission'
+        available_permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPermission'
+    UpdateUserRequest:
+      required:
+        - change_object
+      type: object
+      properties:
+        change_object:
+          required:
+            - uid
+          type: object
+          properties:
+            uid:
+              type: string
+            name:
+              type: string
+            role:
+              type: string
+    DeleteUserRequest:
+      required:
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+    GetUsersResponse:
+      required:
+        - users
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    GetRolesResponse:
+      required:
+        - roles
+      type: object
+      properties:
+        roles:
+          type: object
+          properties:
+            admin:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserPermission'
+            user:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserPermission'
   securitySchemes:
     Auth query parameter:
       name: apiKey

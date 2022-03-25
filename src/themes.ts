@@ -5,6 +5,7 @@ const THEMES_CONFIG = {
         'alternate_color': 'gray',
         'ghost_primary': '#f9f9f9',
         'ghost_secondary': '#ecebeb',
+        'drawer_color': '#fafafa',
         'css_label': 'default-theme',
         'social_theme': 'material-light'
     },
@@ -14,6 +15,7 @@ const THEMES_CONFIG = {
         'alternate_color': '#695959',
         'ghost_primary': '#444444',
         'ghost_secondary': '#141414',
+        'drawer_color': '#303030',
         'css_label': 'dark-theme',
         'social_theme': 'material-dark'
     },

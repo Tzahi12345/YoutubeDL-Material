@@ -15,15 +15,31 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v2
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+          cache: 'npm'
       - name: install dependencies
         run: |
           npm install
           cd backend
           npm install
           sudo npm install -g @angular/cli
+      - name: Set hash
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "version.json"
+          json: '{"type": "autobuild", "tag": "N/A", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          dir: 'backend/'
       - name: build
-        run: ng build --prod
+        run: npm run build
       - name: prepare artifact upload
         shell: pwsh
         run: |
@@ -35,7 +51,7 @@ jobs:
           Copy-Item -Path ./backend/public -Recurse -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/subscriptions -Recurse -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/video -Recurse -Destination ./build/youtubedl-material
-          New-Item -Path ./build/youtubedl-material -Name users
+          New-Item -Path ./build/youtubedl-material -Name users -ItemType Directory
           Copy-Item -Path ./backend/*.js -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/*.json -Destination ./build/youtubedl-material
       - name: upload build artifact

@@ -30,11 +30,11 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
-import { FileCardComponent } from './file-card/file-card.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
@@ -47,7 +47,6 @@ import { InputDialogComponent } from './input-dialog/input-dialog.component';
 import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
 import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
-import { DownloadItemComponent } from './download-item/download-item.component';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
@@ -86,6 +85,8 @@ import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit
 import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
 import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
 import { H401Interceptor } from './http.interceptor';
+import { ConcurrentStreamComponent } from './components/concurrent-stream/concurrent-stream.component';
+import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
 
 registerLocaleData(es, 'es');
 
@@ -96,12 +97,10 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
 @NgModule({
   declarations: [
     AppComponent,
-    FileCardComponent,
     MainComponent,
     PlayerComponent,
     InputDialogComponent,
     CreatePlaylistComponent,
-    DownloadItemComponent,
     SubscriptionsComponent,
     SubscribeDialogComponent,
     SubscriptionComponent,
@@ -134,7 +133,9 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     CustomPlaylistsComponent,
     EditCategoryDialogComponent,
     TwitchChatComponent,
-    SeeMoreComponent
+    SeeMoreComponent,
+    ConcurrentStreamComponent,
+    SkipAdButtonComponent
   ],
   imports: [
     CommonModule,
@@ -173,6 +174,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatChipsModule,
     DragDropModule,
     ClipboardModule,
+    TextFieldModule,
     NgxFileDropModule,
     AvatarModule,
     ContentLoaderModule,

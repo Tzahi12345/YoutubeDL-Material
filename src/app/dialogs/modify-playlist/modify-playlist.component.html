@@ -1,38 +1,44 @@
 <h4 mat-dialog-title><ng-container i18n="Modify playlist dialog title">Modify playlist</ng-container></h4>
 
 <mat-dialog-content>
-    <!-- Playlist info -->
-    <div>
-        <mat-form-field color="accent">
-            <input matInput placeholder="Name" i18n-placeholder="Name" [(ngModel)]="playlist.name">
-        </mat-form-field>
-    </div>
-
-    <div style="margin-bottom: 10px; height: 40px;">
-        <div style="float: left">
-            <span *ngIf="reverse_order === false" i18n="Normal order">Normal order&nbsp;</span>
-            <span *ngIf="reverse_order === true" i18n="Reverse order">Reverse order&nbsp;</span>
-            <button (click)="togglePlaylistOrder()" mat-icon-button><mat-icon>{{!reverse_order ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
+    <div *ngIf="playlist">
+        <!-- Playlist info -->
+        <div>
+            <mat-form-field color="accent">
+                <input matInput placeholder="Name" i18n-placeholder="Name" [(ngModel)]="playlist.name">
+            </mat-form-field>
         </div>
 
-        <div style="float: right">
-            <button [disabled]="available_files.length === 0" mat-stroked-button [matMenuTriggerFor]="menu"><ng-container i18n="Add content">Add content</ng-container></button>
+        <div>
+            <mat-checkbox [(ngModel)]="playlist.randomize_order"><ng-container i18n="Randomize order when playing checkbox label">Randomize order when playing</ng-container></mat-checkbox>
         </div>
-    </div>
 
-    <!-- Playlist order -->
-    <mat-button-toggle-group class="media-list" cdkDropList (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
-        <!-- The following for loop can be optimized but it requires a pipe https://stackoverflow.com/a/35703364/8088021 -->
-        <mat-button-toggle class="media-box" cdkDrag *ngFor="let playlist_item of (reverse_order ? playlist.fileNames.slice().reverse() : playlist.fileNames); let i = index" [checked]="false"><div><div class="playlist-item-text">{{playlist_item}}</div> <button (click)="removeContent(i)" class="remove-item-button" mat-icon-button><mat-icon>cancel</mat-icon></button></div></mat-button-toggle>
-    </mat-button-toggle-group>
-    
-    <mat-menu #menu="matMenu">
-        <button *ngFor="let file of available_files" (click)="addContent(file)" mat-menu-item>{{file}}</button>
-    </mat-menu>
+        <div style="margin-bottom: 10px; height: 40px;">
+            <div style="float: left">
+                <span *ngIf="reverse_order === false" i18n="Normal order">Normal order&nbsp;</span>
+                <span *ngIf="reverse_order === true" i18n="Reverse order">Reverse order&nbsp;</span>
+                <button (click)="togglePlaylistOrder()" mat-icon-button><mat-icon>{{!reverse_order ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
+            </div>
+
+            <div style="float: right">
+                <button [disabled]="available_files.length === 0" mat-stroked-button [matMenuTriggerFor]="menu"><ng-container i18n="Add content">Add content</ng-container></button>
+            </div>
+        </div>
+
+        <!-- Playlist order -->
+        <mat-button-toggle-group class="media-list" cdkDropList (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
+            <!-- The following for loop can be optimized but it requires a pipe https://stackoverflow.com/a/35703364/8088021 -->
+            <mat-button-toggle class="media-box" cdkDrag *ngFor="let playlist_item of (reverse_order ? playlist_file_objs.slice().reverse() : playlist_file_objs); let i = index" [checked]="false"><div><div class="playlist-item-text">{{playlist_item.title}}</div> <button (click)="removeContent(i)" class="remove-item-button" mat-icon-button><mat-icon>cancel</mat-icon></button></div></mat-button-toggle>
+        </mat-button-toggle-group>
+        
+        <mat-menu #menu="matMenu">
+            <button *ngFor="let file of available_files" (click)="addContent(file)" mat-menu-item>{{file.title}}</button>
+        </mat-menu>
+    </div>
 
 </mat-dialog-content>
 
 <mat-dialog-actions>
     <!-- Save -->
-    <button [disabled]="!playlistChanged()" (click)="updatePlaylist()" [disabled]="playlistChanged()" mat-raised-button color="accent"><ng-container i18n="Save">Save</ng-container></button>
+    <button [disabled]="!playlist || !playlistChanged()" (click)="updatePlaylist()" mat-raised-button color="accent"><ng-container i18n="Save">Save</ng-container></button>
 </mat-dialog-actions>

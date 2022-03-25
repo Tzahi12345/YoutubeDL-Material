@@ -90,7 +90,7 @@ export class SubscribeDialogComponent implements OnInit {
       if (!this.download_all) {
         timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
       }
-      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode, this.maxQuality,
+      this.postsService.createSubscription(this.url, this.name, timerange, this.maxQuality,
                                           this.audioOnlyMode, this.customArgs, this.customFileOutput).subscribe(res => {
         this.subscribing = false;
         if (res['new_sub']) {
