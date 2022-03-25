@@ -18,6 +18,8 @@ For much better scaling with large datasets please run your YTDL-M instance with
 It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
 The (closed) issues as well as the project's Wiki will give you good starting points for your journey!
 
+For MongoDB specifically there is [this little guide](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Setting-a-MongoDB-backend-to-use-as-database-provider-for-YTDL-M).
+
 <hr>
 
 ## Getting Started
