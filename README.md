@@ -16,7 +16,7 @@ Now with [Docker](#Docker) support!
 
 For much better scaling with large datasets please run your YTDL-M instance with a MongoDB backend rather than the json file-based default.
 It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
-The (closed) issues as well as the project's Wiki will give you good starting points for your journey with YTDL-M.
+The (closed) issues as well as the project's Wiki will give you good starting points for your journey!
 
 <hr>
 
@@ -149,6 +149,10 @@ See also the list of [contributors](https://github.com/Tzahi12345/YoutubeDL-Mate
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Legal Disclaimer
+
+This project is in no way affiliated with Google LLC, Alphabet Inc. or YouTube (or their subsidiaries) nor endorsed by them.
 
 ## Acknowledgments
 
