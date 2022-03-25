@@ -350,11 +350,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     const file_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
 
-    let fullOutput = `${appendedBasePath}/${file_output}.%(ext)s`;
+    let fullOutput = `"${appendedBasePath}/${file_output}.%(ext)s"`;
     if (desired_path) {
-        fullOutput = `${desired_path}.%(ext)s`;
+        fullOutput = `"${desired_path}.%(ext)s"`;
     } else if (sub.custom_output) {
-        fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
+        fullOutput = `"${appendedBasePath}/${sub.custom_output}.%(ext)s"`;
     }
 
     let downloadConfig = ['--dump-json', '-o', fullOutput, !redownload ? '-ciw' : '-ci', '--write-info-json', '--print-json'];
