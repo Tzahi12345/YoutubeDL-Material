@@ -10,6 +10,16 @@ YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.gi
 
 Now with [Docker](#Docker) support!
 
+<hr>
+
+### USAGE OF THE NIGHTLY BUILDS IS HIGHLY RECOMMENDED.
+
+For much better scaling with large datasets please run your YTDL-M instance with a MongoDB backend rather than the json file-based default.
+It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
+The (closed) issues as well as the project's Wiki will give you good starting points for your journey with YTDL-M.
+
+<hr>
+
 ## Getting Started
 
 Check out the prerequisites, and go to the installation section. Easy as pie!
