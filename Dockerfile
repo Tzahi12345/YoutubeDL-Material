@@ -25,10 +25,8 @@ ENV NO_UPDATE_NOTIFIER=true
 
 RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
-RUN apk -UvX http://dl-cdn.alpinelinux.org/alpine/edge/community/ add -u\
-    ffmpeg
-
 RUN apk add --no-cache \
+  ffmpeg \
   npm \
   python2 \
   python3 \
