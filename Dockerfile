@@ -31,7 +31,7 @@ RUN apk add --no-cache \
   python3 \
   su-exec \
   && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-    atomicparsley
+    atomicparsley \
   && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
     ffmpeg
 
