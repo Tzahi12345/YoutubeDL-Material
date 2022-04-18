@@ -22,7 +22,8 @@ case $(uname -m) in
     exit 1
 esac
 
-wget "https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-$ARCH-static.tar.xz" -O ffmpeg.txz
+echo "Architecture: $ARCH"
+wget "https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-${ARCH}-static.tar.xz" -O ffmpeg.txz
 mkdir /tmp/ffmpeg
 tar xf ffmpeg.txz -C /tmp/ffmpeg
 cp /tmp/ffmpeg/*/ffmpeg /usr/local/bin/ffmpeg
