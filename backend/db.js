@@ -300,6 +300,7 @@ exports.getFileDirectoriesAndDBs = async () => {
 }
 
 exports.importUnregisteredFiles = async () => {
+    const imported_files = [];
     const dirs_to_check = await exports.getFileDirectoriesAndDBs();
 
     // run through check list and check each file to see if it's missing from the db
@@ -316,12 +317,17 @@ exports.importUnregisteredFiles = async () => {
             const file_is_registered = !!(files_with_same_url.find(file_with_same_url => path.resolve(file_with_same_url.path) === path.resolve(file.path)));
             if (!file_is_registered) {
                 // add additional info
-                await exports.registerFileDB(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
-                logger.verbose(`Added discovered file to the database: ${file.id}`);
+                const file_obj = await exports.registerFileDB(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
+                if (file_obj) {
+                    imported_files.push(file_obj['uid']);
+                    logger.verbose(`Added discovered file to the database: ${file.id}`);
+                } else {
+                    logger.error(`Failed to import ${file['path']} automatically.`);
+                }
             }
         }
     }
-
+    return imported_files;
 }
 
 exports.addMetadataPropertyToDB = async (property_key) => {
@@ -742,6 +748,66 @@ exports.removeRecord = async (table, filter_obj) => {
 
     const output = await database.collection(table).deleteOne(filter_obj);
     return !!(output['result']['ok']);
+}
+
+// exports.removeRecordsByUIDBulk = async (table, uids) => {
+//     // local db override
+//     if (using_local_db) {
+//         applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+//         return true;
+//     }
+
+//     const table_collection = database.collection(table);
+        
+//     let bulk = table_collection.initializeOrderedBulkOp(); // Initialize the Ordered Batch
+
+//     const item_ids_to_remove = 
+
+//     for (let i = 0; i < item_ids_to_update.length; i++) {
+//         const item_id_to_update = item_ids_to_update[i];
+//         bulk.find({[key_label]: item_id_to_update }).updateOne({
+//             "$set": update_obj[item_id_to_update]
+//         });
+//     }
+
+//     const output = await bulk.execute();
+//     return !!(output['result']['ok']);
+// }
+
+
+exports.findDuplicatesByKey = async (table, key) => {
+    let duplicates = [];
+    if (using_local_db) {
+        // this can probably be optimized
+        const all_records = await exports.getRecords(table);
+        const existing_records = {};
+        for (let i = 0; i < all_records.length; i++) {
+            const record = all_records[i];
+            const value = record[key];
+
+            if (existing_records[value]) {
+                duplicates.push(record);
+            }
+
+            existing_records[value] = true;
+        }
+        return duplicates;
+    }
+    
+    const duplicated_values = await database.collection(table).aggregate([
+        {"$group" : { "_id": `$${key}`, "count": { "$sum": 1 } } },
+        {"$match": {"_id" :{ "$ne" : null } , "count" : {"$gt": 1} } }, 
+        {"$project": {[key] : "$_id", "_id" : 0} }
+    ]).toArray();
+
+    for (let i = 0; i < duplicated_values.length; i++) {
+        const duplicated_value = duplicated_values[i];
+        const duplicated_records = await exports.getRecords(table, duplicated_value, false);
+        if (duplicated_records.length > 1) {
+            duplicates = duplicates.concat(duplicated_records.slice(1, duplicated_records.length));
+        }
+    }
+    return duplicates;
 }
 
 exports.removeAllRecords = async (table = null, filter_obj = null) => {

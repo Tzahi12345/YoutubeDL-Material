@@ -83,10 +83,35 @@ describe('Database', async function() {
             await db_api.removeAllRecords('test');
         });
         it('Add and read record', async function() {
+            this.timeout(120000);
             await db_api.insertRecordIntoTable('test', {test_add: 'test', test_undefined: undefined, test_null: undefined});
             const added_record = await db_api.getRecord('test', {test_add: 'test', test_undefined: undefined, test_null: null});
             assert(added_record['test_add'] === 'test');
             await db_api.removeRecord('test', {test_add: 'test'});
+        });
+
+        it('Find duplicates by key', async function() {
+            const test_duplicates = [
+                {
+                    test: 'testing',
+                    key: '1'
+                },
+                {
+                    test: 'testing',
+                    key: '2'
+                },
+                {
+                    test: 'testing_missing',
+                    key: '3'
+                },
+                {
+                    test: 'testing',
+                    key: '4'
+                }
+            ];
+            await db_api.insertRecordsIntoTable('test', test_duplicates);
+            const duplicates = await db_api.findDuplicatesByKey('test', 'test');
+            console.log(duplicates);
         });
 
         it('Update record', async function() {
@@ -122,6 +147,7 @@ describe('Database', async function() {
         });
 
         it('Bulk add', async function() {
+            this.timeout(120000);
             const NUM_RECORDS_TO_ADD = 2002; // max batch ops is 1000
             const test_records = [];
             for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
@@ -291,7 +317,6 @@ describe('Multi User', async function() {
     
 describe('Downloader', function() {
     const downloader_api = require('../downloader');
-    downloader_api.initialize(db_api);
     const url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
     const sub_id = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
     const options = {
@@ -348,5 +373,69 @@ describe('Downloader', function() {
         const sample_json = fs.readJSONSync('./test/sample.info.json');
         downloader_api.generateNFOFile(sample_json, nfo_file_path);
         assert(fs.existsSync(nfo_file_path), true);
+        fs.unlinkSync(nfo_file_path);
+    });
+});
+
+describe('Tasks', function() {
+    const tasks_api = require('../tasks');
+    beforeEach(async function() {
+        await db_api.connectToDB();
+        await db_api.removeAllRecords('tasks');
+        await tasks_api.initialize();
+    });
+    it('Backup local db', async function() {
+        const backups_original = await utils.recFindByExt('appdata', 'bak');
+        const original_length = backups_original.length;
+        await tasks_api.executeTask('backup_local_db');
+        const backups_new = await utils.recFindByExt('appdata', 'bak');
+        const new_length = backups_new.length;
+        assert(original_length, new_length-1);
+    });
+
+    it('Check for missing files', async function() {
+        await db_api.removeAllRecords('files', {uid: 'test'});
+        const test_missing_file = {uid: 'test', path: 'test/missing_file.mp4'};
+        await db_api.insertRecordIntoTable('files', test_missing_file);
+        await tasks_api.executeTask('missing_files_check');
+        const task_obj = await db_api.getRecord('tasks', {key: 'missing_files_check'});
+        assert(task_obj['data'] && task_obj['data']['uids'] && task_obj['data']['uids'].length >= 1, true);
+    });
+
+    it('Check for duplicate files', async function() {
+        this.timeout(300000);
+        await db_api.removeAllRecords('files', {uid: 'test1'});
+        await db_api.removeAllRecords('files', {uid: 'test2'});
+        const test_duplicate_file1 = {uid: 'test1', path: 'test/missing_file.mp4'};
+        const test_duplicate_file2 = {uid: 'test2', path: 'test/missing_file.mp4'};
+        const test_duplicate_file3 = {uid: 'test3', path: 'test/missing_file.mp4'};
+        await db_api.insertRecordIntoTable('files', test_duplicate_file1);
+        await db_api.insertRecordIntoTable('files', test_duplicate_file2);
+        await db_api.insertRecordIntoTable('files', test_duplicate_file3);
+        await tasks_api.executeTask('duplicate_files_check');
+        const task_obj = await db_api.getRecord('tasks', {key: 'duplicate_files_check'});
+        const duplicated_record_count = await db_api.getRecords('files', {path: 'test/missing_file.mp4'}, true);
+        assert(task_obj['data'] && task_obj['data']['uids'] && task_obj['data']['uids'].length >= 1, true);
+        assert(duplicated_record_count == 1, true);
+    });
+
+    it('Import unregistered files', async function() {
+        this.timeout(300000);
+
+        // pre-test cleanup
+        await db_api.removeAllRecords('files', {title: 'Sample File'});
+        if (fs.existsSync('video/sample.info.json')) fs.unlinkSync('video/sample.info.json');
+        if (fs.existsSync('video/sample.mp4'))       fs.unlinkSync('video/sample.mp4');
+
+        // copies in files
+        fs.copyFileSync('test/sample.info.json', 'video/sample.info.json');
+        fs.copyFileSync('test/sample.mp4', 'video/sample.mp4');
+        await tasks_api.executeTask('missing_db_records');
+        const imported_file = await db_api.getRecord('files', {title: 'Sample File'});
+        assert(!!imported_file, true);
+        
+        // post-test cleanup
+        if (fs.existsSync('video/sample.info.json')) fs.unlinkSync('video/sample.info.json');
+        if (fs.existsSync('video/sample.mp4'))       fs.unlinkSync('video/sample.mp4');
     });
 });

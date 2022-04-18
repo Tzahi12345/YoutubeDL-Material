@@ -266,6 +266,12 @@ function getCurrentDownloader() {
     return details_json['downloader'];
 }
 
+async function backupLocalDB() {
+    const path_to_backups = path.join('appdata', 'db_backup');
+    fs.ensureDir(path_to_backups);
+    await fs.copyFile('appdata/local_db.json', path.join(path_to_backups, `local_db.json.${Date.now()/1000}.bak`));
+}
+
 async function recFindByExt(base,ext,files,result)
 {
     files = files || (await fs.readdir(base))
@@ -390,6 +396,7 @@ module.exports = {
     getMatchingCategoryFiles: getMatchingCategoryFiles,
     addUIDsToCategory: addUIDsToCategory,
     getCurrentDownloader: getCurrentDownloader,
+    backupLocalDB: backupLocalDB,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
     formatDateString: formatDateString,
