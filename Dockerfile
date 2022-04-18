@@ -1,3 +1,8 @@
+FROM alpine:latest AS ffmpeg
+
+COPY docker-build.sh .
+RUN sh ./docker-build.sh
+
 FROM alpine:latest as frontend
 
 RUN apk add --no-cache \
@@ -26,7 +31,6 @@ ENV NO_UPDATE_NOTIFIER=true
 RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
 RUN apk add --no-cache \
-  ffmpeg \
   npm \
   python2 \
   python3 \
@@ -35,6 +39,8 @@ RUN apk add --no-cache \
     atomicparsley
 
 WORKDIR /app
+COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
+COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe 
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 ENV PM2_HOME=/app/pm2
 RUN npm install pm2 -g

@@ -7,6 +7,8 @@ services:
             ytdl_use_local_db: 'false'
             write_ytdl_config: 'true'
         restart: always
+        depends_on:
+            - ytdl-mongo-db
         volumes:
             - ./appdata:/app/appdata
             - ./audio:/app/audio
@@ -23,5 +25,6 @@ services:
         logging:
             driver: "none"          
         container_name: mongo-db
+        restart: always
         volumes:
             - ./db/:/data/db
