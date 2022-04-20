@@ -3,26 +3,44 @@ const db_api = require('./db');
 
 const fs = require('fs-extra');
 const logger = require('./logger');
+const scheduler = require('node-schedule');
 
 const TASKS = {
     backup_local_db: {
         run: utils.backupLocalDB,
         title: 'Backup Local DB',
+        job: null
     },
     missing_files_check: {
         run: checkForMissingFiles,
         confirm: deleteMissingFiles,
-        title: 'Missing files check'
+        title: 'Missing files check',
+        job: null
     },
     missing_db_records: {
         run: db_api.importUnregisteredFiles,
-        title: 'Import missing DB records'
+        title: 'Import missing DB records',
+        job: null
     },
     duplicate_files_check: {
         run: checkForDuplicateFiles,
         confirm: removeDuplicates,
-        title: 'Find duplicate files in DB'
+        title: 'Find duplicate files in DB',
+        job: null
     }
+}
+
+function scheduleJob(task_key, schedule) {
+    return scheduler.scheduleJob(schedule, async () => {
+        const task_state = await db_api.getRecord('tasks', {key: task_key});
+        if (task_state['running'] || task_state['confirming']) {
+            logger.verbose(`Skipping running task ${task_state['key']} as it is already in progress.`);
+            return;
+        }
+        
+        // we're just "running" the task, any confirmation should be user-initiated
+        exports.executeRun(task_key);
+    });
 }
 
 exports.initialize = async () => {
@@ -31,6 +49,7 @@ exports.initialize = async () => {
         const task_key = tasks_keys[i];
         const task_in_db = await db_api.getRecord('tasks', {key: task_key});
         if (!task_in_db) {
+            // insert task into table if missing
             await db_api.insertRecordIntoTable('tasks', {
                 key: task_key,
                 last_ran: null,
@@ -38,8 +57,17 @@ exports.initialize = async () => {
                 running: false,
                 confirming: false,
                 data: null,
-                error: null
+                error: null,
+                schedule: null
             });
+        } else {
+            // reset task if necessary
+            await db_api.updateRecord('tasks', {key: task_key}, {running: false, confirming: false});
+
+            // schedule task and save job
+            if (task_in_db['schedule']) {
+                TASKS[task_key]['job'] = scheduleJob(task_key, task_in_db['schedule']);
+            }
         }
     }
 }
@@ -71,6 +99,16 @@ exports.executeConfirm = async (task_key) => {
     const data = task_obj['data'];
     await TASKS[task_key].confirm(data);
     await db_api.updateRecord('tasks', {key: task_key}, {confirming: false, last_confirmed: Date.now()/1000});
+}
+
+exports.updateTaskSchedule = async (task_key, schedule) => {
+    await db_api.updateRecord('tasks', {key: task_key}, {schedule: schedule});
+    if (TASKS[task_key]['job']) {
+        TASKS[task_key]['job'].cancel();
+    }
+    if (schedule) {
+        TASKS[task_key]['job'] = scheduleJob(task_key, schedule);
+    }
 }
 
 // missing files check
@@ -110,3 +148,5 @@ async function removeDuplicates(data) {
         await db_api.removeRecord('files', {uid: data['uids'][i]});
     }
 }
+
+exports.TASKS = TASKS;

@@ -382,6 +382,15 @@ describe('Tasks', function() {
     beforeEach(async function() {
         await db_api.connectToDB();
         await db_api.removeAllRecords('tasks');
+
+        const dummy_task = {
+            run: async () => { await utils.wait(500); return true; },
+            confirm: async () => { await utils.wait(500); return true; },
+            title: 'Dummy task',
+            job: null
+        };
+        tasks_api.TASKS['dummy_task'] = dummy_task;
+
         await tasks_api.initialize();
     });
     it('Backup local db', async function() {
@@ -437,5 +446,25 @@ describe('Tasks', function() {
         // post-test cleanup
         if (fs.existsSync('video/sample.info.json')) fs.unlinkSync('video/sample.info.json');
         if (fs.existsSync('video/sample.mp4'))       fs.unlinkSync('video/sample.mp4');
+    });
+
+    it('Schedule and cancel task', async function() {
+        const today_4_hours = new Date();
+        today_4_hours.setHours(today_4_hours.getHours() + 4);
+        await tasks_api.updateTaskSchedule('dummy_task', today_4_hours);
+        assert(!!tasks_api.TASKS['dummy_task']['job'], true);
+        await tasks_api.updateTaskSchedule('dummy_task', null);
+        assert(!!tasks_api.TASKS['dummy_task']['job'], false);
+    });
+
+    it('Schedule and run task', async function() {
+        this.timeout(5000);
+        const today_1_second = new Date();
+        today_1_second.setSeconds(today_1_second.getSeconds() + 1);
+        await tasks_api.updateTaskSchedule('dummy_task', today_1_second);
+        assert(!!tasks_api.TASKS['dummy_task']['job'], true);
+        await utils.wait(2000);
+        const dummy_task_obj = await db_api.getRecord('tasks', {key: 'dummy_task'});
+        assert(dummy_task_obj['data'], true);
     });
 });
