@@ -93,6 +93,9 @@ import {
     GetTaskRequest,
     GetTaskResponse,
     UpdateTaskScheduleRequest,
+    UpdateTaskDataRequest,
+    RestoreDBBackupRequest,
+    Schedule,
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -588,24 +591,38 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'getTasks', {}, this.httpOptions);
     }
 
-    getTask(task_key) {
+    getTask(task_key: string) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<GetTaskResponse>(this.path + 'getTask', body, this.httpOptions);
     }
 
-    runTask(task_key) {
+    runTask(task_key: string) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<SuccessObject>(this.path + 'runTask', body, this.httpOptions);
     }
 
-    confirmTask(task_key) {
+    confirmTask(task_key: string) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<SuccessObject>(this.path + 'confirmTask', body, this.httpOptions);
     }
 
-    updateTaskSchedule(task_key, schedule) {
+    updateTaskSchedule(task_key: string, schedule: Schedule) {
         const body: UpdateTaskScheduleRequest = {task_key: task_key, new_schedule: schedule};
         return this.http.post<SuccessObject>(this.path + 'updateTaskSchedule', body, this.httpOptions);
+    }
+
+    updateTaskData(task_key: string, data: any) {
+        const body: UpdateTaskDataRequest = {task_key: task_key, new_data: data};
+        return this.http.post<SuccessObject>(this.path + 'updateTaskData', body, this.httpOptions);
+    }
+
+    getDBBackups() {
+        return this.http.post<SuccessObject>(this.path + 'getDBBackups', {}, this.httpOptions);
+    }
+
+    restoreDBBackup(file_name: string) {
+        const body: RestoreDBBackupRequest = {file_name: file_name};
+        return this.http.post<SuccessObject>(this.path + 'restoreDBBackup', body, this.httpOptions);
     }
 
     getVersionInfo() {

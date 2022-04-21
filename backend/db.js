@@ -987,6 +987,52 @@ const createDownloadsRecords = (downloads) => {
     return new_downloads;
 }
 
+exports.backupDB = async () => {
+    const backup_dir = path.join('appdata', 'db_backup');
+    fs.ensureDirSync(backup_dir);
+    const backup_file_name = `${using_local_db ? 'local' : 'remote'}_db.json.${Date.now()/1000}.bak`;
+    const path_to_backups = path.join(backup_dir, backup_file_name);
+
+    logger.verbose(`Backing up ${using_local_db ? 'local' : 'remote'} DB to ${path_to_backups}`);
+
+    const table_to_records = {};
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
+        table_to_records[table] = await exports.getRecords(table);
+    }
+
+    fs.writeJsonSync(path_to_backups, table_to_records);
+
+    return backup_file_name;
+}
+
+exports.restoreDB = async (file_name) => {
+    const path_to_backup = path.join('appdata', 'db_backup', file_name);
+
+    logger.debug('Reading database backup file.');
+    const table_to_records = fs.readJSONSync(path_to_backup);
+
+    if (!table_to_records) {
+        logger.error(`Failed to restore DB! Backup file '${path_to_backup}' could not be read.`);
+        return false;
+    }
+
+    logger.debug('Clearing database.');
+    await exports.removeAllRecords();
+
+    logger.debug('Database cleared! Beginning restore.');
+    let success = true;
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
+        if (!table_to_records[table] || table_to_records[table].length === 0) continue;
+        success &= await exports.bulkInsertRecordsIntoTable(table, table_to_records[table]);
+    }
+
+    logger.debug('Restore finished!');
+
+    return success;
+}
+
 exports.transferDB = async (local_to_remote) => {
     const table_to_records = {};
     for (let i = 0; i < tables_list.length; i++) {
@@ -996,9 +1042,8 @@ exports.transferDB = async (local_to_remote) => {
 
     using_local_db = !local_to_remote;
     if (local_to_remote) {
-        // backup local DB
-        logger.debug('Backup up Local DB...');
-        await fs.copyFile('appdata/local_db.json', `appdata/local_db.json.${Date.now()/1000}.bak`);
+        logger.debug('Backup up DB...');
+        await exports.backupDB();
         const db_connected = await exports.connectToDB(5, true);
         if (!db_connected) {
             logger.error('Failed to transfer database - could not connect to MongoDB. Verify that your connection URL is valid.');

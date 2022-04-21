@@ -48,15 +48,23 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <div>
-                    <ng-container *ngIf="element.data?.uids?.length > 0">
-                        <button (click)="confirmTask(element.key)" [disabled]="element.running || element.confirming" mat-stroked-button>
-                            <ng-container *ngIf="element.key == 'missing_files_check'" i18n="Clear missing files from DB">Clear missing files from DB:</ng-container>
-                            <ng-container *ngIf="element.key == 'duplicate_files_check'" i18n="Clear duplicate files from DB">Clear duplicate files from DB:</ng-container>&nbsp;{{element.data.uids.length}}
-                        </button>
-                    </ng-container>
-                    <button (click)="runTask(element.key)" [disabled]="element.running || element.confirming" mat-icon-button matTooltip="Run" i18n-matTooltip="Run"><mat-icon>play_arrow</mat-icon></button>
-                    <button (click)="scheduleTask(element)" mat-icon-button matTooltip="Schedule" i18n-matTooltip="Schedule"><mat-icon>schedule</mat-icon></button>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div *ngIf="element.data?.uids?.length > 0" class="col-12 mt-2">
+                            <ng-container>
+                                <button (click)="confirmTask(element.key)" [disabled]="element.running || element.confirming" mat-stroked-button>
+                                    <ng-container *ngIf="element.key == 'missing_files_check'" i18n="Clear missing files from DB">Clear missing files from DB:</ng-container>
+                                    <ng-container *ngIf="element.key == 'duplicate_files_check'" i18n="Clear duplicate files from DB">Clear duplicate files from DB:</ng-container>&nbsp;{{element.data.uids.length}}
+                                </button>
+                            </ng-container>
+                        </div>
+                        <div class="col-3" style="padding-right: 0px">
+                            <button (click)="runTask(element.key)" [disabled]="element.running || element.confirming" mat-icon-button matTooltip="Run" i18n-matTooltip="Run"><mat-icon>play_arrow</mat-icon></button>
+                        </div>
+                        <div class="col-3" style="padding-left: 0px">
+                            <button (click)="scheduleTask(element)" mat-icon-button matTooltip="Schedule" i18n-matTooltip="Schedule"><mat-icon>schedule</mat-icon></button>
+                        </div>
+                    </div>
                 </div>
             </mat-cell>
           </ng-container>
@@ -70,6 +78,8 @@
                        aria-label="Select page of tasks">
         </mat-paginator>
       </div>
+
+      <button style="margin-top: 10px; margin-left: 5px;" mat-stroked-button (click)="openRestoreDBBackupDialog()" i18n="Restore DB from backup button">Restore DB from backup</button>
 </div>
 
 <div *ngIf="(!tasks || tasks.length === 0) && tasks_retrieved">

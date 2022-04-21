@@ -947,6 +947,54 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateTaskScheduleRequest'
+  /api/updateTaskData:
+    post:
+      summary: Updates task data
+      operationId: post-api-update-task-data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskDataRequest'
+  /api/getDBBackups:
+    post:
+      summary: Get database backups
+      operationId: post-api-get-database-backups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDBBackupsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+  /api/restoreDBBackup:
+    post:
+      summary: Restore database backup
+      operationId: post-api-restore-database-backup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreDBBackupRequest'
   /api/auth/login:
     post:
       summary: Login
@@ -1524,6 +1572,16 @@ components:
       required:
         - task_key
         - new_schedule
+    UpdateTaskDataRequest:
+      type: object
+      properties:
+        task_key:
+          type: string
+        new_data:
+          type: object
+      required:
+        - task_key
+        - new_data
     GetTaskResponse:
       type: object
       properties:
@@ -1536,6 +1594,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Task'
+    GetDBBackupsResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DBBackup'
+    RestoreDBBackupRequest:
+      type: object
+      required:
+        - file_name
+      properties:
+        file_name:
+          type: string
     GetMp3sResponse:
       required:
         - mp3s
@@ -2328,6 +2400,25 @@ components:
               type: number
             timestamp:
               type: number
+    DBBackup:
+      required:
+        - name
+        - timestamp
+        - size
+        - source
+      type: object
+      properties:
+        name:
+          type: string
+        timestamp:
+          type: number
+        size:
+          type: number
+        source:
+          type: string
+          enum:
+            - local
+            - remote
     SubscriptionRequestData:
       required:
         - id

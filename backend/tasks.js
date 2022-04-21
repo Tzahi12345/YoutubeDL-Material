@@ -7,8 +7,8 @@ const scheduler = require('node-schedule');
 
 const TASKS = {
     backup_local_db: {
-        run: utils.backupLocalDB,
-        title: 'Backup Local DB',
+        run: db_api.backupDB,
+        title: 'Backup DB',
         job: null
     },
     missing_files_check: {
@@ -81,7 +81,8 @@ const setupTasks = async () => {
                 confirming: false,
                 data: null,
                 error: null,
-                schedule: null
+                schedule: null,
+                options: {}
             });
         } else {
             // reset task if necessary

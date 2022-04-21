@@ -90,6 +90,7 @@ import { ConcurrentStreamComponent } from './components/concurrent-stream/concur
 import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
 import { TasksComponent } from './components/tasks/tasks.component';
 import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
+import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
 
 registerLocaleData(es, 'es');
 
@@ -140,7 +141,8 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     ConcurrentStreamComponent,
     SkipAdButtonComponent,
     TasksComponent,
-    UpdateTaskScheduleDialogComponent
+    UpdateTaskScheduleDialogComponent,
+    RestoreDbDialogComponent
   ],
   imports: [
     CommonModule,

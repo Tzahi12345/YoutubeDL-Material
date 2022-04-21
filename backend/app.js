@@ -1924,6 +1924,45 @@ app.post('/api/updateTaskSchedule', optionalJwt, async (req, res) => {
     res.send({success: true});
 });
 
+app.post('/api/updateTaskData', optionalJwt, async (req, res) => {
+    const task_key = req.body.task_key;
+    const new_data = req.body.new_data;
+  
+    const success = await db_api.updateRecord('tasks', {key: task_key}, {data: new_data});
+
+    res.send({success: success});
+});
+
+app.post('/api/getDBBackups', optionalJwt, async (req, res) => {
+    const backup_dir = path.join('appdata', 'db_backup');
+    const db_backups = [];
+
+    const candidate_backups = await utils.recFindByExt(backup_dir, 'bak', null, [], false);
+    for (let i = 0; i < candidate_backups.length; i++) {
+        const candidate_backup = candidate_backups[i];
+
+        // must have specific format
+        if (candidate_backup.split('.').length - 1 !== 4) continue;
+
+        const candidate_backup_path = candidate_backup;
+        const stats = fs.statSync(candidate_backup_path);
+
+        db_backups.push({ name: path.basename(candidate_backup), timestamp: parseInt(candidate_backup.split('.')[2]), size: stats.size, source: candidate_backup.includes('local') ? 'local' : 'remote' });
+    }
+
+    db_backups.sort((a,b) => b.timestamp - a.timestamp);
+
+    res.send({db_backups: db_backups});
+});
+
+app.post('/api/restoreDBBackup', optionalJwt, async (req, res) => {
+    const file_name = req.body.file_name;
+
+    const success = await db_api.restoreDB(file_name);
+
+    res.send({success: success});
+});
+
 // logs management
 
 app.post('/api/logs', optionalJwt, async function(req, res) {

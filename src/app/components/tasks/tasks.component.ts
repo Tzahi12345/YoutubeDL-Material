@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { RestoreDbDialogComponent } from 'app/dialogs/restore-db-dialog/restore-db-dialog.component';
 import { UpdateTaskScheduleDialogComponent } from 'app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { PostsService } from 'app/posts.services';
 
@@ -20,6 +21,8 @@ export class TasksComponent implements OnInit {
 
   displayedColumns: string[] = ['title', 'last_ran', 'last_confirmed', 'status', 'actions'];
   dataSource = null;
+
+  db_backups = [];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -70,12 +73,23 @@ export class TasksComponent implements OnInit {
   runTask(task_key: string): void {
     this.postsService.runTask(task_key).subscribe(res => {
       this.getTasks();
+      this.getDBBackups();
+      if (res['success']) this.postsService.openSnackBar($localize`Successfully ran task!`);
+      else this.postsService.openSnackBar($localize`Failed to run task!`);
+    }, err => {
+      this.postsService.openSnackBar($localize`Failed to run task!`);
+      console.error(err);
     });
   }
 
   confirmTask(task_key: string): void {
     this.postsService.confirmTask(task_key).subscribe(res => {
       this.getTasks();
+      if (res['success']) this.postsService.openSnackBar($localize`Successfully confirmed task!`);
+      else this.postsService.openSnackBar($localize`Failed to confirm task!`);
+    }, err => {
+      this.postsService.openSnackBar($localize`Failed to confirm task!`);
+      console.error(err);
     });
   }
 
@@ -94,6 +108,21 @@ export class TasksComponent implements OnInit {
         });
       }
     });
+  }
+
+  getDBBackups(): void {
+    this.postsService.getDBBackups().subscribe(res => {
+      this.db_backups = res['db_backups'];
+    });
+  }
+
+  openRestoreDBBackupDialog(): void {
+    this.dialog.open(RestoreDbDialogComponent, {
+      data: {
+        db_backups: this.db_backups
+      },
+      width: '80vw'
+    })
   }
 
 }

@@ -70,6 +70,17 @@ describe('Database', async function() {
             const success = await db_api.getRecord('test', {test: 'test'});
             assert(success);
         });
+
+        it('Restore db', async function() {
+            const db_stats = await db_api.getDBStats();
+            
+            const file_name = await db_api.backupDB();
+            await db_api.restoreDB(file_name);
+
+            const new_db_stats = await db_api.getDBStats();
+
+            assert(JSON.stringify(db_stats), JSON.stringify(new_db_stats));
+        });
     });
 
     describe('Export', function() {
@@ -393,7 +404,7 @@ describe('Tasks', function() {
 
         await tasks_api.initialize();
     });
-    it('Backup local db', async function() {
+    it('Backup db', async function() {
         const backups_original = await utils.recFindByExt('appdata', 'bak');
         const original_length = backups_original.length;
         await tasks_api.executeTask('backup_local_db');
