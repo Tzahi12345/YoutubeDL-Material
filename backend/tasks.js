@@ -110,7 +110,8 @@ exports.executeTask = async (task_key) => {
 
 exports.executeRun = async (task_key) => {
     logger.verbose(`Running task ${task_key}`);
-    await db_api.updateRecord('tasks', {key: task_key}, {running: true});
+    // don't set running to true when backup up DB as it will be stick "running" if restored
+    if (task_key !== 'backup_local_db') await db_api.updateRecord('tasks', {key: task_key}, {running: true});
     const data = await TASKS[task_key].run();
     await db_api.updateRecord('tasks', {key: task_key}, {data: data, last_ran: Date.now()/1000, running: false});
     logger.verbose(`Finished running task ${task_key}`);

@@ -34,9 +34,9 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Status">Status</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <span *ngIf="element.running || element.confirming"><mat-spinner matTooltip="Busy" i18n-matTooltip="Busy" [diameter]="25"></mat-spinner></span>
-                <span *ngIf="!(element.running || element.confirming) && element.schedule">
+                <span *ngIf="!(element.running || element.confirming) && element.schedule" style="display: flex">
                     <ng-container i18n="Scheduled">Scheduled for</ng-container>&nbsp;
-                    {{element.next_invocation | date: 'short'}}<mat-icon style="font-size: 16px; text-align: center;" *ngIf="element.schedule.type === 'recurring'">repeat</mat-icon>
+                    {{element.next_invocation | date: 'short'}}<mat-icon style="font-size: 16px; display: inline-flex; align-items: center; padding-left: 5px;" *ngIf="element.schedule.type === 'recurring'">repeat</mat-icon>
                 </span>
                 <span *ngIf="!(element.running || element.confirming) && !element.schedule">
                     <ng-container i18n="Not scheduled">Not scheduled</ng-container>
@@ -58,10 +58,10 @@
                                 </button>
                             </ng-container>
                         </div>
-                        <div class="col-3" style="padding-right: 0px">
+                        <div class="col-3">
                             <button (click)="runTask(element.key)" [disabled]="element.running || element.confirming" mat-icon-button matTooltip="Run" i18n-matTooltip="Run"><mat-icon>play_arrow</mat-icon></button>
                         </div>
-                        <div class="col-3" style="padding-left: 0px">
+                        <div class="col-3">
                             <button (click)="scheduleTask(element)" mat-icon-button matTooltip="Schedule" i18n-matTooltip="Schedule"><mat-icon>schedule</mat-icon></button>
                         </div>
                     </div>

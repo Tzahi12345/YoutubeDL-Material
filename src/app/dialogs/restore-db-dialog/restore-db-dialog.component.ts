@@ -31,14 +31,18 @@ export class RestoreDbDialogComponent implements OnInit {
   }
 
   restoreClicked(): void {
+    this.restoring = true;
     if (this.selected_backup.length !== 1) return;
     this.postsService.restoreDBBackup(this.selected_backup[0]).subscribe(res => {
+      this.restoring = false;
       if (res['success']) {
         this.postsService.openSnackBar('Database successfully restored!');
+        this.dialogRef.close();
       } else {
         this.postsService.openSnackBar('Failed to restore database! See logs for more info.');
       }
     }, err => {
+      this.restoring = false;
       this.postsService.openSnackBar('Failed to restore database! See browser console for more info.');
       console.error(err);
     });
