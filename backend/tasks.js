@@ -31,7 +31,21 @@ const TASKS = {
 }
 
 function scheduleJob(task_key, schedule) {
-    return scheduler.scheduleJob(schedule, async () => {
+    // schedule has to be converted from our format to one node-schedule can consume
+    let converted_schedule = null;
+    if (schedule['type'] === 'timestamp') {
+        converted_schedule = new Date(schedule['data']['timestamp']);
+    } else if (schedule['type'] === 'recurring') {
+        const dayOfWeek = schedule['data']['dayOfWeek'] ? schedule['data']['dayOfWeek'] : null;
+        const hour = schedule['data']['hour']           ? schedule['data']['hour']      : null;
+        const minute = schedule['data']['minute']       ? schedule['data']['minute']    : null;
+        converted_schedule = new scheduler.RecurrenceRule(null, null, null, dayOfWeek, hour, minute);
+    } else {
+        logger.error(`Failed to schedule job '${task_key}' as the type '${schedule['type']}' is invalid.`)
+        return null;
+    }
+
+    return scheduler.scheduleJob(converted_schedule, async () => {
         const task_state = await db_api.getRecord('tasks', {key: task_key});
         if (task_state['running'] || task_state['confirming']) {
             logger.verbose(`Skipping running task ${task_state['key']} as it is already in progress.`);
@@ -43,15 +57,24 @@ function scheduleJob(task_key, schedule) {
     });
 }
 
-exports.initialize = async () => {
+if (db_api.database_initialized) {
+    setupTasks();
+} else {
+    db_api.database_initialized_bs.subscribe(init => {
+        if (init) setupTasks();
+    });
+}
+
+const setupTasks = async () => {
     const tasks_keys = Object.keys(TASKS);
     for (let i = 0; i < tasks_keys.length; i++) {
         const task_key = tasks_keys[i];
         const task_in_db = await db_api.getRecord('tasks', {key: task_key});
         if (!task_in_db) {
-            // insert task into table if missing
+            // insert task metadata into table if missing
             await db_api.insertRecordIntoTable('tasks', {
                 key: task_key,
+                title: TASKS[task_key]['title'],
                 last_ran: null,
                 last_confirmed: null,
                 running: false,
@@ -85,12 +108,15 @@ exports.executeTask = async (task_key) => {
 }
 
 exports.executeRun = async (task_key) => {
+    logger.verbose(`Running task ${task_key}`);
     await db_api.updateRecord('tasks', {key: task_key}, {running: true});
     const data = await TASKS[task_key].run();
     await db_api.updateRecord('tasks', {key: task_key}, {data: data, last_ran: Date.now()/1000, running: false});
+    logger.verbose(`Finished running task ${task_key}`);
 }
 
 exports.executeConfirm = async (task_key) => {
+    logger.verbose(`Confirming task ${task_key}`);
     if (!TASKS[task_key]['confirm']) {
         return null;
     }
@@ -98,10 +124,12 @@ exports.executeConfirm = async (task_key) => {
     const task_obj = await db_api.getRecord('tasks', {key: task_key});
     const data = task_obj['data'];
     await TASKS[task_key].confirm(data);
-    await db_api.updateRecord('tasks', {key: task_key}, {confirming: false, last_confirmed: Date.now()/1000});
+    await db_api.updateRecord('tasks', {key: task_key}, {confirming: false, last_confirmed: Date.now()/1000, data: null});
+    logger.verbose(`Finished confirming task ${task_key}`);
 }
 
 exports.updateTaskSchedule = async (task_key, schedule) => {
+    logger.verbose(`Updating schedule for task ${task_key}`);
     await db_api.updateRecord('tasks', {key: task_key}, {schedule: schedule});
     if (TASKS[task_key]['job']) {
         TASKS[task_key]['job'].cancel();

@@ -318,7 +318,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const type = this.playlist[0].type;
     const url = this.playlist[0].url;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(this.uid, this.uuid, this.sub_id, url, type).subscribe(res => {
+    this.postsService.downloadFileFromServer(this.uid, this.uuid, this.sub_id, url, type as FileType).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);

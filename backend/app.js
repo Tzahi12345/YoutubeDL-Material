@@ -28,6 +28,7 @@ const youtubedl = require('youtube-dl');
 const logger = require('./logger');
 const config_api = require('./config.js');
 const downloader_api = require('./downloader');
+const tasks_api = require('./tasks');
 const subscriptions_api = require('./subscriptions');
 const categories_api = require('./categories');
 const twitch_api = require('./twitch');
@@ -60,9 +61,6 @@ const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 config_api.initialize();
 db_api.initialize(db, users_db);
 auth_api.initialize(db_api);
-downloader_api.initialize(db_api);
-subscriptions_api.initialize(db_api, downloader_api);
-categories_api.initialize(db_api);
 
 // Set some defaults
 db.defaults(
@@ -1876,6 +1874,54 @@ app.post('/api/cancelDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
     const success = await downloader_api.cancelDownload(download_uid);
     res.send({success: success});
+});
+
+// tasks
+
+app.post('/api/getTasks', optionalJwt, async (req, res) => {
+    const tasks = await db_api.getRecords('tasks');
+    for (let task of tasks) {
+        if (task['schedule']) task['next_invocation'] = tasks_api.TASKS[task['key']]['job'].nextInvocation().getTime();
+    }
+    res.send({tasks: tasks});
+});
+
+app.post('/api/getTask', optionalJwt, async (req, res) => {
+    const task_key = req.body.task_key;
+    const task = await db_api.getRecord('tasks', {key: task_key});
+    if (task['schedule']) task['next_invocation'] = tasks_api.TASKS[task_key]['job'].nextInvocation().getTime();
+    res.send({task: task});
+});
+
+app.post('/api/runTask', optionalJwt, async (req, res) => {
+    const task_key = req.body.task_key;
+    const task = await db_api.getRecord('tasks', {key: task_key});
+
+    let success = true;
+    if (task['running'] || task['confirming']) success = false;
+    else await tasks_api.executeRun(task_key);
+
+    res.send({success: success});
+});
+
+app.post('/api/confirmTask', optionalJwt, async (req, res) => {
+    const task_key = req.body.task_key;
+    const task = await db_api.getRecord('tasks', {key: task_key});
+
+    let success = true;
+    if (task['running'] || task['confirming'] || !task['data']) success = false;
+    else await tasks_api.executeConfirm(task_key);
+
+    res.send({success: success});
+});
+
+app.post('/api/updateTaskSchedule', optionalJwt, async (req, res) => {
+    const task_key = req.body.task_key;
+    const new_schedule = req.body.new_schedule;
+  
+    await tasks_api.updateTaskSchedule(task_key, new_schedule);
+
+    res.send({success: true});
 });
 
 // logs management

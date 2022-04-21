@@ -90,6 +90,9 @@ import {
     DBInfoResponse,
     GetFileFormatsRequest,
     GetFileFormatsResponse,
+    GetTaskRequest,
+    GetTaskResponse,
+    UpdateTaskScheduleRequest,
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -351,7 +354,7 @@ export class PostsService implements CanActivate {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
     }
 
-    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null, url: string = null, type: string = null) {
+    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null, url: string = null, type: FileType = null) {
         const body: DownloadFileRequest = {
             uid: uid,
             uuid: uuid,
@@ -544,36 +547,65 @@ export class PostsService implements CanActivate {
         return this.http.post<GetDownloadResponse>(this.path + 'download', body, this.httpOptions);
     }
 
-    pauseDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
+    pauseDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'pauseDownload', body, this.httpOptions);
     }
 
     pauseAllDownloads() {
         return this.http.post<SuccessObject>(this.path + 'pauseAllDownloads', {}, this.httpOptions);
     }
 
-    resumeDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+    resumeDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'resumeDownload', body, this.httpOptions);
     }
 
     resumeAllDownloads() {
         return this.http.post<SuccessObject>(this.path + 'resumeAllDownloads', {}, this.httpOptions);
     }
 
-    restartDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
+    restartDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'restartDownload', body, this.httpOptions);
     }
 
-    cancelDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
+    cancelDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'cancelDownload', body, this.httpOptions);
     }
 
-    clearDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
+    clearDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'clearDownload', body, this.httpOptions);
     }
 
     clearFinishedDownloads() {
         return this.http.post<SuccessObject>(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    }
+
+    getTasks() {
+        return this.http.post<SuccessObject>(this.path + 'getTasks', {}, this.httpOptions);
+    }
+
+    getTask(task_key) {
+        const body: GetTaskRequest = {task_key: task_key};
+        return this.http.post<GetTaskResponse>(this.path + 'getTask', body, this.httpOptions);
+    }
+
+    runTask(task_key) {
+        const body: GetTaskRequest = {task_key: task_key};
+        return this.http.post<SuccessObject>(this.path + 'runTask', body, this.httpOptions);
+    }
+
+    confirmTask(task_key) {
+        const body: GetTaskRequest = {task_key: task_key};
+        return this.http.post<SuccessObject>(this.path + 'confirmTask', body, this.httpOptions);
+    }
+
+    updateTaskSchedule(task_key, schedule) {
+        const body: UpdateTaskScheduleRequest = {task_key: task_key, new_schedule: schedule};
+        return this.http.post<SuccessObject>(this.path + 'updateTaskSchedule', body, this.httpOptions);
     }
 
     getVersionInfo() {

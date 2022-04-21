@@ -1,0 +1,53 @@
+<h4 mat-dialog-title><ng-container i18n="Update task schedule">Update task schedule</ng-container></h4>
+
+<mat-dialog-content>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 mt-3">
+                <mat-checkbox [(ngModel)]="enabled"><ng-container i18n="Enabled">Enabled</ng-container></mat-checkbox>
+            </div>
+            <div class="col-12 mt-2">
+                <mat-checkbox [(ngModel)]="recurring" [disabled]="!enabled"><ng-container i18n="Recurring">Recurring</ng-container></mat-checkbox>
+            </div>
+            <div class="col-12 mt-2" *ngIf="recurring">
+                <mat-form-field>
+                    <mat-select placeholder="Interval" [(ngModel)]="interval" [disabled]="!enabled">
+                      <mat-option value="weekly">Weekly</mat-option>
+                      <mat-option value="daily">Daily</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div *ngIf="!recurring" class="col-12 mt-2">
+                <mat-form-field>
+                    <mat-label>Choose a date</mat-label>
+                    <input [(ngModel)]="date" [min]="today" matInput [matDatepicker]="picker" [disabled]="!enabled">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div *ngIf="recurring && interval === 'weekly'" class="col-12 mt-2">
+                <mat-button-toggle-group [(ngModel)]="days_of_week" [multiple]="true" [disabled]="!enabled" aria-label="Week day">
+                    <!-- TODO: support translation -->
+                    <mat-button-toggle [value]="0">M</mat-button-toggle>
+                    <mat-button-toggle [value]="1">T</mat-button-toggle>
+                    <mat-button-toggle [value]="2">W</mat-button-toggle>
+                    <mat-button-toggle [value]="3">T</mat-button-toggle>
+                    <mat-button-toggle [value]="4">F</mat-button-toggle>
+                    <mat-button-toggle [value]="5">S</mat-button-toggle>
+                    <mat-button-toggle [value]="6">S</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <div class="col-12 mt-2">
+                <mat-form-field>
+                    <mat-label>Time</mat-label>
+                    <input type="time" matInput [(ngModel)]="time" [disabled]="!enabled">
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Update task schedule cancel button">Cancel</ng-container></button>
+    <button mat-button (click)="updateTaskSchedule()"><ng-container i18n="Update button">Update</ng-container></button>
+</mat-dialog-actions>
