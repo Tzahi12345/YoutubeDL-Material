@@ -536,8 +536,6 @@ async function loadConfig() {
         watchSubscriptionsInterval();
     }
 
-    db_api.importUnregisteredFiles();
-
     // start the server here
     startServer();
 
