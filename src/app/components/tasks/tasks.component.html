@@ -1,0 +1,95 @@
+<div [hidden]="!(tasks && tasks.length > 0)">
+    <div style="overflow: hidden;" [ngClass]="'mat-elevation-z8'">
+        <mat-table style="overflow: hidden" matSort [dataSource]="dataSource">
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="one-line" [matTooltip]="element.title ? element.title : null">
+                    {{element.title}}
+                </span>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Last Ran Column -->
+          <ng-container matColumnDef="last_ran">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Last ran">Last ran</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.last_ran">{{element.last_ran*1000 | date: 'short'}}</ng-container>
+                <ng-container i18n="N/A" *ngIf="!element.last_ran">N/A</ng-container>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Last Confirmed Column -->
+          <ng-container matColumnDef="last_confirmed">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Last confirmed">Last confirmed</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <ng-container *ngIf="element.last_confirmed">{{element.last_confirmed*1000 | date: 'short'}}</ng-container>
+                <ng-container i18n="N/A" *ngIf="!element.last_confirmed">N/A</ng-container>
+            </mat-cell>
+          </ng-container>
+      
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Status">Status</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span *ngIf="element.running || element.confirming"><mat-spinner matTooltip="Busy" i18n-matTooltip="Busy" [diameter]="25"></mat-spinner></span>
+                <span *ngIf="!(element.running || element.confirming) && element.schedule" style="display: flex">
+                    <ng-container i18n="Scheduled">Scheduled for</ng-container>&nbsp;
+                    {{element.next_invocation | date: 'short'}}<mat-icon style="font-size: 16px; display: inline-flex; align-items: center; padding-left: 5px;" *ngIf="element.schedule.type === 'recurring'">repeat</mat-icon>
+                </span>
+                <span *ngIf="!(element.running || element.confirming) && !element.schedule">
+                    <ng-container i18n="Not scheduled">Not scheduled</ng-container>
+                </span>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div *ngIf="element.data?.uids?.length > 0 || (!element.data?.uids && element.data)" class="col-12 mt-2" style="display: flex; justify-content: center;">
+                            <ng-container>
+                                <button (click)="confirmTask(element.key)" [disabled]="element.running || element.confirming" mat-stroked-button>
+                                    <ng-container *ngIf="element.key == 'missing_files_check'">
+                                        <ng-container i18n="Clear missing files from DB">Clear missing files from DB:</ng-container>{{element.data.uids.length}}
+                                    </ng-container>
+                                    <ng-container *ngIf="element.key == 'duplicate_files_check'">
+                                        <ng-container i18n="Clear duplicate files from DB">Clear duplicate files from DB:</ng-container>&nbsp;{{element.data.uids.length}}
+                                    </ng-container>
+                                    <ng-container *ngIf="element.key == 'youtubedl_update_check'">
+                                        <ng-container i18n="Update binary to">Update binary to:</ng-container>&nbsp;{{element.data}}
+                                    </ng-container>
+                                </button>
+                            </ng-container>
+                        </div>
+                        <div class="col-3">
+                            <button (click)="runTask(element.key)" [disabled]="element.running || element.confirming" mat-icon-button matTooltip="Run" i18n-matTooltip="Run"><mat-icon>play_arrow</mat-icon></button>
+                        </div>
+                        <div class="col-3">
+                            <button (click)="scheduleTask(element)" mat-icon-button matTooltip="Schedule" i18n-matTooltip="Schedule"><mat-icon>schedule</mat-icon></button>
+                        </div>
+                    </div>
+                </div>
+            </mat-cell>
+          </ng-container>
+      
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                       showFirstLastButtons 
+                       aria-label="Select page of tasks">
+        </mat-paginator>
+      </div>
+
+      <button style="margin-top: 10px; margin-left: 5px;" mat-stroked-button (click)="openRestoreDBBackupDialog()" i18n="Restore DB from backup button">Restore DB from backup</button>
+      <button style="margin-top: 10px; margin-left: 5px;" mat-stroked-button (click)="resetTasks()" color="warn" i18n="Reset tasks button">Reset tasks</button>
+</div>
+
+<div *ngIf="(!tasks || tasks.length === 0) && tasks_retrieved">
+  <h4 style="text-align: center; margin-top: 10px;" i18n="No tasks label">No tasks available!</h4>
+</div>

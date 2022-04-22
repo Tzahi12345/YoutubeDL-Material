@@ -14,26 +14,19 @@ const twitch_api = require('./twitch');
 const { create } = require('xmlbuilder2');
 const categories_api = require('./categories');
 const utils = require('./utils');
-
-let db_api = null;
+const db_api = require('./db');
 
 const mutex = new Mutex();
 let should_check_downloads = true;
 
 const archivePath = path.join(__dirname, 'appdata', 'archives');
 
-function setDB(input_db_api) { db_api = input_db_api }
-
-exports.initialize = (input_db_api) => {
-    setDB(input_db_api);
-    categories_api.initialize(db_api);
-    if (db_api.database_initialized) {
-        setupDownloads();
-    } else {
-        db_api.database_initialized_bs.subscribe(init => {
-            if (init) setupDownloads();
-        });
-    }
+if (db_api.database_initialized) {
+    setupDownloads();
+} else {
+    db_api.database_initialized_bs.subscribe(init => {
+        if (init) setupDownloads();
+    });
 }
 
 exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null) => {

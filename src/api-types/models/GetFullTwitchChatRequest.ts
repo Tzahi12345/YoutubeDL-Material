@@ -15,8 +15,5 @@ export interface GetFullTwitchChatRequest {
      * User UID
      */
     uuid?: string;
-    /**
-     * Subscription
-     */
     sub?: Subscription;
 }

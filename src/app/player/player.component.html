@@ -33,8 +33,7 @@
                                         <button *ngIf="(!postsService.isLoggedIn || postsService.permissions.includes('sharing')) && !auto" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                     </ng-container>
                                     <ng-container *ngIf="db_file">
-                                        <button (click)="downloadVideo()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
-                                        <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
+                                        <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
                                         <button *ngIf="type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
                                         <button (click)="openFileInfoDialog()" *ngIf="db_file" mat-icon-button><mat-icon>info</mat-icon></button>
                                     </ng-container>

@@ -666,11 +666,367 @@ paths:
             schema:
               $ref: '#/components/schemas/GetDownloadRequest'
         description: ''
-      description: "Gets a single download using its download_id and session_id. session_id is the device fingerprint. If none was provided at the time of download, then set session_id is 'undeclared'."
+      description: "Gets a single download using its download_id."
       security:
         - Auth query parameter: []
       tags:
         - downloader
+  /api/pauseDownload:
+    post:
+      summary: Pauses one download
+      operationId: post-api-pause-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetDownloadRequest'
+        description: ''
+      description: "Pause a single download using its download_id."
+      security:
+        - Auth query parameter: []
+      tags:
+        - downloader
+  /api/pauseAllDownloads:
+    post:
+      tags:
+        - downloader
+      summary: Pauses all downloads
+      operationId: post-api-pause-all-downloads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/resumeDownload:
+    post:
+      summary: Resume one download
+      operationId: post-api-resume-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetDownloadRequest'
+        description: ''
+      description: "Resume a single download using its download_id."
+      security:
+        - Auth query parameter: []
+      tags:
+        - downloader
+  /api/resumeAllDownloads:
+    post:
+      tags:
+        - downloader
+      summary: Resumes all downloads
+      operationId: post-api-resume-all-downloads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/restartDownload:
+    post:
+      summary: Restart one download
+      operationId: post-api-restart-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetDownloadRequest'
+        description: ''
+      description: "Restart a single download using its download_id."
+      security:
+        - Auth query parameter: []
+      tags:
+        - downloader
+  /api/cancelDownload:
+    post:
+      summary: Cancel one download
+      operationId: post-api-cancel-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetDownloadRequest'
+        description: ''
+      description: "Cancel a single download using its download_id."
+      security:
+        - Auth query parameter: []
+      tags:
+        - downloader
+  /api/clearDownload:
+    post:
+      summary: Clear one download
+      operationId: post-api-clear-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetDownloadRequest'
+        description: ''
+      description: "Clears a single download from the downloaded list using its download_id."
+      security:
+        - Auth query parameter: []
+      tags:
+        - downloader
+  /api/clearFinishedDownloads:
+    post:
+      tags:
+        - downloader
+      summary: Clear finished downloads
+      operationId: post-api-clear-finished-downloads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/getTask:
+    post:
+      summary: Get info for one task
+      operationId: post-api-get-task
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTaskResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetTaskRequest'
+        description: ''
+      description: "Gets a single task using its key."
+      security:
+        - Auth query parameter: []
+      tags:
+        - tasks
+  /api/getTasks:
+    post:
+      tags:
+        - tasks
+      summary: Get tasks
+      operationId: post-api-get-tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllTasksResponse'
+  /api/resetTasks:
+    post:
+      tags:
+        - tasks
+      summary: Resets all tasks
+      operationId: post-api-reset-tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/runTask:
+    post:
+      tags:
+        - tasks
+      summary: Runs one task
+      operationId: post-api-run-task
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetTaskRequest'
+  /api/confirmTask:
+    post:
+      tags:
+        - tasks
+      summary: Confirms a task
+      operationId: post-api-confirm-task
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetTaskRequest'
+  /api/cancelTask:
+    post:
+      tags:
+        - tasks
+      summary: Cancels a task
+      operationId: post-api-cancel-task
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetTaskRequest'
+  /api/updateTaskSchedule:
+    post:
+      tags:
+        - tasks
+      summary: Updates task schedule
+      operationId: post-api-update-task-schedule
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskScheduleRequest'
+  /api/updateTaskData:
+    post:
+      tags:
+        - tasks
+      summary: Updates task data
+      operationId: post-api-update-task-data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskDataRequest'
+  /api/getDBBackups:
+    post:
+      tags:
+        - tasks
+      summary: Get database backups
+      operationId: post-api-get-database-backups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDBBackupsResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+  /api/restoreDBBackup:
+    post:
+      tags:
+        - tasks
+      summary: Restore database backup
+      operationId: post-api-restore-database-backup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreDBBackupRequest'
   /api/auth/login:
     post:
       summary: Login
@@ -1231,6 +1587,59 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Download'
+    GetTaskRequest:
+      type: object
+      properties:
+        task_key:
+          type: string
+      required:
+        - task_key
+    UpdateTaskScheduleRequest:
+      type: object
+      properties:
+        task_key:
+          type: string
+        new_schedule:
+          $ref: '#/components/schemas/Schedule'
+      required:
+        - task_key
+        - new_schedule
+    UpdateTaskDataRequest:
+      type: object
+      properties:
+        task_key:
+          type: string
+        new_data:
+          type: object
+      required:
+        - task_key
+        - new_data
+    GetTaskResponse:
+      type: object
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+    GetAllTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+    GetDBBackupsResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DBBackup'
+    RestoreDBBackupRequest:
+      type: object
+      required:
+        - file_name
+      properties:
+        file_name:
+          type: string
     GetMp3sResponse:
       required:
         - mp3s
@@ -1506,6 +1915,10 @@ components:
           type: string
         playlist_id:
           type: string
+        url:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
     DownloadArchiveRequest:
       required:
         - sub
@@ -1967,6 +2380,77 @@ components:
           type: string
         sub_name:
           type: string
+    Task:
+      required:
+        - key
+        - last_ran
+        - last_confirmed
+        - running
+        - confirming
+        - data
+        - error
+        - schedule
+      type: object
+      properties:
+        key:
+          type: string
+        last_ran:
+          type: number
+        last_confirmed:
+          type: number
+        running:
+          type: boolean
+        confirming:
+          type: boolean
+        data:
+          type: object
+        error:
+          type: string
+        schedule:
+          type: object
+    Schedule:
+      required:
+        - type
+        - data
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - timestamp
+            - recurring
+        data:
+          type: object
+          properties:
+            dayOfWeek:
+              type: array
+              items:
+                type: number
+            hour:
+              type: number
+            minute:
+              type: number
+            timestamp:
+              type: number
+    DBBackup:
+      required:
+        - name
+        - timestamp
+        - size
+        - source
+      type: object
+      properties:
+        name:
+          type: string
+        timestamp:
+          type: number
+        size:
+          type: number
+        source:
+          type: string
+          enum:
+            - local
+            - remote
     SubscriptionRequestData:
       required:
         - id

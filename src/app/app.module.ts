@@ -28,6 +28,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { TextFieldModule } from '@angular/cdk/text-field';
@@ -87,6 +88,9 @@ import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.co
 import { H401Interceptor } from './http.interceptor';
 import { ConcurrentStreamComponent } from './components/concurrent-stream/concurrent-stream.component';
 import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
+import { TasksComponent } from './components/tasks/tasks.component';
+import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
+import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
 
 registerLocaleData(es, 'es');
 
@@ -135,7 +139,10 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     TwitchChatComponent,
     SeeMoreComponent,
     ConcurrentStreamComponent,
-    SkipAdButtonComponent
+    SkipAdButtonComponent,
+    TasksComponent,
+    UpdateTaskScheduleDialogComponent,
+    RestoreDbDialogComponent
   ],
   imports: [
     CommonModule,
@@ -171,6 +178,7 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
+    MatDatepickerModule,
     MatChipsModule,
     DragDropModule,
     ClipboardModule,

@@ -90,6 +90,12 @@ import {
     DBInfoResponse,
     GetFileFormatsRequest,
     GetFileFormatsResponse,
+    GetTaskRequest,
+    GetTaskResponse,
+    UpdateTaskScheduleRequest,
+    UpdateTaskDataRequest,
+    RestoreDBBackupRequest,
+    Schedule,
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -351,15 +357,12 @@ export class PostsService implements CanActivate {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
     }
 
-    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null, url: string = null, type: string = null) {
+    downloadFileFromServer(uid: string, uuid: string = null) {
         const body: DownloadFileRequest = {
             uid: uid,
-            uuid: uuid,
-            sub_id: sub_id,
-            url: url,
-            type: type
+            uuid: uuid
         };
-        return this.http.post(this.path + 'downloadFile', body, {responseType: 'blob', params: this.httpOptions.params});
+        return this.http.post(this.path + 'downloadFileFromServer', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFullTwitchChat(id, type, uuid = null, sub = null) {
@@ -544,36 +547,83 @@ export class PostsService implements CanActivate {
         return this.http.post<GetDownloadResponse>(this.path + 'download', body, this.httpOptions);
     }
 
-    pauseDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'pauseDownload', {download_uid: download_uid}, this.httpOptions);
+    pauseDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'pauseDownload', body, this.httpOptions);
     }
 
     pauseAllDownloads() {
         return this.http.post<SuccessObject>(this.path + 'pauseAllDownloads', {}, this.httpOptions);
     }
 
-    resumeDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'resumeDownload', {download_uid: download_uid}, this.httpOptions);
+    resumeDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'resumeDownload', body, this.httpOptions);
     }
 
     resumeAllDownloads() {
         return this.http.post<SuccessObject>(this.path + 'resumeAllDownloads', {}, this.httpOptions);
     }
 
-    restartDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'restartDownload', {download_uid: download_uid}, this.httpOptions);
+    restartDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'restartDownload', body, this.httpOptions);
     }
 
-    cancelDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'cancelDownload', {download_uid: download_uid}, this.httpOptions);
+    cancelDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'cancelDownload', body, this.httpOptions);
     }
 
-    clearDownload(download_uid) {
-        return this.http.post<SuccessObject>(this.path + 'clearDownload', {download_uid: download_uid}, this.httpOptions);
+    clearDownload(download_uid: string) {
+        const body: GetDownloadRequest = {download_uid: download_uid};
+        return this.http.post<SuccessObject>(this.path + 'clearDownload', body, this.httpOptions);
     }
 
     clearFinishedDownloads() {
         return this.http.post<SuccessObject>(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    }
+
+    getTasks() {
+        return this.http.post<SuccessObject>(this.path + 'getTasks', {}, this.httpOptions);
+    }
+
+    resetTasks() {
+        return this.http.post<SuccessObject>(this.path + 'resetTasks', {}, this.httpOptions);
+    }
+
+    getTask(task_key: string) {
+        const body: GetTaskRequest = {task_key: task_key};
+        return this.http.post<GetTaskResponse>(this.path + 'getTask', body, this.httpOptions);
+    }
+
+    runTask(task_key: string) {
+        const body: GetTaskRequest = {task_key: task_key};
+        return this.http.post<SuccessObject>(this.path + 'runTask', body, this.httpOptions);
+    }
+
+    confirmTask(task_key: string) {
+        const body: GetTaskRequest = {task_key: task_key};
+        return this.http.post<SuccessObject>(this.path + 'confirmTask', body, this.httpOptions);
+    }
+
+    updateTaskSchedule(task_key: string, schedule: Schedule) {
+        const body: UpdateTaskScheduleRequest = {task_key: task_key, new_schedule: schedule};
+        return this.http.post<SuccessObject>(this.path + 'updateTaskSchedule', body, this.httpOptions);
+    }
+
+    updateTaskData(task_key: string, data: any) {
+        const body: UpdateTaskDataRequest = {task_key: task_key, new_data: data};
+        return this.http.post<SuccessObject>(this.path + 'updateTaskData', body, this.httpOptions);
+    }
+
+    getDBBackups() {
+        return this.http.post<SuccessObject>(this.path + 'getDBBackups', {}, this.httpOptions);
+    }
+
+    restoreDBBackup(file_name: string) {
+        const body: RestoreDBBackupRequest = {file_name: file_name};
+        return this.http.post<SuccessObject>(this.path + 'restoreDBBackup', body, this.httpOptions);
     }
 
     getVersionInfo() {
