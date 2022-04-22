@@ -33,7 +33,7 @@
     "@angular/platform-browser-dynamic": "^11.0.4",
     "@angular/router": "^11.0.4",
     "@ngneat/content-loader": "^5.0.0",
-    "@videogular/ngx-videogular": "^2.1.0",
+    "@videogular/ngx-videogular": "^5.0.1",
     "core-js": "^2.4.1",
     "crypto-js": "^4.1.1",
     "file-saver": "^2.0.2",
