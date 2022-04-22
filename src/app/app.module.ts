@@ -56,7 +56,7 @@ import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dia
 import { SettingsComponent } from './settings/settings.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxFileDropModule } from 'ngx-file-drop';
-import { AvatarModule } from 'ngx-avatar';
+import { AvatarModule } from 'ngx-avatars';
 import { ContentLoaderModule } from '@ngneat/content-loader';
 
 import es from '@angular/common/locales/es';
