@@ -357,15 +357,12 @@ export class PostsService implements CanActivate {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
     }
 
-    downloadFileFromServer(uid: string, uuid: string = null, sub_id: string = null, url: string = null, type: FileType = null) {
+    downloadFileFromServer(uid: string, uuid: string = null) {
         const body: DownloadFileRequest = {
             uid: uid,
-            uuid: uuid,
-            sub_id: sub_id,
-            url: url,
-            type: type
+            uuid: uuid
         };
-        return this.http.post(this.path + 'downloadFile', body, {responseType: 'blob', params: this.httpOptions.params});
+        return this.http.post(this.path + 'downloadFileFromServer', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
     getFullTwitchChat(id, type, uuid = null, sub = null) {

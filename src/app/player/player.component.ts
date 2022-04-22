@@ -328,24 +328,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  downloadVideo() {
-    const filename = this.currentItem.label;
-    const ext = (this.currentItem.type === 'audio/mp3') ? '.mp3' : '.mp4';
-    // const type = this.currentItem.type;
-    const url = this.currentItem.src;
-    this.downloading = true;
-    this.http.get(url, {
-      responseType: 'blob'
-    }).subscribe(res => {
-      const blob: Blob = res;
-      this.downloading = false;
-      saveAs(blob, filename + ext);
-    }, err => {
-      console.log(err);
-      this.downloading = false;
-    })
-  }
-
   playlistPostCreationHandler(playlistID) {
     // changes the route without moving from the current view or
     // triggering a navigation event
