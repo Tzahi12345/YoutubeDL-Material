@@ -1,7 +1,6 @@
 import {Injectable, isDevMode, Inject} from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';

@@ -1,6 +1,6 @@
 <span class="text" [ngStyle]="{'-webkit-line-clamp': !see_more_active ? line_limit : null}" [innerHTML]="text | linkify"></span>
 <span>
-    <a [routerLink]="" (click)="toggleSeeMore()">
+    <a [routerLink]="[]" (click)="toggleSeeMore()">
         <ng-container *ngIf="!see_more_active" i18n="See more">
             See more.
         </ng-container>
