@@ -9,7 +9,6 @@ import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-m
 import { FileType } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
-import { HttpClient, HttpParams } from '@angular/common/http';
 
 export interface IMedia {
   title: string;
@@ -110,7 +109,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
-              public snackBar: MatSnackBar, private cdr: ChangeDetectorRef, private http: HttpClient) {
+              public snackBar: MatSnackBar, private cdr: ChangeDetectorRef) {
 
   }
   processConfig() {
