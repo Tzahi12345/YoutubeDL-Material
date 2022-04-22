@@ -1,10 +1,13 @@
-const fs = require('fs-extra')
-const path = require('path')
+const fs = require('fs-extra');
+const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
+const archiver = require('archiver');
+const fetch = require('node-fetch');
+const ProgressBar = require('progress');
+
 const config_api = require('./config');
 const logger = require('./logger');
-const CONSTS = require('./consts')
-const archiver = require('archiver');
+const CONSTS = require('./consts');
 
 const is_windows = process.platform === 'win32';
 
@@ -356,6 +359,62 @@ async function cropFile(file_path, start, end, ext) {
     });
 }
 
+async function checkExistsWithTimeout(filePath, timeout) {
+    return new Promise(function (resolve, reject) {
+
+        var timer = setTimeout(function () {
+            if (watcher) watcher.close();
+            reject(new Error('File did not exists and was not created during the timeout.'));
+        }, timeout);
+
+        fs.access(filePath, fs.constants.R_OK, function (err) {
+            if (!err) {
+                clearTimeout(timer);
+                if (watcher) watcher.close();
+                resolve();
+            }
+        });
+
+        var dir = path.dirname(filePath);
+        var basename = path.basename(filePath);
+        var watcher = fs.watch(dir, function (eventType, filename) {
+            if (eventType === 'rename' && filename === basename) {
+                clearTimeout(timer);
+                if (watcher) watcher.close();
+                resolve();
+            }
+        });
+    });
+}
+
+// helper function to download file using fetch
+async function fetchFile(url, path, file_label) {
+    var len = null;
+    const res = await fetch(url);
+
+    len = parseInt(res.headers.get("Content-Length"), 10);
+
+    var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
+        complete: '=',
+        incomplete: ' ',
+        width: 20,
+        total: len
+    });
+    const fileStream = fs.createWriteStream(path);
+    await new Promise((resolve, reject) => {
+        res.body.pipe(fileStream);
+        res.body.on("error", (err) => {
+          reject(err);
+        });
+        res.body.on('data', function (chunk) {
+            bar.tick(chunk.length);
+        });
+        fileStream.on("finish", function() {
+          resolve();
+        });
+    });
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -397,5 +456,7 @@ module.exports = {
     cropFile: cropFile,
     createEdgeNGrams: createEdgeNGrams,
     wait: wait,
+    checkExistsWithTimeout: checkExistsWithTimeout,
+    fetchFile: fetchFile,
     File: File
 }

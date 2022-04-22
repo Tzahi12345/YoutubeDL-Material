@@ -881,10 +881,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAllTasksResponse'
+  /api/resetTasks:
+    post:
+      tags:
+        - tasks
+      summary: Resets all tasks
+      operationId: post-api-reset-tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
   /api/runTask:
     post:
+      tags:
+        - tasks
       summary: Runs one task
       operationId: post-api-run-task
       responses:
@@ -901,6 +921,8 @@ paths:
               $ref: '#/components/schemas/GetTaskRequest'
   /api/confirmTask:
     post:
+      tags:
+        - tasks
       summary: Confirms a task
       operationId: post-api-confirm-task
       responses:
@@ -917,6 +939,8 @@ paths:
               $ref: '#/components/schemas/GetTaskRequest'
   /api/cancelTask:
     post:
+      tags:
+        - tasks
       summary: Cancels a task
       operationId: post-api-cancel-task
       responses:
@@ -933,6 +957,8 @@ paths:
               $ref: '#/components/schemas/GetTaskRequest'
   /api/updateTaskSchedule:
     post:
+      tags:
+        - tasks
       summary: Updates task schedule
       operationId: post-api-update-task-schedule
       responses:
@@ -949,6 +975,8 @@ paths:
               $ref: '#/components/schemas/UpdateTaskScheduleRequest'
   /api/updateTaskData:
     post:
+      tags:
+        - tasks
       summary: Updates task data
       operationId: post-api-update-task-data
       responses:
@@ -965,6 +993,8 @@ paths:
               $ref: '#/components/schemas/UpdateTaskDataRequest'
   /api/getDBBackups:
     post:
+      tags:
+        - tasks
       summary: Get database backups
       operationId: post-api-get-database-backups
       responses:
@@ -981,6 +1011,8 @@ paths:
               type: object
   /api/restoreDBBackup:
     post:
+      tags:
+        - tasks
       summary: Restore database backup
       operationId: post-api-restore-database-backup
       responses:

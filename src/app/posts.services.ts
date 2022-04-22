@@ -591,6 +591,10 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'getTasks', {}, this.httpOptions);
     }
 
+    resetTasks() {
+        return this.http.post<SuccessObject>(this.path + 'resetTasks', {}, this.httpOptions);
+    }
+
     getTask(task_key: string) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<GetTaskResponse>(this.path + 'getTask', body, this.httpOptions);

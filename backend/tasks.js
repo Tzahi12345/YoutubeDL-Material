@@ -1,5 +1,5 @@
-const utils = require('./utils');
 const db_api = require('./db');
+const youtubedl_api = require('./youtube-dl');
 
 const fs = require('fs-extra');
 const logger = require('./logger');
@@ -27,6 +27,12 @@ const TASKS = {
         confirm: removeDuplicates,
         title: 'Find duplicate files in DB',
         job: null
+    },
+    youtubedl_update_check: {
+        run: youtubedl_api.checkForYoutubeDLUpdate,
+        confirm: youtubedl_api.updateYoutubeDL,
+        title: 'Update youtube-dl',
+        job: null
     }
 }
 
@@ -52,20 +58,22 @@ function scheduleJob(task_key, schedule) {
             return;
         }
         
+        // remove schedule if it's a one-time task
+        if (task_state['schedule']['type'] !== 'recurring') await db_api.updateRecord('tasks', {key: task_key}, {schedule: null});
         // we're just "running" the task, any confirmation should be user-initiated
         exports.executeRun(task_key);
     });
 }
 
 if (db_api.database_initialized) {
-    setupTasks();
+    exports.setupTasks();
 } else {
     db_api.database_initialized_bs.subscribe(init => {
-        if (init) setupTasks();
+        if (init) exports.setupTasks();
     });
 }
 
-const setupTasks = async () => {
+exports.setupTasks = async () => {
     const tasks_keys = Object.keys(TASKS);
     for (let i = 0; i < tasks_keys.length; i++) {
         const task_key = tasks_keys[i];
@@ -90,6 +98,11 @@ const setupTasks = async () => {
 
             // schedule task and save job
             if (task_in_db['schedule']) {
+                // prevent timestamp schedules from being set to the past
+                if (task_in_db['schedule']['type'] === 'timestamp' && task_in_db['schedule']['data']['timestamp'] < Date.now()) {
+                    await db_api.updateRecord('tasks', {key: task_key}, {schedule: null});
+                    continue;
+                }
                 TASKS[task_key]['job'] = scheduleJob(task_key, task_in_db['schedule']);
             }
         }
@@ -113,7 +126,7 @@ exports.executeRun = async (task_key) => {
     // don't set running to true when backup up DB as it will be stick "running" if restored
     if (task_key !== 'backup_local_db') await db_api.updateRecord('tasks', {key: task_key}, {running: true});
     const data = await TASKS[task_key].run();
-    await db_api.updateRecord('tasks', {key: task_key}, {data: data, last_ran: Date.now()/1000, running: false});
+    await db_api.updateRecord('tasks', {key: task_key}, {data: TASKS[task_key]['confirm'] ? data : null, last_ran: Date.now()/1000, running: false});
     logger.verbose(`Finished running task ${task_key}`);
 }
 

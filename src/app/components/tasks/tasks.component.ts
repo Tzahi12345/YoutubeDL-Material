@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
 import { RestoreDbDialogComponent } from 'app/dialogs/restore-db-dialog/restore-db-dialog.component';
 import { UpdateTaskScheduleDialogComponent } from 'app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { PostsService } from 'app/posts.services';
@@ -123,6 +124,31 @@ export class TasksComponent implements OnInit {
       },
       width: '80vw'
     })
+  }
+
+  resetTasks(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: $localize`Reset tasks`,
+        dialogText: $localize`Would you like to reset your tasks? All your schedules will be removed as well.`,
+        submitText: $localize`Reset`,
+        warnSubmitColor: true
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.postsService.resetTasks().subscribe(res => {
+          if (res['success']) {
+            this.postsService.openSnackBar($localize`Tasks successfully reset!`);
+          } else {
+            this.postsService.openSnackBar($localize`Failed to reset tasks!`);
+          }
+        }, err => {
+          this.postsService.openSnackBar($localize`Failed to reset tasks!`);
+          console.error(err);
+        });
+      }
+    });
   }
 
 }

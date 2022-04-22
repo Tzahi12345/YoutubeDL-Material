@@ -13,7 +13,6 @@ const unzipper = require('unzipper');
 const db_api = require('./db');
 const utils = require('./utils')
 const low = require('lowdb')
-const ProgressBar = require('progress');
 const fetch = require('node-fetch');
 const URL = require('url').URL;
 const CONSTS = require('./consts')
@@ -32,8 +31,7 @@ const tasks_api = require('./tasks');
 const subscriptions_api = require('./subscriptions');
 const categories_api = require('./categories');
 const twitch_api = require('./twitch');
-
-const is_windows = process.platform === 'win32';
+const youtubedl_api = require('./youtube-dl');
 
 var app = express();
 
@@ -357,34 +355,6 @@ async function downloadReleaseFiles(tag) {
     });
 }
 
-// helper function to download file using fetch
-async function fetchFile(url, path, file_label) {
-    var len = null;
-    const res = await fetch(url);
-
-    len = parseInt(res.headers.get("Content-Length"), 10);
-
-    var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
-        complete: '=',
-        incomplete: ' ',
-        width: 20,
-        total: len
-    });
-    const fileStream = fs.createWriteStream(path);
-    await new Promise((resolve, reject) => {
-        res.body.pipe(fileStream);
-        res.body.on("error", (err) => {
-          reject(err);
-        });
-        res.body.on('data', function (chunk) {
-            bar.tick(chunk.length);
-        });
-        fileStream.on("finish", function() {
-          resolve();
-        });
-      });
-  }
-
 async function downloadReleaseZip(tag) {
     return new Promise(async resolve => {
         // get name of zip file, which depends on the version
@@ -395,7 +365,7 @@ async function downloadReleaseZip(tag) {
         let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
 
         // download zip from release
-        await fetchFile(latest_zip_link, output_path, 'update ' + tag);
+        await utils.fetchFile(latest_zip_link, output_path, 'update ' + tag);
         resolve(true);
     });
 
@@ -708,156 +678,8 @@ async function getUrlInfos(url) {
 
 async function startYoutubeDL() {
     // auto update youtube-dl
-    await autoUpdateYoutubeDL();
-}
-
-// auto updates the underlying youtube-dl binary, not YoutubeDL-Material
-async function autoUpdateYoutubeDL() {
-    const download_sources = {
-        'youtube-dl': {
-            'tags_url': 'https://api.github.com/repos/ytdl-org/youtube-dl/tags',
-            'func': downloadLatestYoutubeDLBinary
-        },
-        'youtube-dlc': {
-            'tags_url': 'https://api.github.com/repos/blackjack4494/yt-dlc/tags',
-            'func': downloadLatestYoutubeDLCBinary
-        },
-        'yt-dlp': {
-            'tags_url': 'https://api.github.com/repos/yt-dlp/yt-dlp/tags',
-            'func': downloadLatestYoutubeDLPBinary
-        }
-    }
-    return new Promise(async resolve => {
-        const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
-        const tags_url = download_sources[default_downloader]['tags_url'];
-        // get current version
-        let current_app_details_exists = fs.existsSync(CONSTS.DETAILS_BIN_PATH);
-        if (!current_app_details_exists) {
-            logger.warn(`Failed to get youtube-dl binary details at location '${CONSTS.DETAILS_BIN_PATH}'. Generating file...`);
-            fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2020.00.00", "downloader": default_downloader});
-        }
-        let current_app_details = JSON.parse(fs.readFileSync(CONSTS.DETAILS_BIN_PATH));
-        let current_version = current_app_details['version'];
-        let current_downloader = current_app_details['downloader'];
-        let stored_binary_path = current_app_details['path'];
-        if (!stored_binary_path || typeof stored_binary_path !== 'string') {
-            // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${CONSTS.DETAILS_BIN_PATH}, attempting to guess actual path...`);
-            const guessed_base_path = 'node_modules/youtube-dl/bin/';
-            const guessed_file_path = guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
-            if (fs.existsSync(guessed_file_path)) {
-                stored_binary_path = guessed_file_path;
-                // logger.info('INFO: Guess successful! Update process continuing...')
-            } else {
-                logger.error(`Guess '${guessed_file_path}' is not correct. Cancelling update check. Verify that your youtube-dl binaries exist by running npm install.`);
-                resolve(false);
-                return;
-            }
-        }
-
-        // got version, now let's check the latest version from the youtube-dl API
-
-
-        fetch(tags_url, {method: 'Get'})
-        .then(async res => res.json())
-        .then(async (json) => {
-            // check if the versions are different
-            if (!json || !json[0]) {
-                logger.error(`Failed to check ${default_downloader} version for an update.`)
-                resolve(false);
-                return false;
-            }
-            const latest_update_version = json[0]['name'];
-            if (current_version !== latest_update_version || default_downloader !== current_downloader) {
-                // versions different or different downloader is being used, download new update
-                logger.info(`Found new update for ${default_downloader}. Updating binary...`);
-                try {
-                    await checkExistsWithTimeout(stored_binary_path, 10000);
-                } catch(e) {
-                    logger.error(`Failed to update ${default_downloader} - ${e}`);
-                }
-                
-                await download_sources[default_downloader]['func'](latest_update_version);
-
-                resolve(true);
-            } else {
-                resolve(false);
-            }
-        })
-        .catch(err => {
-            logger.error(`Failed to check ${default_downloader} version for an update.`)
-            logger.error(err);
-            resolve(false);
-            return false;
-        });
-    });
-}
-
-async function downloadLatestYoutubeDLBinary(new_version) {
-    const file_ext = is_windows ? '.exe' : '';
-
-    const download_url = `https://github.com/ytdl-org/youtube-dl/releases/latest/download/youtube-dl${file_ext}`;
-    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
-
-    await fetchFile(download_url, output_path, `youtube-dl ${new_version}`);
-
-    updateDetailsJSON(new_version, 'youtube-dl');
-}
-
-async function downloadLatestYoutubeDLCBinary(new_version) {
-    const file_ext = is_windows ? '.exe' : '';
-
-    const download_url = `https://github.com/blackjack4494/yt-dlc/releases/latest/download/youtube-dlc${file_ext}`;
-    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
-
-    await fetchFile(download_url, output_path, `youtube-dlc ${new_version}`);
-
-    updateDetailsJSON(new_version, 'youtube-dlc');
-}
-
-async function downloadLatestYoutubeDLPBinary(new_version) {
-    const file_ext = is_windows ? '.exe' : '';
-
-    const download_url = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp${file_ext}`;
-    const output_path = `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
-
-    await fetchFile(download_url, output_path, `yt-dlp ${new_version}`);
-
-    updateDetailsJSON(new_version, 'yt-dlp');
-}
-
-function updateDetailsJSON(new_version, downloader) {
-    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
-    if (new_version) details_json['version'] = new_version;
-    details_json['downloader'] = downloader;
-    fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
-}
-
-async function checkExistsWithTimeout(filePath, timeout) {
-    return new Promise(function (resolve, reject) {
-
-        var timer = setTimeout(function () {
-            if (watcher) watcher.close();
-            reject(new Error('File did not exists and was not created during the timeout.'));
-        }, timeout);
-
-        fs.access(filePath, fs.constants.R_OK, function (err) {
-            if (!err) {
-                clearTimeout(timer);
-                if (watcher) watcher.close();
-                resolve();
-            }
-        });
-
-        var dir = path.dirname(filePath);
-        var basename = path.basename(filePath);
-        var watcher = fs.watch(dir, function (eventType, filename) {
-            if (eventType === 'rename' && filename === basename) {
-                clearTimeout(timer);
-                if (watcher) watcher.close();
-                resolve();
-            }
-        });
-    });
+    const update_available = await youtubedl_api.checkForYoutubeDLUpdate();
+    if (update_available) await youtubedl_api.updateYoutubeDL(update_available);
 }
 
 app.use(function(req, res, next) {
@@ -1884,6 +1706,17 @@ app.post('/api/getTasks', optionalJwt, async (req, res) => {
         if (task['schedule']) task['next_invocation'] = tasks_api.TASKS[task['key']]['job'].nextInvocation().getTime();
     }
     res.send({tasks: tasks});
+});
+
+app.post('/api/resetTasks', optionalJwt, async (req, res) => {
+    const tasks_keys = Object.keys(tasks_api.TASKS);
+    for (let i = 0; i < tasks_keys.length; i++) {
+        const task_key = tasks_keys[i];
+        tasks_api.TASKS[task_key]['job'] = null;
+    }
+    await db_api.removeAllRecords('tasks');
+    await tasks_api.setupTasks();
+    res.send({success: true});
 });
 
 app.post('/api/getTask', optionalJwt, async (req, res) => {

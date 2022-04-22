@@ -50,11 +50,18 @@
             <mat-cell *matCellDef="let element">
                 <div class="container">
                     <div class="row justify-content-center">
-                        <div *ngIf="element.data?.uids?.length > 0" class="col-12 mt-2">
+                        <div *ngIf="element.data?.uids?.length > 0 || (!element.data?.uids && element.data)" class="col-12 mt-2" style="display: flex; justify-content: center;">
                             <ng-container>
                                 <button (click)="confirmTask(element.key)" [disabled]="element.running || element.confirming" mat-stroked-button>
-                                    <ng-container *ngIf="element.key == 'missing_files_check'" i18n="Clear missing files from DB">Clear missing files from DB:</ng-container>
-                                    <ng-container *ngIf="element.key == 'duplicate_files_check'" i18n="Clear duplicate files from DB">Clear duplicate files from DB:</ng-container>&nbsp;{{element.data.uids.length}}
+                                    <ng-container *ngIf="element.key == 'missing_files_check'">
+                                        <ng-container i18n="Clear missing files from DB">Clear missing files from DB:</ng-container>{{element.data.uids.length}}
+                                    </ng-container>
+                                    <ng-container *ngIf="element.key == 'duplicate_files_check'">
+                                        <ng-container i18n="Clear duplicate files from DB">Clear duplicate files from DB:</ng-container>&nbsp;{{element.data.uids.length}}
+                                    </ng-container>
+                                    <ng-container *ngIf="element.key == 'youtubedl_update_check'">
+                                        <ng-container i18n="Update binary to">Update binary to:</ng-container>&nbsp;{{element.data}}
+                                    </ng-container>
                                 </button>
                             </ng-container>
                         </div>
@@ -80,6 +87,7 @@
       </div>
 
       <button style="margin-top: 10px; margin-left: 5px;" mat-stroked-button (click)="openRestoreDBBackupDialog()" i18n="Restore DB from backup button">Restore DB from backup</button>
+      <button style="margin-top: 10px; margin-left: 5px;" mat-stroked-button (click)="resetTasks()" color="warn" i18n="Reset tasks button">Reset tasks</button>
 </div>
 
 <div *ngIf="(!tasks || tasks.length === 0) && tasks_retrieved">
