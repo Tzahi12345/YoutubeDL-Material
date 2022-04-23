@@ -1,7 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import '~material-icons/iconfont/material-icons.css';
+
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import 'material-icons/iconfont/material-icons.css';
 
 //@import './app-theme';
 /* You can add global styles to this file, and also import other style files */
@@ -31,7 +32,7 @@ $my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
 @include angular-material-theme($my-app-theme);
 
 // Dark theme
-$dark-primary: mat-palette($mat-indigo);
+$dark-primary: mat-palette($mat-light-blue, 700, 100, 800);
 $dark-accent:  mat-palette($mat-blue);
 $dark-warn:    mat-palette($mat-deep-orange);
 
@@ -39,6 +40,10 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 .dark-theme {
   @include angular-material-theme($dark-theme);
+}
+
+.mat-stroked-button, .mat-raised-button, .mat-flat-button {
+  border-radius: 24px !important
 }
 
 // Light theme
@@ -49,7 +54,7 @@ $light-warn: mat-palette($mat-deep-orange, 200);
 $light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
 
 .light-theme {
-  @include angular-material-theme($light-theme)
+  @include angular-material-theme($light-theme);
 }
 
 .no-outline {
