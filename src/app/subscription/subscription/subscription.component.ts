@@ -49,8 +49,8 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit() {
-    if (this.route.snapshot.paramMap.get('id')) {
-      this.id = this.route.snapshot.paramMap.get('id');
+    this.route.params.subscribe(params => {
+      this.id = params['id'];
 
       this.postsService.service_initialized.subscribe(init => {
         if (init) {
@@ -59,7 +59,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
           this.sub_interval = setInterval(() => this.getSubscription(true), 1000);
         }
       });
-    }
+    });
 
     // set filter property to cached
     const cached_filter_property = localStorage.getItem('filter_property');

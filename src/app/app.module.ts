@@ -45,8 +45,6 @@ import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
 import { VgCoreModule } from '@videogular/ngx-videogular/core';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
-import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
-import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
@@ -93,10 +91,6 @@ import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedul
 import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
 
 registerLocaleData(es, 'es');
-
-export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
-  return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
-}
 
 @NgModule({
     declarations: [
@@ -190,7 +184,6 @@ export function isVisible({ event, element, scrollContainer, offset }: IsVisible
         VgControlsModule,
         VgOverlayPlayModule,
         VgBufferingModule,
-        LazyLoadImageModule.forRoot({ isVisible }),
         RouterModule,
         AppRoutingModule,
     ],
