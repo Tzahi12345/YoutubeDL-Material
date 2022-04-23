@@ -62,7 +62,7 @@ export class SkipAdButtonComponent implements OnInit {
 
   getVideoIDHashFromURL(video_id) {
     if (!video_id) return null;
-    return CryptoJS.SHA256(video_id).toString(CryptoJS.enc.Hex);;
+    return CryptoJS.SHA256(video_id).toString(CryptoJS.enc.Hex);
   }
 
   getVideoIDFromURL(url) {

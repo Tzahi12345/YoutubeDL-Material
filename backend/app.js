@@ -1496,18 +1496,14 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
         }
 
         // generate zip
-        file_path_to_download = await utils.createContainerZipFile(playlist, playlist_files_to_download);
+        file_path_to_download = await utils.createContainerZipFile(playlist['name'], playlist_files_to_download);
     } else if (sub_id && !uid) {
         zip_file_generated = true;
-        const sub_files_to_download = [];
-        const sub = subscriptions_api.getSubscription(sub_id, uuid);
-        for (let i = 0; i < sub['videos'].length; i++) {
-            const sub_file = sub['videos'][i];
-            sub_files_to_download.push(sub_file);
-        }
+        const sub = await db_api.getRecord('subscriptions', {id: sub_id});
+        const sub_files_to_download = await db_api.getRecords('files', {sub_id: sub_id});
 
         // generate zip
-        file_path_to_download = await utils.createContainerZipFile(sub, sub_files_to_download);
+        file_path_to_download = await utils.createContainerZipFile(sub['name'], sub_files_to_download);
     } else {
         const file_obj = await db_api.getVideo(uid, uuid, sub_id)
         file_path_to_download = file_obj.path;
