@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import { FileType } from './FileType';
 
 export interface DownloadFileRequest {
     uid?: string;
@@ -9,5 +10,5 @@ export interface DownloadFileRequest {
     sub_id?: string;
     playlist_id?: string;
     url?: string;
-    type?: string;
+    type?: FileType;
 }

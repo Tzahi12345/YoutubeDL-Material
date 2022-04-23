@@ -8,15 +8,8 @@ const logger = require('./logger');
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
-let db_api = null;
-let downloader_api = null;
-
-function setDB(input_db_api) { db_api = input_db_api }
-
-function initialize(input_db_api, input_downloader_api) {
-    setDB(input_db_api);
-    downloader_api = input_downloader_api;
-}
+const db_api = require('./db');
+const downloader_api = require('./downloader');
 
 async function subscribe(sub, user_uid = null) {
     const result_obj = {
@@ -542,7 +535,6 @@ module.exports = {
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
-    initialize             : initialize,
     updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple,
     generateOptionsForSubscriptionDownload: generateOptionsForSubscriptionDownload
 }

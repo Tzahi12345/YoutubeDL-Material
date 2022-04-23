@@ -1,10 +1,13 @@
-const fs = require('fs-extra')
-const path = require('path')
+const fs = require('fs-extra');
+const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
+const archiver = require('archiver');
+const fetch = require('node-fetch');
+const ProgressBar = require('progress');
+
 const config_api = require('./config');
 const logger = require('./logger');
-const CONSTS = require('./consts')
-const archiver = require('archiver');
+const CONSTS = require('./consts');
 
 const is_windows = process.platform === 'win32';
 
@@ -55,13 +58,13 @@ async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
     return files;
 }
 
-async function createContainerZipFile(container_obj, container_file_objs) {
+async function createContainerZipFile(file_name, container_file_objs) {
     const container_files_to_download = [];
     for (let i = 0; i < container_file_objs.length; i++) {
         const container_file_obj = container_file_objs[i];
         container_files_to_download.push(container_file_obj.path);
     }
-    return await createZipFile(path.join('appdata', container_obj.name + '.zip'), container_files_to_download);
+    return await createZipFile(path.join('appdata', file_name + '.zip'), container_files_to_download);
 }
 
 async function createZipFile(zip_file_path, file_paths) {
@@ -266,7 +269,7 @@ function getCurrentDownloader() {
     return details_json['downloader'];
 }
 
-async function recFindByExt(base,ext,files,result)
+async function recFindByExt(base, ext, files, result, recursive = true)
 {
     files = files || (await fs.readdir(base))
     result = result || []
@@ -275,6 +278,7 @@ async function recFindByExt(base,ext,files,result)
         var newbase = path.join(base,file)
         if ( (await fs.stat(newbase)).isDirectory() )
         {
+            if (!recursive) continue;
             result = await recFindByExt(newbase,ext,await fs.readdir(newbase),result)
         }
         else
@@ -355,6 +359,62 @@ async function cropFile(file_path, start, end, ext) {
     });
 }
 
+async function checkExistsWithTimeout(filePath, timeout) {
+    return new Promise(function (resolve, reject) {
+
+        var timer = setTimeout(function () {
+            if (watcher) watcher.close();
+            reject(new Error('File did not exists and was not created during the timeout.'));
+        }, timeout);
+
+        fs.access(filePath, fs.constants.R_OK, function (err) {
+            if (!err) {
+                clearTimeout(timer);
+                if (watcher) watcher.close();
+                resolve();
+            }
+        });
+
+        var dir = path.dirname(filePath);
+        var basename = path.basename(filePath);
+        var watcher = fs.watch(dir, function (eventType, filename) {
+            if (eventType === 'rename' && filename === basename) {
+                clearTimeout(timer);
+                if (watcher) watcher.close();
+                resolve();
+            }
+        });
+    });
+}
+
+// helper function to download file using fetch
+async function fetchFile(url, path, file_label) {
+    var len = null;
+    const res = await fetch(url);
+
+    len = parseInt(res.headers.get("Content-Length"), 10);
+
+    var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
+        complete: '=',
+        incomplete: ' ',
+        width: 20,
+        total: len
+    });
+    const fileStream = fs.createWriteStream(path);
+    await new Promise((resolve, reject) => {
+        res.body.pipe(fileStream);
+        res.body.on("error", (err) => {
+          reject(err);
+        });
+        res.body.on('data', function (chunk) {
+            bar.tick(chunk.length);
+        });
+        fileStream.on("finish", function() {
+          resolve();
+        });
+    });
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -396,5 +456,7 @@ module.exports = {
     cropFile: cropFile,
     createEdgeNGrams: createEdgeNGrams,
     wait: wait,
+    checkExistsWithTimeout: checkExistsWithTimeout,
+    fetchFile: fetchFile,
     File: File
 }

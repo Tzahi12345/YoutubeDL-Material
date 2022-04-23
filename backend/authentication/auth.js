@@ -1,6 +1,7 @@
 const config_api = require('../config');
 const consts = require('../consts');
 const logger = require('../logger');
+const db_api = require('../db');
 
 const jwt = require('jsonwebtoken');
 const { uuid } = require('uuidv4');
@@ -12,15 +13,12 @@ var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // other required vars
-let db_api = null;
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function(db_api) {
-  setDB(db_api);
-
+exports.initialize = function() {
   /*************************
    * Authentication module
    ************************/
@@ -49,10 +47,6 @@ exports.initialize = function(db_api) {
         // or you could create a new account
     }
   }));
-}
-
-function setDB(input_db_api) {
-  db_api = input_db_api;
 }
 
 exports.passport = require('passport');
