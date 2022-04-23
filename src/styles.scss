@@ -1,7 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-@use '~@angular/material' as mat;
-
-@import '~material-icons/iconfont/material-icons.css';
 
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
@@ -17,45 +14,41 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 // Plus imports for other components in your app.
 
 /*// Typography
-$custom-typography: mat.define-typography-config(
+$custom-typography: mat-typography-config(
   $font-family: Raleway,
-  $headline: mat.define-typography-level(24px, 48px, 400),
-  $body-1: mat.define-typography-level(16px, 24px, 400)
+  $headline: mat-typography-level(24px, 48px, 400),
+  $body-1: mat-typography-level(16px, 24px, 400)
 );
-@include mat.all-component-typographies($custom-typography);
+@include angular-material-typography($custom-typography);
 */
 // Default colors
-$my-app-primary: mat.define-palette(mat.$light-blue-palette, 700, 100, 800);
-$my-app-accent:  mat.define-palette(mat.$blue-palette, 700, 100, 800);
-$my-app-warn: mat.define-palette(mat.$red-palette, 700, 100, 800);
+$my-app-primary: mat-palette($mat-light-blue, 700, 100, 800);
+$my-app-accent:  mat-palette($mat-blue, 700, 100, 800);
+$my-app-warn: mat-palette($mat-red, 700, 100, 800);
 
-$my-app-theme: mat.define-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
-@include mat.all-component-themes($my-app-theme);
+$my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
+@include angular-material-theme($my-app-theme);
 
 // Dark theme
-$dark-primary: mat.define-palette(mat.$light-blue-palette, 700, 100, 800);
-$dark-accent:  mat.define-palette(mat.$blue-palette);
-$dark-warn:    mat.define-palette(mat.$deep-orange-palette);
+$dark-primary: mat-palette($mat-indigo);
+$dark-accent:  mat-palette($mat-blue);
+$dark-warn:    mat-palette($mat-deep-orange);
 
-$dark-theme:   mat.define-dark-theme($dark-primary, $dark-accent, $dark-warn);
+$dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 .dark-theme {
-  @include mat.all-component-themes($dark-theme);
-}
-
-.mat-stroked-button, .mat-raised-button, .mat-flat-button {
-  border-radius: 24px !important
+  @include angular-material-theme($dark-theme);
 }
 
 // Light theme
-$light-primary: mat.define-palette(mat.$grey-palette, 200, 500, 300);
-$light-accent: mat.define-palette(mat.$brown-palette, 200);
-$light-warn: mat.define-palette(mat.$deep-orange-palette, 200);
+$light-primary: mat-palette($mat-grey, 200, 500, 300);
+$light-accent: mat-palette($mat-brown, 200);
+$light-warn: mat-palette($mat-deep-orange, 200);
 
-$light-theme: mat.define-light-theme($light-primary, $light-accent, $light-warn);
+$light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
 
 .light-theme {
-  @include mat.all-component-themes($light-theme);
+  @include angular-material-theme($light-theme)
 }
 
 .no-outline {
@@ -66,7 +59,7 @@ $light-theme: mat.define-light-theme($light-primary, $light-accent, $light-warn)
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat.core();
+@include mat-core();
 
 // @import '../node_modules/@angular/material/theming';
 
