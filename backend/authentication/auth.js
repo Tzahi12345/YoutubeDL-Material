@@ -18,10 +18,19 @@ let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function() {
+exports.initialize = function () {
   /*************************
    * Authentication module
    ************************/
+
+  if (db_api.database_initialized) {
+    setupRoles();
+  } else {
+      db_api.database_initialized_bs.subscribe(init => {
+          if (init) setupRoles();
+      });
+  }
+
   saltRounds = 10;
 
   JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
@@ -47,6 +56,41 @@ exports.initialize = function() {
         // or you could create a new account
     }
   }));
+}
+
+const setupRoles = async () => {
+  const required_roles = {
+    admin: {
+        permissions: [
+            'filemanager',
+            'settings',
+            'subscriptions',
+            'sharing',
+            'advanced_download',
+            'downloads_manager'
+        ]
+    },
+    user: {
+        permissions: [
+            'filemanager',
+            'subscriptions',
+            'sharing'
+        ]
+    }
+  }
+
+  const role_keys = Object.keys(required_roles);
+  for (let i = 0; i < role_keys.length; i++) {
+    const role_key = role_keys[i];
+    const role_in_db = await db_api.getRecord('roles', {key: role_key});
+    if (!role_in_db) {
+      // insert task metadata into table if missing
+      await db_api.insertRecordIntoTable('roles', {
+          key: role_key,
+          permissions: required_roles[role_key]['permissions']
+      });
+    }
+  }
 }
 
 exports.passport = require('passport');
