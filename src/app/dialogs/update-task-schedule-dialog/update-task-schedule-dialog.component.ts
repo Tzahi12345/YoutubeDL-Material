@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Schedule } from 'api-types';
+import { Schedule, Task } from 'api-types';
 import { PostsService } from 'app/posts.services';
 
 @Component({
@@ -18,7 +18,7 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
   date = null;
   today = new Date();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dialogRef: MatDialogRef<UpdateTaskScheduleDialogComponent>, private postsService: PostsService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: {task: Task}, private dialogRef: MatDialogRef<UpdateTaskScheduleDialogComponent>, private postsService: PostsService) {
     this.processTask(this.data.task);
     this.postsService.getTask(this.data.task.key).subscribe(res => {
       this.processTask(res['task']);
@@ -28,7 +28,7 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  processTask(task) {
+  processTask(task: Task): void {
     if (!task['schedule']) {
       this.enabled = false;
       return;
@@ -39,7 +39,11 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
     this.recurring = schedule['type'] === Schedule.type.RECURRING;
 
     if (this.recurring) {
-      this.time = `${schedule['data']['hour']}:${schedule['data']['minute']}`;
+      const hour = schedule['data']['hour'];
+      const minute = schedule['data']['minute'];
+
+      // add padding 0s if necessary to hours and minutes
+      this.time = (hour < 10 ? '0' : '') + hour + ':' + (minute < 10 ? '0' : '') + minute;
 
       if (schedule['data']['dayOfWeek']) {
         this.days_of_week = schedule['data']['dayOfWeek'];
@@ -75,7 +79,6 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
       }
     } else {
       this.date.setHours(hours, minutes);
-      console.log(this.date);
       schedule['data'] = {timestamp: this.date.getTime()};
     }
     this.dialogRef.close(schedule);

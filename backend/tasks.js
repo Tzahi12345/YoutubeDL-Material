@@ -42,9 +42,9 @@ function scheduleJob(task_key, schedule) {
     if (schedule['type'] === 'timestamp') {
         converted_schedule = new Date(schedule['data']['timestamp']);
     } else if (schedule['type'] === 'recurring') {
-        const dayOfWeek = schedule['data']['dayOfWeek'] ? schedule['data']['dayOfWeek'] : null;
-        const hour = schedule['data']['hour']           ? schedule['data']['hour']      : null;
-        const minute = schedule['data']['minute']       ? schedule['data']['minute']    : null;
+        const dayOfWeek = schedule['data']['dayOfWeek'] != null       ? schedule['data']['dayOfWeek'] : null;
+        const hour = schedule['data']['hour']           != null       ? schedule['data']['hour']      : null;
+        const minute = schedule['data']['minute']       != null       ? schedule['data']['minute']    : null;
         converted_schedule = new scheduler.RecurrenceRule(null, null, null, dayOfWeek, hour, minute);
     } else {
         logger.error(`Failed to schedule job '${task_key}' as the type '${schedule['type']}' is invalid.`)
