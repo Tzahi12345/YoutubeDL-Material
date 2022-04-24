@@ -3,7 +3,6 @@ const { uuid } = require('uuidv4');
 const path = require('path');
 const mergeFiles = require('merge-files');
 const NodeID3 = require('node-id3')
-const glob = require('glob')
 const Mutex = require('async-mutex').Mutex;
 
 const youtubedl = require('youtube-dl');
@@ -583,20 +582,26 @@ async function checkDownloadPercent(download_uid) {
     if (!resulting_file_size) return;
 
     let sum_size = 0;
-    glob(`{${files_to_check_for_progress.join(',')}, }*`, async (err, files) => {
-        files.forEach(async file => {
-            try {
-                const file_stats = fs.statSync(file);
-                if (file_stats && file_stats.size) {
-                    sum_size += file_stats.size;
-                }
-            } catch (e) {
-
+    for (let i = 0; i < files_to_check_for_progress.length; i++) {
+        const file_to_check_for_progress = files_to_check_for_progress[i];
+        const dir = path.dirname(file_to_check_for_progress);
+        if (!fs.existsSync(dir)) continue;
+        fs.readdir(dir, async (err, files) => {
+            for (let j = 0; j < files.length; j++) {
+                const file = files[j];
+                if (!file.includes(path.basename(file_to_check_for_progress))) continue;
+                try {
+                    const file_stats = fs.statSync(path.join(dir, file));
+                    if (file_stats && file_stats.size) {
+                        sum_size += file_stats.size;
+                    }
+                } catch (e) {}
             }
+            
+            const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
+            await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
         });
-        const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
-        await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
-    });
+    }
 }
 
 exports.generateNFOFile = (info, output_path) => {
