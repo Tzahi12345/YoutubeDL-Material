@@ -16,7 +16,7 @@ paths:
         - downloader
       summary: Download video file
       description: |-
-        Downloads a video file with the given URL. Will include global args if they exist.
+        Downloads a file with the given URL. Will include global args if they exist.
 
 
         HTTP requests will return once the video file download completes. In the future, it will (by default) return once the download starts, and a separate API call will be used for checking the download status.
@@ -41,7 +41,7 @@ paths:
     post:
       tags:
         - downloader
-      summary: Download video file
+      summary: Generates arguments used to download file
       description: Generates args, used for checking what args would run if you ran downloadFile
       operationId: post-generateArgs
       requestBody:

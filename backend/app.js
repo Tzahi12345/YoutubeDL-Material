@@ -803,7 +803,7 @@ app.post('/api/testConnectionString', optionalJwt, async (req, res) => {
 app.post('/api/downloadFile', optionalJwt, async function(req, res) {
     req.setTimeout(0); // remove timeout in case of long videos
     const url = req.body.url;
-    const type = req.body.type;
+    const type = req.body.type ? req.body.type : 'video';
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
     const options = {
         customArgs: req.body.customArgs,
