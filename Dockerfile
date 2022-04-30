@@ -1,9 +1,9 @@
-FROM alpine:latest AS ffmpeg
+FROM ubuntu:focal AS ffmpeg
 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
 
-FROM alpine:latest as frontend
+FROM ubuntu:focal as frontend
 
 RUN apk add --no-cache \
   npm
@@ -20,7 +20,7 @@ RUN npm run build
 
 #--------------#
 
-FROM alpine:latest
+FROM ubuntu:focal
 
 ENV UID=1000 \
   GID=1000 \
@@ -34,11 +34,7 @@ RUN apk add --no-cache \
   npm \
   python2 \
   python3 \
-  su-exec \
-  && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-    atomicparsley \
-  && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main/ \
-    musl
+  atomicparsley
 
 WORKDIR /app
 COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
