@@ -5,8 +5,7 @@ RUN sh ./docker-build.sh
 
 FROM ubuntu:focal as frontend
 
-RUN apk add --no-cache \
-  npm
+RUN apt-get update && apt-get install npm
 
 RUN npm install -g @angular/cli
 
@@ -30,7 +29,7 @@ ENV NO_UPDATE_NOTIFIER=true
 
 RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install \
   npm \
   python2 \
   python3 \
