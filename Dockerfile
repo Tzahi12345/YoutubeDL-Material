@@ -13,8 +13,8 @@ RUN apt-get update && apt-get -y install \
   curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
   apt-get -y install \
   nodejs \
-  npm \
-  node-gyp && \
+  npm && \
+  apt-get install -f && \
   npm install -g @angular/cli
 
 WORKDIR /build
@@ -38,7 +38,6 @@ RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get update && apt-get -y install \
-  npm \
   python2 \
   python3 \
   atomicparsley
