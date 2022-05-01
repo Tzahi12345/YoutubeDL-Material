@@ -1,19 +1,18 @@
 FROM ubuntu:20.04 AS ffmpeg
 
+RUN apt-get update && apt-get -y install curl xz-utils 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
 
 FROM ubuntu:20.04 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get -y install \
-  wget \
-  gnupg && \
-  curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
-  apt-get -y install \
-  nodejs \
-  npm && \
-  npm install -g @angular/cli
+RUN apt-get update
+RUN apt-get -y install curl gnupg
+RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash -
+RUN apt-get -y install nodejs
+
+RUN npm install -g @angular/cli
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
@@ -34,9 +33,11 @@ ENV UID=1000 \
 
 RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
-  apt-get update && apt-get -y install \
-  npm \
+RUN apt-get update && apt-get -y install curl
+
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get update && apt-get -y install \
+  nodejs \
   python2 \
   python3 \
   atomicparsley
