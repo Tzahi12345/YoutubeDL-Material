@@ -38,6 +38,7 @@ RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get update && apt-get -y install \
+  npm\
   python2 \
   python3 \
   atomicparsley
