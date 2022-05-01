@@ -14,6 +14,7 @@ RUN apt-get update && apt-get -y install \
   apt-get -y install \
   nodejs \
   npm && \
+  node-gyp && \
   npm install -g @angular/cli
 
 WORKDIR /build
