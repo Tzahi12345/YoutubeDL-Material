@@ -22,7 +22,7 @@ esac
 
 echo "(INFO) Architecture detected: $ARCH"
 echo "(1/5) READY - Acquire temp dependencies in ffmpeg obtain layer"
-apt-get -y install curl xz-utils
+apt-get update && apt-get -y install curl xz-utils
 echo "(2/5) DOWNLOAD - Acquire latest ffmpeg and ffprobe from John van Sickle's master-sourced builds in ffmpeg obtain layer"
 curl -o ffmpeg.txz \
     --connect-timeout 5 \
