@@ -1,14 +1,19 @@
-FROM alpine:latest AS ffmpeg
+FROM ubuntu:20.04 AS ffmpeg
 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
 
-FROM alpine:latest as frontend
+FROM ubuntu:20.04 as frontend
 
-RUN apk add --no-cache \
-  npm
-
-RUN npm install -g @angular/cli
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get -y install \
+  wget \
+  gnupg && \
+  curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
+  apt-get -y install \
+  nodejs \
+  npm && \
+  npm install -g @angular/cli
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
@@ -20,37 +25,33 @@ RUN npm run build
 
 #--------------#
 
-FROM alpine:latest
+FROM ubuntu:20.04
 
 ENV UID=1000 \
   GID=1000 \
-  USER=youtube
+  USER=youtube \
+  NO_UPDATE_NOTIFIER=true
 
-ENV NO_UPDATE_NOTIFIER=true
+RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
-RUN addgroup -S $USER -g $GID && adduser -D -S $USER -G $USER -u $UID
-
-RUN apk add --no-cache \
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+  apt-get update && apt-get -y install \
   npm \
   python2 \
   python3 \
-  su-exec \
-  && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
-    atomicparsley \
-  && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main/ \
-    musl
+  atomicparsley
 
 WORKDIR /app
 COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe 
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 ENV PM2_HOME=/app/pm2
-RUN npm install pm2 -g
-RUN npm install && chown -R $UID:$GID ./
+RUN npm install pm2 -g && \
+  npm install && chown -R $UID:$GID ./
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
 COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+# ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "pm2-runtime", "pm2.config.js" ]
