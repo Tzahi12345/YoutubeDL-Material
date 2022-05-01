@@ -19,6 +19,7 @@ RUN apt-get update && apt-get -y install \
   # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
   yarn && \
   apt-get install -f && \
+  npm config set strict-ssl false && \
   npm install -g @angular/cli
 
 WORKDIR /build
@@ -59,7 +60,8 @@ COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe 
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 ENV PM2_HOME=/app/pm2
-RUN npm install pm2 -g && \
+RUN npm config set strict-ssl false && \
+  npm install pm2 -g && \
   npm install && chown -R $UID:$GID ./
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
