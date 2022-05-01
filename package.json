@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production",
-    "prebuild": "node src/postbuild.mjs",
+    "prebuild": "node src/postbuild.js",
     "heroku-postbuild": "npm install --prefix backend",
     "test": "ng test",
     "lint": "ng lint",
