@@ -141,6 +141,7 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
         if (sub.archive && (await fs.pathExists(sub.archive))) {
             const archive_file_path = path.join(sub.archive, 'archive.txt');
             // deletes archive if it exists
+            // TODO: Keep entries in blacklist_video.txt by moving them to a global blacklist
             if (await fs.pathExists(archive_file_path)) {
                 await fs.unlink(archive_file_path);
             }
@@ -379,7 +380,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     if (useArchive && !redownload) {
         if (sub.archive) {
             archive_dir = sub.archive;
-            archive_path = path.join(archive_dir, 'archive.txt')
+            if (sub.type && sub.type === 'audio') {
+                archive_path = path.join(archive_dir, 'merged_audio.txt');
+            } else {
+                archive_path = path.join(archive_dir, 'merged_video.txt');
+            }            
         }
         downloadConfig.push('--download-archive', archive_path);
     }
