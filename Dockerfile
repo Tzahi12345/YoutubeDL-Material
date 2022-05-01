@@ -35,14 +35,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get update && apt-get --no-install-recommends -y install \
+RUN apt-get update && apt-get -y install \
   npm \
   python2 \
   python3 \
   atomicparsley && \
-  apt autoremove --purge && \
-  apt autoremove && \
-  apt clean && \
+  apt-get autoremove --purge && \
+  apt-get autoremove && \
+  apt-get clean && \
   rm -rf /var/lib/apt
 
 WORKDIR /app
