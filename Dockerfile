@@ -8,18 +8,10 @@ RUN sh ./docker-build.sh
 FROM ubuntu:20.04 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get --no-install-recommends -y install \
-  wget \
-  curl \
-  gnupg && \
-  curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
-  apt-get -y install \
-  nodejs \
-  # YARN: brings along npm, solves dependency conflicts,
-  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
-  yarn && \
-  apt-get install -f && \
-  npm install -g @angular/cli
+RUN apt-get update && apt-get -y install curl
+RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash -
+RUN apt-get -y install nodejs
+RUN npm install -g @angular/cli
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
@@ -48,7 +40,6 @@ RUN apt-get update && apt-get --no-install-recommends -y install \
   python2 \
   python3 \
   atomicparsley && \
-  apt-get install -f && \
   apt autoremove --purge && \
   apt autoremove && \
   apt clean && \
