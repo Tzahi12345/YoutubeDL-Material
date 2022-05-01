@@ -23,7 +23,14 @@ case $(uname -m) in
 esac
 
 echo "Architecture: $ARCH"
-wget "https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-${ARCH}-static.tar.xz" -O ffmpeg.txz
+apt-get -y install curl
+curl --connect-timeout 5 \
+    --max-time 10 \
+    --retry 5 \
+    --retry-delay 0 \
+    --retry-max-time 40 \
+    "https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-${ARCH}-static.tar.xz" -o ffmpeg.txz
+apt-get remove curl
 mkdir /tmp/ffmpeg
 tar xf ffmpeg.txz -C /tmp/ffmpeg
 cp /tmp/ffmpeg/*/ffmpeg /usr/local/bin/ffmpeg
