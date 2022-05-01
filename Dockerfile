@@ -10,7 +10,9 @@ FROM ubuntu:20.04 as frontend
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y install curl
 RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash -
-RUN apt-get -y install nodejs
+RUN apt-get -y install nodejs \
+  yarn
+RUN npm config set strict-ssl false
 RUN npm install -g @angular/cli
 
 WORKDIR /build
@@ -36,7 +38,8 @@ RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get update && apt-get -y install \
-  npm \
+  nodejs \
+  yarn \
   python2 \
   python3 \
   atomicparsley && \
@@ -44,6 +47,8 @@ RUN apt-get update && apt-get -y install \
   apt-get autoremove && \
   apt-get clean && \
   rm -rf /var/lib/apt
+
+RUN npm config set strict-ssl false
 
 WORKDIR /app
 COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
