@@ -1,12 +1,14 @@
 FROM ubuntu:20.04 AS ffmpeg
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
 
 FROM ubuntu:20.04 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get -y install \
+RUN apt-get update && apt-get --no-install-recommends -y install \
   wget \
   curl \
   gnupg && \
@@ -36,10 +38,12 @@ ENV UID=1000 \
   USER=youtube \
   NO_UPDATE_NOTIFIER=true
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get update && apt-get -y install \
+RUN apt-get update && apt-get --no-install-recommends -y install \
   npm \
   python2 \
   python3 \
