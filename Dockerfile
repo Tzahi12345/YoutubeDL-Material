@@ -13,7 +13,9 @@ RUN apt-get update && apt-get -y install \
   curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
   apt-get -y install \
   nodejs \
-  npm && \
+  # YARN: brings along npm, solves dependency conflicts,
+  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
+  yarn && \
   apt-get install -f && \
   npm install -g @angular/cli
 
@@ -38,7 +40,9 @@ RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get update && apt-get -y install \
-  npm\
+  # YARN: brings along npm, solves dependency conflicts,
+  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
+  yarn\
   python2 \
   python3 \
   atomicparsley && \
