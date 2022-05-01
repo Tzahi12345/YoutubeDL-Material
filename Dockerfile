@@ -44,7 +44,11 @@ RUN apt-get update && apt-get -y install \
   python2 \
   python3 \
   atomicparsley && \
-  apt-get install -f
+  apt-get install -f && \
+  apt autoremove --purge && \
+  apt autoremove && \
+  apt clean && \
+  rm -rf /var/lib/apt
 
 WORKDIR /app
 COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
