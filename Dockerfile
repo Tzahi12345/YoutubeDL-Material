@@ -41,7 +41,8 @@ RUN apt-get update && apt-get -y install \
   npm\
   python2 \
   python3 \
-  atomicparsley
+  atomicparsley && \
+  apt-get install -f
 
 WORKDIR /app
 COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
