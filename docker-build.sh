@@ -4,7 +4,7 @@
 # and also optimizing some code with this commit.
 # xoxo :D
 
-set -xeuo pipefail
+bash | set -xeuo pipefail
 
 case $(uname -m) in
   x86_64)
