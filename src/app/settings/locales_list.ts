@@ -445,7 +445,7 @@ export const isoLangs = {
        'name': 'Navajo, Navaho',
        'nativeName': 'Diné bizaad, Dinékʼehǰí'
    },
-   'nb': {
+   'nb-NO': {
        'name': 'Norwegian Bokmål',
        'nativeName': 'Norsk bokmål',
        'ngID': 'nb'
