@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 
 @Component({
@@ -6,7 +6,7 @@ import { PostsService } from 'app/posts.services';
   templateUrl: './twitch-chat.component.html',
   styleUrls: ['./twitch-chat.component.scss']
 })
-export class TwitchChatComponent implements OnInit, AfterViewInit {
+export class TwitchChatComponent implements OnInit, OnDestroy {
 
   full_chat = null;
   visible_chat = null;
