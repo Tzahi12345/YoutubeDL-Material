@@ -31,7 +31,7 @@ jobs:
         uses: jsdaniell/create-json@1.1.2
         with:
           name: "version.json"
-          json: '{"type": "docker", "tag": "nightly", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          json: '{"type": "docker", "tag": "${{secrets.DOCKERHUB_MASTER_TAG}}", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
           dir: 'backend/'
       - name: setup platform emulator
         uses: docker/setup-qemu-action@v1
@@ -49,4 +49,8 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm,linux/arm64/v8
           push: true
-          tags: tzahi12345/youtubedl-material:nightly
+          # Defaults:
+          #     DOCKERHUB_USERNAME  : tzahi12345
+          #     DOCKERHUB_REPO      : youtubedl-material
+          #     DOCKERHUB_MASTER_TAG: nightly
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{secrets.DOCKERHUB_MASTER_TAG}}

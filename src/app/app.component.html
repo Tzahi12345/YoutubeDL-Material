@@ -51,7 +51,7 @@
                     </ng-container>
                     <ng-container *ngIf="postsService.config && allowSubscriptions && postsService.subscriptions && postsService.hasPermission('subscriptions')">
                         <mat-divider *ngIf="postsService.subscriptions.length > 0"></mat-divider>
-                        <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatar [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatar>{{subscription.name}}</a>
+                        <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatars [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatars>{{subscription.name}}</a>
                     </ng-container>
                 </mat-nav-list>
             </mat-sidenav>
