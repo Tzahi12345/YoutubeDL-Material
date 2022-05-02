@@ -9,7 +9,6 @@ FROM ubuntu:20.04 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y install \
-  wget \
   curl \
   gnupg && \
   curl -sL https://deb.nodesource.com/setup_12.x  | bash - && \
