@@ -1,6 +1,9 @@
 FROM ubuntu:22.04 AS ffmpeg
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV UID=1000 \
+  GID=1000 \
+  USER=youtube \
+  DEBIAN_FRONTEND=noninteractive
 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
