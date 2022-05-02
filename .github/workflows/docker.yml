@@ -3,6 +3,16 @@ name: docker
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - '.github/**'
+      - '.vscode/**'
+      - 'chrome-extension/**'
+      - 'releases/**'
+      - '**.crx'
+      - '**.pem'
+      - '**.md'
+      - '.dockerignore'
+      - '.gitignore'
 
 jobs:
   build-and-push:
