@@ -1,4 +1,4 @@
-name: docker-pr-check
+name: docker-pr
 
 on:
   pull_request:
