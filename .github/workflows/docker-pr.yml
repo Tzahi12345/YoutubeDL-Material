@@ -24,4 +24,4 @@ jobs:
           json: '{"type": "docker", "tag": "nightly", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
           dir: 'backend/'
       - name: Build docker images
-        run: docker build . -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{secrets.DOCKERHUB_MASTER_TAG}}
+        run: docker build . -t tzahi12345/youtubedl-material:nightly-pr
