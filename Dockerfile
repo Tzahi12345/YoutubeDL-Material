@@ -1,11 +1,11 @@
-FROM ubuntu:20.04 AS ffmpeg
+FROM ubuntu:21.10 AS ffmpeg
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
 
-FROM ubuntu:20.04 as frontend
+FROM ubuntu:21.10 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y install \
@@ -31,7 +31,7 @@ RUN npm run build
 
 #--------------#
 
-FROM ubuntu:20.04
+FROM ubuntu:21.10
 
 ENV UID=1000 \
   GID=1000 \
