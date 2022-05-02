@@ -33,7 +33,8 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
     this.getFullChat();
   }
 
-  ngAfterViewInit() {
+  ngOnDestroy(): void {
+    if (this.chat_check_interval_obj) { clearInterval(this.chat_check_interval_obj); }
   }
 
   private isUserNearBottom(): boolean {

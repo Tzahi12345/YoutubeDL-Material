@@ -52,6 +52,8 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       this.id = params['id'];
 
+      if (this.sub_interval) { clearInterval(this.sub_interval); }
+
       this.postsService.service_initialized.subscribe(init => {
         if (init) {
           this.getConfig();
