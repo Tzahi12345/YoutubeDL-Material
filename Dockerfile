@@ -13,9 +13,9 @@ RUN apt-get update && apt-get -y install \
   gnupg \
   # Ubuntu 22.04 ships Node.JS 12 by default :)
   nodejs \
-  # YARN: brings along npm, solves dependency conflicts,
+  # needed on 21.10 and before, maybe not on 22.04 YARN: brings along npm, solves dependency conflicts,
   # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
-  yarn && \
+  npm && \
   apt-get install -f && \
   apt-get autoremove --purge && \
   apt-get autoremove && \
