@@ -415,6 +415,38 @@ async function fetchFile(url, path, file_label) {
     });
 }
 
+// adds or replaces args according to the following rules:
+//  - if it already exists and has value, then replace both arg and value
+//  - if already exists and doesn't have value, ignore
+//  - if it doesn't exist and has value, add both arg and value
+//  - if it doesn't exist and doesn't have value, add arg
+function injectArgs(original_args, new_args) {
+    try {
+        for (let i = 0; i < new_args.length; i++) {
+            const new_arg = new_args[i];
+            if (!new_arg.startsWith('-') && !new_arg.startsWith('--')) continue;
+            
+            if (CONSTS.YTDL_ARGS_WITH_VALUES.has(new_arg)) {
+                if (original_args.includes(new_arg)) {
+                    const original_index = original_args.indexOf(new_arg);
+                    original_args.splice(original_index, 2);
+                }
+
+                original_args.push(new_arg, new_args[i + 1]);
+            } else {
+                if (!original_args.includes(new_arg)) {
+                    original_args.push(new_arg);
+                }
+            }
+        }
+    } catch (err) {
+        logger.warn(err);
+        logger.warn(`Failed to inject args (${new_args}) into (${original_args})`);
+    }
+
+    return original_args;
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -458,5 +490,6 @@ module.exports = {
     wait: wait,
     checkExistsWithTimeout: checkExistsWithTimeout,
     fetchFile: fetchFile,
+    injectArgs: injectArgs,
     File: File
 }

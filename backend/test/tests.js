@@ -386,6 +386,13 @@ describe('Downloader', function() {
         assert(fs.existsSync(nfo_file_path), true);
         fs.unlinkSync(nfo_file_path);
     });
+
+    it('Inject args', async function() {
+        const original_args = ['--no-resize-buffer', '-o', '%(title)s', '--no-mtime'];
+        const new_args = ['--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
+        const updated_args = utils.injectArgs(original_args, new_args);
+        assert(updated_args, ['--no-resize-buffer', '--no-mtime', '--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s']);
+    });
 });
 
 describe('Tasks', function() {

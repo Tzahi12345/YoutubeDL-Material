@@ -485,7 +485,7 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
         }
 
         if (options.additionalArgs && options.additionalArgs !== '') {
-            downloadConfig = downloadConfig.concat(options.additionalArgs.split(',,'));
+            downloadConfig = utils.injectArgs(downloadConfig, options.additionalArgs.split(',,'));
         }
 
         const rate_limit = config_api.getConfigItem('ytdl_download_rate_limit');
