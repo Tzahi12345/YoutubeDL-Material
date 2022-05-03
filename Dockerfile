@@ -20,9 +20,6 @@ RUN apt-get update && apt-get -y install \
   # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
   npm && \
   apt-get install -f && \
-  apt-get autoremove --purge && \
-  apt-get autoremove && \
-  apt-get clean && \
   npm config set strict-ssl false && \
   npm install -g @angular/cli
 
