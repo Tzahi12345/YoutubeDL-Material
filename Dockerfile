@@ -68,5 +68,5 @@ COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/
 COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
-# ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "pm2-runtime", "pm2.config.js" ]
