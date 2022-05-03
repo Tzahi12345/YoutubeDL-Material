@@ -85,8 +85,6 @@ exports.initialize = (input_db, input_users_db) => {
 }
 
 exports.connectToDB = async (retries = 5, no_fallback = false, custom_connection_string = null) => {
-    using_local_db = config_api.getConfigItem('ytdl_use_local_db'); // verify
-    if (using_local_db && !custom_connection_string) return;
     const success = await exports._connectToDB(custom_connection_string);
     if (success) return true;
 
