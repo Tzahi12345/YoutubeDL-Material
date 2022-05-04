@@ -48,8 +48,7 @@ RUN apt-get update && apt-get -y install \
   npm \
   python2 \
   python3 \
-  atomicparsley \
-  apache2-suexec-custom && \
+  atomicparsley && \
   apt-get install -f && \
   apt-get autoremove --purge && \
   apt-get autoremove && \
