@@ -14,6 +14,7 @@ PATH_SUBS=/app/subscriptions
 PATH_AUDIO=/app/audio
 PATH_VIDS=/app/video
 
+clear -x
 echo "\n"
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -             # horizontal line
 echo "Welcome to the INTERACTIVE PERMISSIONS FIX SCRIPT FOR YTDL-M."
@@ -49,6 +50,8 @@ if echo "$answer" | grep -iq "^y" ;then
     [ -d $PATH_VIDS ] && chown "$UID:$GID" -R $PATH_VIDS &&  echo "✔ Set owner of ${PATH_VIDS} to ${USER}."
     [ -d $PATH_VIDS ] && chmod 644 -R $PATH_VIDS && echo "✔ Set permissions of ${PATH_VIDS} to 644."
     echo "\n✔ Done."
+    echo "\n  If you noticed file access errors those MAY be due to currently running downloads."
+    echo "  Feel free to re-run this script, however download parts should have correct file permissions anyhow. :)"
     exit
 else
     echo "\nOkay, bye."
