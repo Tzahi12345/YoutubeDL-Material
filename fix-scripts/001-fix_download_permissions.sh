@@ -6,7 +6,7 @@
 # If you want to run this script on a bare-metal installation instead of within Docker
 # make sure that the paths configured below match your paths! (it's wise to use the full paths)
 # USAGE: within your container's bash shell:
-# su root
+# chmod -R +x ./fix-scripts/
 # ./fix-scripts/001-fix_download_permissions.sh
 
 # User defines / Docker env defaults
