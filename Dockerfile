@@ -1,12 +1,11 @@
 FROM ubuntu:22.04 AS ffmpeg
 
-ENV UID=1000 \
-  GID=1000 \
-  USER=youtube \
-  DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
+
+#--------------# Stage 2
 
 FROM ubuntu:22.04 as frontend
 
@@ -31,7 +30,7 @@ COPY [ "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
 RUN npm run build
 
-#--------------#
+#--------------# Final Stage
 
 FROM ubuntu:22.04
 
@@ -56,8 +55,8 @@ RUN apt-get update && apt-get -y install \
   rm -rf /var/lib/apt
 
 WORKDIR /app
-COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
-COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe 
+COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
+COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 ENV PM2_HOME=/app/pm2
 RUN npm config set strict-ssl false && \
