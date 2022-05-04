@@ -65,7 +65,7 @@ RUN npm config set strict-ssl false && \
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
 COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
-COPY --chown=$UID:$GID --chmod=+x [ "/fix-scripts", "/app/" ]
+COPY --chown=$UID:$GID --chmod=755 [ "/fix-scripts", "/app/" ]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
