@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="zh-Hans">
     <body>
@@ -902,8 +902,8 @@
         <note priority="1" from="description">Video path setting input hint</note>
       </trans-unit>
       <trans-unit id="6b995e7130b4d667eaab6c5f61b362ace486d26d" datatype="html">
-        <source>Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</source>
-        <target>开始页面上用于下载的全局自定义参数。参数由两个逗号分隔：,,</target>
+        <source>Global custom args for downloads on the home page. (Set args for subscriptions for each subscriptions separately!) Args are delimited using two commas like so: ,,</source>
+        <target>开始页面上用于下载的全局自定义参数。(单独为每个订阅设置订阅参数！) 参数由两个逗号分隔：,,</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">146</context>
