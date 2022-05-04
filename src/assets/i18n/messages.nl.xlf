@@ -1545,8 +1545,8 @@
         <note priority="1" from="description">Custom args input placeholder</note>
       </trans-unit>
       <trans-unit id="6b995e7130b4d667eaab6c5f61b362ace486d26d" datatype="html">
-        <source>Global custom args for downloads on the home page. Args are delimited using two commas like so: ,,</source>
-        <target>Algemene aanvullende opties voor downloads op de overzichtspagina. Scheidt deze met komma's: ,,</target>
+        <source>Global custom args for downloads on the home page. (Set args for subscriptions for each subscriptions separately!) Args are delimited using two commas like so: ,,</source>
+        <target>Algemene aanvullende opties voor downloads op de overzichtspagina. (Stel de opties per abonnement in!) Scheidt deze met komma's: ,,</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">134</context>
