@@ -8,9 +8,9 @@ on:
       - '.vscode/**'
       - 'chrome-extension/**'
       - 'releases/**'
+      - '**/**.md'
       - '**.crx'
       - '**.pem'
-      - '**.md'
       - '.dockerignore'
       - '.gitignore'
 

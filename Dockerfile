@@ -1,12 +1,11 @@
 FROM ubuntu:22.04 AS ffmpeg
 
-ENV UID=1000 \
-  GID=1000 \
-  USER=youtube \
-  DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 COPY docker-build.sh .
 RUN sh ./docker-build.sh
+
+#--------------# Stage 2
 
 FROM ubuntu:22.04 as frontend
 
@@ -20,9 +19,6 @@ RUN apt-get update && apt-get -y install \
   # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
   npm && \
   apt-get install -f && \
-  apt-get autoremove --purge && \
-  apt-get autoremove && \
-  apt-get clean && \
   npm config set strict-ssl false && \
   npm install -g @angular/cli
 
@@ -34,7 +30,7 @@ COPY [ "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
 RUN npm run build
 
-#--------------#
+#--------------# Final Stage
 
 FROM ubuntu:22.04
 
@@ -51,6 +47,7 @@ RUN apt-get update && apt-get -y install \
   npm \
   python2 \
   python3 \
+  gosu \
   atomicparsley && \
   apt-get install -f && \
   apt-get autoremove --purge && \
@@ -59,8 +56,8 @@ RUN apt-get update && apt-get -y install \
   rm -rf /var/lib/apt
 
 WORKDIR /app
-COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
-COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe 
+COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
+COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 ENV PM2_HOME=/app/pm2
 RUN npm config set strict-ssl false && \
@@ -71,5 +68,5 @@ COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/
 COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
 
 EXPOSE 17442
-# ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
 CMD [ "pm2-runtime", "pm2.config.js" ]
