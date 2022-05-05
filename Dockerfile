@@ -1,74 +1,51 @@
-FROM ubuntu:22.04 AS ffmpeg
-
+FROM debian:bullseye-slim AS ffmpeg
 ENV DEBIAN_FRONTEND=noninteractive
+COPY ffmpeg-fetch.sh .
+RUN sh ./ffmpeg-fetch.sh
 
-COPY docker-build.sh .
-RUN sh ./docker-build.sh
 
-#--------------# Stage 2
-
-FROM ubuntu:22.04 as frontend
-
+# Build frontend
+FROM node:16-bullseye-slim as frontend
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get -y install \
-  curl \
-  gnupg \
-  # Ubuntu 22.04 ships Node.JS 12 by default :)
-  nodejs \
-  # needed on 21.10 and before, maybe not on 22.04 YARN: brings along npm, solves dependency conflicts,
-  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
-  npm && \
-  apt-get install -f && \
-  npm config set strict-ssl false && \
-  npm install -g @angular/cli
-
+RUN npm -g install npm && \
+    npm install -g @angular/cli
 WORKDIR /build
-COPY [ "package.json", "package-lock.json", "/build/" ]
-RUN npm install
-
-COPY [ "angular.json", "tsconfig.json", "/build/" ]
+COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
-RUN npm run build
+RUN npm install && \
+    npm run build
 
-#--------------# Final Stage
 
-FROM ubuntu:22.04
-
-ENV UID=1000 \
-  GID=1000 \
-  USER=youtube \
-  NO_UPDATE_NOTIFIER=true
-
+# Install backend deps
+FROM node:16-bullseye-slim as backend
+ENV NO_UPDATE_NOTIFIER=true
 ENV DEBIAN_FRONTEND=noninteractive
-
-RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
-
-RUN apt-get update && apt-get -y install \
-  npm \
-  python2 \
-  python3 \
-  gosu \
-  atomicparsley && \
-  apt-get install -f && \
-  apt-get autoremove --purge && \
-  apt-get autoremove && \
-  apt-get clean && \
-  rm -rf /var/lib/apt
-
 WORKDIR /app
+COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
+RUN npm config set strict-ssl false && \
+    npm install --prod
+
+# Final image
+FROM node:16-bullseye-slim
+ENV NO_UPDATE_NOTIFIER=true
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PM2_HOME=/app/pm2
+ENV UID=1000
+ENV GID=1000
+RUN npm -g install npm && \
+    npm install -g pm2 && \
+    apt update && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 atomicparsley ca-certificates && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+# User 1000 already exist as node
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
-COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
-ENV PM2_HOME=/app/pm2
-RUN npm config set strict-ssl false && \
-  npm install pm2 -g && \
-  npm install && chown -R $UID:$GID ./
-
-# needed for ubuntu, see #596
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
+COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
-COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
+# Add some persistence data
+VOLUME ["/app/appdata"]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
