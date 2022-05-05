@@ -51,4 +51,4 @@ VOLUME ["/app/appdata"]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "pm2-runtime", "pm2.config.js" ]
+CMD [ "pm2-runtime", "--raw", "pm2.config.js" ]
