@@ -415,6 +415,14 @@ async function fetchFile(url, path, file_label) {
     });
 }
 
+async function restartServer(is_update = false) {
+    logger.info(`${is_update ? 'Update complete! ' : ''}Restarting server...`);
+
+    // the following line restarts the server through nodemon
+    fs.writeFileSync(`restart${is_update ? '_update' : '_general'}.json`, 'internal use only');
+    process.exit(1);
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -458,5 +466,6 @@ module.exports = {
     wait: wait,
     checkExistsWithTimeout: checkExistsWithTimeout,
     fetchFile: fetchFile,
+    restartServer: restartServer,
     File: File
 }

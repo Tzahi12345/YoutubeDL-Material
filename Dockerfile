@@ -64,6 +64,7 @@ RUN npm config set strict-ssl false && \
   npm install pm2 -g && \
   npm install && chown -R $UID:$GID ./
 
+# needed for ubuntu, see #596
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
