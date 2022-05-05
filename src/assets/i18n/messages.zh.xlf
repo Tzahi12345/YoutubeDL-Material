@@ -733,7 +733,7 @@
       </trans-unit>
       <trans-unit id="4bee2a4bef2d26d37c9b353c278e24e5cd309ce3" datatype="html">
         <source>Subscriptions base path</source>
-        <target>订阅文件路径</target>
+        <target>订阅基路径</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">72</context>
