@@ -1,18 +1,27 @@
-FROM ubuntu:focal AS ffmpeg
+FROM ubuntu:22.04 AS ffmpeg
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y software-properties-common 
 RUN add-apt-repository ppa:savoury1/ffmpeg4
 RUN add-apt-repository ppa:savoury1/ffmpeg5 && apt-get update && apt-get install -y ffmpeg
 
-FROM ubuntu:focal as frontend
+#--------------# Stage 2
+
+FROM ubuntu:22.04 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
-RUN apt-get -y install curl gnupg
-RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash -
-RUN apt-get -y install nodejs
-
-RUN npm install -g @angular/cli
+RUN apt-get update && apt-get -y install \
+  curl \
+  gnupg \
+  # Ubuntu 22.04 ships Node.JS 12 by default :)
+  nodejs \
+  # needed on 21.10 and before, maybe not on 22.04 YARN: brings along npm, solves dependency conflicts,
+  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
+  npm && \
+  apt-get install -f && \
+  npm config set strict-ssl false && \
+  npm install -g @angular/cli
 
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "/build/" ]
@@ -22,34 +31,42 @@ COPY [ "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
 RUN npm run build
 
-#--------------#
+#--------------# Final Stage
 
-FROM ubuntu:focal
+FROM ubuntu:22.04
 
 ENV UID=1000 \
   GID=1000 \
-  USER=youtube
-
-ENV NO_UPDATE_NOTIFIER=true
-
-RUN groupadd -g $GID $USER
-RUN useradd --system -g $USER --uid $UID $USER
+  USER=youtube \
+  NO_UPDATE_NOTIFIER=true
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+
+RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
+
 RUN apt-get update && apt-get -y install \
   npm \
   python2 \
   python3 \
-  atomicparsley
+  gosu \
+  atomicparsley && \
+  apt-get install -f && \
+  apt-get autoremove --purge && \
+  apt-get autoremove && \
+  apt-get clean && \
+  rm -rf /var/lib/apt
 
 WORKDIR /app
-COPY --from=ffmpeg /usr/bin/ffmpeg /usr/bin/ffmpeg
-COPY --from=ffmpeg /usr/bin/ffprobe /usr/bin/ffprobe 
+COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
+COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
 COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
 ENV PM2_HOME=/app/pm2
-RUN npm install pm2 -g
-RUN npm install && chown -R $UID:$GID ./
+RUN npm config set strict-ssl false && \
+  npm install pm2 -g && \
+  npm install && chown -R $UID:$GID ./
+
+# needed for ubuntu, see #596
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
 COPY --chown=$UID:$GID [ "/backend/", "/app/" ]

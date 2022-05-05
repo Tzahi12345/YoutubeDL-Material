@@ -386,6 +386,21 @@ describe('Downloader', function() {
         assert(fs.existsSync(nfo_file_path), true);
         fs.unlinkSync(nfo_file_path);
     });
+
+    it('Inject args', async function() {
+        const original_args1 = ['--no-resize-buffer', '-o', '%(title)s', '--no-mtime'];
+        const new_args1 = ['--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
+        const updated_args1 = utils.injectArgs(original_args1, new_args1);
+        const expected_args1 = ['--no-resize-buffer', '--no-mtime', '--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
+        assert(JSON.stringify(updated_args1), JSON.stringify(expected_args1));
+
+        const original_args2 = ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3'];
+        const new_args2 =  ['--add-metadata', '--embed-thumbnail', '--convert-thumbnails', 'jpg'];
+        const updated_args2 = utils.injectArgs(original_args2, new_args2);
+        const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert_thumbnails', 'jpg'];
+        console.log(updated_args2);
+        assert(JSON.stringify(updated_args2), JSON.stringify(expected_args2));
+    });
 });
 
 describe('Tasks', function() {

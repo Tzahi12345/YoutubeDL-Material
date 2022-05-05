@@ -33,7 +33,18 @@ async function createLocalizationJSON() {
     for (let i = 0; i < files.length; i++) {
         const file = path.basename(files[i]);
         const file_parts = file.split('.');
-        locales.push(file_parts[1]);
+        if (file_parts.length !== 3 || file_parts[1] === 'en') continue;
+        try {
+            const locale_json = fs.readJSONSync(files[i]);
+            const locale_json_keys = Object.keys(locale_json);
+            let has_defined_keys = false;
+            for (let i = 0; i < locale_json_keys.length; i++) {
+                if (locale_json[locale_json_keys[i]] !== '') has_defined_keys = true;
+            }
+            if (has_defined_keys) locales.push(file_parts[1]);
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     fs.unlinkSync('src/assets/i18n/messages.en.json');
