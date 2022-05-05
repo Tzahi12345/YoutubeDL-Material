@@ -49,7 +49,8 @@ RUN apt-get update && apt-get -y install \
   python2 \
   python3 \
   gosu \
-  atomicparsley && \
+  atomicparsley \
+  --no-install-recommends && \
   apt-get install -f && \
   apt-get autoremove --purge && \
   apt-get autoremove && \
