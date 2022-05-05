@@ -421,10 +421,11 @@ async function fetchFile(url, path, file_label) {
 //  - if it doesn't exist and has value, add both arg and value
 //  - if it doesn't exist and doesn't have value, add arg
 function injectArgs(original_args, new_args) {
+    const updated_args = original_args.slice();
     try {
         for (let i = 0; i < new_args.length; i++) {
             const new_arg = new_args[i];
-            if (!new_arg.startsWith('-') && !new_arg.startsWith('--')) continue;
+            if (!new_arg.startsWith('-') && !new_arg.startsWith('--') && i > 0 && original_args.includes(new_args[i - 1])) continue;
             
             if (CONSTS.YTDL_ARGS_WITH_VALUES.has(new_arg)) {
                 if (original_args.includes(new_arg)) {
@@ -432,10 +433,10 @@ function injectArgs(original_args, new_args) {
                     original_args.splice(original_index, 2);
                 }
 
-                original_args.push(new_arg, new_args[i + 1]);
+                updated_args.push(new_arg, new_args[i + 1]);
             } else {
                 if (!original_args.includes(new_arg)) {
-                    original_args.push(new_arg);
+                    updated_args.push(new_arg);
                 }
             }
         }
@@ -444,7 +445,7 @@ function injectArgs(original_args, new_args) {
         logger.warn(`Failed to inject args (${new_args}) into (${original_args})`);
     }
 
-    return original_args;
+    return updated_args;
 }
 
 // objects
