@@ -13,7 +13,8 @@ WORKDIR /build
 COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
 RUN npm install && \
-    npm run build
+    npm run build && \
+    ls -al backend/public
 
 
 # Install backend deps
@@ -21,9 +22,10 @@ FROM node:16-bullseye-slim as backend
 ENV NO_UPDATE_NOTIFIER=true
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
-COPY ["backend/", "/app/" ]
+COPY [ "backend/","/app/" ]
 RUN npm config set strict-ssl false && \
-    npm install --prod
+    npm install --prod && \
+    ls -al
 
 # Final image
 FROM node:16-bullseye-slim
