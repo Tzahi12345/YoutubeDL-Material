@@ -249,14 +249,6 @@ async function startServer() {
     });
 }
 
-async function restartServer(is_update = false) {
-    logger.info(`${is_update ? 'Update complete! ' : ''}Restarting server...`);
-
-    // the following line restarts the server through nodemon
-    fs.writeFileSync(`restart${is_update ? '_update' : '_general'}.json`, 'internal use only');
-    process.exit(1);
-}
-
 async function updateServer(tag) {
     // no tag provided means update to the latest version
     if (!tag) {
@@ -297,7 +289,7 @@ async function updateServer(tag) {
             updating: true,
             'details': 'Update complete! Restarting server...'
         }
-        restartServer(true);
+        utils.restartServer(true);
     }, err => {
         logger.error(err);
         updaterStatus = {
@@ -676,6 +668,7 @@ async function getUrlInfos(url) {
 
 async function startYoutubeDL() {
     // auto update youtube-dl
+    youtubedl_api.verifyBinaryExistsLinux();
     const update_available = await youtubedl_api.checkForYoutubeDLUpdate();
     if (update_available) await youtubedl_api.updateYoutubeDL(update_available);
 }
@@ -764,7 +757,7 @@ app.get('/api/versionInfo', (req, res) => {
 
 app.post('/api/restartServer', optionalJwt, (req, res) => {
     // delayed by a little bit so that the client gets a response
-    setTimeout(() => {restartServer()}, 100);
+    setTimeout(() => {utils.restartServer()}, 100);
     res.send({success: true});
 });
 
@@ -1802,6 +1795,7 @@ app.post('/api/updateTaskData', optionalJwt, async (req, res) => {
 
 app.post('/api/getDBBackups', optionalJwt, async (req, res) => {
     const backup_dir = path.join('appdata', 'db_backup');
+    fs.ensureDirSync(backup_dir);
     const db_backups = [];
 
     const candidate_backups = await utils.recFindByExt(backup_dir, 'bak', null, [], false);
