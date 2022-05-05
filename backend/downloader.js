@@ -3,7 +3,6 @@ const { uuid } = require('uuidv4');
 const path = require('path');
 const mergeFiles = require('merge-files');
 const NodeID3 = require('node-id3')
-const glob = require('glob')
 const Mutex = require('async-mutex').Mutex;
 
 const youtubedl = require('youtube-dl');
@@ -11,28 +10,22 @@ const youtubedl = require('youtube-dl');
 const logger = require('./logger');
 const config_api = require('./config');
 const twitch_api = require('./twitch');
+const { create } = require('xmlbuilder2');
 const categories_api = require('./categories');
 const utils = require('./utils');
-
-let db_api = null;
+const db_api = require('./db');
 
 const mutex = new Mutex();
 let should_check_downloads = true;
 
 const archivePath = path.join(__dirname, 'appdata', 'archives');
 
-function setDB(input_db_api) { db_api = input_db_api }
-
-exports.initialize = (input_db_api) => {
-    setDB(input_db_api);
-    categories_api.initialize(db_api);
-    if (db_api.database_initialized) {
-        setupDownloads();
-    } else {
-        db_api.database_initialized_bs.subscribe(init => {
-            if (init) setupDownloads();
-        });
-    }
+if (db_api.database_initialized) {
+    setupDownloads();
+} else {
+    db_api.database_initialized_bs.subscribe(init => {
+        if (init) setupDownloads();
+    });
 }
 
 exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null) => {
@@ -278,7 +271,9 @@ async function downloadQueuedFile(download_uid) {
             } else if (output) {
                 if (output.length === 0 || output[0].length === 0) {
                     // ERROR!
-                    logger.warn(`No output received for video download, check if it exists in your archive.`)
+                    const error_message = `No output received for video download, check if it exists in your archive.`;
+                    await handleDownloadError(download_uid, error_message);
+                    logger.warn(error_message);
                     resolve(false);
                     return;
                 }
@@ -328,6 +323,10 @@ async function downloadQueuedFile(download_uid) {
                         if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
                     }
 
+                    if (config_api.getConfigItem('ytdl_generate_nfo_files')) {
+                        exports.generateNFOFile(output_json, `${filepath_no_extension}.nfo`);
+                    }
+
                     if (options.cropFileSettings) {
                         await utils.cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
                     }
@@ -339,9 +338,10 @@ async function downloadQueuedFile(download_uid) {
                 }
 
                 if (options.merged_string !== null && options.merged_string !== undefined) {
-                    let current_merged_archive = fs.readFileSync(path.join(fileFolderPath, `merged_${type}.txt`), 'utf8');
-                    let diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = download['user_uid'] ? path.join(fileFolderPath, 'archives', `archive_${type}.txt`) : path.join(archivePath, `archive_${type}.txt`);
+                    const archive_folder = getArchiveFolder(fileFolderPath, options, download['user_uid']);
+                    const current_merged_archive = fs.readFileSync(path.join(archive_folder, `merged_${type}.txt`), 'utf8');
+                    const diff = current_merged_archive.replace(options.merged_string, '');
+                    const archive_path = path.join(archive_folder, `archive_${type}.txt`);
                     fs.appendFileSync(archive_path, diff);
                 }
 
@@ -369,7 +369,7 @@ async function downloadQueuedFile(download_uid) {
 
 // helper functions
 
-exports.generateArgs = async (url, type, options, user_uid = null) => {
+exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
 
@@ -409,7 +409,7 @@ exports.generateArgs = async (url, type, options, user_uid = null) => {
         downloadConfig = customArgs.split(',,');
     } else {
         if (customQualityConfiguration) {
-            qualityPath = ['-f', customQualityConfiguration];
+            qualityPath = ['-f', customQualityConfiguration, '--merge-output-format', 'mp4'];
         } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
             qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
         } else if (is_audio) {
@@ -450,23 +450,16 @@ exports.generateArgs = async (url, type, options, user_uid = null) => {
 
         let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
         if (useYoutubeDLArchive) {
-            let archive_folder = null;
-            if (options.customArchivePath) {
-                archive_folder = path.join(options.customArchivePath);
-            } else if (user_uid) {
-                archive_folder = path.join(fileFolderPath, 'archives');
-            } else {
-                archive_folder = path.join(archivePath);
-            }
+            const archive_folder = getArchiveFolder(fileFolderPath, options, user_uid);
             const archive_path = path.join(archive_folder, `archive_${type}.txt`);
 
             await fs.ensureDir(archive_folder);
             await fs.ensureFile(archive_path);
 
-            let blacklist_path = path.join(archive_folder, `blacklist_${type}.txt`);
+            const blacklist_path = path.join(archive_folder, `blacklist_${type}.txt`);
             await fs.ensureFile(blacklist_path);
 
-            let merged_path = path.join(fileFolderPath, `merged_${type}.txt`);
+            const merged_path = path.join(archive_folder, `merged_${type}.txt`);
             await fs.ensureFile(merged_path);
             // merges blacklist and regular archive
             let inputPathList = [archive_path, blacklist_path];
@@ -510,7 +503,7 @@ exports.generateArgs = async (url, type, options, user_uid = null) => {
     // filter out incompatible args
     downloadConfig = filterArgs(downloadConfig, is_audio);
 
-    logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
+    if (!simulated) logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
     return downloadConfig;
 }
 
@@ -589,18 +582,49 @@ async function checkDownloadPercent(download_uid) {
     if (!resulting_file_size) return;
 
     let sum_size = 0;
-    glob(`{${files_to_check_for_progress.join(',')}, }*`, async (err, files) => {
-        files.forEach(async file => {
-            try {
-                const file_stats = fs.statSync(file);
-                if (file_stats && file_stats.size) {
-                    sum_size += file_stats.size;
-                }
-            } catch (e) {
-
+    for (let i = 0; i < files_to_check_for_progress.length; i++) {
+        const file_to_check_for_progress = files_to_check_for_progress[i];
+        const dir = path.dirname(file_to_check_for_progress);
+        if (!fs.existsSync(dir)) continue;
+        fs.readdir(dir, async (err, files) => {
+            for (let j = 0; j < files.length; j++) {
+                const file = files[j];
+                if (!file.includes(path.basename(file_to_check_for_progress))) continue;
+                try {
+                    const file_stats = fs.statSync(path.join(dir, file));
+                    if (file_stats && file_stats.size) {
+                        sum_size += file_stats.size;
+                    }
+                } catch (e) {}
             }
+            
+            const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
+            await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
         });
-        const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
-        await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
-    });
+    }
+}
+
+exports.generateNFOFile = (info, output_path) => {
+    const nfo_obj = {
+        episodedetails: {
+            title: info['fulltitle'],
+            episode: info['playlist_index'] ? info['playlist_index'] : undefined,
+            premiered: utils.formatDateString(info['upload_date']),
+            plot: `${info['uploader_url']}\n${info['description']}\n${info['playlist_title'] ? info['playlist_title'] : ''}`,
+            director: info['artist'] ? info['artist'] : info['uploader']
+        }
+    };
+    const doc = create(nfo_obj);
+    const xml = doc.end({ prettyPrint: true });
+    fs.writeFileSync(output_path, xml);
+}
+
+function getArchiveFolder(fileFolderPath, options, user_uid) {
+    if (options.customArchivePath) {
+        return path.join(options.customArchivePath);
+    } else if (user_uid) {
+        return path.join(fileFolderPath, 'archives');
+    } else {
+        return path.join(archivePath);
+    }
 }

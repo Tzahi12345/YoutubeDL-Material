@@ -42,6 +42,11 @@ export class ConcurrentStreamComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    if (this.check_timeout) { clearInterval(this.check_timeout); }
+    if (this.update_timeout) { clearInterval(this.update_timeout); }
+  }
+
   startServer() {
     this.started = true;
     this.server_started = true;

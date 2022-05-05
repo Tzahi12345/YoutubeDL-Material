@@ -25,6 +25,7 @@
 !.vscode/extensions.json
 
 # misc
+/.angular/cache
 /.sass-cache
 /connect.lock
 /coverage
@@ -66,3 +67,12 @@ backend/appdata/users.json
 backend/users/*
 backend/appdata/cookies.txt
 backend/public
+src/assets/i18n/*.json
+
+# User Files
+db/
+appdata/
+audio/
+video/
+subscriptions/
+users/

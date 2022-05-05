@@ -129,7 +129,9 @@ mat-form-field.mat-form-field {
 }
 
 .edit-button {
-    margin-left: 10px;
+    margin-left: 5px;
+    margin-top: -6px;
+    margin-bottom: -5px;
     top: -5px;
 }
 
@@ -149,4 +151,13 @@ mat-form-field.mat-form-field {
     .download-progress-bar {
         width: 125px;
     }
+}
+
+.url-input {
+    padding-right: 25px;
+    overflow-y: hidden;
+}
+
+.url-input::-webkit-scrollbar {
+    display: none;
 }

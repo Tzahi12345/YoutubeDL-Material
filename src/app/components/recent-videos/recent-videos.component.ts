@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
+import { FileType } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -227,7 +228,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   downloadSubscriptionFile(file) {
-    const type = file.isAudio ? 'audio' : 'video';
+    const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
     this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
@@ -239,7 +240,7 @@ export class RecentVideosComponent implements OnInit {
   }
 
   downloadNormalFile(file) {
-    const type = file.isAudio ? 'audio' : 'video';
+    const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const name = file.id;
     this.downloading_content[type][name] = true;

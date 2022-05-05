@@ -8,15 +8,8 @@ const logger = require('./logger');
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
-let db_api = null;
-let downloader_api = null;
-
-function setDB(input_db_api) { db_api = input_db_api }
-
-function initialize(input_db_api, input_downloader_api) {
-    setDB(input_db_api);
-    downloader_api = input_downloader_api;
-}
+const db_api = require('./db');
+const downloader_api = require('./downloader');
 
 async function subscribe(sub, user_uid = null) {
     const result_obj = {
@@ -148,6 +141,7 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
         if (sub.archive && (await fs.pathExists(sub.archive))) {
             const archive_file_path = path.join(sub.archive, 'archive.txt');
             // deletes archive if it exists
+            // TODO: Keep entries in blacklist_video.txt by moving them to a global blacklist
             if (await fs.pathExists(archive_file_path)) {
                 await fs.unlink(archive_file_path);
             }
@@ -273,11 +267,17 @@ async function getVideosForSub(sub, user_uid = null) {
                 }
                 resolve(false);
             } else if (output) {
+                if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
+                    await setFreshUploads(sub, user_uid);
+                    checkVideosForFreshUploads(sub, user_uid);
+                }
+
                 if (output.length === 0 || (output.length === 1 && output[0] === '')) {
                     logger.verbose('No additional videos to download for ' + sub.name);
                     resolve(true);
                     return;
                 }
+
                 const output_jsons = [];
                 for (let i = 0; i < output.length; i++) {
                     let output_json = null;
@@ -301,14 +301,7 @@ async function getVideosForSub(sub, user_uid = null) {
                 }
 
                 resolve(files_to_download);
-
-                if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
-                    await setFreshUploads(sub, user_uid);
-                    checkVideosForFreshUploads(sub, user_uid);
-                }
-
-                resolve(true);
-            }
+           }
         });
     }, err => {
         logger.error(err);
@@ -350,11 +343,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     const file_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
 
-    let fullOutput = `${appendedBasePath}/${file_output}.%(ext)s`;
+    let fullOutput = `"${appendedBasePath}/${file_output}.%(ext)s"`;
     if (desired_path) {
-        fullOutput = `${desired_path}.%(ext)s`;
+        fullOutput = `"${desired_path}.%(ext)s"`;
     } else if (sub.custom_output) {
-        fullOutput = `${appendedBasePath}/${sub.custom_output}.%(ext)s`;
+        fullOutput = `"${appendedBasePath}/${sub.custom_output}.%(ext)s"`;
     }
 
     let downloadConfig = ['--dump-json', '-o', fullOutput, !redownload ? '-ciw' : '-ci', '--write-info-json', '--print-json'];
@@ -387,7 +380,11 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     if (useArchive && !redownload) {
         if (sub.archive) {
             archive_dir = sub.archive;
-            archive_path = path.join(archive_dir, 'archive.txt')
+            if (sub.type && sub.type === 'audio') {
+                archive_path = path.join(archive_dir, 'merged_audio.txt');
+            } else {
+                archive_path = path.join(archive_dir, 'merged_video.txt');
+            }            
         }
         downloadConfig.push('--download-archive', archive_path);
     }
@@ -431,7 +428,7 @@ async function getFilesToDownload(sub, output_jsons) {
     const files_to_download = [];
     for (let i = 0; i < output_jsons.length; i++) {
         const output_json = output_jsons[i];
-        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']})) && !(await db_api.getRecord('download_queue', {sub_id: sub.id, url: output_json['webpage_url'], error: null}));
+        const file_missing = !(await db_api.getRecord('files', {sub_id: sub.id, url: output_json['webpage_url']})) && !(await db_api.getRecord('download_queue', {sub_id: sub.id, url: output_json['webpage_url'], error: null, finished: false}));
         if (file_missing) {
             const file_with_path_exists = await db_api.getRecord('files', {sub_id: sub.id, path: output_json['_filename']});
             if (file_with_path_exists) {
@@ -480,22 +477,24 @@ async function updateSubscriptionProperty(sub, assignment_obj) {
     return true;
 }
 
-async function setFreshUploads(sub, user_uid) {
+async function setFreshUploads(sub) {
+    const sub_files = await db_api.getRecords('files', {sub_id: sub.id});
     const current_date = new Date().toISOString().split('T')[0].replace(/-/g, '');
-    sub.videos.forEach(async video => {
-        if (current_date === video['upload_date'].replace(/-/g, '')) {
+    sub_files.forEach(async file => {
+        if (current_date === file['upload_date'].replace(/-/g, '')) {
             // set upload as fresh
-            const video_uid = video['uid'];
-            await db_api.setVideoProperty(video_uid, {'fresh_upload': true}, user_uid, sub['id']);
+            const file_uid = file['uid'];
+            await db_api.setVideoProperty(file_uid, {'fresh_upload': true});
         }
     });
 }
 
 async function checkVideosForFreshUploads(sub, user_uid) {
+    const sub_files = await db_api.getRecords('files', {sub_id: sub.id});
     const current_date = new Date().toISOString().split('T')[0].replace(/-/g, '');
-    sub.videos.forEach(async video => {
-        if (video['fresh_upload'] && current_date > video['upload_date'].replace(/-/g, '')) {
-            await checkVideoIfBetterExists(video, sub, user_uid)
+    sub_files.forEach(async file => {
+        if (file['fresh_upload'] && current_date > file['upload_date'].replace(/-/g, '')) {
+            await checkVideoIfBetterExists(file, sub, user_uid)
         }
     });
 }
@@ -517,13 +516,13 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
                         logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
                     } else if (output) {
                         logger.verbose(`Successfully upgraded video ${file_obj['id']}'s ${metric_to_compare} from ${file_obj[metric_to_compare]} to ${output[metric_to_compare]}`);
-                        await db_api.setVideoProperty(file_obj['uid'], {[metric_to_compare]: output[metric_to_compare]}, user_uid, sub['id']);
+                        await db_api.setVideoProperty(file_obj['uid'], {[metric_to_compare]: output[metric_to_compare]});
                     }
                 });
             } 
         }
     });
-    await db_api.setVideoProperty(file_obj['uid'], {'fresh_upload': false}, user_uid, sub['id']);
+    await db_api.setVideoProperty(file_obj['uid'], {'fresh_upload': false});
 }
 
 // helper functions
@@ -542,7 +541,6 @@ module.exports = {
     unsubscribe            : unsubscribe,
     deleteSubscriptionFile : deleteSubscriptionFile,
     getVideosForSub        : getVideosForSub,
-    initialize             : initialize,
     updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple,
     generateOptionsForSubscriptionDownload: generateOptionsForSubscriptionDownload
 }

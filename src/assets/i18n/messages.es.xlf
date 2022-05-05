@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd">
         <source>Arg value</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Valor de arg</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Valor de argumento</target>
       </trans-unit>
       <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b">
         <source>Add arg</source>
@@ -103,8 +103,8 @@
         <target state="translated" state-qualifier="leveraged-glossary">Avanzado</target>
       </trans-unit>
       <trans-unit id="b7ffe7c6586d6f3f18a9246806a7c7d5538ab43e">
-        <source> Simulated command: </source>
-        <target state="translated" state-qualifier="leveraged-glossary">Commando simulado:</target>
+        <source>Simulated command:</source>
+        <target state="translated" state-qualifier="leveraged-glossary">Orden simulada:</target>
       </trans-unit>
       <trans-unit id="4e4c721129466be9c3862294dc40241b64045998">
         <source> Use custom args </source>
@@ -132,11 +132,11 @@
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target state="translated" state-qualifier="leveraged-glossary">La ruta es relativa a la ruta de descarga de la config. No incluya el extensión.</target>
+        <target state="translated" state-qualifier="leveraged-glossary">La ruta es relativa a la ruta de descarga de la configuración. No incluya el extensión.</target>
       </trans-unit>
       <trans-unit id="8fad10737d3e3735a6699a4d89cbf6c20f6bb55f">
-        <source> Use authentication </source>
-        <target state="translated" state-qualifier="leveraged-glossary">Usa autenticación</target>
+        <source>Use authentication</source>
+        <target state="translated" state-qualifier="leveraged-glossary">Utilizar autenticación</target>
       </trans-unit>
       <trans-unit id="08c74dc9762957593b91f6eb5d65efdfc975bf48">
         <source>Username</source>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8">
         <source>Close</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Cerca</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Cerrar</target>
       </trans-unit>
       <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1">
         <source>ID:</source>
@@ -308,7 +308,7 @@
       </trans-unit>
       <trans-unit id="ff7cee38a2259526c519f878e71b964f41db4348">
         <source>Default</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Defecto</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Predeterminado</target>
       </trans-unit>
       <trans-unit id="adb4562d2dbd3584370e44496969d58c511ecb63">
         <source>Dark</source>
@@ -432,7 +432,7 @@
       </trans-unit>
       <trans-unit id="cb17ff8fe3961cf90f44bee97c88a3f3347a7e55">
         <source>Not much is required other than changing the extension's settings to set the frontend URL.</source>
-        <target state="translated" state-qualifier="leveraged-glossary">No se requiere mucho más que cambiar la configuración de la extensión para establecer la URL de la interfaz.</target>
+        <target state="translated" state-qualifier="leveraged-glossary">No se requiere mucho más que cambiar la configuración de la extensión para establecer el URL de la interfaz.</target>
       </trans-unit>
       <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2">
         <source>Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</source>
@@ -472,7 +472,7 @@
       </trans-unit>
       <trans-unit id="52c9a103b812f258bcddc3d90a6e3f46871d25fe">
         <source>Save</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Salvar</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Guardar</target>
       </trans-unit>
       <trans-unit id="fe8fd36dbf5deee1d56564965787a782a66eba44">
         <source>{VAR_SELECT, select, true {Close} false {Cancel} other {otha} }</source>
@@ -480,7 +480,7 @@
       </trans-unit>
       <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e">
         <source>About YoutubeDL-Material</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Sobre YoutubeDL-Material</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Acerca de YoutubeDL-Material</target>
       </trans-unit>
       <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
@@ -512,7 +512,7 @@
       </trans-unit>
       <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016">
         <source>to create an issue!</source>
-        <target state="translated" state-qualifier="leveraged-glossary">para crear una cuestión!</target>
+        <target state="translated" state-qualifier="leveraged-glossary">para crear un informe.</target>
       </trans-unit>
       <trans-unit id="42ff677ec14f111e88bd6cdd30145378e994d1bf">
         <source>Your Profile</source>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a">
         <source>About</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Sobre</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Acerca de</target>
       </trans-unit>
       <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c">
         <source>Home</source>
@@ -584,11 +584,11 @@
       </trans-unit>
       <trans-unit id="1f6d14a780a37a97899dc611881e6bc971268285">
         <source>Enable sharing</source>
-        <target state="translated">Habilitar compartir</target>
+        <target state="translated">Activar compartición</target>
       </trans-unit>
       <trans-unit id="6580b6a950d952df847cb3d8e7176720a740adc8">
         <source>Use timestamp</source>
-        <target state="translated">Usar marca de tiempo</target>
+        <target state="translated">Utilizar cronomarcador</target>
       </trans-unit>
       <trans-unit id="4f2ed9e71a7c981db3e50ae2fedb28aff2ec4e6c">
         <source>Seconds</source>
@@ -596,7 +596,7 @@
       </trans-unit>
       <trans-unit id="3a6e5a6aa78ca864f6542410c5dafb6334538106">
         <source>Copy to clipboard</source>
-        <target state="translated">Copiar al Portapapeles</target>
+        <target state="translated">Copiar en el portapapeles</target>
       </trans-unit>
       <trans-unit id="5b3075e8dc3f3921ec316b0bd83b6d14a06c1a4f">
         <source>Save changes</source>
@@ -652,7 +652,7 @@
       </trans-unit>
       <trans-unit id="d0336848b0c375a1c25ba369b3481ee383217a4f">
         <source>Subscribe</source>
-        <target state="translated">Subscribe</target>
+        <target state="translated">Suscribirse</target>
       </trans-unit>
       <trans-unit id="e78c0d60ac39787f62c9159646fe0b3c1ed55a1d">
         <source>Type:</source>
@@ -712,7 +712,7 @@
       </trans-unit>
       <trans-unit id="91ecce65f1d23f9419d1c953cd6b7bc7f91c110e">
         <source>Updater</source>
-        <target state="translated">Updater</target>
+        <target state="translated">Actualizador</target>
       </trans-unit>
       <trans-unit id="1372e61c5bd06100844bd43b98b016aabc468f62">
         <source>Select a version:</source>
@@ -724,7 +724,7 @@
       </trans-unit>
       <trans-unit id="a1ad8b1be9be43b5183bd2c3186d4e19496f2a0b">
         <source>Session ID:</source>
-        <target state="translated">ID de sesión:</target>
+        <target state="translated">Id. de sesión:</target>
       </trans-unit>
       <trans-unit id="eb98135e35af26a9a326ee69bd8ff104d36dd8ec">
         <source>(current)</source>
@@ -752,7 +752,7 @@
       </trans-unit>
       <trans-unit id="e70e209561583f360b1e9cefd2cbb1fe434b6229">
         <source>New password</source>
-        <target state="translated">Nueva contraseña</target>
+        <target state="translated">Contraseña nueva</target>
       </trans-unit>
       <trans-unit id="6498fa1b8f563988f769654a75411bb8060134b9">
         <source>Set new password</source>
@@ -764,7 +764,7 @@
       </trans-unit>
       <trans-unit id="4f20f2d5a6882190892e58b85f6ccbedfa737952">
         <source>Yes</source>
-        <target state="translated">Si</target>
+        <target state="translated">Sí</target>
       </trans-unit>
       <trans-unit id="3d3ae7deebc5949b0c1c78b9847886a94321d9fd">
         <source>No</source>
@@ -805,7 +805,7 @@
       </trans-unit>
       <trans-unit id="cfa67d14d84fe0e9fadf251dc51ffc181173b662" datatype="html">
         <source>Search Base</source>
-        <target state="translated">Search Base</target>
+        <target state="translated">Base de búsquedas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">333</context>
@@ -814,7 +814,7 @@
       </trans-unit>
       <trans-unit id="e01d54ecc1a0fcf9525a3c100ed8b83d94e61c23" datatype="html">
         <source>Search Filter</source>
-        <target state="translated">Search Filter</target>
+        <target state="translated">Filtro de búsqueda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">338</context>
@@ -823,7 +823,7 @@
       </trans-unit>
       <trans-unit id="080cc6abcba236390fc22e79792d0d3443a3bd2a" datatype="html">
         <source>Bind Credentials</source>
-        <target state="translated">Bind Credentials</target>
+        <target state="translated">Credenciales de vinculación</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">328</context>
@@ -832,7 +832,7 @@
       </trans-unit>
       <trans-unit id="f50fa6c09c8944aed504f6325f2913ee6c7a296a" datatype="html">
         <source>Bind DN</source>
-        <target state="translated">Bind DN</target>
+        <target state="translated">DN de vinculación</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">323</context>
@@ -922,7 +922,7 @@
       </trans-unit>
       <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html">
         <source>Kill all downloads</source>
-        <target>Mata todas las descargas</target>
+        <target>Forzar término de todas las descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">139</context>
@@ -967,7 +967,7 @@
       </trans-unit>
       <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html">
         <source>Upload new cookies</source>
-        <target>Subir nuevas cookies</target>
+        <target>Cargar «cookies» nuevas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1136,7 +1136,7 @@
       </trans-unit>
       <trans-unit id="e9aff8e6df2e2bf6299ea27bb2894c70bc48bd4d" datatype="html">
         <source>An error has occurred:</source>
-        <target>Un error ha ocurrido:</target>
+        <target>Ha ocurrido un error:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1145,7 +1145,7 @@
       </trans-unit>
       <trans-unit id="348cc5d553b18e862eb1c1770e5636f6b05ba130" datatype="html">
         <source>An error has occurred</source>
-        <target>Un error ha ocurrido</target>
+        <target>Ha ocurrido un error</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1154,7 +1154,7 @@
       </trans-unit>
       <trans-unit id="4d8a18b04a1f785ecd8021ac824e0dfd5881dbfc" datatype="html">
         <source>The download was successful</source>
-        <target>La descarga era exitosa</target>
+        <target>La descarga fue exitosa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/download-item/download-item.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1172,7 +1172,7 @@
       </trans-unit>
       <trans-unit id="b6c453e0e61faea184bbaf5c5b0a1e164f4de2a2" datatype="html">
         <source>Clear all downloads</source>
-        <target>Claro todas las descargas</target>
+        <target>Borrar todas las descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1316,7 +1316,7 @@
       </trans-unit>
       <trans-unit id="3d1a47dc18b7bd8b5d9e1eb44b235ed9c4a2b513" datatype="html">
         <source>Redownload fresh uploads</source>
-        <target>Volver a descargar nuevas cargas</target>
+        <target>Volver a descargar cargas nuevas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">63</context>
@@ -1388,7 +1388,7 @@
       </trans-unit>
       <trans-unit id="73423607944a694ce6f9e55cfee329681bb4d9f9" datatype="html">
         <source>No videos found.</source>
-        <target>No se encontraron vídeos.</target>
+        <target>No se encontró ningún vídeo.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">38</context>
@@ -1468,6 +1468,167 @@
           <context context-type="linenumber">32</context>
         </context-group>
         <note priority="1" from="description">Max quality placeholder</note>
+      </trans-unit>
+      <trans-unit id="24dc3ecf7ec2c2144910c4f3d38343828be03a4c" datatype="html">
+        <source>Auto-generated</source>
+        <target>Generado automáticamente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">Auto-generated label</note>
+      </trans-unit>
+      <trans-unit id="94e2674467c7a08a291f9bd97ce694d4e47ffd62" datatype="html">
+        <source>Share file</source>
+        <target>Compartir archivo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">Share video dialog title</note>
+      </trans-unit>
+      <trans-unit id="635285fa5624d50a408feb7eb564c0db0d3f1ce1" datatype="html">
+        <source>Restart server</source>
+        <target>Reiniciar servidor</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">397</context>
+        </context-group>
+        <note priority="1" from="description">Restart server button</note>
+      </trans-unit>
+      <trans-unit id="b1c08387975e6feada407c9b5f5f564261b8192b" datatype="html">
+        <source>Database information could not be retrieved. Check the server logs for more information.</source>
+        <target>No se pudo recuperar la información de la base de datos. Compruebe los registros del servidor para obtener detalles.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">312</context>
+        </context-group>
+        <note priority="1" from="description">Database info not retrieved error message</note>
+      </trans-unit>
+      <trans-unit id="98e94c9bdac1ca8beb29d73b2e6f7a9e5e035aec" datatype="html">
+        <source>Transfer DB to</source>
+        <target>Transferir BD a</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">308</context>
+        </context-group>
+        <note priority="1" from="description">Transfer DB button</note>
+      </trans-unit>
+      <trans-unit id="d54142de169844b014ae913a4056c31495f4a305" datatype="html">
+        <source>Test connection string</source>
+        <target>Probar cadena de conexión</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">304</context>
+        </context-group>
+        <note priority="1" from="description">Test connection string button</note>
+      </trans-unit>
+      <trans-unit id="5473e36f5102e2ae22ce4c6620cacc40cc98da95" datatype="html">
+        <source>Example:</source>
+        <target>Ejemplo:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">300</context>
+        </context-group>
+        <note priority="1" from="description">MongoDB Connection String setting hint AKA preamble</note>
+      </trans-unit>
+      <trans-unit id="3913164a51898aac444bf6c7150e46ad5a8a18ad" datatype="html">
+        <source>MongoDB Connection String</source>
+        <target>Cadena de conexión de MongoDB</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">299</context>
+        </context-group>
+        <note priority="1" from="description">MongoDB Connection String</note>
+      </trans-unit>
+      <trans-unit id="9f8de81d44ec2a9a58b97e589b9e3154b3966c60" datatype="html">
+        <source>Records per table</source>
+        <target>Registros por tabla</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">291</context>
+        </context-group>
+        <note priority="1" from="description">Records per table label</note>
+      </trans-unit>
+      <trans-unit id="47955e2cc6986625528b4352034858180d675281" datatype="html">
+        <source>Database location:</source>
+        <target>Ubicación de base de datos:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+        <note priority="1" from="description">Database location label</note>
+      </trans-unit>
+      <trans-unit id="5da94ccb2301f586af26916e921bdad6d673ab58" datatype="html">
+        <source>Allow playlist categorization</source>
+        <target>Permitir categorización de listas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <note priority="1" from="description">Allow playlist categorization setting label</note>
+      </trans-unit>
+      <trans-unit id="1f6d3986a970af27f16f8a95ce0dc3033cc90a83" datatype="html">
+        <source>With this setting enabled, if a single video matches a category, the entire playlist will receive that category.</source>
+        <target>Con esta opción activada, si un único vídeo coincide con una categoría, toda la lista de reproducción se clasificará en la misma.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+        <note priority="1" from="description">Allow playlist categorization setting tooltip</note>
+      </trans-unit>
+      <trans-unit id="fb324ec7da611c6283caa6fc6257c39a56d6aaf7" datatype="html">
+        <source>Database</source>
+        <target>Base de datos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">284</context>
+        </context-group>
+        <note priority="1" from="description">Database settings label</note>
+      </trans-unit>
+      <trans-unit id="cba36d610ddba59b6dd6fbec77199eabf0ff2de3" datatype="html">
+        <source>Randomize order when playing</source>
+        <target>Aleatorizar orden al reproducir</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <note priority="1" from="description">Randomize order when playing checkbox label</note>
+      </trans-unit>
+      <trans-unit id="661206c3ab91fa81e9d8b40afb29f1866b78432f" datatype="html">
+        <source>Crop to (seconds)</source>
+        <target>Recortar hasta (s)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">164</context>
+        </context-group>
+        <note priority="1" from="description">Crop to placeholder</note>
+      </trans-unit>
+      <trans-unit id="44d007f6f8a2b19f12d85f9e49647b4ac02d7cbe" datatype="html">
+        <source>Crop from (seconds)</source>
+        <target>Recortar a partir de (s)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">159</context>
+        </context-group>
+        <note priority="1" from="description">Crop from placeholder</note>
+      </trans-unit>
+      <trans-unit id="4e1291cb1d579e7b7a1b802e6a8fd16ef7a557fa" datatype="html">
+        <source>Crop file</source>
+        <target>Recortar archivo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">155,156</context>
+        </context-group>
+        <note priority="1" from="description">Crop video checkbox</note>
+      </trans-unit>
+      <trans-unit id="7220285196408439810" datatype="html">
+        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
+        <target>¡La descarga de <x id="url" equiv-text="d, cropF"/> se ha puesto en cola!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">469</context>
+        </context-group>
       </trans-unit>
     </body>
   </file>

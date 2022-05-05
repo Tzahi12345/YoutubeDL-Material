@@ -6,9 +6,21 @@
 [![GitHub issues badge](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
 [![License badge](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
 
-YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 11](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 13](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
 Now with [Docker](#Docker) support!
+
+<hr>
+
+### USAGE OF THE NIGHTLY BUILDS IS HIGHLY RECOMMENDED.
+
+For much better scaling with large datasets please run your YTDL-M instance with a MongoDB backend rather than the json file-based default.
+It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
+The (closed) issues as well as the project's Wiki will give you good starting points for your journey!
+
+For MongoDB specifically there is [this little guide](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Setting-a-MongoDB-backend-to-use-as-database-provider-for-YTDL-M).
+
+<hr>
 
 ## Getting Started
 
@@ -67,7 +79,7 @@ If you'd like to install YoutubeDL-Material, go to the Installation section. If 
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `ng build --prod`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `npm build`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
 
 The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
 
@@ -110,6 +122,12 @@ To get started, go to the settings menu and enable the public API from the *Extr
 
 Once you have enabled the API and have the key, you can start sending requests by adding the query param `apiKey=API_KEY`. Replace `API_KEY` with your actual API key, and you should be good to go! Nearly all of the backend should be at your disposal. View available endpoints in the link above.
 
+## iOS Shortcut 
+
+If you are using iOS, try YoutubeDL-Material more conveniently with a Shortcut. With this Shorcut, you can easily start downloading YouTube video with just two taps! (Or maybe three?)
+
+You can download Shortcut [here.](https://routinehub.co/shortcut/10283/)
+
 ## Contributing
 
 If you're interested in contributing, first: awesome! Second, please refer to the guidelines/setup information located in the [Contributing](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Contributing) wiki page, it's a helpful way to get you on your feet and coding away.
@@ -133,6 +151,10 @@ See also the list of [contributors](https://github.com/Tzahi12345/YoutubeDL-Mate
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Legal Disclaimer
+
+This project is in no way affiliated with Google LLC, Alphabet Inc. or YouTube (or their subsidiaries) nor endorsed by them.
 
 ## Acknowledgments
 

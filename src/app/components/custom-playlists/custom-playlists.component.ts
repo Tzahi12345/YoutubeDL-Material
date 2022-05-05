@@ -98,7 +98,7 @@ export class CustomPlaylistsComponent implements OnInit {
       this.getAllPlaylists();
     });
   }
-  
+
   editPlaylistDialog(args) {
     const playlist = args.playlist;
     const index = args.index;

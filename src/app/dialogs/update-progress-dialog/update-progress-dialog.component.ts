@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UpdaterStatus } from '../../../api-types';
 
 @Component({
   selector: 'app-update-progress-dialog',
@@ -9,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class UpdateProgressDialogComponent implements OnInit {
 
-  updateStatus = null;
+  updateStatus: UpdaterStatus = null;
   updateInterval = 250;
   errored = false;
 

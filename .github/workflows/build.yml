@@ -25,10 +25,6 @@ jobs:
           cd backend
           npm install
           sudo npm install -g @angular/cli
-      - name: prepare localization
-        run: |
-          sudo npm install -g xliff-to-json
-          xliff-to-json ./src/assets/i18n
       - name: Set hash
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
@@ -43,7 +39,7 @@ jobs:
           json: '{"type": "autobuild", "tag": "N/A", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
           dir: 'backend/'
       - name: build
-        run: ng build --prod
+        run: npm run build
       - name: prepare artifact upload
         shell: pwsh
         run: |

@@ -1,14 +1,6 @@
 const utils = require('./utils');
 const logger = require('./logger');
-
-var db_api = null;
-
-function setDB(input_db_api) { db_api = input_db_api }
-
-function initialize(input_db_api) {
-    setDB(input_db_api);
-}
-
+const db_api = require('./db');
 /*
 
 Categories:
@@ -137,7 +129,6 @@ function applyCategoryRules(file_json, rules, category_name) {
 // }
 
 module.exports = {
-    initialize: initialize,
     categorize: categorize,
     getCategories: getCategories,
     getCategoriesAsPlaylists: getCategoriesAsPlaylists

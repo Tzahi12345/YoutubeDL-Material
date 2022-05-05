@@ -75,7 +75,7 @@ export class UnifiedFileCardComponent implements OnInit {
     }
 
     if (this.file_obj && this.file_obj.thumbnailPath) {
-      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}${this.jwtString}`;
+      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}?jwt=${this.jwtString}`;
       /*const mime = getMimeByFilename(this.file_obj.thumbnailPath);
       const blob = new Blob([new Uint8Array(this.file_obj.thumbnailBlob.data)], {type: mime});
       const bloburl = URL.createObjectURL(blob);
@@ -134,9 +134,8 @@ export class UnifiedFileCardComponent implements OnInit {
   }
 
   generateStreamURL() {
-    let baseLocation = 'stream/';
+    const baseLocation = 'stream/';
     let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${this.file_obj['uid']}`;
-
     if (this.jwtString) {
       fullLocation += `&jwt=${this.jwtString}`;
     }

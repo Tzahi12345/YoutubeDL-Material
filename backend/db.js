@@ -54,6 +54,10 @@ const tables = {
         name: 'download_queue',
         primary_key: 'uid'
     },
+    tasks: {
+        name: 'tasks',
+        primary_key: 'key'
+    },
     test: {
         name: 'test'
     }
@@ -81,6 +85,7 @@ exports.initialize = (input_db, input_users_db) => {
 }
 
 exports.connectToDB = async (retries = 5, no_fallback = false, custom_connection_string = null) => {
+    using_local_db = config_api.getConfigItem('ytdl_use_local_db'); // verify
     if (using_local_db && !custom_connection_string) return;
     const success = await exports._connectToDB(custom_connection_string);
     if (success) return true;
@@ -217,8 +222,7 @@ function generateFileObject(file_path, type) {
     var title = jsonobj.title;
     var url = jsonobj.webpage_url;
     var uploader = jsonobj.uploader;
-    var upload_date = jsonobj.upload_date;
-    upload_date = upload_date ? `${upload_date.substring(0, 4)}-${upload_date.substring(4, 6)}-${upload_date.substring(6, 8)}` : 'N/A';
+    var upload_date = utils.formatDateString(jsonobj.upload_date);
 
     var size = stats.size;
 
@@ -301,6 +305,7 @@ exports.getFileDirectoriesAndDBs = async () => {
 }
 
 exports.importUnregisteredFiles = async () => {
+    const imported_files = [];
     const dirs_to_check = await exports.getFileDirectoriesAndDBs();
 
     // run through check list and check each file to see if it's missing from the db
@@ -317,12 +322,17 @@ exports.importUnregisteredFiles = async () => {
             const file_is_registered = !!(files_with_same_url.find(file_with_same_url => path.resolve(file_with_same_url.path) === path.resolve(file.path)));
             if (!file_is_registered) {
                 // add additional info
-                await exports.registerFileDB(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
-                logger.verbose(`Added discovered file to the database: ${file.id}`);
+                const file_obj = await exports.registerFileDB(file['path'], dir_to_check.type, dir_to_check.user_uid, null, dir_to_check.sub_id, null);
+                if (file_obj) {
+                    imported_files.push(file_obj['uid']);
+                    logger.verbose(`Added discovered file to the database: ${file.id}`);
+                } else {
+                    logger.error(`Failed to import ${file['path']} automatically.`);
+                }
             }
         }
     }
-
+    return imported_files;
 }
 
 exports.addMetadataPropertyToDB = async (property_key) => {
@@ -487,6 +497,7 @@ exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
 
     let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
+        const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         const archive_path = uuid ? path.join(usersFileFolder, uuid, 'archives', `archive_${type}.txt`) : path.join('appdata', 'archives', `archive_${type}.txt`);
 
         // get ID from JSON
@@ -745,6 +756,66 @@ exports.removeRecord = async (table, filter_obj) => {
     return !!(output['result']['ok']);
 }
 
+// exports.removeRecordsByUIDBulk = async (table, uids) => {
+//     // local db override
+//     if (using_local_db) {
+//         applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+//         return true;
+//     }
+
+//     const table_collection = database.collection(table);
+        
+//     let bulk = table_collection.initializeOrderedBulkOp(); // Initialize the Ordered Batch
+
+//     const item_ids_to_remove = 
+
+//     for (let i = 0; i < item_ids_to_update.length; i++) {
+//         const item_id_to_update = item_ids_to_update[i];
+//         bulk.find({[key_label]: item_id_to_update }).updateOne({
+//             "$set": update_obj[item_id_to_update]
+//         });
+//     }
+
+//     const output = await bulk.execute();
+//     return !!(output['result']['ok']);
+// }
+
+
+exports.findDuplicatesByKey = async (table, key) => {
+    let duplicates = [];
+    if (using_local_db) {
+        // this can probably be optimized
+        const all_records = await exports.getRecords(table);
+        const existing_records = {};
+        for (let i = 0; i < all_records.length; i++) {
+            const record = all_records[i];
+            const value = record[key];
+
+            if (existing_records[value]) {
+                duplicates.push(record);
+            }
+
+            existing_records[value] = true;
+        }
+        return duplicates;
+    }
+    
+    const duplicated_values = await database.collection(table).aggregate([
+        {"$group" : { "_id": `$${key}`, "count": { "$sum": 1 } } },
+        {"$match": {"_id" :{ "$ne" : null } , "count" : {"$gt": 1} } }, 
+        {"$project": {[key] : "$_id", "_id" : 0} }
+    ]).toArray();
+
+    for (let i = 0; i < duplicated_values.length; i++) {
+        const duplicated_value = duplicated_values[i];
+        const duplicated_records = await exports.getRecords(table, duplicated_value, false);
+        if (duplicated_records.length > 1) {
+            duplicates = duplicates.concat(duplicated_records.slice(1, duplicated_records.length));
+        }
+    }
+    return duplicates;
+}
+
 exports.removeAllRecords = async (table = null, filter_obj = null) => {
     // local db override
     const tables_to_remove = table ? [table] : tables_list;
@@ -918,6 +989,52 @@ const createDownloadsRecords = (downloads) => {
     return new_downloads;
 }
 
+exports.backupDB = async () => {
+    const backup_dir = path.join('appdata', 'db_backup');
+    fs.ensureDirSync(backup_dir);
+    const backup_file_name = `${using_local_db ? 'local' : 'remote'}_db.json.${Date.now()/1000}.bak`;
+    const path_to_backups = path.join(backup_dir, backup_file_name);
+
+    logger.verbose(`Backing up ${using_local_db ? 'local' : 'remote'} DB to ${path_to_backups}`);
+
+    const table_to_records = {};
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
+        table_to_records[table] = await exports.getRecords(table);
+    }
+
+    fs.writeJsonSync(path_to_backups, table_to_records);
+
+    return backup_file_name;
+}
+
+exports.restoreDB = async (file_name) => {
+    const path_to_backup = path.join('appdata', 'db_backup', file_name);
+
+    logger.debug('Reading database backup file.');
+    const table_to_records = fs.readJSONSync(path_to_backup);
+
+    if (!table_to_records) {
+        logger.error(`Failed to restore DB! Backup file '${path_to_backup}' could not be read.`);
+        return false;
+    }
+
+    logger.debug('Clearing database.');
+    await exports.removeAllRecords();
+
+    logger.debug('Database cleared! Beginning restore.');
+    let success = true;
+    for (let i = 0; i < tables_list.length; i++) {
+        const table = tables_list[i];
+        if (!table_to_records[table] || table_to_records[table].length === 0) continue;
+        success &= await exports.bulkInsertRecordsIntoTable(table, table_to_records[table]);
+    }
+
+    logger.debug('Restore finished!');
+
+    return success;
+}
+
 exports.transferDB = async (local_to_remote) => {
     const table_to_records = {};
     for (let i = 0; i < tables_list.length; i++) {
@@ -927,9 +1044,8 @@ exports.transferDB = async (local_to_remote) => {
 
     using_local_db = !local_to_remote;
     if (local_to_remote) {
-        // backup local DB
-        logger.debug('Backup up Local DB...');
-        await fs.copyFile('appdata/local_db.json', `appdata/local_db.json.${Date.now()/1000}.bak`);
+        logger.debug('Backup up DB...');
+        await exports.backupDB();
         const db_connected = await exports.connectToDB(5, true);
         if (!db_connected) {
             logger.error('Failed to transfer database - could not connect to MongoDB. Verify that your connection URL is valid.');
