@@ -21,7 +21,7 @@ FROM node:16-bullseye-slim as backend
 ENV NO_UPDATE_NOTIFIER=true
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
-COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
+COPY ["backend/", "/app/" ]
 RUN npm config set strict-ssl false && \
     npm install --prod
 
