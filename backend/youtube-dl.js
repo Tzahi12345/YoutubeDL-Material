@@ -6,6 +6,8 @@ const utils = require('./utils');
 const CONSTS = require('./consts');
 const config_api = require('./config.js');
 
+const OUTDATED_VERSION = "2020.00.00";
+
 const is_windows = process.platform === 'win32';
 
 const download_sources = {
@@ -31,7 +33,7 @@ exports.checkForYoutubeDLUpdate = async () => {
         let current_app_details_exists = fs.existsSync(CONSTS.DETAILS_BIN_PATH);
         if (!current_app_details_exists) {
             logger.warn(`Failed to get youtube-dl binary details at location '${CONSTS.DETAILS_BIN_PATH}'. Generating file...`);
-            fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2020.00.00", "downloader": default_downloader});
+            fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version": OUTDATED_VERSION, "downloader": default_downloader});
         }
         let current_app_details = JSON.parse(fs.readFileSync(CONSTS.DETAILS_BIN_PATH));
         let current_version = current_app_details['version'];
@@ -84,6 +86,18 @@ exports.checkForYoutubeDLUpdate = async () => {
 exports.updateYoutubeDL = async (latest_update_version) => {
     const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
     await download_sources[default_downloader]['func'](latest_update_version);
+}
+
+exports.verifyBinaryExistsLinux = () => {
+    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
+    if (!is_windows && details_json && details_json['path'].includes('.exe')) {
+        details_json['path'] = 'node_modules/youtube-dl/bin/youtube-dl';
+        details_json['exec'] = 'youtube-dl';
+        details_json['version'] = OUTDATED_VERSION;
+        fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
+
+        utils.restartServer();
+    }
 }
 
 async function downloadLatestYoutubeDLBinary(new_version) {

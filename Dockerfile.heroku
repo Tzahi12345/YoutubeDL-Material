@@ -1,0 +1,2 @@
+FROM tzahi12345/youtubedl-material:nightly
+CMD [ "pm2-runtime", "pm2.config.js" ]
