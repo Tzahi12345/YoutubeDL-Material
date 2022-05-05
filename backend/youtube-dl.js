@@ -90,7 +90,7 @@ exports.updateYoutubeDL = async (latest_update_version) => {
 
 exports.verifyBinaryExistsLinux = () => {
     const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
-    if (!is_windows && details_json && details_json['path'].includes('.exe')) {
+    if (!is_windows && details_json && details_json['path'] && details_json['path'].includes('.exe')) {
         details_json['path'] = 'node_modules/youtube-dl/bin/youtube-dl';
         details_json['exec'] = 'youtube-dl';
         details_json['version'] = OUTDATED_VERSION;
