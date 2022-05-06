@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS ffmpeg
+FROM ubuntu:20.04 AS ffmpeg
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -7,17 +7,16 @@ RUN sh ./docker-build.sh
 
 #--------------# Stage 2
 
-FROM ubuntu:22.04 as frontend
+FROM ubuntu:20.04 as frontend
 
 ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get -y install \
-  curl \
-  gnupg \
-  # Ubuntu 22.04 ships Node.JS 12 by default :)
+  curl && \
+  curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+  apt-get install -y gnupg \
   nodejs \
-  # needed on 21.10 and before, maybe not on 22.04 YARN: brings along npm, solves dependency conflicts,
-  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
-  npm && \
+  yarn && \
   apt-get install -f && \
   npm config set strict-ssl false && \
   npm install -g @angular/cli
@@ -32,7 +31,7 @@ RUN npm run build
 
 #--------------# Final Stage
 
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 ENV UID=1000 \
   GID=1000 \
