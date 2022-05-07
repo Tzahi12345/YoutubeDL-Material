@@ -1,10 +1,12 @@
+# Fetching our ffmpeg
 FROM ubuntu:22.04 AS ffmpeg
 ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND=noninteractive
-#COPY ffmpeg-fetch.sh .
-#RUN sh ./ffmpeg-fetch.sh
 RUN apt update && \
     apt install -y --no-install-recommends wget xz-utils ca-certificates
+# Disable using ffmpeg-fetch.sh and integrate in Dockerfile, in case of err 'mismatcth platform' we enable this for counter measure.
+#COPY ffmpeg-fetch.sh .
+#RUN sh ./ffmpeg-fetch.sh
 RUN case ${TARGETPLATFORM} in \
          "linux/amd64")  ARCH=amd64  ;; \
          "linux/arm64")  ARCH=arm64  ;; \
