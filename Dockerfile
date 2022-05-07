@@ -1,23 +1,9 @@
 # Fetching our ffmpeg
 FROM ubuntu:22.04 AS ffmpeg
-ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && \
-    apt install -y --no-install-recommends wget xz-utils ca-certificates
-# Disable using ffmpeg-fetch.sh and integrate in Dockerfile, in case of err 'mismatcth platform' we enable this for counter measure.
-#COPY ffmpeg-fetch.sh .
-#RUN sh ./ffmpeg-fetch.sh
-RUN case ${TARGETPLATFORM} in \
-         "linux/amd64")  ARCH=amd64  ;; \
-         "linux/arm64")  ARCH=arm64  ;; \
-         "linux/arm/v7")  ARCH=armhf  ;; \
-    esac \ 
-    && wget -O ffmpeg.txz -c -t 10 "https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-${ARCH}-static.tar.xz" && \
-    mkdir /tmp/ffmpeg && \
-    tar xf ffmpeg.txz -C /tmp/ffmpeg && \
-    cp /tmp/ffmpeg/*/ffmpeg /usr/local/bin/ffmpeg && \
-    cp /tmp/ffmpeg/*/ffprobe /usr/local/bin/ffprobe
-    
+# Use script due local build compability
+COPY ffmpeg-fetch.sh .
+RUN sh ./ffmpeg-fetch.sh
 
 # Create our Ubuntu 22.04 with node 16
 # Go to 20.04
