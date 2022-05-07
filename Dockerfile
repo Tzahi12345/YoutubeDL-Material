@@ -25,7 +25,7 @@ ENV GID=1000
 ENV USER=youtube
 ENV NO_UPDATE_NOTIFIER=true
 ENV PM2_HOME=/app/pm2
-RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER && \
+RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
     apt install -y --no-install-recommends curl ca-certificates && \
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
