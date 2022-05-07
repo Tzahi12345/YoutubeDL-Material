@@ -1,8 +1,21 @@
-# When using ubuntu:22.04 there is weird disconnection issue
-FROM debian:bullseye-slim AS ffmpeg
+FROM ubuntu:22.04 AS ffmpeg
+ARG TARGETPLATFORM
 ENV DEBIAN_FRONTEND=noninteractive
-COPY ffmpeg-fetch.sh .
-RUN sh ./ffmpeg-fetch.sh
+#COPY ffmpeg-fetch.sh .
+#RUN sh ./ffmpeg-fetch.sh
+RUN apt update && \
+    apt install -y --no-install-recommends wget xz-utils ca-certificates
+RUN case ${TARGETPLATFORM} in \
+         "linux/amd64")  ARCH=amd64  ;; \
+         "linux/arm64")  ARCH=arm64  ;; \
+         "linux/arm/v7")  ARCH=armhf  ;; \
+    esac \ 
+    && wget -O ffmpeg.txz -c -t 10 "https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-${ARCH}-static.tar.xz" && \
+    mkdir /tmp/ffmpeg && \
+    tar xf ffmpeg.txz -C /tmp/ffmpeg && \
+    cp /tmp/ffmpeg/*/ffmpeg /usr/local/bin/ffmpeg && \
+    cp /tmp/ffmpeg/*/ffprobe /usr/local/bin/ffprobe
+    
 
 # Create our Ubuntu 22.04 with node 16
 FROM ubuntu:22.04 AS base
@@ -53,9 +66,8 @@ COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
 COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
-
-#Add some persistence data
-VOLUME ["/app/appdata"]
+# Add some persistence data
+#VOLUME ["/app/appdata"]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
