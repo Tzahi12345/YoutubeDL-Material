@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY ffmpeg-fetch.sh .
 RUN sh ./ffmpeg-fetch.sh
 
+
 # Create our Ubuntu 22.04 with node 16
 # Go to 20.04
 FROM ubuntu:20.04 AS base
@@ -22,7 +23,8 @@ RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     npm -g install npm && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-        
+
+
 # Build frontend
 FROM base as frontend
 RUN npm install -g @angular/cli
@@ -41,6 +43,7 @@ COPY [ "backend/","/app/" ]
 RUN npm config set strict-ssl false && \
     npm install --prod && \
     ls -al
+
 
 # Final image
 FROM base
