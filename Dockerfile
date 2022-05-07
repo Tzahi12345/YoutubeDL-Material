@@ -18,7 +18,8 @@ RUN case ${TARGETPLATFORM} in \
     
 
 # Create our Ubuntu 22.04 with node 16
-FROM ubuntu:22.04 AS base
+# Go to 20.04
+FROM ubuntu:20.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
 ENV GID=1000
