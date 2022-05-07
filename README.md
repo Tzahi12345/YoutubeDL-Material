@@ -6,7 +6,7 @@
 [![GitHub issues badge](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
 [![License badge](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
 
-YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 13](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) 12 on the backend.
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 13](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) 16 on the backend.
 
 Now with [Docker](#Docker) support!
 
