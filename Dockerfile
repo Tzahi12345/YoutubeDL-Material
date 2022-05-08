@@ -1,75 +1,66 @@
+# Fetching our ffmpeg
 FROM ubuntu:22.04 AS ffmpeg
-
 ENV DEBIAN_FRONTEND=noninteractive
+# Use script due local build compability
+COPY ffmpeg-fetch.sh .
+RUN sh ./ffmpeg-fetch.sh
 
-COPY docker-build.sh .
-RUN sh ./docker-build.sh
 
-#--------------# Stage 2
-
-FROM ubuntu:22.04 as frontend
-
+# Create our Ubuntu 22.04 with node 16
+# Go to 20.04
+FROM ubuntu:20.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get -y install \
-  curl \
-  gnupg \
-  # Ubuntu 22.04 ships Node.JS 12 by default :)
-  nodejs \
-  # needed on 21.10 and before, maybe not on 22.04 YARN: brings along npm, solves dependency conflicts,
-  # spares us this spaghetti approach: https://stackoverflow.com/a/60547197
-  npm && \
-  apt-get install -f && \
-  npm config set strict-ssl false && \
-  npm install -g @angular/cli
+ENV UID=1000
+ENV GID=1000
+ENV USER=youtube
+ENV NO_UPDATE_NOTIFIER=true
+ENV PM2_HOME=/app/pm2
+RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
+    apt update && \
+    apt install -y --no-install-recommends curl ca-certificates && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt install -y --no-install-recommends nodejs && \
+    npm -g install npm && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
+
+# Build frontend
+FROM base as frontend
+RUN npm install -g @angular/cli
 WORKDIR /build
-COPY [ "package.json", "package-lock.json", "/build/" ]
-RUN npm install
-
-COPY [ "angular.json", "tsconfig.json", "/build/" ]
+COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
-RUN npm run build
+RUN npm install && \
+    npm run build && \
+    ls -al /build/backend/public
 
-#--------------# Final Stage
 
-FROM ubuntu:22.04
-
-ENV UID=1000 \
-  GID=1000 \
-  USER=youtube \
-  NO_UPDATE_NOTIFIER=true
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN groupadd -g $GID $USER && useradd --system -g $USER --uid $UID $USER
-
-RUN apt-get update && apt-get -y install \
-  npm \
-  python2 \
-  python3 \
-  gosu \
-  atomicparsley && \
-  apt-get install -f && \
-  apt-get autoremove --purge && \
-  apt-get autoremove && \
-  apt-get clean && \
-  rm -rf /var/lib/apt
-
+# Install backend deps
+FROM base as backend
 WORKDIR /app
+COPY [ "backend/","/app/" ]
+RUN npm config set strict-ssl false && \
+    npm install --prod && \
+    ls -al
+
+
+# Final image
+FROM base
+RUN npm install -g pm2 && \
+    apt update && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 atomicparsley && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+# User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
-COPY --chown=$UID:$GID [ "backend/package.json", "backend/package-lock.json", "/app/" ]
-ENV PM2_HOME=/app/pm2
-RUN npm config set strict-ssl false && \
-  npm install pm2 -g && \
-  npm install && chown -R $UID:$GID ./
-
-# needed for ubuntu, see #596
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
+COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
-COPY --chown=$UID:$GID [ "/backend/", "/app/" ]
+# Add some persistence data
+#VOLUME ["/app/appdata"]
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "pm2-runtime", "pm2.config.js" ]
+CMD [ "pm2-runtime","--raw","pm2.config.js" ]
