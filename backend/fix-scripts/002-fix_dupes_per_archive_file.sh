@@ -54,7 +54,7 @@ esac
 old_stty_cfg=$(stty -g)
 stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg          # Careful playing with stty
 if echo "$answer" | grep -iq "^y" ;then
-    printf "\nRunning jobs now... (this may take a while)\n"
+    printf "\n\nRunning jobs now... (this may take a while)\n"
 
     printf "\nBacking up directories...\n"
 
@@ -126,13 +126,15 @@ if echo "$answer" | grep -iq "^y" ;then
         if [ "$BEFORE" -ne "$AFTER" ]; then
           printf "\b✔ Compacted down to ${AFTER} lines from ${BEFORE}: ${file}\n"
           else
-          printf "\bℹ No action needed for file: ${file}\n"
+          printf "\bℹ No action ran for file: ${file}\n"
         fi
     done
     tput cnorm                                                     # show the cursor
     rm "$tmpfile"
 
-    printf "\n\n✔ Done.\n\n"
+    printf "\n\n✔ Done."
+    printf "\nℹ Please keep in mind that you may still want to"
+    printf "\n  run sanity checks against your archives!\n\n"
     exit
 else
     tput cnorm
