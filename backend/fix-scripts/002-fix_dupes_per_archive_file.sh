@@ -14,8 +14,8 @@ PATH_SUBSARCHIVE=/app/subscriptions/archives
 PATH_ONEOFFARCHIVE=/app/appdata/archives
 
 # Backup paths (substitute with your personal preference if you like)
-PATH_SUBSARCHIVEBKP=$PATH_SUBSARCHIVE-$(date +%Y%m%d)
-PATH_ONEOFFARCHIVEBKP=$PATH_ONEOFFARCHIVE-$(date +%Y%m%d)
+PATH_SUBSARCHIVEBKP=$PATH_SUBSARCHIVE-BKP-$(date +%Y%m%d%H%M%S)
+PATH_ONEOFFARCHIVEBKP=$PATH_ONEOFFARCHIVE-BKP-$(date +%Y%m%d%H%M%S)
 
 
 # Define Colors for TUI
@@ -101,7 +101,7 @@ if echo "$answer" | grep -iq "^y" ;then
         done
         BEFORE=$(wc -l < $tmpfile)
         AFTER=$(wc -l < $file)
-        if [[ "$AFTER" < "$BEFORE" ]]; then
+        if [[ "$AFTER" -ne "$BEFORE" ]]; then
           printf "\b✔ Compacted down to ${AFTER} lines from ${BEFORE}: ${file}\n"
           else
           printf "\bℹ No action needed for file: ${file}\n"
