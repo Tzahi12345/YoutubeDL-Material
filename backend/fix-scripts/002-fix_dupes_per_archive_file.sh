@@ -103,6 +103,8 @@ if echo "$answer" | grep -iq "^y" ;then
         AFTER=$(wc -l < $file)
         if [[ "$AFTER" < "$BEFORE" ]]; then
           printf "\b✔ Compacted down to ${AFTER} lines from ${BEFORE}: ${file}\n"
+          else
+          printf "\bℹ No action needed for file: ${file}\n"
         fi
     done
 
@@ -123,6 +125,8 @@ if echo "$answer" | grep -iq "^y" ;then
         AFTER=$(wc -l < $file)
         if [ "$BEFORE" -ne "$AFTER" ]; then
           printf "\b✔ Compacted down to ${AFTER} lines from ${BEFORE}: ${file}\n"
+          else
+          printf "\bℹ No action needed for file: ${file}\n"
         fi
     done
     tput cnorm                                                     # show the cursor
