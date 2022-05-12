@@ -235,6 +235,25 @@ describe('Database', async function() {
             assert(success);
         });
     });
+
+    describe('Local DB Filters', async function() {
+        it('Basic', async function() {
+            const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: 'test'}, 'find');
+            assert(result && result['test'] === 'test');
+        });
+
+        it('Regex', async function() {
+            const filter = {$regex: `\\w+\\d`, $options: 'i'};
+            const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: filter}, 'find');
+            assert(result && result['test'] === 'test1');
+        });
+
+        it('Not equals', async function() {
+            const filter = {$ne: 'test'};
+            const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: filter}, 'find');
+            assert(result && result['test'] === 'test1');
+        });
+    })
 });
 
 describe('Multi User', async function() {

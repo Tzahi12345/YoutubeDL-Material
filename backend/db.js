@@ -629,7 +629,7 @@ exports.bulkInsertRecordsIntoTable = async (table, docs) => {
 exports.getRecord = async (table, filter_obj) => {
     // local db override
     if (using_local_db) {
-        return applyFilterLocalDB(local_db.get(table), filter_obj, 'find').value();
+        return exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').value();
     }
 
     return await database.collection(table).findOne(filter_obj);
@@ -638,7 +638,7 @@ exports.getRecord = async (table, filter_obj) => {
 exports.getRecords = async (table, filter_obj = null, return_count = false, sort = null, range = null) => {
     // local db override
     if (using_local_db) {
-        let cursor = filter_obj ? applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').value() : local_db.get(table).value();
+        let cursor = filter_obj ? exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').value() : local_db.get(table).value();
         if (sort) {
             cursor = cursor.sort((a, b) => (a[sort['by']] > b[sort['by']] ? sort['order'] : sort['order']*-1));
         }
@@ -664,7 +664,7 @@ exports.getRecords = async (table, filter_obj = null, return_count = false, sort
 exports.updateRecord = async (table, filter_obj, update_obj) => {
     // local db override
     if (using_local_db) {
-        applyFilterLocalDB(local_db.get(table), filter_obj, 'find').assign(update_obj).write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').assign(update_obj).write();
         return true;
     }
 
@@ -677,7 +677,7 @@ exports.updateRecord = async (table, filter_obj, update_obj) => {
 exports.updateRecords = async (table, filter_obj, update_obj) => {
     // local db override
     if (using_local_db) {
-        applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').assign(update_obj).write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').assign(update_obj).write();
         return true;
     }
 
@@ -722,7 +722,7 @@ exports.bulkUpdateRecords = async (table, key_label, update_obj) => {
 exports.pushToRecordsArray = async (table, filter_obj, key, value) => {
     // local db override
     if (using_local_db) {
-        applyFilterLocalDB(local_db.get(table), filter_obj, 'find').get(key).push(value).write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').get(key).push(value).write();
         return true;
     }
 
@@ -733,7 +733,7 @@ exports.pushToRecordsArray = async (table, filter_obj, key, value) => {
 exports.pullFromRecordsArray = async (table, filter_obj, key, value) => {
     // local db override
     if (using_local_db) {
-        applyFilterLocalDB(local_db.get(table), filter_obj, 'find').get(key).pull(value).write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').get(key).pull(value).write();
         return true;
     }
 
@@ -746,7 +746,7 @@ exports.pullFromRecordsArray = async (table, filter_obj, key, value) => {
 exports.removeRecord = async (table, filter_obj) => {
     // local db override
     if (using_local_db) {
-        applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
         return true;
     }
 
@@ -757,7 +757,7 @@ exports.removeRecord = async (table, filter_obj) => {
 // exports.removeRecordsByUIDBulk = async (table, uids) => {
 //     // local db override
 //     if (using_local_db) {
-//         applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+//         exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
 //         return true;
 //     }
 
@@ -821,7 +821,7 @@ exports.removeAllRecords = async (table = null, filter_obj = null) => {
     if (using_local_db) {
         for (let i = 0; i < tables_to_remove.length; i++) {
             const table_to_remove = tables_to_remove[i];
-            if (filter_obj) applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
+            if (filter_obj) exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'remove').write();
             else local_db.assign({[table_to_remove]: []}).write();
             logger.debug(`Successfully removed records from ${table_to_remove}`);
         }
@@ -1075,8 +1075,13 @@ exports.transferDB = async (local_to_remote) => {
     This function is necessary to emulate mongodb's ability to search for null or missing values.
         A filter of null or undefined for a property will find docs that have that property missing, or have it
         null or undefined. We want that same functionality for the local DB as well
+
+        error:    {$ne: null}
+          ^            ^
+          |            |
+      filter_prop  filter_prop_value
 */
-const applyFilterLocalDB = (db_path, filter_obj, operation) => {
+exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
     const filter_props = Object.keys(filter_obj);
     const return_val = db_path[operation](record => {
         if (!filter_props) return true;
@@ -1088,8 +1093,10 @@ const applyFilterLocalDB = (db_path, filter_obj, operation) => {
                 filtered &= record[filter_prop] === undefined || record[filter_prop] === null
             } else {
                 if (typeof filter_prop_value === 'object') {
-                    if (filter_prop_value['$regex']) {
+                    if ('$regex' in filter_prop_value) {
                         filtered &= (record[filter_prop].search(new RegExp(filter_prop_value['$regex'], filter_prop_value['$options'])) !== -1);
+                    } else if ('$ne' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] !== filter_prop_value['$ne'];
                     }
                 } else {
                     filtered &= record[filter_prop] === filter_prop_value;
