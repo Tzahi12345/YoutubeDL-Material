@@ -2164,7 +2164,6 @@ components:
           type: boolean
         result:
           allOf:
-          - $ref: '#/components/schemas/file'
           - type: object
             properties:
               formats:
@@ -2556,28 +2555,6 @@ components:
           type: string
         passhash:
           type: string
-        files:
-          type: object
-          properties:
-            audio:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
-            video:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
-        playlists:
-          type: object
-          properties:
-            audio:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
-            video:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
         subscriptions:
           type: array
           items:
