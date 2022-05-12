@@ -841,17 +841,10 @@ paths:
         - Auth query parameter: []
       tags:
         - downloader
-  /api/clearFinishedDownloads:
+  /api/clearDownloads:
     post:
-      tags:
-        - downloader
-      summary: Clear finished downloads
-      operationId: post-api-clear-finished-downloads
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
+      summary: Clear multiple downloads
+      operationId: post-api-clear-downloads
       responses:
         '200':
           description: OK
@@ -859,8 +852,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearDownloadsRequest'
+        description: ''
+      description: "Clears multiple downloads based on a given filter."
       security:
         - Auth query parameter: []
+      tags:
+        - downloader
   /api/getTask:
     post:
       summary: Get info for one task
@@ -1607,6 +1609,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Download'
+    ClearDownloadsRequest:
+      type: object
+      properties:
+        clear_finished:
+          type: boolean
+        clear_paused:
+          type: boolean
+        clear_errors:
+          type: boolean
     GetTaskRequest:
       type: object
       properties:

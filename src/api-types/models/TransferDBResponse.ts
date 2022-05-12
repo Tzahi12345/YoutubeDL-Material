@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface TransferDBResponse {
+export type TransferDBResponse = {
     success: boolean;
     error?: string;
-}
+};

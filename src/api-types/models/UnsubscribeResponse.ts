@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface UnsubscribeResponse {
+export type UnsubscribeResponse = {
     success: boolean;
     error?: string;
-}
+};

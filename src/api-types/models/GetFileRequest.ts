@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface GetFileRequest {
+export type GetFileRequest = {
     /**
      * Video UID
      */
@@ -14,4 +14,4 @@ export interface GetFileRequest {
      * User UID
      */
     uuid?: string;
-}
+};

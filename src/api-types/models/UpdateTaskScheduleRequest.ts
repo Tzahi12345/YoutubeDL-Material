@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Schedule } from './Schedule';
+import type { Schedule } from './Schedule';
 
-export interface UpdateTaskScheduleRequest {
+export type UpdateTaskScheduleRequest = {
     task_key: string;
     new_schedule: Schedule;
-}
+};

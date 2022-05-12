@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GetSubscriptionRequest {
+export type GetSubscriptionRequest = {
     /**
      * Subscription ID
      */
@@ -12,4 +11,4 @@ export interface GetSubscriptionRequest {
      * Subscription name
      */
     name?: string;
-}
+};

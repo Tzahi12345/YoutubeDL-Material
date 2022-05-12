@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { User } from './User';
+import type { User } from './User';
 
-export interface RegisterResponse {
+export type RegisterResponse = {
     user?: User;
-}
+};

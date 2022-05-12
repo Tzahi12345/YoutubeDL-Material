@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface Download {
+export type Download = {
     uid: string;
     ui_uid?: string;
     running: boolean;
@@ -23,4 +22,4 @@ export interface Download {
     user_uid?: string;
     sub_id?: string;
     sub_name?: string;
-}
+};

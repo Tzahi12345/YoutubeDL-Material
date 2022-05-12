@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface Subscription {
+export type Subscription = {
     name: string;
     url: string;
     id: string;
@@ -17,4 +17,4 @@ export interface Subscription {
     custom_args?: string;
     custom_output?: string;
     videos: Array<any>;
-}
+};

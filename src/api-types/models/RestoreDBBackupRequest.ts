@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface RestoreDBBackupRequest {
+export type RestoreDBBackupRequest = {
     file_name: string;
-}
+};

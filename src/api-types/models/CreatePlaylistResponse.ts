@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Playlist } from './Playlist';
+import type { Playlist } from './Playlist';
 
-export interface CreatePlaylistResponse {
+export type CreatePlaylistResponse = {
     new_playlist: Playlist;
     success: boolean;
-}
+};

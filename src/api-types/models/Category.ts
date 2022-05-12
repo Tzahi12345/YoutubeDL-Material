@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { CategoryRule } from './CategoryRule';
+import type { CategoryRule } from './CategoryRule';
 
-export interface Category {
+export type Category = {
     name?: string;
     uid?: string;
     rules?: Array<CategoryRule>;
@@ -12,4 +12,4 @@ export interface Category {
      * Overrides file output for downloaded files in category
      */
     custom_output?: string;
-}
+};

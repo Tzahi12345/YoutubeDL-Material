@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface SharingToggle {
+export type SharingToggle = {
     uid: string;
     is_playlist?: boolean;
-}
+};

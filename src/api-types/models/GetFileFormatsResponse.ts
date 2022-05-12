@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { File } from './File';
+import type { file } from './file';
 
-export interface GetFileFormatsResponse {
+export type GetFileFormatsResponse = {
     success: boolean;
-    result: {
-formats?: Array<any>,
+    result: (file & {
+formats?: Array<any>;
+});
 };
-}

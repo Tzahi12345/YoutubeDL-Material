@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Download } from './Download';
+import type { Download } from './Download';
 
-export interface GetAllDownloadsResponse {
+export type GetAllDownloadsResponse = {
     downloads?: Array<Download>;
-}
+};

@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface CreateCategoryRequest {
+export type CreateCategoryRequest = {
     name: string;
-}
+};

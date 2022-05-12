@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface inline_response_200_15 {
+export type inline_response_200_15 = {
     is_set: boolean;
-}
+};

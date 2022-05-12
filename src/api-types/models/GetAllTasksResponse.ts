@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Task } from './Task';
+import type { Task } from './Task';
 
-export interface GetAllTasksResponse {
+export type GetAllTasksResponse = {
     tasks?: Array<Task>;
-}
+};

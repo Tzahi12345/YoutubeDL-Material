@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Category } from './Category';
+import type { Category } from './Category';
 
-export interface CreateCategoryResponse {
+export type CreateCategoryResponse = {
     new_category?: Category;
     success?: boolean;
-}
+};

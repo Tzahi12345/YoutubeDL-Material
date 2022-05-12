@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface RegisterRequest {
+export type RegisterRequest = {
     userid: string;
     username: string;
     password: string;
-}
+};

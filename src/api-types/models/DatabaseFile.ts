@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface DatabaseFile {
+export type DatabaseFile = {
     id: string;
     title: string;
     thumbnailURL: string;
@@ -19,4 +18,4 @@ export interface DatabaseFile {
     upload_date: string;
     uid: string;
     sharingEnabled?: boolean;
-}
+};

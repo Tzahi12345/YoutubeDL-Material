@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface DeletePlaylistRequest {
+export type DeletePlaylistRequest = {
     playlist_id: string;
     type: FileType;
-}
+};

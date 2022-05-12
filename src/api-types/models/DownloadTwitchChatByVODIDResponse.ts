@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { TwitchChatMessage } from './TwitchChatMessage';
+import type { TwitchChatMessage } from './TwitchChatMessage';
 
-export interface DownloadTwitchChatByVODIDResponse {
+export type DownloadTwitchChatByVODIDResponse = {
     chat: Array<TwitchChatMessage>;
-}
+};

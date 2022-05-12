@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface CreatePlaylistRequest {
+export type CreatePlaylistRequest = {
     playlistName: string;
     uids: Array<string>;
     type: FileType;
     thumbnailURL: string;
-}
+};

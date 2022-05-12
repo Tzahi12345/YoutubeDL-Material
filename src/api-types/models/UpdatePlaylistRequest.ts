@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Playlist } from './Playlist';
+import type { Playlist } from './Playlist';
 
-export interface UpdatePlaylistRequest {
+export type UpdatePlaylistRequest = {
     playlist: Playlist;
-}
+};

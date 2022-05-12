@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { BaseChangePermissionsRequest } from './BaseChangePermissionsRequest';
+import type { BaseChangePermissionsRequest } from './BaseChangePermissionsRequest';
 
-export interface ChangeRolePermissionsRequest extends BaseChangePermissionsRequest {
-    role: string;
-}
+export type ChangeRolePermissionsRequest = (BaseChangePermissionsRequest & {
+role: string;
+});

@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface DeleteUserRequest {
+export type DeleteUserRequest = {
     uid: string;
-}
+};

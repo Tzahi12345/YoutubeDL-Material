@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Task } from './Task';
+import type { Task } from './Task';
 
-export interface GetTaskResponse {
+export type GetTaskResponse = {
     task?: Task;
-}
+};

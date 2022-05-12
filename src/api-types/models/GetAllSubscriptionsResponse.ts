@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Subscription } from './Subscription';
+import type { Subscription } from './Subscription';
 
-export interface GetAllSubscriptionsResponse {
+export type GetAllSubscriptionsResponse = {
     subscriptions: Array<Subscription>;
-}
+};

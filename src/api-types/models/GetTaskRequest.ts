@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GetTaskRequest {
+export type GetTaskRequest = {
     task_key: string;
-}
+};

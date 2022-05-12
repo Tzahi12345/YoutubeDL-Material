@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
-import { Playlist } from './Playlist';
+import type { FileType } from './FileType';
+import type { Playlist } from './Playlist';
 
-export interface GetPlaylistResponse {
+export type GetPlaylistResponse = {
     playlist: Playlist;
     type: FileType;
     success: boolean;
-}
+};

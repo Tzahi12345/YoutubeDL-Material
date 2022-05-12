@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { UserPermission } from './UserPermission';
-import { YesNo } from './YesNo';
+import type { UserPermission } from './UserPermission';
+import type { YesNo } from './YesNo';
 
-export interface BaseChangePermissionsRequest {
+export type BaseChangePermissionsRequest = {
     permission: UserPermission;
     new_value: YesNo;
-}
+};

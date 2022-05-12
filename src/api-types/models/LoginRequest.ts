@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface LoginRequest {
+export type LoginRequest = {
     username: string;
     password: string;
-}
+};

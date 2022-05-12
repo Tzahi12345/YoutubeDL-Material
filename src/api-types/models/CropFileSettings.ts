@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface CropFileSettings {
+export type CropFileSettings = {
     cropFileStart: number;
     cropFileEnd: number;
-}
+};
