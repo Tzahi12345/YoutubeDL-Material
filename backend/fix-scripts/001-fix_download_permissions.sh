@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # INTERACTIVE PERMISSIONS FIX SCRIPT FOR YTDL-M
 # Date: 2022-05-03

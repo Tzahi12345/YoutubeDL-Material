@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # INTERACTIVE ARCHIVE-DUPE-ENTRY FIX SCRIPT FOR YTDL-M
 # Date: 2022-05-09
