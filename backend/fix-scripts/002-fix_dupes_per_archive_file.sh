@@ -42,11 +42,11 @@ i=0
 # Ask to proceed or cancel, exit on missing paths
 case $i in
   0)
-    printf "\n\n  Couldn't find any archive location path to fix dupes for! \n\nPlease edit this script to configure!"
+    printf "\n\n  Couldn't find any archive location path! \n\nPlease edit this script to configure!"
     tput cnorm
     exit 2;;
   2)
-    printf "\n\n  Found all archive locations to fix dupes for. \n\nProceed? (Y/N)";;
+    printf "\n\n  Found all archive locations. \n\nProceed? (Y/N)";;
   *)
     printf "\n\n  Only found ${i} out of 2 archive locations! Something about this script's config must be wrong. \n\nProceed anyways? (Y/N)";;
 esac
@@ -133,7 +133,7 @@ if echo "$answer" | grep -iq "^y" ;then
 
     printf "\n\n✔ Done."
     printf "\nℹ Please keep in mind that you may still want to"
-    printf "\n  run sanity checks against your archives!\n\n"
+    printf "\n  run corruption checks against your archives!\n\n"
     exit
 else
     tput cnorm
