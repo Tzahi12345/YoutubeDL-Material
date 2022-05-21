@@ -336,9 +336,7 @@
         <note priority="1" from="description">YT Password placeholder</note>
       </trans-unit>
       <trans-unit id="4a0dada6e841a425de3e5006e6a04df26c644fa5" datatype="html">
-        <source>
-                        Audio
-                    </source>
+        <source>Audio</source>
         <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -347,9 +345,7 @@
         <note priority="1" from="description">Audio files title</note>
       </trans-unit>
       <trans-unit id="9779715ac05308973d8f1c8658b29b986e92450f" datatype="html">
-        <source>
-                        Your audio files are here
-                    </source>
+        <source>Your audio files are here</source>
         <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -375,9 +371,7 @@
         <note priority="1" from="description">Playlists title</note>
       </trans-unit>
       <trans-unit id="78bd81adb4609b68cfa4c589222bdc233ba1faaa" datatype="html">
-        <source>
-                        No playlists available. Create one from your downloading audio files by clicking the blue plus button.
-                    </source>
+        <source>No playlists available. Create one from your downloading audio files by clicking the blue plus button.</source>
         <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -386,9 +380,7 @@
         <note priority="1" from="description">No video playlists available text</note>
       </trans-unit>
       <trans-unit id="9d2b62bb0b91e2e17fb4177a7e3d6756a2e6ee33" datatype="html">
-        <source>
-                        Video
-                    </source>
+        <source>Video</source>
         <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -397,9 +389,7 @@
         <note priority="1" from="description">Video files title</note>
       </trans-unit>
       <trans-unit id="960582a8b9d7942716866ecfb7718309728f2916" datatype="html">
-        <source>
-                        Your video files are here
-                    </source>
+        <source>Your video files are here</source>
         <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -408,9 +398,7 @@
         <note priority="1" from="description">Video files description</note>
       </trans-unit>
       <trans-unit id="0f59c46ca29e9725898093c9ea6b586730d0624e" datatype="html">
-        <source>
-                        No playlists available. Create one from your downloading video files by clicking the blue plus button.
-                    </source>
+        <source>No playlists available. Create one from your downloading video files by clicking the blue plus button.</source>
         <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
@@ -1453,7 +1441,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
-        <target>О</target>
+        <target>О программе</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1462,7 +1450,7 @@
       </trans-unit>
       <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html">
         <source>Home</source>
-        <target>Дом</target>
+        <target>Домашняя страница</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
           <context context-type="linenumber">43</context>
@@ -2894,7 +2882,7 @@
       </trans-unit>
       <trans-unit id="8700121026680200191" datatype="html">
         <source>Clear</source>
-        <target>Стереть</target>
+        <target>Очистить</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">131</context>
@@ -2902,7 +2890,7 @@
       </trans-unit>
       <trans-unit id="8384225360105280028" datatype="html">
         <source>Complete</source>
-        <target>Закончено</target>
+        <target>Завершено</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">61</context>
@@ -2910,7 +2898,7 @@
       </trans-unit>
       <trans-unit id="7180002287537831534" datatype="html">
         <source>Clear finished downloads</source>
-        <target>Очистить законченны загрузки</target>
+        <target>Очистить завершённые загрузки</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">129</context>
@@ -2960,7 +2948,7 @@
       </trans-unit>
       <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
         <source>Clear</source>
-        <target>Стереть</target>
+        <target>Очистить</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">68</context>
