@@ -13,7 +13,7 @@
       </trans-unit>
       <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
         <source>Name</source>
-        <target>Имя</target>
+        <target>Название</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">5</context>
@@ -124,7 +124,7 @@
       </trans-unit>
       <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html">
         <source>Modify</source>
-        <target>Модифицировать</target>
+        <target>Изменить</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">85</context>
@@ -289,7 +289,7 @@
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target>Путь является относительным к пути загрузки конфигурации. Не включайте расширение.</target>
+        <target state="needs-translation">Путь является относительным к пути загрузки конфигурации. Не включайте расширение.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
           <context context-type="linenumber">131</context>
@@ -421,7 +421,7 @@
       </trans-unit>
       <trans-unit id="c52db455cca9109ee47e1a612c3f4117c09eb71b" datatype="html">
         <source>URL:</source>
-        <target>URL-адрес:</target>
+        <target>Ссылка:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -511,7 +511,7 @@
       </trans-unit>
       <trans-unit id="4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1" datatype="html">
         <source>Modify playlist</source>
-        <target>Изменить список воспроизведения</target>
+        <target>Изменить плейлист</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/modify-playlist/modify-playlist.component.html</context>
           <context context-type="linenumber">1</context>
@@ -590,7 +590,7 @@
       </trans-unit>
       <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html">
         <source>Upload new cookies</source>
-        <target>Загрузка новых файлов cookie</target>
+        <target>Загрузка новых cookie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -630,7 +630,7 @@
       </trans-unit>
       <trans-unit id="801b98c6f02fe3b32f6afa3ee854c99ed83474e6" datatype="html">
         <source>URL</source>
-        <target>URL-адрес</target>
+        <target>Ссылка</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1271,7 +1271,7 @@
       </trans-unit>
       <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
-        <target>это загрузчик YouTube с открытым исходным кодом, созданный в соответствии со спецификациями Material Design от Google. Вы можете легко загружать любимые видеоролики в виде видео- или аудиофайлов и даже подписываться на любимые каналы и плейлисты, чтобы быть в курсе их новых видео.</target>
+        <target>это загрузчик YouTube с открытым исходным кодом, созданный в соответствии со спецификациями Material Design от Google. Вы можете легко загружать любимые видеоролики в виде видео- или аудиофайлов и даже подписываться на любимые каналы и плейлисты, чтобы быть в курсе новых видео.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1334,7 +1334,7 @@
       </trans-unit>
       <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html">
         <source>to create an issue!</source>
-        <target>чтобы создать проблему!</target>
+        <target>чтобы описать проблему!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">25</context>
@@ -1405,7 +1405,7 @@
       </trans-unit>
       <trans-unit id="a1dbca87b9f36d2b06a5cbcffb5814c4ae9b798a" datatype="html">
         <source>Create admin account</source>
-        <target>Создайте учетную запись администратора</target>
+        <target>Создание учетной записи администратора</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1414,7 +1414,7 @@
       </trans-unit>
       <trans-unit id="2d2adf3ca26a676bca2269295b7455a26fd26980" datatype="html">
         <source>No default admin account detected. This will create and set the password for an admin account with the user name as 'admin'.</source>
-        <target>Учетная запись администратора по умолчанию не обнаружена. Это создаст и установит пароль для учетной записи администратора с именем пользователя 'admin'.</target>
+        <target state="needs-translation">Учетная запись администратора по умолчанию не обнаружена. Это создаст и установит пароль для учетной записи администратора с именем пользователя 'admin'.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">5</context>
@@ -1513,7 +1513,7 @@
       </trans-unit>
       <trans-unit id="6580b6a950d952df847cb3d8e7176720a740adc8" datatype="html">
         <source>Use timestamp</source>
-        <target>Используйте метку времени</target>
+        <target>Использовать метку времени</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1607,7 +1607,7 @@
       </trans-unit>
       <trans-unit id="93efc99ae087fc116de708ecd3ace86ca237cf30" datatype="html">
         <source>The playlist or channel URL</source>
-        <target>URL-адрес списка воспроизведения или канала</target>
+        <target>Ссылка на плейлист или канал</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1625,7 +1625,7 @@
       </trans-unit>
       <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html">
         <source>Download all uploads</source>
-        <target>Загрузить все загруженные файлы</target>
+        <target state="needs-translation">Загрузить все загруженные файлы</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1634,7 +1634,7 @@
       </trans-unit>
       <trans-unit id="28a678e9cabf86e44c32594c43fa0e890135c20f" datatype="html">
         <source>Download videos uploaded in the last</source>
-        <target>Скачать видео, загруженное за последние время</target>
+        <target>Скачать видео, загруженные за последнее время</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -1643,7 +1643,7 @@
       </trans-unit>
       <trans-unit id="c76a955642714b8949ff3e4b4990864a2e2cac95" datatype="html">
         <source>Audio-only mode</source>
-        <target>Только аудио режим</target>
+        <target>Только звук</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">38</context>
@@ -1652,7 +1652,7 @@
       </trans-unit>
       <trans-unit id="408ca4911457e84a348cecf214f02c69289aa8f1" datatype="html">
         <source>Streaming-only mode</source>
-        <target>Режим только для потокового вещания</target>
+        <target>Только потоковое вещание</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1670,7 +1670,7 @@
       </trans-unit>
       <trans-unit id="98b6ec9ec138186d663e64770267b67334353d63" datatype="html">
         <source>Custom file output</source>
-        <target>Пользовательский вывод файлов</target>
+        <target state="needs-translation">Пользовательский файл для вывода</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">57</context>
@@ -1715,7 +1715,7 @@
       </trans-unit>
       <trans-unit id="3042bd3ad8dffcfeca5fd1ae6159fd1047434e95" datatype="html">
         <source>Unsubscribe</source>
-        <target>Отписаться от рассылки</target>
+        <target>Отписаться</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -1917,7 +1917,7 @@
       </trans-unit>
       <trans-unit id="6498fa1b8f563988f769654a75411bb8060134b9" datatype="html">
         <source>Set new password</source>
-        <target>Установите новый пароль</target>
+        <target>Задать новый пароль</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">10</context>
@@ -2033,7 +2033,7 @@
       </trans-unit>
       <trans-unit id="56a2a773fbd5a6b9ac2e6b89d29d70a2ed0f3227" datatype="html">
         <source>See less.</source>
-        <target>Смотреть меньше.</target>
+        <target>Закрыть.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2042,7 +2042,7 @@
       </trans-unit>
       <trans-unit id="ddc31f2885b1b33a7651963254b0c197f2a64086" datatype="html">
         <source>See more.</source>
-        <target>См. подробнее.</target>
+        <target>Раскрыть.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -2087,7 +2087,7 @@
       </trans-unit>
       <trans-unit id="8a0bda4c47f10b2423ff183acefbf70d4ab52ea2" datatype="html">
         <source>Clear logs</source>
-        <target>Очистить журналы</target>
+        <target>Очистить журнал</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.html</context>
           <context context-type="linenumber">34</context>
@@ -2392,7 +2392,7 @@
       </trans-unit>
       <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html">
         <source>Download Twitch Chat</source>
-        <target>Скачать Чат Twitch</target>
+        <target>Скачать чат Twitch</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.html</context>
           <context context-type="linenumber">10</context>
@@ -2419,7 +2419,7 @@
       </trans-unit>
       <trans-unit id="c3b0b86523f1d10e84a71f9b188d54913a11af3b" datatype="html">
         <source>Editing category</source>
-        <target>Категория редактирования</target>
+        <target>Редактирование категории</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2437,7 +2437,7 @@
       </trans-unit>
       <trans-unit id="3697f8583ea42868aa269489ad366103d94aece7" datatype="html">
         <source>Editing</source>
-        <target>Редактирование</target>
+        <target>Правка</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2482,7 +2482,7 @@
       </trans-unit>
       <trans-unit id="5caadefa4143cf6766a621b0f54f91f373a1f164" datatype="html">
         <source>Add content</source>
-        <target>Добавить содержание</target>
+        <target state="needs-translation">Добавить содержание</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2491,7 +2491,7 @@
       </trans-unit>
       <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html">
         <source>NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
-        <target>ПРИМЕЧАНИЕ: Загрузка новых файлов cookie отменяет предыдущие файлы cookie. Также обратите внимание, что файлы cookie используются в масштабах всего экземпляра, а не каждого пользователя.</target>
+        <target state="needs-translation">ПРИМЕЧАНИЕ: Загрузка новых cookie отменяет предыдущие cookie. Также обратите внимание, что cookie используются в масштабах всего экземпляра, а не каждого пользователя.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2534,7 +2534,7 @@
       </trans-unit>
       <trans-unit id="d641b8fa5ac5e85114c733b1f7de6976bd091f70" datatype="html">
         <source>Max quality</source>
-        <target>Максимальное качество</target>
+        <target>Лучшее качество</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">40</context>
@@ -2873,7 +2873,7 @@
       </trans-unit>
       <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html">
         <source>Build date:</source>
-        <target>Дата постройки:</target>
+        <target>Дата сборки:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">33</context>
@@ -3022,7 +3022,7 @@
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
         <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target>Ошибка для <x id="url" equiv-text="download['url']"/></target>
+        <target>Ошибка с <x id="url" equiv-text="download['url']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
@@ -3106,7 +3106,7 @@
       </trans-unit>
       <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html">
         <source>Docker tag:</source>
-        <target>Тег Docker:</target>
+        <target>Метка Docker:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">28</context>
@@ -3215,7 +3215,7 @@
       </trans-unit>
       <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html">
         <source>Busy</source>
-        <target>Занято</target>
+        <target state="needs-translation">Занято</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">36</context>
