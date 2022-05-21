@@ -732,7 +732,7 @@
         <note priority="1" from="description">Allow subscriptions setting</note>
       </trans-unit>
       <trans-unit id="4bee2a4bef2d26d37c9b353c278e24e5cd309ce3" datatype="html">
-        <source>Base bath for subscriptions</source>
+        <source>Subscriptions base path</source>
         <target>Базовый путь для подписок</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
@@ -2748,8 +2748,8 @@
         <note priority="1" from="description">Download rate limit input hint</note>
       </trans-unit>
       <trans-unit id="7220285196408439810" datatype="html">
-        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
-        <target>Загрузка для <x id="url" equiv-text="d, cropF"/> выла добавлена в очередь!</target>
+        <source>Download for <x id="url" equiv-text="url"/> has been queued!</source>
+        <target>Загрузка для <x id="url" equiv-text="url"/> была добавлена в очередь!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">469</context>
@@ -3021,8 +3021,8 @@
         <note priority="1" from="description">Progress</note>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="});      retu"/></source>
-        <target>Ошибка для <x id="url" equiv-text="});      retu"/></target>
+        <source>Error for <x id="url" equiv-text="download['url']"/></source>
+        <target>Ошибка для <x id="url" equiv-text="download['url']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
@@ -3163,6 +3163,296 @@
           <context context-type="linenumber">31</context>
         </context-group>
         <note priority="1" from="description">Commit hash</note>
+      </trans-unit>
+      <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
+        <source>Tasks</source>
+        <target>Задачи</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">Navigation menu Tasks Page title</note>
+      </trans-unit>
+      <trans-unit id="84a36cb75660b736773fe36ffa3d54f0f0fe363e" datatype="html">
+        <source>N/A</source>
+        <target>Неизвестно</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">N/A</note>
+      </trans-unit>
+      <trans-unit id="e4c3cd97461b220b9cea67cfe08c5399799cfeed" datatype="html">
+        <source>Last ran</source>
+        <target>Последний запуск</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <note priority="1" from="description">Last ran</note>
+      </trans-unit>
+      <trans-unit id="698f716f927f633b16cbe2308d90b2dba51f7556" datatype="html">
+        <source>Last confirmed</source>
+        <target>Последние подтверждённые</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">Last confirmed</note>
+      </trans-unit>
+      <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
+        <source>Status</source>
+        <target>Статус</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <note priority="1" from="description">Status</note>
+      </trans-unit>
+      <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html">
+        <source>Busy</source>
+        <target>Занято</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <note priority="1" from="description">Busy</note>
+      </trans-unit>
+      <trans-unit id="7e121a443a8e9d92218f987001b650c59504d815" datatype="html">
+        <source>Scheduled for</source>
+        <target>Отложено для</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+        <note priority="1" from="description">Scheduled</note>
+      </trans-unit>
+      <trans-unit id="3b7d6ff5d14ab177ce3e2d217b1927fb2e4aefd1" datatype="html">
+        <source>Not scheduled</source>
+        <target>Не отложено</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">Not scheduled</note>
+      </trans-unit>
+      <trans-unit id="5ff9ae1f4c26bf2ddf6e9d5e4136916c5ce6a941" datatype="html">
+        <source>Clear missing files from DB:</source>
+        <target>Очистка потерянных файлов из базы данных:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+        <note priority="1" from="description">Clear missing files from DB</note>
+      </trans-unit>
+      <trans-unit id="4391397241847e675f6c38bbdec6b2883157fb1a" datatype="html">
+        <source>Clear duplicate files from DB:</source>
+        <target>Очистка дубликатов файлов из базы данных:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <note priority="1" from="description">Clear duplicate files from DB</note>
+      </trans-unit>
+      <trans-unit id="9562dd1e902acc4cc6a6e09cba66a2775daf7794" datatype="html">
+        <source>Update binary to:</source>
+        <target>Обновить бинарный файл на:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <note priority="1" from="description">Update binary to</note>
+      </trans-unit>
+      <trans-unit id="9b3d305551358858e1892169a94527e0cc4dbf5b" datatype="html">
+        <source>Run</source>
+        <target>Запустить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <note priority="1" from="description">Run</note>
+      </trans-unit>
+      <trans-unit id="4a4f46a2dcec36bd5c8c371ceee55c2226dec27f" datatype="html">
+        <source>Schedule</source>
+        <target>Отложить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+        <note priority="1" from="description">Schedule</note>
+      </trans-unit>
+      <trans-unit id="40bd7093f5fbd3fbeff9a50baaf5d4c8416add1e" datatype="html">
+        <source>Restore DB from backup</source>
+        <target>Восстановить базу данных из резервной копии</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">Restore DB from backup button</note>
+      </trans-unit>
+      <trans-unit id="f8a2361f3bd8fb05bf92080e2755bddd56ab64d7" datatype="html">
+        <source>Reset tasks</source>
+        <target>Сбросить задачи</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+        <note priority="1" from="description">Reset tasks button</note>
+      </trans-unit>
+      <trans-unit id="5e96c9d4528bf259da3944daac3171d7462b065a" datatype="html">
+        <source>No tasks available!</source>
+        <target>Нет доступных задач!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+        <note priority="1" from="description">No tasks label</note>
+      </trans-unit>
+      <trans-unit id="5615896113581458384" datatype="html">
+        <source>Successfully ran task!</source>
+        <target>Задача успешно запущена!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2106110452479146311" datatype="html">
+        <source>Failed to run task!</source>
+        <target>Не удалось запустить задачу!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4707127982271899773" datatype="html">
+        <source>Successfully confirmed task!</source>
+        <target>Задача успешно подтверждена!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4334913030311371594" datatype="html">
+        <source>Would you like to reset your tasks? All your schedules will be removed as well.</source>
+        <target>Хотите ли вы сбросить ваши задачи? Все отложенные задачи также будут удалены.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d5cec7468241d72cafd86ad1af6d55b09a6e3ae5" datatype="html">
+        <source>Restore</source>
+        <target>Восстановить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <note priority="1" from="description">Restore button</note>
+      </trans-unit>
+      <trans-unit id="998793c78895d53576f462054f13d6e515e923d9" datatype="html">
+        <source>Update task schedule</source>
+        <target>Обновить расписание задачи</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">Update task schedule</note>
+      </trans-unit>
+      <trans-unit id="f50a33d3c339f8f4a465141f8caa5d2d8c005251" datatype="html">
+        <source>Enabled</source>
+        <target>Включено</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="description">Enabled</note>
+      </trans-unit>
+      <trans-unit id="67aed6c588eb854f2f30ef642e85147da0027a61" datatype="html">
+        <source>Recurring</source>
+        <target>Повторяющиеся</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Recurring</note>
+      </trans-unit>
+      <trans-unit id="047f50bc5b5d17b5bec0196355953e1a5c590ddb" datatype="html">
+        <source>Update</source>
+        <target>Обновить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <note priority="1" from="description">Update button</note>
+      </trans-unit>
+      <trans-unit id="fd374bee82dab66055b933496860f82b7b780159" datatype="html">
+        <source>Global custom args for downloads on the home page. (Set args for subscriptions for each subscriptions separately!) Args are delimited using two commas like so: ,,</source>
+        <target>Глобальные пользовательские аргументы для загрузок на домашней странице. (Установите аргументы подписок для каждой подписки отдельно!) Аргументы разделяются, используя две запятые, как здесь: ,,</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">128</context>
+        </context-group>
+        <note priority="1" from="description">Custom args setting input hint</note>
+      </trans-unit>
+      <trans-unit id="5588424857086384816" datatype="html">
+        <source>Reset tasks</source>
+        <target>Сбросить задачи</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9121124215111024650" datatype="html">
+        <source>Failed to confirm task!</source>
+        <target>Не удалось подтвердить задачу!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7808756054397155068" datatype="html">
+        <source>Reset</source>
+        <target>Сбросить</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">134</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1709994363138824316" datatype="html">
+        <source>Failed to reset tasks!</source>
+        <target>Не удалось сбросить задачи!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">144</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">147</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8612475568724527886" datatype="html">
+        <source>Tasks successfully reset!</source>
+        <target>Задачи успешно сброшены!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">142</context>
+        </context-group>
       </trans-unit>
     </body>
   </file>
