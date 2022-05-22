@@ -95,6 +95,7 @@ import {
     UpdateTaskDataRequest,
     RestoreDBBackupRequest,
     Schedule,
+    ClearDownloadsRequest
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -176,7 +177,7 @@ export class PostsService implements CanActivate {
         const redirect_not_required = window.location.href.includes('/player') || window.location.href.includes('/login');
 
         // get config
-        this.loadNavItems().subscribe(res => {
+        this.getConfig().subscribe(res => {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
@@ -252,7 +253,7 @@ export class PostsService implements CanActivate {
     }
 
     reloadConfig() {
-        this.loadNavItems().subscribe(res => {
+        this.getConfig().subscribe(res => {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
@@ -313,7 +314,7 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'restartServer', {}, this.httpOptions);
     }
 
-    loadNavItems() {
+    getConfig() {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');
         } else {
@@ -579,8 +580,9 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'clearDownload', body, this.httpOptions);
     }
 
-    clearFinishedDownloads() {
-        return this.http.post<SuccessObject>(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    clearDownloads(clear_finished: boolean, clear_paused: boolean, clear_errors: boolean) {
+        const body: ClearDownloadsRequest = {clear_finished: clear_finished, clear_paused: clear_paused, clear_errors: clear_errors};
+        return this.http.post<SuccessObject>(this.path + 'clearDownloads', body, this.httpOptions);
     }
 
     getTasks() {

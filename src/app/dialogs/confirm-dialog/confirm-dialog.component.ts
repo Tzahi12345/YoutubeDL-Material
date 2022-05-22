@@ -8,10 +8,13 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class ConfirmDialogComponent implements OnInit {
 
+  dialogType = 'text';
   dialogTitle = 'Confirm';
   dialogText = 'Would you like to confirm?';
   submitText = 'Yes'
-  cancelText = null;
+  cancelText = $localize`Cancel`;
+  list: { key: string, title: string }[] = [];
+  selected_items = [];
   submitClicked = false;
   closeOnSubmit = true;
 
@@ -21,13 +24,15 @@ export class ConfirmDialogComponent implements OnInit {
   warnSubmitColor = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmDialogComponent>) {
-    if (this.data.dialogTitle !== undefined) { this.dialogTitle = this.data.dialogTitle }
-    if (this.data.dialogText !== undefined) { this.dialogText = this.data.dialogText }
-    if (this.data.submitText !== undefined) { this.submitText = this.data.submitText }
-    if (this.data.cancelText !== undefined) { this.cancelText = this.data.cancelText }
+    if (this.data.dialogTitle     !== undefined) { this.dialogTitle     = this.data.dialogTitle }
+    if (this.data.dialogType      !== undefined) { this.dialogType      = this.data.dialogType  }
+    if (this.data.dialogText      !== undefined) { this.dialogText      = this.data.dialogText }
+    if (this.data.list            !== undefined) { this.list            = this.data.list }
+    if (this.data.submitText      !== undefined) { this.submitText      = this.data.submitText }
+    if (this.data.cancelText      !== undefined) { this.cancelText      = this.data.cancelText }
     if (this.data.warnSubmitColor !== undefined) { this.warnSubmitColor = this.data.warnSubmitColor }
     if (this.data.warnSubmitColor !== undefined) { this.warnSubmitColor = this.data.warnSubmitColor }
-    if (this.data.closeOnSubmit !== undefined) { this.closeOnSubmit = this.data.closeOnSubmit }
+    if (this.data.closeOnSubmit   !== undefined) { this.closeOnSubmit   = this.data.closeOnSubmit }
 
     // checks if emitter exists, if so don't autoclose as it should be handled by caller
     if (this.data.doneEmitter) {
@@ -36,7 +41,7 @@ export class ConfirmDialogComponent implements OnInit {
     }
   }
 
-  confirmClicked() {
+  confirmClicked(): void {
     if (this.onlyEmitOnDone) {
       this.doneEmitter.emit(true);
       if (this.closeOnSubmit) this.submitClicked = true;
