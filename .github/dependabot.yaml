@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "github-actions"
-    directory: "./github/workflows"
+    directory: "/.github/workflows"
     schedule:
       interval: "daily"
   - package-ecosystem: "npm"
