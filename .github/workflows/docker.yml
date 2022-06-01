@@ -53,4 +53,6 @@ jobs:
           #     DOCKERHUB_USERNAME  : tzahi12345
           #     DOCKERHUB_REPO      : youtubedl-material
           #     DOCKERHUB_MASTER_TAG: nightly
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{secrets.DOCKERHUB_MASTER_TAG}}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{secrets.DOCKERHUB_MASTER_TAG}}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:nightly-${{ steps.date.outputs.date }}
