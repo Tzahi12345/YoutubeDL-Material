@@ -289,7 +289,7 @@
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target>该路径是相对于配置下载路径的，省略文件扩展名</target>
+        <target state="translated">该路径是相对于配置中的下载路径，省略文件扩展名。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
           <context context-type="linenumber">131</context>
@@ -1863,7 +1863,7 @@
       </trans-unit>
       <trans-unit id="7117fc42f860e86d983bfccfcf2654e5750f3406" datatype="html">
         <source>No downloads available!</source>
-        <target>没有下载可用！</target>
+        <target state="translated">无可用下载！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2312,7 +2312,7 @@
       </trans-unit>
       <trans-unit id="56a2a773fbd5a6b9ac2e6b89d29d70a2ed0f3227" datatype="html">
         <source>See less.</source>
-        <target>查看更少</target>
+        <target state="translated">查看更少。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">8,9</context>
@@ -2361,7 +2361,7 @@
       </trans-unit>
       <trans-unit id="84ffcebac2709ca0785f4a1d5ba274433b5beabc" datatype="html">
         <source>Also known as a Client ID.</source>
-        <target>也称为客户ID</target>
+        <target state="translated">也称为客户ID。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">249</context>
@@ -2496,7 +2496,7 @@
       </trans-unit>
       <trans-unit id="73423607944a694ce6f9e55cfee329681bb4d9f9" datatype="html">
         <source>No videos found.</source>
-        <target>找不到视频</target>
+        <target state="translated">找不到视频。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">38</context>
@@ -2602,7 +2602,7 @@
       </trans-unit>
       <trans-unit id="98e94c9bdac1ca8beb29d73b2e6f7a9e5e035aec" datatype="html">
         <source>Transfer DB to</source>
-        <target>数据库转移到</target>
+        <target state="translated">转移数据库到</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">308</context>
@@ -2629,7 +2629,7 @@
       </trans-unit>
       <trans-unit id="3913164a51898aac444bf6c7150e46ad5a8a18ad" datatype="html">
         <source>MongoDB Connection String</source>
-        <target>MongoDB 连接字符串</target>
+        <target state="translated">MongoDB URI 连接</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">299</context>
@@ -2833,7 +2833,7 @@
       </trans-unit>
       <trans-unit id="7307570005283604795" datatype="html">
         <source>You must enable multi-user mode to access this tab.</source>
-        <target state="translated">启用多用户模式来访问来访问此页面。</target>
+        <target state="translated">启用多用户模式来访问此页面。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">48</context>
@@ -3253,7 +3253,7 @@
       </trans-unit>
       <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html">
         <source>Docker tag:</source>
-        <target state="translated">Docker tag:</target>
+        <target state="translated">Docker 标签：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">28</context>
@@ -3393,6 +3393,55 @@
           <context context-type="linenumber">274</context>
         </context-group>
         <note priority="1" from="description">Generate NFO files setting</note>
+      </trans-unit>
+      <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
+        <source>Both</source>
+        <target state="translated">全部</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="description">Both</note>
+      </trans-unit>
+      <trans-unit id="84a36cb75660b736773fe36ffa3d54f0f0fe363e" datatype="html">
+        <source>N/A</source>
+        <target state="translated">N/A</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">N/A</note>
+      </trans-unit>
+      <trans-unit id="7e121a443a8e9d92218f987001b650c59504d815" datatype="html">
+        <source>Scheduled for</source>
+        <target state="translated">计划于</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+        <note priority="1" from="description">Scheduled</note>
+      </trans-unit>
+      <trans-unit id="3b7d6ff5d14ab177ce3e2d217b1927fb2e4aefd1" datatype="html">
+        <source>Not scheduled</source>
+        <target state="translated">尚未计划</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">Not scheduled</note>
+      </trans-unit>
+      <trans-unit id="67aed6c588eb854f2f30ef642e85147da0027a61" datatype="html">
+        <source>Recurring</source>
+        <target state="translated">重复</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Recurring</note>
       </trans-unit>
     </body>
   </file>
