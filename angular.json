@@ -30,7 +30,8 @@
               "src/backend"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/bootstrap.min.css"
             ],
             "scripts": [],
             "vendorChunk": true,
@@ -118,7 +119,8 @@
               "src/backend"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/bootstrap.min.css"
             ],
             "scripts": []
           },
@@ -151,7 +153,8 @@
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/bootstrap.min.css"
             ],
             "assets": [
               "src/assets",
