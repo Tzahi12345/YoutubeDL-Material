@@ -108,6 +108,7 @@ exports.clearDownload = async (download_uid) => {
 }
 
 async function handleDownloadError(download_uid, error_message) {
+    if (!download_uid) return;
     await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error_message, finished: true, running: false});
 }
 
@@ -186,7 +187,7 @@ async function collectInfo(download_uid) {
     let args = await exports.generateArgs(url, type, options, download['user_uid']);
 
     // get video info prior to download
-    let info = await getVideoInfoByURL(url, args, download_uid);
+    let info = await exports.getVideoInfoByURL(url, args, download_uid);
 
     if (!info) {
         // info failed, error presumably already recorded
@@ -203,7 +204,7 @@ async function collectInfo(download_uid) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
         args = await exports.generateArgs(url, type, options, download['user_uid']);
-        info = await getVideoInfoByURL(url, args, download_uid);
+        info = await exports.getVideoInfoByURL(url, args, download_uid);
     }
 
     // setup info required to calculate download progress
@@ -507,7 +508,7 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     return downloadConfig;
 }
 
-async function getVideoInfoByURL(url, args = [], download_uid = null) {
+exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
     return new Promise(resolve => {
         // remove bad args
         const new_args = [...args];

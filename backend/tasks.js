@@ -148,6 +148,7 @@ exports.updateTaskSchedule = async (task_key, schedule) => {
     await db_api.updateRecord('tasks', {key: task_key}, {schedule: schedule});
     if (TASKS[task_key]['job']) {
         TASKS[task_key]['job'].cancel();
+        TASKS[task_key]['job'] = null;
     }
     if (schedule) {
         TASKS[task_key]['job'] = scheduleJob(task_key, schedule);
