@@ -1,0 +1,38 @@
+name: No Response
+
+# Both `issue_comment` and `scheduled` event types are required for this Action
+# to work properly.
+on:
+  issue_comment:
+    types: [created]
+  schedule:
+    # Schedule for five minutes after the hour, every hour
+    - cron: '5 * * * *'
+
+# By specifying the access of one of the scopes, all of those that are not
+# specified are set to 'none'.
+permissions:
+  issues: write
+
+jobs:
+  noResponse:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'Tzahi12345/YoutubeDL-Material' }}
+    steps:
+      - uses: lee-dohm/no-response@v0.5.0
+        with:
+          token: ${{ github.token }}
+          # Comment to post when closing an Issue for lack of response. Set to `false` to disable
+          closeComment: >
+            This issue has been automatically closed because there has been no response
+            to our request for more information from the original author. With only the
+            information that is currently in the issue, we don't have enough information
+            to take action. Please reach out if you have or find the answers we need so
+            that we can investigate further. We will re-open this issue if you provide us
+            with the requested information with a comment under this issue.
+            Thank you for your understanding and for trying to help make this application
+            a better one!
+          # Number of days of inactivity before an issue is closed for lack of response.
+          daysUntilClose: 21
+          # Label requiring a response.
+          responseRequiredLabel: "💬 response-needed"

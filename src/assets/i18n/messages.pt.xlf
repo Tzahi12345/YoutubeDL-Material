@@ -3104,6 +3104,15 @@
         </context-group>
         <note priority="1" from="description">Skip ad button</note>
       </trans-unit>
+      <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
+        <source>Tasks</source>
+        <target state="translated">Tarefas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">Navigation menu Tasks Page title</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
