@@ -66,6 +66,7 @@ async function getCategoriesAsPlaylists(files = null) {
                 category['thumbnailPath'] = files_that_match[0].thumbnailPath;
                 category['duration'] = files_that_match.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
                 category['id'] = category['uid'];
+                category['auto'] = true;
                 categories_as_playlists.push(category);
             }
         }

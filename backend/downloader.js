@@ -207,6 +207,8 @@ async function collectInfo(download_uid) {
         info = await exports.getVideoInfoByURL(url, args, download_uid);
     }
 
+    download['category'] = category;
+
     // setup info required to calculate download progress
 
     const expected_file_size = utils.getExpectedFileSize(info);

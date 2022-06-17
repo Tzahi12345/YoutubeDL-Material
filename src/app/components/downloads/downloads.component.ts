@@ -122,26 +122,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  clearFinishedDownloads(): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        dialogTitle: $localize`Clear finished downloads`,
-        dialogText: $localize`Would you like to clear your finished downloads?`,
-        submitText: $localize`Clear`,
-        warnSubmitColor: true
-      }
-    });
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.postsService.clearDownloads(true, false, false).subscribe(res => {
-          if (!res['success']) {
-            this.postsService.openSnackBar('Failed to clear finished downloads!');
-          }
-        });
-      }
-    });
-  }
-
   clearDownloadsByType(): void {
     const clearEmitter = new EventEmitter<boolean>();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

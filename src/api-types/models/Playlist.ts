@@ -13,4 +13,5 @@ export type Playlist = {
     registered: number;
     duration: number;
     user_uid?: string;
+    auto?: boolean;
 };
