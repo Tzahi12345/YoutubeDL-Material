@@ -55,12 +55,12 @@ async function getCategories() {
     return categories ? categories : null;
 }
 
-async function getCategoriesAsPlaylists(files = null) {
+async function getCategoriesAsPlaylists() {
     const categories_as_playlists = [];
     const available_categories = await getCategories();
-    if (available_categories && files) {
+    if (available_categories) {
         for (let category of available_categories) {
-            const files_that_match = utils.addUIDsToCategory(category, files);
+            const files_that_match = await db_api.getRecords('files', {'category.uid': category['uid']});
             if (files_that_match && files_that_match.length > 0) {
                 category['thumbnailURL'] = files_that_match[0].thumbnailURL;
                 category['thumbnailPath'] = files_that_match[0].thumbnailPath;

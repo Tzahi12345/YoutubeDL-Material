@@ -272,6 +272,11 @@ describe('Database', async function() {
             const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: filter}, 'find');
             assert(result && result['test'] === 'test1');
         });
+
+        it('Nested', async function() {
+            const result = db_api.applyFilterLocalDB([{test1: {test2: 'test3'}}, {test4: 'test5'}], {'test1.test2': 'test3'}, 'find');
+            assert(result && result['test1']['test2'] === 'test3');
+        });
     })
 });
 

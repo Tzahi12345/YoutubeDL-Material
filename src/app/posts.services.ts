@@ -457,13 +457,13 @@ export class PostsService implements CanActivate {
         return this.http.post<GetPlaylistResponse>(this.path + 'getPlaylist', body, this.httpOptions);
     }
 
+    getPlaylists(include_categories = false) {
+        return this.http.post<GetPlaylistsRequest>(this.path + 'getPlaylists', {include_categories: include_categories}, this.httpOptions);
+    }
+
     incrementViewCount(file_uid, sub_id, uuid) {
         const body: IncrementViewCountRequest = {file_uid: file_uid, sub_id: sub_id, uuid: uuid};
         return this.http.post<SuccessObject>(this.path + 'incrementViewCount', body, this.httpOptions);
-    }
-
-    getPlaylists() {
-        return this.http.post<GetPlaylistsRequest>(this.path + 'getPlaylists', {}, this.httpOptions);
     }
 
     updatePlaylist(playlist: Playlist) {

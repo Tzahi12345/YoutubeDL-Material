@@ -456,6 +456,21 @@ function injectArgs(original_args, new_args) {
     return updated_args;
 }
 
+const searchObjectByString = function(o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+        var k = a[i];
+        if (k in o) {
+            o = o[k];
+        } else {
+            return;
+        }
+    }
+    return o;
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -489,7 +504,6 @@ module.exports = {
     createContainerZipFile: createContainerZipFile,
     durationStringToNumber: durationStringToNumber,
     getMatchingCategoryFiles: getMatchingCategoryFiles,
-    addUIDsToCategory: addUIDsToCategory,
     getCurrentDownloader: getCurrentDownloader,
     recFindByExt: recFindByExt,
     removeFileExtension: removeFileExtension,
@@ -501,5 +515,6 @@ module.exports = {
     fetchFile: fetchFile,
     restartServer: restartServer,
     injectArgs: injectArgs,
+    searchObjectByString: searchObjectByString,
     File: File
 }

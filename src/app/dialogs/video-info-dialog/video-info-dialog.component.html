@@ -28,12 +28,12 @@
     <mat-form-field class="info-field">
         <input [(ngModel)]="new_file.thumbnailURL" matInput placeholder="Thumbnail URL" i18n-placeholder="Thumbnail URL" [disabled]="!editing || new_file.thumbnailPath">
     </mat-form-field>
-    <mat-form-field class="info-field">
-        <mat-select placeholder="Category" i18n-placeholder="Category" [value]="category" (valueChange)="categoryChanged($event)" [compareWith]="categoryComparisonFunction" [disabled]="!editing">
+    <mat-form-field *ngIf="initialized && postsService.categories" class="info-field">
+        <mat-select placeholder="Category" i18n-placeholder="Category" [value]="category" (selectionChange)="categoryChanged($event)" [compareWith]="categoryComparisonFunction" [disabled]="!editing">
             <mat-option [value]="{}">
                 N/A
             </mat-option>
-            <mat-option *ngFor="let available_category of postsService.categories | keyvalue" [value]="available_category">
+            <mat-option *ngFor="let available_category of postsService.categories | keyvalue" [value]="available_category.value">
                 {{available_category.value.name}}
             </mat-option>
         </mat-select>

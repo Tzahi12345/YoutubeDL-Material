@@ -35,7 +35,7 @@ export class CustomPlaylistsComponent implements OnInit {
   getAllPlaylists() {
     this.playlists_received = false;
     // must call getAllFiles as we need to get category playlists as well
-    this.postsService.getPlaylists().subscribe(res => {
+    this.postsService.getPlaylists(true).subscribe(res => {
       this.playlists = res['playlists'];
       this.playlists_received = true;
     });

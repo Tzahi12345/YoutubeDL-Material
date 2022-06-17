@@ -933,20 +933,13 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
     
     files = await db_api.getRecords('files', filter_obj, false, sort, range, text_search);
-    let file_count = await db_api.getRecords('files', filter_obj, true);
-    playlists = await db_api.getRecords('playlists', {user_uid: uuid});
-
-    const categories = await categories_api.getCategoriesAsPlaylists(files);
-    if (categories) {
-        playlists = playlists.concat(categories);
-    }
+    const file_count = await db_api.getRecords('files', filter_obj, true);
 
     files = JSON.parse(JSON.stringify(files));
 
     res.send({
         files: files,
         file_count: file_count,
-        playlists: playlists
     });
 });
 
@@ -1383,7 +1376,7 @@ app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
 
     let playlists = await db_api.getRecords('playlists', {user_uid: uuid});
     if (include_categories) {
-        const categories = await categories_api.getCategoriesAsPlaylists(files);
+        const categories = await categories_api.getCategoriesAsPlaylists();
         if (categories) {
             playlists = playlists.concat(categories);
         }

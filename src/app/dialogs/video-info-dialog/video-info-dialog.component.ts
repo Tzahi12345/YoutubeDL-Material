@@ -18,6 +18,7 @@ export class VideoInfoDialogComponent implements OnInit {
   upload_date: Date;
   category: Category;
   editing = false;
+  initialized = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public postsService: PostsService, private datePipe: DatePipe) { }
 
@@ -37,15 +38,16 @@ export class VideoInfoDialogComponent implements OnInit {
     this.upload_date = new Date(this.new_file.upload_date);
     this.upload_date.setMinutes( this.upload_date.getMinutes() + this.upload_date.getTimezoneOffset() );
 
-    this.category = this.file.category ? this.category : {};
+    this.category = this.file.category ? this.file.category : {};
 
     // we need to align whether missing category is null or undefined. this line helps with that.
     if (!this.file.category) { this.new_file.category = null; this.file.category = null; }
+    this.initialized = true;
   }
 
   saveChanges(): void {
     const change_obj = {};
-    const keys = Object.keys(this.file);
+    const keys = Object.keys(this.new_file);
     keys.forEach(key => {
       if (this.file[key] !== this.new_file[key]) change_obj[key] = this.new_file[key];
     });
@@ -67,7 +69,8 @@ export class VideoInfoDialogComponent implements OnInit {
   }
 
   categoryChanged(event): void {
-    this.new_file.category = Object.keys(event).length ? {uid: event.uid, name: event.name} : null;
+    const new_category = event.value;
+    this.new_file.category = Object.keys(new_category).length ? {uid: new_category.uid, name: new_category.name} : null;
   }
 
   categoryComparisonFunction(option: Category, value: Category): boolean {

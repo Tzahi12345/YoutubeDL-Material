@@ -127,7 +127,7 @@ function setConfigItem(key, value) {
     success = setConfigFile(config_json);
 
     return success;
-};
+}
 
 function setConfigItems(items) {
     let success = false;

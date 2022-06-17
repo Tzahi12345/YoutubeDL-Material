@@ -387,9 +387,9 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
     if (!playlist) {
         playlist = await exports.getRecord('categories', {uid: playlist_id});
         if (playlist) {
-            // category found
-            const files = await exports.getFiles(user_uid);
-            utils.addUIDsToCategory(playlist, files);
+            const uids = (await exports.getRecords('files', {'category.uid': playlist_id})).map(file => file.uid);
+            playlist['uids'] = uids;
+            playlist['auto'] = true;
         }
     }
 
@@ -1090,7 +1090,7 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
             const filter_prop = filter_props[i];
             const filter_prop_value = filter_obj[filter_prop];
             if (filter_prop_value === undefined || filter_prop_value === null) {
-                filtered &= record[filter_prop] === undefined || record[filter_prop] === null
+                filtered &= record[filter_prop] === undefined || record[filter_prop] === null;
             } else {
                 if (typeof filter_prop_value === 'object') {
                     if ('$regex' in filter_prop_value) {
@@ -1099,7 +1099,11 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
                         filtered &= filter_prop in record && record[filter_prop] !== filter_prop_value['$ne'];
                     }
                 } else {
-                    filtered &= record[filter_prop] === filter_prop_value;
+                    // handle case of nested property check
+                    if (filter_prop.includes('.'))
+                        filtered &= utils.searchObjectByString(record, filter_prop) === filter_prop_value;
+                    else
+                        filtered &= record[filter_prop] === filter_prop_value;
                 }
             }
         }
