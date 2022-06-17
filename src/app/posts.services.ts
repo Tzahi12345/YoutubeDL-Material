@@ -95,7 +95,9 @@ import {
     UpdateTaskDataRequest,
     RestoreDBBackupRequest,
     Schedule,
-    ClearDownloadsRequest
+    ClearDownloadsRequest,
+    Category,
+    UpdateFileRequest
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -145,7 +147,7 @@ export class PostsService implements CanActivate {
     // global vars
     config = null;
     subscriptions = null;
-    categories = null;
+    categories: Category[] = null;
     sidenav = null;
     locale = isoLangs['en'];
     version_info = null;
@@ -348,13 +350,18 @@ export class PostsService implements CanActivate {
         return this.http.get<GetMp4sResponse>(this.path + 'getMp4s', this.httpOptions);
     }
 
-    getFile(uid: string, type: FileType, uuid: string = null) {
-        const body: GetFileRequest = {uid: uid, type: type, uuid: uuid};
+    getFile(uid: string, uuid: string = null) {
+        const body: GetFileRequest = {uid: uid, uuid: uuid};
         return this.http.post<GetFileResponse>(this.path + 'getFile', body, this.httpOptions);
     }
 
     getAllFiles(sort, range, text_search, file_type_filter) {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
+    }
+
+    updateFile(uid: string, change_obj: Object) {
+        const body: UpdateFileRequest = {uid: uid, change_obj: change_obj};
+        return this.http.post<SuccessObject>(this.path + 'updateFile', body, this.httpOptions);
     }
 
     downloadFileFromServer(uid: string, uuid: string = null) {

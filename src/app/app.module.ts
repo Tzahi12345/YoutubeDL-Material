@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, LOCALE_ID } from '@angular/core';
-import { registerLocaleData, CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { registerLocaleData, CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -189,7 +189,8 @@ registerLocaleData(es, 'es');
     ],
     providers: [
         PostsService,
-        { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true },
+        DatePipe
     ],
     exports: [
         HighlightPipe,

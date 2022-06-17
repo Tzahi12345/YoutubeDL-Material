@@ -950,6 +950,24 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     });
 });
 
+app.post('/api/updateFile', optionalJwt, async function (req, res) {
+    const uid = req.body.uid;
+    const change_obj = req.body.change_obj;
+
+    const file = await db_api.updateRecord('files', {uid: uid}, change_obj);
+
+    if (!file) {
+        res.send({
+            success: false,
+            error: 'File could not be found'
+        });
+    } else {
+        res.send({
+            success: true
+        });
+    }
+});
+
 app.post('/api/checkConcurrentStream', async (req, res) => {
     const uid = req.body.uid;
 

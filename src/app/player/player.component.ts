@@ -70,7 +70,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('twitchchat') twitchChat: TwitchChatComponent;
 
   @HostListener('window:resize', ['$event'])
-  onResize(event) {
+  onResize(): void {
     this.innerWidth = window.innerWidth;
   }
 
@@ -98,12 +98,12 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.cdr.detectChanges();
     this.postsService.sidenav.close();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // prevents volume save feature from running in the background
     clearInterval(this.save_volume_timer);
   }
@@ -112,7 +112,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
               public snackBar: MatSnackBar, private cdr: ChangeDetectorRef) {
 
   }
-  processConfig() {
+  processConfig(): void {
     this.baseStreamPath = this.postsService.path;
     this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
     this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
@@ -143,14 +143,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  getFile() {
-    this.postsService.getFile(this.uid, null, this.uuid).subscribe(res => {
+  getFile(): void {
+    this.postsService.getFile(this.uid, this.uuid).subscribe(res => {
       this.db_file = res['file'];
       if (!this.db_file) {
-        this.openSnackBar('Failed to get file information from the server.', 'Dismiss');
+        this.postsService.openSnackBar('Failed to get file information from the server.', 'Dismiss');
         return;
       }
-      this.postsService.incrementViewCount(this.db_file['uid'], null, this.uuid).subscribe(res => {}, err => {
+      this.postsService.incrementViewCount(this.db_file['uid'], null, this.uuid).subscribe(() => undefined, err => {
         console.error('Failed to increment view count');
         console.error(err);
       });
@@ -161,19 +161,19 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  getSubscription() {
+  getSubscription(): void {
     this.postsService.getSubscription(this.sub_id).subscribe(res => {
       const subscription = res['subscription'];
       this.subscription = subscription;
       this.type === this.subscription.type;
       this.uids = this.subscription.videos.map(video => video['uid']);
       this.parseFileNames();
-    }, err => {
-      this.openSnackBar(`Failed to find subscription ${this.sub_id}`, 'Dismiss');
+    }, () => {
+      this.postsService.openSnackBar(`Failed to find subscription ${this.sub_id}`, 'Dismiss');
     });
   }
 
-  getPlaylistFiles() {
+  getPlaylistFiles(): void {
     this.postsService.getPlaylist(this.playlist_id, this.uuid, true).subscribe(res => {
       if (res['playlist']) {
         this.db_playlist = res['playlist'];
@@ -183,14 +183,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.show_player = true;
         this.parseFileNames();
       } else {
-        this.openSnackBar('Failed to load playlist!', '');
+        this.postsService.openSnackBar('Failed to load playlist!', '');
       }
-    }, err => {
-      this.openSnackBar('Failed to load playlist!', '');
+    }, () => {
+      this.postsService.openSnackBar('Failed to load playlist!', '');
     });
   }
 
-  parseFileNames() {    
+  parseFileNames(): void {    
     this.playlist = [];
     for (let i = 0; i < this.uids.length; i++) {
       let file_obj = null;
@@ -204,7 +204,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const mime_type = file_obj.isAudio ? 'audio/mp3' : 'video/mp4' 
 
-      let baseLocation = 'stream/';
+      const baseLocation = 'stream/';
       let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${file_obj['uid']}`;
 
       if (this.postsService.isLoggedIn) {
@@ -238,7 +238,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.show_player = true;
   }
 
-  onPlayerReady(api: VgApiService) {
+  onPlayerReady(api: VgApiService): void {
       this.api = api;
       this.api_ready = true;
       this.cdr.detectChanges();
@@ -258,14 +258,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       }
   }
 
-  saveVolume(api) {
+  saveVolume(api: VgApiService): void {
     if (this.original_volume !== api.volume) {
       localStorage.setItem('player_volume', api.volume)
       this.original_volume = api.volume;
     }
   }
 
-  nextVideo() {
+  nextVideo(): void {
       if (this.currentIndex === this.playlist.length - 1) {
         // dont continue playing
           // this.currentIndex = 0;
@@ -276,17 +276,16 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentItem = this.playlist[ this.currentIndex ];
   }
 
-  playVideo() {
+  playVideo(): void {
       this.api.play();
   }
 
-  onClickPlaylistItem(item: IMedia, index: number) {
-      // console.log('new current item is ' + item.title + ' at index ' + index);
+  onClickPlaylistItem(item: IMedia, index: number): void {
       this.currentIndex = index;
       this.currentItem = item;
   }
 
-  getFileNames() {
+  getFileNames(): string[] {
     const fileNames = [];
     for (let i = 0; i < this.playlist.length; i++) {
       fileNames.push(this.playlist[i].title);
@@ -294,11 +293,11 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     return fileNames;
   }
 
-  decodeURI(string) {
-    return decodeURI(string);
+  decodeURI(uri: string): string {
+    return decodeURI(uri);
   }
 
-  downloadContent() {
+  downloadContent(): void {
     const zipName = this.db_playlist.name;
     this.downloading = true;
     this.postsService.downloadPlaylistFromServer(this.playlist_id, this.uuid).subscribe(res => {
@@ -311,7 +310,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  downloadFile() {
+  downloadFile(): void {
     const filename = this.playlist[0].title;
     const ext = (this.playlist[0].type === 'audio/mp3') ? '.mp3' : '.mp4';
     this.downloading = true;
@@ -325,22 +324,22 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  playlistPostCreationHandler(playlistID) {
+  playlistPostCreationHandler(playlistID: string): void {
     // changes the route without moving from the current view or
     // triggering a navigation event
     this.playlist_id = playlistID;
     this.router.navigateByUrl(this.router.url + ';id=' + playlistID);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.playlist, event.previousIndex, event.currentIndex);
   }
 
-   playlistChanged() {
+   playlistChanged(): boolean {
     return JSON.stringify(this.playlist) !== this.original_playlist;
   }
 
-  openShareDialog() {
+  openShareDialog(): void {
     const dialogRef = this.dialog.open(ShareMediaDialogComponent, {
       data: {
         uid: this.playlist_id ? this.playlist_id : this.uid,
@@ -361,7 +360,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   
-  openFileInfoDialog() {
+  openFileInfoDialog(): void {
     this.dialog.open(VideoInfoDialogComponent, {
       data: {
         file: this.db_file,
@@ -370,11 +369,11 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  setPlaybackTimestamp(time) {
+  setPlaybackTimestamp(time: number): void {
     this.api.seekTime(time);
   }
 
-  togglePlayback(to_play) {
+  togglePlayback(to_play: boolean): void {
     if (to_play) {
       this.api.play();
     } else {
@@ -382,22 +381,14 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  setPlaybackRate(speed) {
+  setPlaybackRate(speed: number): void {
     this.api.playbackRate = speed;
   }
 
-  shuffleArray(array) {
+  shuffleArray(array: unknown[]): void {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
   }
-
-  // snackbar helper
-  public openSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 2000,
-    });
-  }
-
 }

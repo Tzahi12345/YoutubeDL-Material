@@ -1,36 +1,64 @@
 <h4 mat-dialog-title>{{file.title}}</h4>
 
 <mat-dialog-content>
-    <div class="info-item">
-        <div class="info-item-label"><strong><ng-container i18n="Video name property">Name:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value">{{file.title}}</div>
+    <div style="width: 100%; position: relative;">
+        <button style="position: absolute; right: 16px; top: 8px;" mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
     </div>
-    <div class="info-item">
-        <div class="info-item-label"><strong><ng-container i18n="Video URL property">URL:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value"><a target="_blank" [href]="file.url">{{file.url}}</a></div>
-    </div>
-    <div class="info-item">
-        <div class="info-item-label"><strong><ng-container i18n="Video ID property">Uploader:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value">{{file.uploader ? file.uploader : 'N/A'}}</div>
-    </div>
+    <mat-form-field class="info-field">
+        <input [(ngModel)]="new_file.title" matInput placeholder="Name" i18n-placeholder="Name" [disabled]="!editing">
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <input [(ngModel)]="new_file.url" matInput placeholder="URL" i18n-placeholder="URL" [disabled]="!editing">
+        <button mat-icon-button matSuffix (click)="window.open(new_file.url, '_blank')">
+            <mat-icon>link</mat-icon>
+        </button>
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <input [(ngModel)]="new_file.uploader" matInput placeholder="Uploader" i18n-placeholder="Uploader" [disabled]="!editing">
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <mat-label i18n="Upload date">Upload date</mat-label>
+        <input [value]="upload_date" matInput [matDatepicker]="picker" (dateChange)="uploadDateChanged($event)" [disabled]="!editing">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <input [(ngModel)]="new_file.thumbnailPath" matInput placeholder="Thumbnail path" i18n-placeholder="Thumbnail path" [disabled]="!editing">
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <input [(ngModel)]="new_file.thumbnailURL" matInput placeholder="Thumbnail URL" i18n-placeholder="Thumbnail URL" [disabled]="!editing || new_file.thumbnailPath">
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <mat-select placeholder="Category" i18n-placeholder="Category" [value]="category" (valueChange)="categoryChanged($event)" [compareWith]="categoryComparisonFunction" [disabled]="!editing">
+            <mat-option [value]="{}">
+                N/A
+            </mat-option>
+            <mat-option *ngFor="let available_category of postsService.categories | keyvalue" [value]="available_category">
+                {{available_category.value.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <input type="number" [(ngModel)]="new_file.view_count" matInput placeholder="View count" i18n-placeholder="View count" [disabled]="!editing">
+    </mat-form-field>
+    <mat-form-field class="info-field">
+        <input type="number" [(ngModel)]="new_file.local_view_count" matInput placeholder="Local view count" i18n-placeholder="Local view count" [disabled]="!editing">
+    </mat-form-field>
+
+    <mat-divider style="margin-bottom: 16px;"></mat-divider>
+
     <div class="info-item">
         <div class="info-item-label"><strong><ng-container i18n="Video file size property">File size:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value">{{file.size ? filesize(file.size) : 'N/A'}}</div>
+        <div class="info-item-value">{{new_file.size ? filesize(new_file.size) : 'N/A'}}</div>
     </div>
     <div class="info-item">
         <div class="info-item-label"><strong><ng-container i18n="Video path property">Path:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value">{{file.path ? file.path : 'N/A'}}</div>
+        <div class="info-item-value">{{new_file.path ? new_file.path : 'N/A'}}</div>
     </div>
-    <div class="info-item">
-        <div class="info-item-label"><strong><ng-container i18n="Video upload date property">Upload Date:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value">{{file.upload_date ? file.upload_date : 'N/A'}}</div>
-    </div>
-    <div class="info-item">
-        <div class="info-item-label"><strong><ng-container i18n="Category property">Category:</ng-container>&nbsp;</strong></div>
-        <div class="info-item-value"><ng-container *ngIf="file.category"><mat-chip-list><mat-chip>{{file.category.name}}</mat-chip></mat-chip-list></ng-container><ng-container *ngIf="!file.category">N/A</ng-container></div>
-    </div>
+
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close><ng-container i18n="Close subscription info button">Close</ng-container></button>
+    <button mat-button mat-dialog-close><ng-container i18n="Close video info button">Close</ng-container></button>
+    <button mat-button [disabled]="!metadataChanged()" (click)="saveChanges()"><ng-container i18n="Save video info button">Save</ng-container></button>
 </mat-dialog-actions>

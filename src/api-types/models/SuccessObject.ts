@@ -4,4 +4,5 @@
 
 export type SuccessObject = {
     success: boolean;
+    error?: string;
 };

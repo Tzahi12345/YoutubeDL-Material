@@ -100,6 +100,7 @@ export type { UpdateCategoriesRequest } from './models/UpdateCategoriesRequest';
 export type { UpdateCategoryRequest } from './models/UpdateCategoryRequest';
 export type { UpdateConcurrentStreamRequest } from './models/UpdateConcurrentStreamRequest';
 export type { UpdateConcurrentStreamResponse } from './models/UpdateConcurrentStreamResponse';
+export type { UpdateFileRequest } from './models/UpdateFileRequest';
 export type { UpdatePlaylistRequest } from './models/UpdatePlaylistRequest';
 export type { UpdaterStatus } from './models/UpdaterStatus';
 export type { UpdateServerRequest } from './models/UpdateServerRequest';
