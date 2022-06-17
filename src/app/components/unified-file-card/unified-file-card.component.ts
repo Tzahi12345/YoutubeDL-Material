@@ -41,7 +41,7 @@ export class UnifiedFileCardComponent implements OnInit {
   // input/output
   @Input() loading = true;
   @Input() theme = null;
-  @Input() file_obj: DatabaseFile | Playlist = null;
+  @Input() file_obj = null;
   @Input() card_size = 'medium';
   @Input() use_youtubedl_archive = false;
   @Input() is_playlist = false;
@@ -51,7 +51,7 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() jwtString = null;
   @Input() availablePlaylists = null;
   @Output() goToFile = new EventEmitter<any>();
-  @Output() goToSubscription = new EventEmitter<DatabaseFile>();
+  @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
   @Output() addFileToPlaylist = new EventEmitter<any>();
   @Output() editPlaylist = new EventEmitter<any>();

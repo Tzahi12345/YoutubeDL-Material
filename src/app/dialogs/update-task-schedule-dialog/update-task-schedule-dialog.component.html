@@ -19,7 +19,7 @@
             </div>
             <div *ngIf="!recurring" class="col-12 mt-2">
                 <mat-form-field>
-                    <mat-label>Choose a date</mat-label>
+                    <mat-label i18n="Choose a date">Choose a date</mat-label>
                     <input [(ngModel)]="date" [min]="today" matInput [matDatepicker]="picker" [disabled]="!enabled">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
