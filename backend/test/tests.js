@@ -39,6 +39,7 @@ const utils = require('../utils');
 const subscriptions_api = require('../subscriptions');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
+const NodeID3 = require('node-id3');
 
 db_api.initialize(db, users_db);
 
@@ -397,6 +398,19 @@ describe('Downloader', function() {
         console.log(returned_download);
         await utils.wait(20000);
 
+    });
+
+    it('Tag file', async function() {
+        const audio_path = './test/sample.mp3';
+        const sample_json = fs.readJSONSync('./test/sample.info.json');
+        const tags = {
+            title: sample_json['title'],
+            artist: sample_json['artist'] ? sample_json['artist'] : sample_json['uploader'],
+            TRCK: '27'
+        }
+        NodeID3.write(tags, audio_path);
+        const written_tags = NodeID3.read(audio_path);
+        assert(written_tags['raw']['TRCK'] === '27');
     });
 
     it('Queue file', async function() {
