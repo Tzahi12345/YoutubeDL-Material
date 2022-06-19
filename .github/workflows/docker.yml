@@ -13,6 +13,9 @@ on:
       - '**.pem'
       - '.dockerignore'
       - '.gitignore'
+  schedule:
+    - cron:  '34 4 * * 2'
+  workflow_dispatch:
 
 jobs:
   build-and-push:
