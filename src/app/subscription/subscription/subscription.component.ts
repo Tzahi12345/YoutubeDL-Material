@@ -100,22 +100,12 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getConfig() {
+  getConfig(): void {
     this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
   }
 
-  goToFile(emit_obj) {
-    const uid = emit_obj['uid'];
-    const url = emit_obj['url'];
-    localStorage.setItem('player_navigator', this.router.url);
-    if (this.subscription.streamingOnly) {
-      this.router.navigate(['/player', {uid: uid, url: url}]);
-    } else {
-      this.router.navigate(['/player', {uid: uid}]);
-    }
-  }
 
-  onSearchInputChanged(newvalue) {
+  onSearchInputChanged(newvalue: string): void {
     if (newvalue.length > 0) {
       this.search_mode = true;
       this.filterFiles(newvalue);
@@ -129,7 +119,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue));
   }
 
-  filterByProperty(prop) {
+  filterByProperty(prop: string): void {
     if (this.descendingMode) {
       this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? -1 : 1));
     } else {
@@ -142,17 +132,12 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     localStorage.setItem('filter_property', value['key']);
   }
 
-  toggleModeChange() {
+  toggleModeChange(): void {
     this.descendingMode = !this.descendingMode;
     this.filterByProperty(this.filterProperty['property']);
   }
 
-  downloadContent() {
-    const fileNames = [];
-    for (let i = 0; i < this.files.length; i++) {
-      fileNames.push(this.files[i].path);
-    }
-
+  downloadContent(): void {
     this.downloading = true;
     this.postsService.downloadSubFromServer(this.subscription.id).subscribe(res => {
       this.downloading = false;
@@ -164,7 +149,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  editSubscription() {
+  editSubscription(): void {
     this.dialog.open(EditSubscriptionDialogComponent, {
       data: {
         sub: this.postsService.getSubscriptionByID(this.subscription.id)
@@ -172,7 +157,7 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  watchSubscription() {
+  watchSubscription(): void {
     this.router.navigate(['/player', {sub_id: this.subscription.id}])
   }
 

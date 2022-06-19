@@ -912,11 +912,11 @@ app.post('/api/getFile', optionalJwt, async function (req, res) {
 app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
     let files = null;
-    let playlists = null;
-    let sort = req.body.sort;
-    let range = req.body.range;
-    let text_search = req.body.text_search;
-    let file_type_filter = req.body.file_type_filter;
+    const sort = req.body.sort;
+    const range = req.body.range;
+    const text_search = req.body.text_search;
+    const file_type_filter = req.body.file_type_filter;
+    const sub_id = req.body.sub_id;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     const filter_obj = {user_uid: uuid};
@@ -927,6 +927,10 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
         } else {
             filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
         }
+    }
+
+    if (sub_id) {
+        filter_obj['sub_id'] = sub_id;
     }
 
     if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;

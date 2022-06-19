@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="col-12 order-1 col-sm-4 order-sm-2 d-flex justify-content-center">
-            <h4 class="my-videos-title" i18n="My videos title">My videos</h4>
+            <h4 class="my-videos-title" i18n="My files title">My files</h4>
         </div>
         <div class="col-12 order-3 col-sm-4 order-sm-3 d-flex justify-content-center">
             <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
@@ -35,7 +35,7 @@
                     <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [availablePlaylists]="playlists" (addFileToPlaylist)="addFileToPlaylist($event)" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? this.postsService.token : ''"></app-unified-file-card>
                 </div>
                 <div *ngIf="paged_data.length === 0">
-                    <ng-container i18n="No videos found">No videos found.</ng-container>
+                    <ng-container i18n="No files found">No files found.</ng-container>
                 </div>
             </ng-container>
             <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <div>
+    <div *ngIf="usePaginator">
         <div style="position: absolute; margin-left: 8px; margin-top: 5px; scale: 0.8">
             <mat-form-field>
                 <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>

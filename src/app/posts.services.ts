@@ -97,7 +97,10 @@ import {
     Schedule,
     ClearDownloadsRequest,
     Category,
-    UpdateFileRequest
+    UpdateFileRequest,
+    Sort,
+    FileTypeFilter,
+    GetAllFilesRequest
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -355,8 +358,9 @@ export class PostsService implements CanActivate {
         return this.http.post<GetFileResponse>(this.path + 'getFile', body, this.httpOptions);
     }
 
-    getAllFiles(sort, range, text_search, file_type_filter) {
-        return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
+    getAllFiles(sort: Sort, range: number[], text_search: string, file_type_filter: FileTypeFilter, sub_id: string) {
+        const body: GetAllFilesRequest = {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter, sub_id: sub_id};
+        return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', body, this.httpOptions);
     }
 
     updateFile(uid: string, change_obj: Object) {

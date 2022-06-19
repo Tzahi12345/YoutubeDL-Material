@@ -592,10 +592,6 @@
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
-          <context context-type="linenumber">33</context>
-        </context-group>
         <note priority="1" from="description">search field description</note>
       </trans-unit>
       <trans-unit id="746f64ddd9001ac456327cd9a3d5152203a4b93c" datatype="html">
@@ -682,21 +678,21 @@
         </context-group>
         <note priority="1" from="description">Edit role</note>
       </trans-unit>
-      <trans-unit id="d02888c485d3aeab6de628508f4a00312a722894" datatype="html">
-        <source>My videos</source>
+      <trans-unit id="52e0fa8ada52c3f29774a4508582fd98250b9f93" datatype="html">
+        <source>My files</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
-        <note priority="1" from="description">My videos title</note>
+        <note priority="1" from="description">My files title</note>
       </trans-unit>
-      <trans-unit id="73423607944a694ce6f9e55cfee329681bb4d9f9" datatype="html">
-        <source>No videos found.</source>
+      <trans-unit id="6827066f436adfc56a142d5816a8be6113d73b01" datatype="html">
+        <source>No files found.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
-        <note priority="1" from="description">No videos found</note>
+        <note priority="1" from="description">No files found</note>
       </trans-unit>
       <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
         <source>File type</source>
@@ -1134,10 +1130,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
-          <context context-type="linenumber">29</context>
         </context-group>
         <note priority="1" from="description">Videos title</note>
       </trans-unit>

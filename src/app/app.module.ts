@@ -49,7 +49,6 @@ import { CreatePlaylistComponent } from './create-playlist/create-playlist.compo
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
-import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MatChipsModule } from '@angular/material/chips';
@@ -102,7 +101,6 @@ registerLocaleData(es, 'es');
         SubscriptionsComponent,
         SubscribeDialogComponent,
         SubscriptionComponent,
-        SubscriptionFileCardComponent,
         SubscriptionInfoDialogComponent,
         SettingsComponent,
         AboutDialogComponent,

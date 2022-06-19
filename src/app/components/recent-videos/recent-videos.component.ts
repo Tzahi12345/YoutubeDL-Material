@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
-import { FileType } from '../../../api-types';
+import { FileType, FileTypeFilter } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -12,6 +12,9 @@ import { distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./recent-videos.component.scss']
 })
 export class RecentVideosComponent implements OnInit {
+
+  @Input() usePaginator = true;
+  @Input() sub_id = null;
 
   cached_file_count = 0;
   loading_files = null;
@@ -104,7 +107,7 @@ export class RecentVideosComponent implements OnInit {
 
     // set file type filter to cached value
     const cached_file_type_filter = localStorage.getItem('file_type_filter');
-    if (cached_file_type_filter) {
+    if (this.usePaginator && cached_file_type_filter) {
       this.fileTypeFilter = cached_file_type_filter;
     }
 
@@ -163,7 +166,7 @@ export class RecentVideosComponent implements OnInit {
     const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
     const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
     const range = [current_file_index, current_file_index + this.pageSize];
-    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter).subscribe(res => {
+    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter as FileTypeFilter, this.sub_id).subscribe(res => {
       this.file_count = res['file_count'];
       this.paged_data = res['files'];
       for (let i = 0; i < this.paged_data.length; i++) {

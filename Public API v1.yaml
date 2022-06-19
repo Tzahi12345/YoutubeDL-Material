@@ -97,6 +97,11 @@ paths:
       summary: Get all files
       description: Gets all files and playlists stored in the db
       operationId: get-getAllFiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAllFilesRequest'
       responses:
         '200':
           description: OK
@@ -1724,6 +1729,41 @@ components:
           description: All video playlists
           items:
             $ref: '#/components/schemas/Playlist'
+    GetAllFilesRequest:
+      type: object
+      properties:
+        sort:
+          $ref: '#/components/schemas/Sort'
+        range:
+          type: array
+          items:
+            type: number
+            description: Two elements allowed, start index and end index
+          minItems: 2
+          maxItems: 2
+        text_search:
+          type: string
+          description: Filter files by title
+        file_type_filter:
+          $ref: '#/components/schemas/FileTypeFilter'
+        sub_id:
+          type: string
+          description: Include if you want to filter by subscription
+    Sort:
+      type: object
+      properties:
+        by:
+          type: string
+          description: Property to sort by
+        order:
+          type: number
+          description: 1 for ascending, -1 for descending
+    FileTypeFilter:
+      type: string
+      enum:
+        - audio_only
+        - video_only
+        - both
     GetAllFilesResponse:
       required:
         - files
