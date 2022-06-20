@@ -594,7 +594,6 @@ export class MainComponent implements OnInit {
         if (simulated_args) {
           // hide password if needed
           const passwordIndex = simulated_args.indexOf('--password');
-          console.log(passwordIndex);
           if (passwordIndex !== -1 && passwordIndex !== simulated_args.length - 1) {
             simulated_args[passwordIndex + 1] = simulated_args[passwordIndex + 1].replace(/./g, '*');
           }
