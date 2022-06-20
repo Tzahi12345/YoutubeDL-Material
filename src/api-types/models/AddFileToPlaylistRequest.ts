@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface AddFileToPlaylistRequest {
+export type AddFileToPlaylistRequest = {
     file_uid: string;
     playlist_id: string;
-}
+};

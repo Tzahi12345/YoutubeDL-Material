@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface UpdateServerRequest {
+export type UpdateServerRequest = {
     tag: string;
-}
+};

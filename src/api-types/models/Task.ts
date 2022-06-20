@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface Task {
+export type Task = {
     key: string;
     last_ran: number;
     last_confirmed: number;
@@ -12,4 +11,4 @@ export interface Task {
     data: any;
     error: string;
     schedule: any;
-}
+};

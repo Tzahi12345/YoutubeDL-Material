@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
-import { DomSanitizer } from '@angular/platform-browser';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { registerLocaleData } from '@angular/common';
 import localeGB from '@angular/common/locales/en-GB';
@@ -10,6 +9,7 @@ import localeES from '@angular/common/locales/es';
 import localeDE from '@angular/common/locales/de';
 import localeZH from '@angular/common/locales/zh';
 import localeNB from '@angular/common/locales/nb';
+import { DatabaseFile, Playlist } from 'api-types';
 
 registerLocaleData(localeGB);
 registerLocaleData(localeFR);
@@ -67,7 +67,7 @@ export class UnifiedFileCardComponent implements OnInit {
     big: 250x200
   */
 
-  constructor(private dialog: MatDialog, private sanitizer: DomSanitizer) { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
     if (!this.loading) {
@@ -76,10 +76,6 @@ export class UnifiedFileCardComponent implements OnInit {
 
     if (this.file_obj && this.file_obj.thumbnailPath) {
       this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}?jwt=${this.jwtString}`;
-      /*const mime = getMimeByFilename(this.file_obj.thumbnailPath);
-      const blob = new Blob([new Uint8Array(this.file_obj.thumbnailBlob.data)], {type: mime});
-      const bloburl = URL.createObjectURL(blob);
-      this.thumbnailBlobURL = this.sanitizer.bypassSecurityTrustUrl(bloburl);*/
     }
 
     if (this.file_obj) this.streamURL = this.generateStreamURL();
@@ -180,17 +176,4 @@ function fancyTimeFormat(time) {
   ret += '' + mins + ':' + (secs < 10 ? '0' : '');
   ret += '' + secs;
   return ret;
-}
-
-function getMimeByFilename(name) {
-  switch (name.substring(name.length-4, name.length)) {
-    case '.jpg':
-      return 'image/jpeg';
-    case '.png':
-      return 'image/png';
-    case 'webp':
-      return 'image/webp';
-    default:
-      return null;
-  }
 }

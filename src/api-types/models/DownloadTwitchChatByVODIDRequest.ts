@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
-import { Subscription } from './Subscription';
+import type { FileType } from './FileType';
+import type { Subscription } from './Subscription';
 
-export interface DownloadTwitchChatByVODIDRequest {
+export type DownloadTwitchChatByVODIDRequest = {
     /**
      * File ID
      */
@@ -20,4 +20,4 @@ export interface DownloadTwitchChatByVODIDRequest {
      */
     uuid?: string;
     sub?: Subscription;
-}
+};

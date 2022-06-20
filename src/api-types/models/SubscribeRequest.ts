@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface SubscribeRequest {
+export type SubscribeRequest = {
     name: string;
     url: string;
     timerange?: string;
@@ -11,4 +10,4 @@ export interface SubscribeRequest {
     customArgs?: string;
     customFileOutput?: string;
     maxQuality?: string;
-}
+};

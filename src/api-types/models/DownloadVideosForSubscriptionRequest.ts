@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface DownloadVideosForSubscriptionRequest {
+export type DownloadVideosForSubscriptionRequest = {
     subID: string;
-}
+};

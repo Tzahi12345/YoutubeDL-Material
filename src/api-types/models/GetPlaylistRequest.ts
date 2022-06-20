@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface GetPlaylistRequest {
+export type GetPlaylistRequest = {
     playlist_id: string;
     type?: FileType;
     uuid?: string;
     include_file_metadata?: boolean;
-}
+};

@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Category } from './Category';
+import type { Category } from './Category';
 
-export interface GetAllCategoriesResponse {
+export type GetAllCategoriesResponse = {
     categories: Array<Category>;
-}
+};

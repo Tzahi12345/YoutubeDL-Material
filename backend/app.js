@@ -933,21 +933,32 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
     
     files = await db_api.getRecords('files', filter_obj, false, sort, range, text_search);
-    let file_count = await db_api.getRecords('files', filter_obj, true);
-    playlists = await db_api.getRecords('playlists', {user_uid: uuid});
-
-    const categories = await categories_api.getCategoriesAsPlaylists(files);
-    if (categories) {
-        playlists = playlists.concat(categories);
-    }
+    const file_count = await db_api.getRecords('files', filter_obj, true);
 
     files = JSON.parse(JSON.stringify(files));
 
     res.send({
         files: files,
         file_count: file_count,
-        playlists: playlists
     });
+});
+
+app.post('/api/updateFile', optionalJwt, async function (req, res) {
+    const uid = req.body.uid;
+    const change_obj = req.body.change_obj;
+
+    const file = await db_api.updateRecord('files', {uid: uid}, change_obj);
+
+    if (!file) {
+        res.send({
+            success: false,
+            error: 'File could not be found'
+        });
+    } else {
+        res.send({
+            success: true
+        });
+    }
 });
 
 app.post('/api/checkConcurrentStream', async (req, res) => {
@@ -1365,7 +1376,7 @@ app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
 
     let playlists = await db_api.getRecords('playlists', {user_uid: uuid});
     if (include_categories) {
-        const categories = await categories_api.getCategoriesAsPlaylists(files);
+        const categories = await categories_api.getCategoriesAsPlaylists();
         if (categories) {
             playlists = playlists.concat(categories);
         }
@@ -1669,9 +1680,15 @@ app.post('/api/download', optionalJwt, async (req, res) => {
     }
 });
 
-app.post('/api/clearFinishedDownloads', optionalJwt, async (req, res) => {
+app.post('/api/clearDownloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
-    const success = db_api.removeAllRecords('download_queue', {finished: true, user_uid: user_uid});
+    const clear_finished = req.body.clear_finished;
+    const clear_paused = req.body.clear_paused;
+    const clear_errors = req.body.clear_errors;
+    let success = true;
+    if (clear_finished) success &= await db_api.removeAllRecords('download_queue', {finished: true,        user_uid: user_uid});
+    if (clear_paused)   success &= await db_api.removeAllRecords('download_queue', {paused:   true,        user_uid: user_uid});
+    if (clear_errors)   success &= await db_api.removeAllRecords('download_queue', {error:    {$ne: null}, user_uid: user_uid});
     res.send({success: success});
 });
 

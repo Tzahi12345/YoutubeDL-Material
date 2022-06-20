@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Config } from './Config';
+import type { Config } from './Config';
 
-export interface SetConfigRequest {
+export type SetConfigRequest = {
     new_config_file: Config;
-}
+};

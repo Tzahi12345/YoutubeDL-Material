@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GetPlaylistsRequest {
+export type GetPlaylistsRequest = {
     include_categories?: boolean;
-}
+};

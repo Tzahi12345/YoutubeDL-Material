@@ -2,17 +2,16 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface TwitchChatMessage {
+export type TwitchChatMessage = {
     created_at?: string;
     content_offset_seconds?: number;
     commenter?: {
-name?: string,
-_id?: string,
-created_at?: string,
+name?: string;
+_id?: string;
+created_at?: string;
 };
     message?: {
-body?: string,
-user_color?: string,
+body?: string;
+user_color?: string;
 };
-}
+};

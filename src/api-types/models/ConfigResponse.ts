@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Config } from './Config';
+import type { Config } from './Config';
 
-export interface ConfigResponse {
+export type ConfigResponse = {
     config_file: Config;
     success: boolean;
-}
+};

@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { ConcurrentStream } from './ConcurrentStream';
+import type { ConcurrentStream } from './ConcurrentStream';
 
-export interface UpdateConcurrentStreamRequest extends ConcurrentStream {
-    /**
-     * Concurrent stream UID
-     */
-    uid: string;
-}
+export type UpdateConcurrentStreamRequest = (ConcurrentStream & {
+/**
+ * Concurrent stream UID
+ */
+uid: string;
+});

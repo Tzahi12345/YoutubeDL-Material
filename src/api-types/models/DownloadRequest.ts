@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { CropFileSettings } from './CropFileSettings';
-import { FileType } from './FileType';
+import type { CropFileSettings } from './CropFileSettings';
+import type { FileType } from './FileType';
 
-export interface DownloadRequest {
+export type DownloadRequest = {
     url: string;
     /**
      * Video format code. Overrides other quality options.
@@ -41,4 +41,4 @@ export interface DownloadRequest {
     maxBitrate?: string;
     type?: FileType;
     cropFileSettings?: CropFileSettings;
-}
+};

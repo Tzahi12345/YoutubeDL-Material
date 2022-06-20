@@ -2,13 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { DatabaseFile } from './DatabaseFile';
-import { Playlist } from './Playlist';
+import type { DatabaseFile } from './DatabaseFile';
+import type { Playlist } from './Playlist';
 
-export interface GetAllFilesResponse {
+export type GetAllFilesResponse = {
     files: Array<DatabaseFile>;
     /**
      * All video playlists
      */
     playlists: Array<Playlist>;
-}
+};

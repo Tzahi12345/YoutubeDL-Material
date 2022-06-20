@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { ConcurrentStream } from './ConcurrentStream';
+import type { ConcurrentStream } from './ConcurrentStream';
 
-export interface CheckConcurrentStreamResponse {
+export type CheckConcurrentStreamResponse = {
     stream: ConcurrentStream;
-}
+};

@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface Playlist {
+export type Playlist = {
     name: string;
     uids: Array<string>;
     id: string;
@@ -13,4 +13,5 @@ export interface Playlist {
     registered: number;
     duration: number;
     user_uid?: string;
-}
+    auto?: boolean;
+};

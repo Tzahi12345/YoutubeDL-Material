@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface DeleteCategoryRequest {
+export type DeleteCategoryRequest = {
     category_uid: string;
-}
+};

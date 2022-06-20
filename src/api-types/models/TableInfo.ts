@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface TableInfo {
+export type TableInfo = {
     records_count?: number;
-}
+};

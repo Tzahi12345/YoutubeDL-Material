@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GetDownloadRequest {
+export type GetDownloadRequest = {
     download_uid: string;
-}
+};

@@ -171,8 +171,12 @@ exports.registerUser = async function(req, res) {
 
 
 exports.login = async (username, password) => {
+  // even if we're using LDAP, we still want users to be able to login using internal credentials
   const user = await db_api.getRecord('users', {name: username});
-  if (!user) { logger.error(`User ${username} not found`); return false }
+  if (!user) {
+    if (config_api.getConfigItem('ytdl_auth_method') === 'internal') logger.error(`User ${username} not found`);
+    return false;
+  }
   if (user.auth_method && user.auth_method !== 'internal') { return false }
   return await bcrypt.compare(password, user.passhash) ? user : false;
 }

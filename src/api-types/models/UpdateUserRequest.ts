@@ -2,11 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface UpdateUserRequest {
+export type UpdateUserRequest = {
     change_object: {
-uid: string,
-name?: string,
-role?: string,
+uid: string;
+name?: string;
+role?: string;
 };
-}
+};

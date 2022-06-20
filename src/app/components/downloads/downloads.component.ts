@@ -61,7 +61,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       3: $localize`Complete`
   }
 
-  displayedColumns: string[] = ['date', 'title', 'stage', 'subscription', 'progress', 'actions'];
+  displayedColumns: string[] = ['timestamp_start', 'title', 'step_index', 'sub_name', 'percent_complete', 'actions'];
   dataSource = null; // new MatTableDataSource<Download>();
   downloads_retrieved = false;
 
@@ -104,7 +104,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   getCurrentDownloads(): void {
     this.postsService.getCurrentDownloads(this.uids).subscribe(res => {
-      this.downloads_retrieved = true;
       if (res['downloads'] !== null 
         && res['downloads'] !== undefined
         && JSON.stringify(this.downloads) !== JSON.stringify(res['downloads'])) {
@@ -114,29 +113,50 @@ export class DownloadsComponent implements OnInit, OnDestroy {
           this.dataSource = new MatTableDataSource<Download>(this.downloads);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-
           this.paused_download_exists = this.downloads.find(download => download['paused'] && !download['error']);
           this.running_download_exists = this.downloads.find(download => !download['paused'] && !download['finished']);
       } else {
         // failed to get downloads
       }
+      this.downloads_retrieved = true;
     });
   }
 
-  clearFinishedDownloads(): void {
+  clearDownloadsByType(): void {
+    const clearEmitter = new EventEmitter<boolean>();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        dialogTitle: $localize`Clear finished downloads`,
-        dialogText: $localize`Would you like to clear your finished downloads?`,
+        dialogType: 'selection_list',
+        dialogTitle: $localize`Clear downloads`,
+        dialogText: $localize`Select downloads to clear`,
         submitText: $localize`Clear`,
-        warnSubmitColor: true
+        doneEmitter: clearEmitter,
+        warnSubmitColor: true,
+        list: [
+          {
+            title: $localize`Finished downloads`,
+            key: 'clear_finished'
+          },
+          {
+            title: $localize`Paused downloads`,
+            key: 'clear_paused'
+          },
+          {
+            title: $localize`Errored downloads`,
+            key: 'clear_errors'
+          }
+        ]
       }
     });
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.postsService.clearFinishedDownloads().subscribe(res => {
+    clearEmitter.subscribe((done: boolean) => {
+      if (done) {
+        const selected_items = dialogRef.componentInstance.selected_items;
+        this.postsService.clearDownloads(selected_items.includes('clear_finished'), selected_items.includes('clear_paused'), selected_items.includes('clear_errors')).subscribe(res => {
           if (!res['success']) {
-            this.postsService.openSnackBar('Failed to clear finished downloads!');
+            this.postsService.openSnackBar($localize`Failed to clear finished downloads!`);
+          } else {
+            this.postsService.openSnackBar($localize`Cleared downloads!`);
+            dialogRef.close();
           }
         });
       }

@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface TestConnectionStringResponse {
+export type TestConnectionStringResponse = {
     success: boolean;
     error?: string;
-}
+};

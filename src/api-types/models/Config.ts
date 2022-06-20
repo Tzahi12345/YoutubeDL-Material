@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface Config {
+export type Config = {
     YoutubeDLMaterial: any;
-}
+};

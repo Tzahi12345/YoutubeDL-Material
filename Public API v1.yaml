@@ -129,6 +129,27 @@ paths:
           description: User is not authorized to view the file.
       security:
         - Auth query parameter: []
+  /api/updateFile:
+    post:
+      tags:
+        - files
+      summary: Updates file database object
+      description: Updates a file db object using its uid and a change object.
+      operationId: post-updateFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
   /api/enableSharing:
     post:
       tags:
@@ -841,17 +862,10 @@ paths:
         - Auth query parameter: []
       tags:
         - downloader
-  /api/clearFinishedDownloads:
+  /api/clearDownloads:
     post:
-      tags:
-        - downloader
-      summary: Clear finished downloads
-      operationId: post-api-clear-finished-downloads
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
+      summary: Clear multiple downloads
+      operationId: post-api-clear-downloads
       responses:
         '200':
           description: OK
@@ -859,8 +873,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClearDownloadsRequest'
+        description: ''
+      description: "Clears multiple downloads based on a given filter."
       security:
         - Auth query parameter: []
+      tags:
+        - downloader
   /api/getTask:
     post:
       summary: Get info for one task
@@ -1507,6 +1530,8 @@ components:
       properties:
         success:
           type: boolean
+        error:
+          type: string
     FileType:
       type: string
       enum:
@@ -1607,6 +1632,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Download'
+    ClearDownloadsRequest:
+      type: object
+      properties:
+        clear_finished:
+          type: boolean
+        clear_paused:
+          type: boolean
+        clear_errors:
+          type: boolean
     GetTaskRequest:
       type: object
       properties:
@@ -1727,6 +1761,18 @@ components:
           type: boolean
         file:
           $ref: '#/components/schemas/DatabaseFile'
+    UpdateFileRequest:
+      required:
+        - uid
+        - change_obj
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Video UID
+        change_obj:
+          type: object
+          description: Object with fields to update as keys and their new values
     SharingToggle:
       required:
         - uid
@@ -2153,7 +2199,6 @@ components:
           type: boolean
         result:
           allOf:
-          - $ref: '#/components/schemas/file'
           - type: object
             properties:
               formats:
@@ -2311,6 +2356,9 @@ components:
           type: string
         thumbnailURL:
           type: string
+          description: Backup if thumbnailPath is not defined
+        thumbnailPath:
+          type: string
         isAudio:
           type: boolean
         duration:
@@ -2322,6 +2370,7 @@ components:
           type: string
         size:
           type: number
+          description: In bytes
         path:
           type: string
         upload_date:
@@ -2330,6 +2379,12 @@ components:
           type: string
         sharingEnabled:
           type: boolean
+        category:
+          $ref: '#/components/schemas/Category'
+        view_count:
+          type: number
+        local_view_count:
+          type: number
     Playlist:
       required:
         - uids
@@ -2359,6 +2414,8 @@ components:
           type: number
         user_uid:
           type: string
+        auto:
+          type: boolean
     Download:
       required:
         - url
@@ -2545,28 +2602,6 @@ components:
           type: string
         passhash:
           type: string
-        files:
-          type: object
-          properties:
-            audio:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
-            video:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
-        playlists:
-          type: object
-          properties:
-            audio:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
-            video:
-              type: array
-              items:
-                $ref: '#/components/schemas/file'
         subscriptions:
           type: array
           items:

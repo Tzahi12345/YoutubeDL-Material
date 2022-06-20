@@ -2,10 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface Version {
+export type Version = {
     type?: string;
     tag?: string;
     commit?: string;
     date?: string;
-}
+};

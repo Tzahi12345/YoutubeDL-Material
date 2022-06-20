@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface body_19 {
+export type body_19 = {
     input_pin: string;
-}
+};

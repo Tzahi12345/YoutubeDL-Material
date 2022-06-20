@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { User } from './User';
+import type { User } from './User';
 
-export interface GetUsersResponse {
+export type GetUsersResponse = {
     users: Array<User>;
-}
+};

@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface File {
+export type binary = {
     id?: string;
-}
+};

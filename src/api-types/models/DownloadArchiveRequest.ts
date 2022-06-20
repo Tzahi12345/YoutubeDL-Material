@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface DownloadArchiveRequest {
+export type DownloadArchiveRequest = {
     sub: {
-archive_dir: string,
+archive_dir: string;
 };
-}
+};

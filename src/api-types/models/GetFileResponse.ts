@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { DatabaseFile } from './DatabaseFile';
+import type { DatabaseFile } from './DatabaseFile';
 
-export interface GetFileResponse {
+export type GetFileResponse = {
     success: boolean;
     file?: DatabaseFile;
-}
+};

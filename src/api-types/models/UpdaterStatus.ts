@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface UpdaterStatus {
+export type UpdaterStatus = {
     updating: boolean;
     details: string;
     error?: boolean;
-}
+};

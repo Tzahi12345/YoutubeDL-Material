@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GenerateArgsResponse {
+export type GenerateArgsResponse = {
     args?: Array<string>;
-}
+};

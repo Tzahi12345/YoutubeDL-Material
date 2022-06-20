@@ -2,15 +2,15 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { UserPermission } from './UserPermission';
+import type { UserPermission } from './UserPermission';
 
-export interface GetRolesResponse {
+export type GetRolesResponse = {
     roles: {
 admin?: {
-permissions?: Array<UserPermission>,
-},
-user?: {
-permissions?: Array<UserPermission>,
-},
+permissions?: Array<UserPermission>;
 };
-}
+user?: {
+permissions?: Array<UserPermission>;
+};
+};
+};

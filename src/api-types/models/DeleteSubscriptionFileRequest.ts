@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { SubscriptionRequestData } from './SubscriptionRequestData';
+import type { SubscriptionRequestData } from './SubscriptionRequestData';
 
-export interface DeleteSubscriptionFileRequest {
+export type DeleteSubscriptionFileRequest = {
     file: string;
     file_uid?: string;
     sub: SubscriptionRequestData;
@@ -12,4 +12,4 @@ export interface DeleteSubscriptionFileRequest {
      * If true, does not remove id from archive. Only valid if youtube-dl archive is enabled in settings.
      */
     deleteForever?: boolean;
-}
+};

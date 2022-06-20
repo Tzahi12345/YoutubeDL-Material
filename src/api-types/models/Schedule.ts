@@ -2,16 +2,15 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface Schedule {
+export type Schedule = {
     type: Schedule.type;
     data: {
-dayOfWeek?: Array<number>,
-hour?: number,
-minute?: number,
-timestamp?: number,
+dayOfWeek?: Array<number>;
+hour?: number;
+minute?: number;
+timestamp?: number;
 };
-}
+};
 
 export namespace Schedule {
 

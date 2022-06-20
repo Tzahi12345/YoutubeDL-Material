@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { DBBackup } from './DBBackup';
+import type { DBBackup } from './DBBackup';
 
-export interface GetDBBackupsResponse {
+export type GetDBBackupsResponse = {
     tasks?: Array<DBBackup>;
-}
+};

@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface SuccessObject {
+export type SuccessObject = {
     success: boolean;
-}
+    error?: string;
+};

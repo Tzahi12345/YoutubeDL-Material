@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GetFullTwitchChatResponse {
+export type GetFullTwitchChatResponse = {
     success: boolean;
     error?: string;
-}
+};

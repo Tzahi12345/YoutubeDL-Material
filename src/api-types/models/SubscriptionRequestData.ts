@@ -2,12 +2,12 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { FileType } from './FileType';
+import type { FileType } from './FileType';
 
-export interface SubscriptionRequestData {
+export type SubscriptionRequestData = {
     name: string;
     id: string;
     type?: FileType;
     isPlaylist?: boolean;
     archive?: string;
-}
+};

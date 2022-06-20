@@ -42,6 +42,25 @@ const { uuid } = require('uuidv4');
 
 db_api.initialize(db, users_db);
 
+const sample_video_json = {
+    id: "Sample Video",
+    title: "Sample Video",
+    thumbnailURL: "https://sampleurl.jpg",
+    isAudio: false,
+    duration: 177.413,
+    url: "sampleurl.com",
+    uploader: "Sample Uploader",
+    size: 2838445,
+    path: "users\\admin\\video\\Sample Video.mp4",
+    upload_date: "2017-07-28",
+    description: null,
+    view_count: 230,
+    abr: 128,
+    thumbnailPath: null,
+    user_uid: "admin",
+    uid: "1ada04ab-2773-4dd4-bbdd-3e2d40761c50",
+    registered: 1628469039377
+}
 
 describe('Database', async function() {
     describe('Import', async function() {
@@ -214,7 +233,7 @@ describe('Database', async function() {
             for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
                 const uid = uuid();
                 if (i === NUM_RECORDS_TO_ADD/2) random_uid = uid;
-                test_records.push({"id":"A$AP Mob - Yamborghini High (Official Music Video) ft. Juicy J","title":"A$AP Mob - Yamborghini High (Official Music Video) ft. Juicy J","thumbnailURL":"https://i.ytimg.com/vi/tt7gP_IW-1w/maxresdefault.jpg","isAudio":true,"duration":312,"url":"https://www.youtube.com/watch?v=tt7gP_IW-1w","uploader":"asapmobVEVO","size":5060157,"path":"audio\\A$AP Mob - Yamborghini High (Official Music Video) ft. Juicy J.mp3","upload_date":"2016-05-11","description":"A$AP Mob ft. Juicy J  - \"Yamborghini High\" Get it now on:\niTunes: http://smarturl.it/iYAMH?IQid=yt\nListen on Spotify: http://smarturl.it/sYAMH?IQid=yt\nGoogle Play: http://smarturl.it/gYAMH?IQid=yt\nAmazon:  http://smarturl.it/aYAMH?IQid=yt\n\nFollow A$AP Mob:\nhttps://www.facebook.com/asapmobofficial\nhttps://twitter.com/ASAPMOB\nhttp://instagram.com/asapmob \nhttp://www.asapmob.com/\n\n#AsapMob #YamborghiniHigh #Vevo #HipHop #OfficialMusicVideo #JuicyJ","view_count":118689353,"height":null,"abr":160,"uid": uid,"registered":1626672120632});
+                test_records.push({"id":"RandomTextRandomText","title":"RandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomText","thumbnailURL":"https://i.ytimg.com/vi/randomurl/maxresdefault.jpg","isAudio":true,"duration":312,"url":"https://www.youtube.com/watch?v=randomvideo","uploader":"randomUploader","size":5060157,"path":"audio\\RandomTextRandomText.mp3","upload_date":"2016-05-11","description":"RandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomText","view_count":118689353,"height":null,"abr":160,"uid": uid,"registered":1626672120632});
             }
             const insert_start = Date.now();
             let success = await db_api.bulkInsertRecordsIntoTable('test', test_records);
@@ -235,6 +254,30 @@ describe('Database', async function() {
             assert(success);
         });
     });
+
+    describe('Local DB Filters', async function() {
+        it('Basic', async function() {
+            const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: 'test'}, 'find');
+            assert(result && result['test'] === 'test');
+        });
+
+        it('Regex', async function() {
+            const filter = {$regex: `\\w+\\d`, $options: 'i'};
+            const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: filter}, 'find');
+            assert(result && result['test'] === 'test1');
+        });
+
+        it('Not equals', async function() {
+            const filter = {$ne: 'test'};
+            const result = db_api.applyFilterLocalDB([{test: 'test'}, {test: 'test1'}], {test: filter}, 'find');
+            assert(result && result['test'] === 'test1');
+        });
+
+        it('Nested', async function() {
+            const result = db_api.applyFilterLocalDB([{test1: {test2: 'test3'}}, {test4: 'test5'}], {'test1.test2': 'test3'}, 'find');
+            assert(result && result['test1']['test2'] === 'test3');
+        });
+    })
 });
 
 describe('Multi User', async function() {
@@ -253,10 +296,12 @@ describe('Multi User', async function() {
             assert(user);
         });
     });
-    describe('Video player - normal', function() {
-        const video_to_test = 'ebbcfffb-d6f1-4510-ad25-d1ec82e0477e';
+    describe('Video player - normal', async function() {
+        await db_api.removeRecord('files', {uid: sample_video_json['uid']});
+        await db_api.insertRecordIntoTable('files', sample_video_json);
+        const video_to_test = sample_video_json['uid'];
         it('Get video', async function() {
-            const video_obj = db_api.getVideo(video_to_test, 'admin');
+            const video_obj = await db_api.getVideo(video_to_test);
             assert(video_obj);
         });
 
@@ -341,7 +386,9 @@ describe('Downloader', function() {
     });
 
     it('Get file info', async function() {
-
+        this.timeout(300000);
+        const info = await downloader_api.getVideoInfoByURL(url);
+        assert(!!info);
     });
 
     it('Download file', async function() {
@@ -360,20 +407,23 @@ describe('Downloader', function() {
     });
 
     it('Pause file', async function() {
-
+        const returned_download = await downloader_api.createDownload(url, 'video', options);
+        await downloader_api.pauseDownload(returned_download['uid']);
+        const updated_download = await db_api.getRecord('download_queue', {uid: returned_download['uid']});
+        assert(updated_download['paused'] && !updated_download['running']);
     });
 
     it('Generate args', async function() {
         const args = await downloader_api.generateArgs(url, 'video', options);
-        console.log(args);
+        assert(args.length > 0);
     });
 
     it('Generate args - subscription', async function() {
-        subscriptions_api.initialize(db_api, logger);
         const sub = await subscriptions_api.getSubscription(sub_id);
         const sub_options = subscriptions_api.generateOptionsForSubscriptionDownload(sub, 'admin');
-        const args = await downloader_api.generateArgs(url, 'video', sub_options, 'admin');
-        console.log(args);
+        const args_normal = await downloader_api.generateArgs(url, 'video', options);
+        const args_sub = await downloader_api.generateArgs(url, 'video', sub_options, 'admin');
+        console.log(JSON.stringify(args_normal) !== JSON.stringify(args_sub));
     });
 
     it('Generate kodi NFO file', async function() {
@@ -417,7 +467,7 @@ describe('Tasks', function() {
         };
         tasks_api.TASKS['dummy_task'] = dummy_task;
 
-        await tasks_api.initialize();
+        await tasks_api.setupTasks();
     });
     it('Backup db', async function() {
         const backups_original = await utils.recFindByExt('appdata', 'bak');
@@ -429,12 +479,13 @@ describe('Tasks', function() {
     });
 
     it('Check for missing files', async function() {
+        this.timeout(300000);
         await db_api.removeAllRecords('files', {uid: 'test'});
         const test_missing_file = {uid: 'test', path: 'test/missing_file.mp4'};
         await db_api.insertRecordIntoTable('files', test_missing_file);
         await tasks_api.executeTask('missing_files_check');
-        const task_obj = await db_api.getRecord('tasks', {key: 'missing_files_check'});
-        assert(task_obj['data'] && task_obj['data']['uids'] && task_obj['data']['uids'].length >= 1, true);
+        const missing_file_db_record = await db_api.getRecord('files', {uid: 'test'});
+        assert(!missing_file_db_record, true);
     });
 
     it('Check for duplicate files', async function() {
@@ -447,10 +498,13 @@ describe('Tasks', function() {
         await db_api.insertRecordIntoTable('files', test_duplicate_file1);
         await db_api.insertRecordIntoTable('files', test_duplicate_file2);
         await db_api.insertRecordIntoTable('files', test_duplicate_file3);
-        await tasks_api.executeTask('duplicate_files_check');
+
+        await tasks_api.executeRun('duplicate_files_check');
         const task_obj = await db_api.getRecord('tasks', {key: 'duplicate_files_check'});
-        const duplicated_record_count = await db_api.getRecords('files', {path: 'test/missing_file.mp4'}, true);
         assert(task_obj['data'] && task_obj['data']['uids'] && task_obj['data']['uids'].length >= 1, true);
+
+        await tasks_api.executeTask('duplicate_files_check');
+        const duplicated_record_count = await db_api.getRecords('files', {path: 'test/missing_file.mp4'}, true);
         assert(duplicated_record_count == 1, true);
     });
 
@@ -475,22 +529,36 @@ describe('Tasks', function() {
     });
 
     it('Schedule and cancel task', async function() {
-        const today_4_hours = new Date();
-        today_4_hours.setHours(today_4_hours.getHours() + 4);
-        await tasks_api.updateTaskSchedule('dummy_task', today_4_hours);
-        assert(!!tasks_api.TASKS['dummy_task']['job'], true);
+        this.timeout(5000);
+        const today_one_year = new Date();
+        today_one_year.setFullYear(today_one_year.getFullYear() + 1);
+        const schedule_obj = {
+            type: 'timestamp',
+            data: { timestamp: today_one_year.getTime() }
+        }
+        await tasks_api.updateTaskSchedule('dummy_task', schedule_obj);
+        const dummy_task = await db_api.getRecord('tasks', {key: 'dummy_task'});
+        assert(!!tasks_api.TASKS['dummy_task']['job']);
+        assert(!!dummy_task['schedule']);
+
         await tasks_api.updateTaskSchedule('dummy_task', null);
-        assert(!!tasks_api.TASKS['dummy_task']['job'], false);
+        const dummy_task_updated = await db_api.getRecord('tasks', {key: 'dummy_task'});
+        assert(!tasks_api.TASKS['dummy_task']['job']);
+        assert(!dummy_task_updated['schedule']);
     });
 
     it('Schedule and run task', async function() {
         this.timeout(5000);
         const today_1_second = new Date();
         today_1_second.setSeconds(today_1_second.getSeconds() + 1);
-        await tasks_api.updateTaskSchedule('dummy_task', today_1_second);
-        assert(!!tasks_api.TASKS['dummy_task']['job'], true);
+        const schedule_obj = {
+            type: 'timestamp',
+            data: { timestamp: today_1_second.getTime() }
+        }
+        await tasks_api.updateTaskSchedule('dummy_task', schedule_obj);
+        assert(!!tasks_api.TASKS['dummy_task']['job']);
         await utils.wait(2000);
         const dummy_task_obj = await db_api.getRecord('tasks', {key: 'dummy_task'});
-        assert(dummy_task_obj['data'], true);
+        assert(dummy_task_obj['data']);
     });
 });

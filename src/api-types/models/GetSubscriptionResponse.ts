@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Subscription } from './Subscription';
+import type { Subscription } from './Subscription';
 
-export interface GetSubscriptionResponse {
+export type GetSubscriptionResponse = {
     subscription: Subscription;
     files: Array<any>;
-}
+};

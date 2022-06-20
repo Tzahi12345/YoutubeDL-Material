@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
 export enum UserPermission {
     FILEMANAGER = 'filemanager',
     SETTINGS = 'settings',

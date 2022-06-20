@@ -95,6 +95,9 @@ import {
     UpdateTaskDataRequest,
     RestoreDBBackupRequest,
     Schedule,
+    ClearDownloadsRequest,
+    Category,
+    UpdateFileRequest
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -144,7 +147,7 @@ export class PostsService implements CanActivate {
     // global vars
     config = null;
     subscriptions = null;
-    categories = null;
+    categories: Category[] = null;
     sidenav = null;
     locale = isoLangs['en'];
     version_info = null;
@@ -176,7 +179,7 @@ export class PostsService implements CanActivate {
         const redirect_not_required = window.location.href.includes('/player') || window.location.href.includes('/login');
 
         // get config
-        this.loadNavItems().subscribe(res => {
+        this.getConfig().subscribe(res => {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
@@ -252,7 +255,7 @@ export class PostsService implements CanActivate {
     }
 
     reloadConfig() {
-        this.loadNavItems().subscribe(res => {
+        this.getConfig().subscribe(res => {
             const result = !this.debugMode ? res['config_file'] : res;
             if (result) {
                 this.config = result['YoutubeDLMaterial'];
@@ -313,7 +316,7 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'restartServer', {}, this.httpOptions);
     }
 
-    loadNavItems() {
+    getConfig() {
         if (isDevMode()) {
             return this.http.get('./assets/default.json');
         } else {
@@ -347,13 +350,18 @@ export class PostsService implements CanActivate {
         return this.http.get<GetMp4sResponse>(this.path + 'getMp4s', this.httpOptions);
     }
 
-    getFile(uid: string, type: FileType, uuid: string = null) {
-        const body: GetFileRequest = {uid: uid, type: type, uuid: uuid};
+    getFile(uid: string, uuid: string = null) {
+        const body: GetFileRequest = {uid: uid, uuid: uuid};
         return this.http.post<GetFileResponse>(this.path + 'getFile', body, this.httpOptions);
     }
 
     getAllFiles(sort, range, text_search, file_type_filter) {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
+    }
+
+    updateFile(uid: string, change_obj: Object) {
+        const body: UpdateFileRequest = {uid: uid, change_obj: change_obj};
+        return this.http.post<SuccessObject>(this.path + 'updateFile', body, this.httpOptions);
     }
 
     downloadFileFromServer(uid: string, uuid: string = null) {
@@ -449,13 +457,13 @@ export class PostsService implements CanActivate {
         return this.http.post<GetPlaylistResponse>(this.path + 'getPlaylist', body, this.httpOptions);
     }
 
+    getPlaylists(include_categories = false) {
+        return this.http.post<GetPlaylistsRequest>(this.path + 'getPlaylists', {include_categories: include_categories}, this.httpOptions);
+    }
+
     incrementViewCount(file_uid, sub_id, uuid) {
         const body: IncrementViewCountRequest = {file_uid: file_uid, sub_id: sub_id, uuid: uuid};
         return this.http.post<SuccessObject>(this.path + 'incrementViewCount', body, this.httpOptions);
-    }
-
-    getPlaylists() {
-        return this.http.post<GetPlaylistsRequest>(this.path + 'getPlaylists', {}, this.httpOptions);
     }
 
     updatePlaylist(playlist: Playlist) {
@@ -579,8 +587,9 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'clearDownload', body, this.httpOptions);
     }
 
-    clearFinishedDownloads() {
-        return this.http.post<SuccessObject>(this.path + 'clearFinishedDownloads', {}, this.httpOptions);
+    clearDownloads(clear_finished: boolean, clear_paused: boolean, clear_errors: boolean) {
+        const body: ClearDownloadsRequest = {clear_finished: clear_finished, clear_paused: clear_paused, clear_errors: clear_errors};
+        return this.http.post<SuccessObject>(this.path + 'clearDownloads', body, this.httpOptions);
     }
 
     getTasks() {

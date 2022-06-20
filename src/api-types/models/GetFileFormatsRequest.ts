@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface GetFileFormatsRequest {
+export type GetFileFormatsRequest = {
     url?: string;
-}
+};

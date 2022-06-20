@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Version } from './Version';
+import type { Version } from './Version';
 
-export interface VersionInfoResponse {
+export type VersionInfoResponse = {
     version_info: Version;
-}
+};

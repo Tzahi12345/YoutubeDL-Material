@@ -3,7 +3,7 @@
         <mat-table style="overflow: hidden" [ngClass]="uids ? 'rounded-top' : null" matSort [dataSource]="dataSource">
       
           <!-- Date Column -->
-          <ng-container matColumnDef="date">
+          <ng-container matColumnDef="timestamp_start">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.timestamp_start | date: 'short'}} </mat-cell>
           </ng-container>
@@ -19,7 +19,7 @@
           </ng-container>
 
           <!-- Subscription Column -->
-          <ng-container matColumnDef="subscription">
+          <ng-container matColumnDef="sub_name">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Subscription">Subscription</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
               <ng-container *ngIf="element.sub_name">
@@ -32,13 +32,13 @@
           </ng-container>
       
           <!-- Stage Column -->
-          <ng-container matColumnDef="stage">
+          <ng-container matColumnDef="step_index">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Stage">Stage</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{STEP_INDEX_TO_LABEL[element.step_index]}} </mat-cell>
           </ng-container>
       
           <!-- Progress Column -->
-          <ng-container matColumnDef="progress">
+          <ng-container matColumnDef="percent_complete">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <ng-container *ngIf="element.percent_complete">
@@ -82,7 +82,7 @@
       <div *ngIf="!uids" class="downloads-action-button-div">
         <button [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
         <button style="margin-left: 10px;" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
-        <button color="warn" style="margin-left: 10px;" mat-stroked-button (click)="clearFinishedDownloads()"><ng-container i18n="Clear finished downloads">Clear finished downloads</ng-container></button>
+        <button color="warn" style="margin-left: 10px;" mat-stroked-button (click)="clearDownloadsByType()"><ng-container i18n="Clear downloads">Clear downloads</ng-container></button>
       </div>
 </div>
 

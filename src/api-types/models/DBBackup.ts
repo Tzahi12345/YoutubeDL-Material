@@ -2,13 +2,12 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface DBBackup {
+export type DBBackup = {
     name: string;
     timestamp: number;
     size: number;
     source: DBBackup.source;
-}
+};
 
 export namespace DBBackup {
 

@@ -2,16 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { FileType } from './FileType';
-
-export type GetFileRequest = {
+export type UpdateFileRequest = {
     /**
      * Video UID
      */
     uid: string;
-    type?: FileType;
     /**
-     * User UID
+     * Object with fields to update as keys and their new values
      */
-    uuid?: string;
+    change_obj: any;
 };

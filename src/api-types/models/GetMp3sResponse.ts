@@ -2,13 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { DatabaseFile } from './DatabaseFile';
-import { Playlist } from './Playlist';
+import type { DatabaseFile } from './DatabaseFile';
+import type { Playlist } from './Playlist';
 
-export interface GetMp3sResponse {
+export type GetMp3sResponse = {
     mp3s: Array<DatabaseFile>;
     /**
      * All audio playlists
      */
     playlists: Array<Playlist>;
-}
+};

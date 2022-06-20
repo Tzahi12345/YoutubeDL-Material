@@ -2,10 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface CheckConcurrentStreamRequest {
+export type CheckConcurrentStreamRequest = {
     /**
      * UID of the concurrent stream
      */
     uid: string;
-}
+};

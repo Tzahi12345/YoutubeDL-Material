@@ -2,7 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-
-export interface body_20 {
+export type body_20 = {
     unhashed_pin: string;
-}
+};
