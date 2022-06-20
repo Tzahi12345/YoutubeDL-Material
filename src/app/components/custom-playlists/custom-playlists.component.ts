@@ -105,9 +105,9 @@ export class CustomPlaylistsComponent implements OnInit {
     const index = args.index;
     const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
       data: {
-        playlist_id: playlist.id,
-        width: '65vw'
-      }
+        playlist_id: playlist.id
+      },
+      minWidth: '85vw'
     });
 
     dialogRef.afterClosed().subscribe(() => {

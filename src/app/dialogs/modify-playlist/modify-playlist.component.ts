@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PostsService } from 'app/posts.services';
+import { DatabaseFile, Playlist } from 'api-types';
 
 @Component({
   selector: 'app-modify-playlist',
@@ -10,11 +11,11 @@ import { PostsService } from 'app/posts.services';
 })
 export class ModifyPlaylistComponent implements OnInit {
 
-  playlist_id = null;
+  playlist_id: string = null;
 
-  original_playlist = null;
-  playlist = null;
-  playlist_file_objs = null;
+  original_playlist: Playlist = null;
+  playlist: Playlist = null;
+  playlist_file_objs: DatabaseFile[] = null;
 
   available_files = [];
   all_files = [];
@@ -34,18 +35,18 @@ export class ModifyPlaylistComponent implements OnInit {
     this.reverse_order = localStorage.getItem('default_playlist_order_reversed') === 'true';
   }
 
-  getFiles() {
+  getFiles(): void {
     this.postsService.getAllFiles().subscribe(res => {
       this.processFiles(res['files']);
     });
   }
 
-  processFiles(new_files = null) {
+  processFiles(new_files: DatabaseFile[] = null): void {
     if (new_files) { this.all_files = new_files; }
     this.available_files = this.all_files.filter(e => !this.playlist_file_objs.includes(e))
   }
 
-  updatePlaylist() {
+  updatePlaylist(): void {
     this.playlist['uids'] = this.playlist_file_objs.map(playlist_file_obj => playlist_file_obj['uid'])
     this.postsService.updatePlaylist(this.playlist).subscribe(res => {
       this.playlist_updated = true;
@@ -55,11 +56,11 @@ export class ModifyPlaylistComponent implements OnInit {
     });
   }
 
-  playlistChanged() {
+  playlistChanged(): boolean {
     return JSON.stringify(this.playlist) !== JSON.stringify(this.original_playlist);
   }
 
-  getPlaylist() {
+  getPlaylist(): void {
     this.postsService.getPlaylist(this.playlist_id, null, true).subscribe(res => {
       if (res['playlist']) {
         this.playlist = res['playlist'];
@@ -70,13 +71,13 @@ export class ModifyPlaylistComponent implements OnInit {
     });
   }
 
-  addContent(file) {
+  addContent(file: DatabaseFile): void {
     this.playlist_file_objs.push(file);
     this.playlist.uids.push(file.uid);
     this.processFiles();
   }
 
-  removeContent(index) {
+  removeContent(index: number): void {
     if (this.reverse_order) {
       index = this.playlist_file_objs.length - 1 - index;
     }
@@ -85,17 +86,18 @@ export class ModifyPlaylistComponent implements OnInit {
     this.processFiles();
   }
 
-  togglePlaylistOrder() {
+  togglePlaylistOrder(): void {
     this.reverse_order = !this.reverse_order;
     localStorage.setItem('default_playlist_order_reversed', '' + this.reverse_order);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>): void {
     if (this.reverse_order) {
       event.previousIndex = this.playlist_file_objs.length - 1 - event.previousIndex;
       event.currentIndex = this.playlist_file_objs.length - 1 - event.currentIndex;
     }
     moveItemInArray(this.playlist_file_objs, event.previousIndex, event.currentIndex);
+    this.playlist.uids = this.playlist_file_objs.map(file => file.uid);
   }
 
 }
