@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormControl } from '@angular/forms';
 import { PostsService } from 'app/posts.services';
+import { Playlist } from 'api-types';
 
 @Component({
   selector: 'app-create-playlist',
@@ -20,9 +21,24 @@ export class CreatePlaylistComponent implements OnInit {
   cached_thumbnail_url = null;
 
   create_in_progress = false;
+  create_mode = false;
 
-  constructor(private postsService: PostsService,
-              public dialogRef: MatDialogRef<CreatePlaylistComponent>) { }
+  // playlist modify mode
+
+  playlist: Playlist = null;
+  playlist_id: string = null;
+  preselected_files = [];
+  playlist_updated = false;
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any,
+              private postsService: PostsService,
+              public dialogRef: MatDialogRef<CreatePlaylistComponent>) {
+                if (this.data?.create_mode) this.create_mode = true;
+                if (this.data?.playlist_id) {
+                  this.playlist_id = this.data.playlist_id;
+                  this.getPlaylist();
+                }
+  }
 
 
   ngOnInit(): void {}
@@ -40,6 +56,17 @@ export class CreatePlaylistComponent implements OnInit {
     });
   }
 
+  updatePlaylist(): void {
+    this.playlist['name'] = this.name;
+    this.playlist['uids'] = this.filesSelect.value;
+    this.playlist_updated = true;
+    this.postsService.updatePlaylist(this.playlist).subscribe(() => {
+      this.postsService.openSnackBar('Playlist updated successfully.');
+      this.getPlaylist();
+      this.postsService.playlists_changed.next(true);
+    });
+  }
+
   getThumbnailURL(): string {
     return this.cached_thumbnail_url;
   }
@@ -48,5 +75,20 @@ export class CreatePlaylistComponent implements OnInit {
     this.filesSelect.setValue(new_selection);
     if (new_selection.length) this.cached_thumbnail_url = thumbnailURL;
     else                      this.cached_thumbnail_url = null;
+  }
+
+  playlistChanged(): boolean {
+    return JSON.stringify(this.playlist.uids) !== JSON.stringify(this.filesSelect.value) || this.name !== this.playlist.name;
+  }
+
+  getPlaylist(): void {
+    this.postsService.getPlaylist(this.playlist_id, null, true).subscribe(res => {
+      if (res['playlist']) {
+        this.filesSelect.setValue(res['file_objs'].map(file => file.uid));
+        this.preselected_files = res['file_objs'];
+        this.playlist = res['playlist'];
+        this.name = this.playlist['name']; 
+      }
+    });
   }
 }

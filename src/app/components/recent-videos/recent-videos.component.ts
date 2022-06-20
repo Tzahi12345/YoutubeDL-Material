@@ -5,6 +5,7 @@ import { DatabaseFile, FileType, FileTypeFilter } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-recent-videos',
@@ -14,10 +15,24 @@ import { distinctUntilChanged } from 'rxjs/operators';
 export class RecentVideosComponent implements OnInit {
 
   @Input() usePaginator = true;
+
+  // File selection
+
   @Input() selectMode = false;
+  @Input() defaultSelected: DatabaseFile[] = [];
   @Input() sub_id = null;
   @Input() customHeader = null;
+  @Input() selectedIndex = 1;
   @Output() fileSelectionEmitter = new EventEmitter<{new_selection: string[], thumbnailURL: string}>();
+
+  pageSize = 10;
+  paged_data: DatabaseFile[] = null;
+
+  selected_data: string[] = [];
+  selected_data_objs: DatabaseFile[] = [];
+  reverse_order = false;
+
+  // File listing (with cards)
 
   cached_file_count = 0;
   loading_files = null;
@@ -63,19 +78,31 @@ export class RecentVideosComponent implements OnInit {
   
   playlists = null;
 
-  pageSize = 10;
-  paged_data: DatabaseFile[] = null;
-
-  selected_data: string[] = [];
-
   @ViewChild('paginator') paginator: MatPaginator
 
   constructor(public postsService: PostsService, private router: Router) {
     // get cached file count
     if (localStorage.getItem('cached_file_count')) {
       this.cached_file_count = +localStorage.getItem('cached_file_count') <= 10 ? +localStorage.getItem('cached_file_count') : 10;
-      
       this.loading_files = Array(this.cached_file_count).fill(0);
+    }
+
+    // set filter property to cached value
+    const cached_filter_property = localStorage.getItem('filter_property');
+    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
+      this.filterProperty = this.filterProperties[cached_filter_property];
+    }
+
+    // set file type filter to cached value
+    const cached_file_type_filter = localStorage.getItem('file_type_filter');
+    if (this.usePaginator && cached_file_type_filter) {
+      this.fileTypeFilter = cached_file_type_filter;
+    }
+
+    const sort_order = localStorage.getItem('recent_videos_sort_order');
+
+    if (sort_order) {
+      this.descendingMode = sort_order === 'descending';
     }
   }
 
@@ -104,23 +131,9 @@ export class RecentVideosComponent implements OnInit {
       }
     });
 
-    // set filter property to cached value
-    const cached_filter_property = localStorage.getItem('filter_property');
-    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
-      this.filterProperty = this.filterProperties[cached_filter_property];
-    }
-
-    // set file type filter to cached value
-    const cached_file_type_filter = localStorage.getItem('file_type_filter');
-    if (this.usePaginator && cached_file_type_filter) {
-      this.fileTypeFilter = cached_file_type_filter;
-    }
-
-    const sort_order = localStorage.getItem('recent_videos_sort_order');
-
-    if (sort_order) {
-      this.descendingMode = sort_order === 'descending';
-    }
+    
+    this.selected_data = this.defaultSelected.map(file => file.uid);
+    this.selected_data_objs = this.defaultSelected;    
 
     this.searchChangedSubject
       .debounceTime(500)
@@ -364,20 +377,41 @@ export class RecentVideosComponent implements OnInit {
     this.getAllFiles();
   }
 
-  fileSelectionChanged(event): void {
+  fileSelectionChanged(event: { option: { _selected: boolean; value: DatabaseFile; } }): void {
     const adding = event.option._selected;
     const value = event.option.value;
-    if (adding)
-      this.selected_data.push(value);
-    else
-      this.selected_data = this.selected_data.filter(e => e !== value);
-
-    let thumbnail_url = null;
-    if (this.selected_data.length) {
-      const file_obj = this.paged_data.find(file => file.uid === this.selected_data[0]);
-      if (file_obj) { thumbnail_url = file_obj['thumbnailURL'] }
+    if (adding) {
+      this.selected_data.push(value.uid);
+      this.selected_data_objs.push(value);
+    } else {
+      this.selected_data      = this.selected_data.filter(e => e !== value.uid);
+      this.selected_data_objs = this.selected_data_objs.filter(e => e.uid !== value.uid);
     }
 
-    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: thumbnail_url});
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
+  }
+
+  toggleSelectionOrder(): void {
+    this.reverse_order = !this.reverse_order;
+    localStorage.setItem('default_playlist_order_reversed', '' + this.reverse_order);
+  }
+
+  drop(event: CdkDragDrop<string[]>): void {
+    if (this.reverse_order) {
+      event.previousIndex = this.selected_data.length - 1 - event.previousIndex;
+      event.currentIndex = this.selected_data.length - 1 - event.currentIndex;
+    }
+    moveItemInArray(this.selected_data, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.selected_data_objs, event.previousIndex, event.currentIndex);
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
+  }
+
+  removeSelectedFile(index: number): void {
+    if (this.reverse_order) {
+      index = this.selected_data.length - 1 - index;
+    }
+    this.selected_data.splice(index, 1);
+    this.selected_data_objs.splice(index, 1);
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
   }
 }

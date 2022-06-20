@@ -1,14 +1,29 @@
-<h4 mat-dialog-title i18n="Create a playlist dialog title">Create a playlist</h4>
-<form>
-    <div>
-        <div>
-            <mat-form-field color="accent">
-                <input [(ngModel)]="name" matInput placeholder="Name" i18n-placeholder="Playlist name placeholder" type="text" required aria-required [ngModelOptions]="{standalone: true}">
-            </mat-form-field>
-        </div>
-        <app-recent-videos [selectMode]="true" [customHeader]="'Select files'" (fileSelectionEmitter)="fileSelectionChanged($event)"></app-recent-videos>
-    </div>
-</form>
+<div class="fixActionRow">
+<h4 mat-dialog-title *ngIf="create_mode" ><ng-container i18n="Create a playlist dialog title">Create a playlist</ng-container></h4>
+<h4 mat-dialog-title *ngIf="!create_mode"><ng-container i18n="Modify playlist dialog title">Modify playlist</ng-container></h4>
 
-<div *ngIf="create_in_progress" style="float: left"><mat-spinner [diameter]="25"></mat-spinner></div>
-<button (click)="createPlaylist()" [disabled]="!name || !filesSelect.value || filesSelect.value.length === 0" color="primary" style="float: right" mat-flat-button>Create</button>
+<mat-dialog-content style="max-height: 85vh;">
+    <form>
+        <div *ngIf="create_mode || playlist">
+            <div>
+                <mat-form-field color="accent">
+                    <input [(ngModel)]="name" matInput placeholder="Name" i18n-placeholder="Playlist name placeholder" type="text" required aria-required [ngModelOptions]="{standalone: true}">
+                </mat-form-field>
+            </div>
+            <app-recent-videos [selectMode]="true" [defaultSelected]="preselected_files" [customHeader]="'Select files'" (fileSelectionEmitter)="fileSelectionChanged($event)" [selectedIndex]="create_mode ? 1 : 0"></app-recent-videos>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<div class="spacer"></div>
+
+<mat-dialog-actions>
+    <div *ngIf="create_in_progress" style="float: left"><mat-spinner [diameter]="25"></mat-spinner></div>
+    <button *ngIf="create_mode" (click)="createPlaylist()" [disabled]="!name || !filesSelect.value || filesSelect.value.length === 0" color="primary" style="float: right" mat-flat-button>
+        <ng-container i18n="Create button">Create</ng-container>
+    </button>
+    <button *ngIf="!create_mode" (click)="updatePlaylist()" [disabled]="!name || !playlistChanged()" color="primary" style="float: right" mat-flat-button>
+        <ng-container i18n="Save button">Save</ng-container>
+    </button>
+</mat-dialog-actions>
+</div>

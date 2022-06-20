@@ -48,31 +48,53 @@
     </div>
 
     <div *ngIf="selectMode">
-        <mat-selection-list *ngIf="normal_files_received" (selectionChange)="fileSelectionChanged($event)">
-            <mat-list-option [selected]="selected_data.includes(file.uid)" *ngFor="let file of paged_data" [value]="file.uid">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-10">
-                            <mat-icon class="audio-video-icon">{{(file.type === 'audio' || file.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
-                            {{file.title}}
-                        </div>
-                        <div class="col-2">{{file.registered | date:'shortDate'}}</div>
-                    </div>
+        <mat-tab-group [(selectedIndex)]="selectedIndex">
+            <mat-tab label="Order" i18n-label="Order">
+                <div *ngIf="selected_data.length">
+                    <span *ngIf="reverse_order === false" i18n="Normal order">Normal order&nbsp;</span>
+                    <span *ngIf="reverse_order === true" i18n="Reverse order">Reverse order&nbsp;</span>
+                    <button (click)="toggleSelectionOrder()" mat-icon-button><mat-icon>{{!reverse_order ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
                 </div>
-                
-            </mat-list-option>
-        </mat-selection-list>
 
-        <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
-            <mat-selection-list *ngIf="!normal_files_received">
-                <mat-list-option *ngFor="let file of paged_data">
-                    <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" width="250" height="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
-                </mat-list-option>
-            </mat-selection-list>
-        </ng-container>
+                <!-- Selection order -->
+                <mat-button-toggle-group *ngIf="selected_data.length" class="media-list" cdkDropList (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical #group="matButtonToggleGroup">
+                    <!-- The following for loop can be optimized but it requires a pipe https://stackoverflow.com/a/35703364/8088021 -->
+                    <mat-button-toggle class="media-box" cdkDrag *ngFor="let file of (reverse_order ? selected_data_objs.slice().reverse() : selected_data_objs); let i = index" [checked]="false"><div><div class="playlist-item-text">{{file.title}}</div> <button (click)="removeSelectedFile(i)" class="remove-item-button" mat-icon-button><mat-icon>cancel</mat-icon></button></div></mat-button-toggle>
+                </mat-button-toggle-group>
+                
+                <div style="margin-top: 20px;" *ngIf="!selected_data.length">
+                    <h4 style="text-align: center;">No files selected!</h4>
+                </div>
+
+            </mat-tab>
+            <mat-tab label="Select files" i18n-label="Select files">
+                <mat-selection-list *ngIf="normal_files_received" (selectionChange)="fileSelectionChanged($event)">
+                    <mat-list-option [selected]="selected_data.includes(file.uid)" *ngFor="let file of paged_data" [value]="file">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-10">
+                                    <mat-icon class="audio-video-icon">{{(file.type === 'audio' || file.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
+                                    {{file.title}}
+                                </div>
+                                <div class="col-2">{{file.registered | date:'shortDate'}}</div>
+                            </div>
+                        </div>
+                        
+                    </mat-list-option>
+                </mat-selection-list>
+        
+                <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
+                    <mat-selection-list *ngIf="!normal_files_received">
+                        <mat-list-option *ngFor="let file of paged_data">
+                            <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" width="250" height="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
+                        </mat-list-option>
+                    </mat-selection-list>
+                </ng-container>
+            </mat-tab>
+        </mat-tab-group>
     </div>
 
-    <div *ngIf="usePaginator">
+    <div style="position: relative;" *ngIf="usePaginator && selectedIndex > 0">
         <div style="position: absolute; margin-left: 8px; margin-top: 5px; scale: 0.8">
             <mat-form-field>
                 <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>

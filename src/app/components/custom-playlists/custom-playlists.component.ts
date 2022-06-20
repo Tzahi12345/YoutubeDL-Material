@@ -45,6 +45,9 @@ export class CustomPlaylistsComponent implements OnInit {
   // creating a playlist
   openCreatePlaylistDialog(): void {
     const dialogRef = this.dialog.open(CreatePlaylistComponent, {
+      data: {
+        create_mode: true
+      },
       minWidth: '90vw',
       minHeight: '95vh'
     });
@@ -103,9 +106,10 @@ export class CustomPlaylistsComponent implements OnInit {
   editPlaylistDialog(args: { playlist: Playlist; index: number; }): void {
     const playlist = args.playlist;
     const index = args.index;
-    const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
+    const dialogRef = this.dialog.open(CreatePlaylistComponent, {
       data: {
-        playlist_id: playlist.id
+        playlist_id: playlist.id,
+        create_mode: false
       },
       minWidth: '85vw'
     });
@@ -113,7 +117,7 @@ export class CustomPlaylistsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
       // updates playlist in file manager if it changed
       if (dialogRef.componentInstance.playlist_updated) {
-        this.playlists[index] = dialogRef.componentInstance.original_playlist;
+        this.playlists[index] = dialogRef.componentInstance.playlist;
       }
     });
   }
