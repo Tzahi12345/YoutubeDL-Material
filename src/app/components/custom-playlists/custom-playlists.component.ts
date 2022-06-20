@@ -3,7 +3,6 @@ import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
-import { ModifyPlaylistComponent } from 'app/dialogs/modify-playlist/modify-playlist.component';
 import { Playlist } from 'api-types';
 
 @Component({

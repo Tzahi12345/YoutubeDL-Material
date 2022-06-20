@@ -73,7 +73,6 @@ import { ManageUserComponent } from './components/manage-user/manage-user.compon
 import { ManageRoleComponent } from './components/manage-role/manage-role.component';
 import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
 import { LogsViewerComponent } from './components/logs-viewer/logs-viewer.component';
-import { ModifyPlaylistComponent } from './dialogs/modify-playlist/modify-playlist.component';
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
 import { UnifiedFileCardComponent } from './components/unified-file-card/unified-file-card.component';
 import { RecentVideosComponent } from './components/recent-videos/recent-videos.component';
@@ -121,7 +120,6 @@ registerLocaleData(es, 'es');
         ManageRoleComponent,
         CookiesUploaderDialogComponent,
         LogsViewerComponent,
-        ModifyPlaylistComponent,
         ConfirmDialogComponent,
         UnifiedFileCardComponent,
         RecentVideosComponent,

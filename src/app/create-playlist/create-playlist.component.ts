@@ -10,7 +10,7 @@ import { Playlist } from 'api-types';
   styleUrls: ['./create-playlist.component.scss']
 })
 export class CreatePlaylistComponent implements OnInit {
-  // really "createPlaylistDialogComponent"
+  // really "createAndModifyPlaylistDialogComponent"
 
   filesToSelectFrom = null;
   type = null;
