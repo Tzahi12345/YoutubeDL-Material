@@ -357,7 +357,7 @@ exports.addMetadataPropertyToDB = async (property_key) => {
     }
 }
 
-exports.createPlaylist = async (playlist_name, uids, type, user_uid = null) => {
+exports.createPlaylist = async (playlist_name, uids, user_uid = null) => {
     const first_video = await exports.getVideo(uids[0]);
     const thumbnailToUse = first_video['thumbnailURL'];
     
@@ -366,7 +366,6 @@ exports.createPlaylist = async (playlist_name, uids, type, user_uid = null) => {
         uids: uids,
         id: uuid(),
         thumbnailURL: thumbnailToUse,
-        type: type,
         registered: Date.now(),
         randomize_order: false
     };

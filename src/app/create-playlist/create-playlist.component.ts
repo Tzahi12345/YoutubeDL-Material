@@ -17,42 +17,20 @@ export class CreatePlaylistComponent implements OnInit {
   audiosToSelectFrom = null;
   videosToSelectFrom = null;
   name = '';
+  cached_thumbnail_url = null;
 
   create_in_progress = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any,
-              private postsService: PostsService,
+  constructor(private postsService: PostsService,
               public dialogRef: MatDialogRef<CreatePlaylistComponent>) { }
 
 
-  ngOnInit() {
-    if (this.data) {
-      this.filesToSelectFrom = this.data.filesToSelectFrom;
-      this.type = this.data.type;
-    }
+  ngOnInit(): void {}
 
-    if (!this.filesToSelectFrom) {
-      this.getMp3s();
-      this.getMp4s();
-    }
-  }
-
-  getMp3s() {
-    this.postsService.getMp3s().subscribe(result => {
-      this.audiosToSelectFrom = result['mp3s'];
-    });
-  }
-
-  getMp4s() {
-    this.postsService.getMp4s().subscribe(result => {
-      this.videosToSelectFrom = result['mp4s'];
-    });
-  }
-
-  createPlaylist() {
+  createPlaylist(): void {
     const thumbnailURL = this.getThumbnailURL();
     this.create_in_progress = true;
-    this.postsService.createPlaylist(this.name, this.filesSelect.value, this.type, thumbnailURL).subscribe(res => {
+    this.postsService.createPlaylist(this.name, this.filesSelect.value, thumbnailURL).subscribe(res => {
       this.create_in_progress = false;
       if (res['success']) {
         this.dialogRef.close(true);
@@ -62,19 +40,13 @@ export class CreatePlaylistComponent implements OnInit {
     });
   }
 
-  getThumbnailURL() {
-    let properFilesToSelectFrom = this.filesToSelectFrom;
-    if (!this.filesToSelectFrom) {
-      properFilesToSelectFrom = this.type === 'audio' ? this.audiosToSelectFrom : this.videosToSelectFrom;
-    }
-    for (let i = 0; i < properFilesToSelectFrom.length; i++) {
-      const file = properFilesToSelectFrom[i];
-      if (file.id === this.filesSelect.value[0]) {
-        // different services store the thumbnail in different places
-        if (file.thumbnailURL) { return file.thumbnailURL };
-        if (file.thumbnail) { return file.thumbnail };
-      }
-    }
-    return null;
+  getThumbnailURL(): string {
+    return this.cached_thumbnail_url;
+  }
+
+  fileSelectionChanged({new_selection, thumbnailURL}: {new_selection: string[], thumbnailURL: string}): void {
+    this.filesSelect.setValue(new_selection);
+    if (new_selection.length) this.cached_thumbnail_url = thumbnailURL;
+    else                      this.cached_thumbnail_url = null;
   }
 }

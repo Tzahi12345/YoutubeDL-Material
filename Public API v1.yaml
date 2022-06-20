@@ -1939,7 +1939,6 @@ components:
         - uids
         - playlistName
         - thumbnailURL
-        - type
       type: object
       properties:
         playlistName:
@@ -1948,8 +1947,6 @@ components:
           type: array
           items:
             type: string
-        type:
-          $ref: '#/components/schemas/FileType'
         thumbnailURL:
           type: string
     CreatePlaylistResponse:
@@ -1979,15 +1976,17 @@ components:
       required:
         - playlist
         - success
-        - type
       type: object
       properties:
         playlist:
           $ref: '#/components/schemas/Playlist'
-        type:
-          $ref: '#/components/schemas/FileType'
         success:
           type: boolean
+        file_objs:
+          type: array
+          description: File objects for every uid in the playlist's uids property, in the same order
+          items:
+            $ref: '#/components/schemas/DatabaseFile'
     GetPlaylistsRequest:
       type: object
       properties:
@@ -2012,13 +2011,10 @@ components:
     DeletePlaylistRequest:
       required:
         - playlist_id
-        - type
       type: object
       properties:
         playlist_id:
           type: string
-        type:
-          $ref: '#/components/schemas/FileType'
     DownloadFileRequest:
       type: object
       properties:

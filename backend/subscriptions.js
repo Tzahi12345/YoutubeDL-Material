@@ -178,7 +178,7 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     ]);
 
     if (jsonExists) {
-        retrievedID = JSON.parse(await fs.readFile(jsonPath, 'utf8'))['id'];
+        retrievedID = fs.readJSONSync(jsonPath)['id'];
         await fs.unlink(jsonPath);
     }
 

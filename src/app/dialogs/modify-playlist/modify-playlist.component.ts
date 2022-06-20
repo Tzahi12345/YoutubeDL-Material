@@ -35,15 +35,9 @@ export class ModifyPlaylistComponent implements OnInit {
   }
 
   getFiles() {
-    if (this.playlist.type === 'audio') {
-      this.postsService.getMp3s().subscribe(res => {
-        this.processFiles(res['mp3s']);
-      });
-    } else {
-      this.postsService.getMp4s().subscribe(res => {
-        this.processFiles(res['mp4s']);
-      });
-    }
+    this.postsService.getAllFiles().subscribe(res => {
+      this.processFiles(res['files']);
+    });
   }
 
   processFiles(new_files = null) {

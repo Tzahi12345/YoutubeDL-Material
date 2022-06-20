@@ -60,7 +60,7 @@
                     </div>
                 </form>
                 <br/>
-                <mat-checkbox [disabled]="current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">
+                <mat-checkbox [disabled]="autoplay && current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">
                     <ng-container i18n="Only Audio checkbox">
                         Only Audio
                     </ng-container>

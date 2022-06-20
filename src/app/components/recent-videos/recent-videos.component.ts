@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
-import { FileType, FileTypeFilter } from '../../../api-types';
+import { DatabaseFile, FileType, FileTypeFilter } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -14,7 +14,10 @@ import { distinctUntilChanged } from 'rxjs/operators';
 export class RecentVideosComponent implements OnInit {
 
   @Input() usePaginator = true;
+  @Input() selectMode = false;
   @Input() sub_id = null;
+  @Input() customHeader = null;
+  @Output() fileSelectionEmitter = new EventEmitter<{new_selection: string[], thumbnailURL: string}>();
 
   cached_file_count = 0;
   loading_files = null;
@@ -61,7 +64,9 @@ export class RecentVideosComponent implements OnInit {
   playlists = null;
 
   pageSize = 10;
-  paged_data = null;
+  paged_data: DatabaseFile[] = null;
+
+  selected_data: string[] = [];
 
   @ViewChild('paginator') paginator: MatPaginator
 
@@ -357,5 +362,22 @@ export class RecentVideosComponent implements OnInit {
     this.pageSize = event.pageSize;
     this.loading_files = Array(this.pageSize).fill(0);
     this.getAllFiles();
+  }
+
+  fileSelectionChanged(event): void {
+    const adding = event.option._selected;
+    const value = event.option.value;
+    if (adding)
+      this.selected_data.push(value);
+    else
+      this.selected_data = this.selected_data.filter(e => e !== value);
+
+    let thumbnail_url = null;
+    if (this.selected_data.length) {
+      const file_obj = this.paged_data.find(file => file.uid === this.selected_data[0]);
+      if (file_obj) { thumbnail_url = file_obj['thumbnailURL'] }
+    }
+
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: thumbnail_url});
   }
 }

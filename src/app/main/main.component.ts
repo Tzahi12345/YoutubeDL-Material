@@ -10,12 +10,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Platform } from '@angular/cdk/platform';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { RecentVideosComponent } from 'app/components/recent-videos/recent-videos.component';
-import { Download, FileType } from 'api-types';
-
-export let audioFilesMouseHovering = false;
-export let videoFilesMouseHovering = false;
-export let audioFilesOpened = false;
-export let videoFilesOpened = false;
+import { DatabaseFile, Download, FileType, Playlist } from 'api-types';
 
 @Component({
   selector: 'app-root',
@@ -78,7 +73,6 @@ export class MainComponent implements OnInit {
   mp4s: any[] = [];
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
-  downloading_content = {'audio': {}, 'video': {}};
   downloads: Download[] = [];
   download_uids: string[] = [];
   current_download: Download = null;
@@ -466,11 +460,9 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadFileFromServer(file, type: string): void {
+  downloadFileFromServer(file: DatabaseFile, type: string): void {
     const ext = type === 'audio' ? 'mp3' : 'mp4'
-    this.downloading_content[type][file.id] = true;
     this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
-      this.downloading_content[type][file.id] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(file.id) + `.${ext}`);
 
@@ -481,9 +473,8 @@ export class MainComponent implements OnInit {
     });
   }
 
-  downloadPlaylist(playlist): void {
+  downloadPlaylist(playlist: Playlist): void {
     this.postsService.downloadPlaylistFromServer(playlist.id).subscribe(res => {
-      if (playlist.id) { this.downloading_content[playlist.type][playlist.id] = false };
       const blob: Blob = res;
       saveAs(blob, playlist.name + '.zip');
     });

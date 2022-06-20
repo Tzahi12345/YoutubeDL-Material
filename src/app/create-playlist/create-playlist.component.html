@@ -1,34 +1,12 @@
 <h4 mat-dialog-title i18n="Create a playlist dialog title">Create a playlist</h4>
 <form>
-    <div *ngIf="filesToSelectFrom || (audiosToSelectFrom && videosToSelectFrom)">
+    <div>
         <div>
             <mat-form-field color="accent">
                 <input [(ngModel)]="name" matInput placeholder="Name" i18n-placeholder="Playlist name placeholder" type="text" required aria-required [ngModelOptions]="{standalone: true}">
             </mat-form-field>
         </div>
-        <div *ngIf="!filesToSelectFrom">
-            <mat-form-field color="accent">
-                <mat-select placeholder="Type" i18n-placeholder="Type select" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
-                    <mat-option value="audio"><ng-container i18n="Audio">Audio</ng-container></mat-option>
-                    <mat-option value="video"><ng-container i18n="Video">Video</ng-container></mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field *ngIf="type && ((filesToSelectFrom && filesToSelectFrom.length > 0) || (type === 'audio' && audiosToSelectFrom && audiosToSelectFrom.length > 0) || (type === 'video' && videosToSelectFrom && videosToSelectFrom.length > 0))" color="accent">
-                <mat-label *ngIf="type === 'audio'"><ng-container i18n="Audio files title">Audio files</ng-container></mat-label>
-                <mat-label *ngIf="type === 'video'"><ng-container i18n="Videos title">Videos</ng-container></mat-label>
-                <mat-select [formControl]="filesSelect" multiple required aria-required>
-                    <ng-container *ngIf="filesToSelectFrom"><mat-option *ngFor="let file of filesToSelectFrom" [value]="file.uid">{{file.id}}</mat-option></ng-container>
-                    <ng-container *ngIf="audiosToSelectFrom && type === 'audio'"><mat-option *ngFor="let file of audiosToSelectFrom" [value]="file.uid">{{file.id}}</mat-option></ng-container>
-                    <ng-container *ngIf="videosToSelectFrom && type === 'video'"><mat-option *ngFor="let file of videosToSelectFrom" [value]="file.uid">{{file.id}}</mat-option></ng-container>
-                </mat-select>
-            </mat-form-field>
-            <!-- No videos available -->
-            <div style="margin-bottom: 15px;" *ngIf="type && ((filesToSelectFrom && filesToSelectFrom.length === 0) || (type === 'audio' && audiosToSelectFrom && audiosToSelectFrom.length === 0) || (type === 'video' && videosToSelectFrom && videosToSelectFrom.length === 0))">
-                No files available.
-            </div>
-        </div>
+        <app-recent-videos [selectMode]="true" [customHeader]="'Select files'" (fileSelectionEmitter)="fileSelectionChanged($event)"></app-recent-videos>
     </div>
 </form>
 

@@ -17,7 +17,8 @@
             </div>
         </div>
         <div class="col-12 order-1 col-sm-4 order-sm-2 d-flex justify-content-center">
-            <h4 class="my-videos-title" i18n="My files title">My files</h4>
+            <h4 *ngIf="!customHeader" class="my-videos-title" i18n="My files title">My files</h4>
+            <h4 *ngIf="customHeader" class="my-videos-title">{{customHeader}}</h4>
         </div>
         <div class="col-12 order-3 col-sm-4 order-sm-3 d-flex justify-content-center">
             <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
@@ -28,7 +29,7 @@
     </div>
 </div>
 <div>
-    <div class="container" style="margin-bottom: 16px">
+    <div *ngIf="!selectMode" class="container" style="margin-bottom: 16px">
         <div class="row justify-content-center">
             <ng-container *ngIf="normal_files_received && paged_data">
                 <div *ngFor="let file of paged_data; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
@@ -44,6 +45,31 @@
                 </div>
             </ng-container>
         </div>
+    </div>
+
+    <div *ngIf="selectMode">
+        <mat-selection-list *ngIf="normal_files_received" (selectionChange)="fileSelectionChanged($event)">
+            <mat-list-option [selected]="selected_data.includes(file.uid)" *ngFor="let file of paged_data" [value]="file.uid">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-10">
+                            <mat-icon class="audio-video-icon">{{(file.type === 'audio' || file.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
+                            {{file.title}}
+                        </div>
+                        <div class="col-2">{{file.registered | date:'shortDate'}}</div>
+                    </div>
+                </div>
+                
+            </mat-list-option>
+        </mat-selection-list>
+
+        <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
+            <mat-selection-list *ngIf="!normal_files_received">
+                <mat-list-option *ngFor="let file of paged_data">
+                    <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" width="250" height="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
+                </mat-list-option>
+            </mat-selection-list>
+        </ng-container>
     </div>
 
     <div *ngIf="usePaginator">

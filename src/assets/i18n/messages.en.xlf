@@ -590,7 +590,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">search field description</note>
       </trans-unit>
@@ -690,7 +690,7 @@
         <source>No files found.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <note priority="1" from="description">No files found</note>
       </trans-unit>
@@ -698,7 +698,7 @@
         <source>File type</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">78</context>
         </context-group>
         <note priority="1" from="description">File type</note>
       </trans-unit>
@@ -706,7 +706,7 @@
         <source>Both</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">80</context>
         </context-group>
         <note priority="1" from="description">Both</note>
       </trans-unit>
@@ -714,7 +714,7 @@
         <source>Video only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">Video only</note>
       </trans-unit>
@@ -722,7 +722,7 @@
         <source>Audio only</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">82</context>
         </context-group>
         <note priority="1" from="description">Audio only</note>
       </trans-unit>
@@ -991,10 +991,6 @@
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
         <note priority="1" from="description">Video info button</note>
       </trans-unit>
       <trans-unit id="a0720c36ee1057e5c54a86591b722485c62d7b1a" datatype="html">
@@ -1019,10 +1015,6 @@
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
         <note priority="1" from="description">Delete and redownload subscription video button</note>
       </trans-unit>
       <trans-unit id="2031adb51e07a41844e8ba7704b054e98345c9c1" datatype="html">
@@ -1030,10 +1022,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">37</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
-          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">Delete forever subscription video button</note>
       </trans-unit>
@@ -1092,46 +1080,6 @@
           <context context-type="linenumber">8</context>
         </context-group>
         <note priority="1" from="description">Playlist name placeholder</note>
-      </trans-unit>
-      <trans-unit id="f61c6867295f3b53d23557021f2f4e0aa1d0b8fc" datatype="html">
-        <source>Type</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
-          <context context-type="linenumber">11</context>
-        </context-group>
-        <note priority="1" from="description">Type select</note>
-      </trans-unit>
-      <trans-unit id="f0baeb8b69d120073b6d60d34785889b0c3232c8" datatype="html">
-        <source>Audio</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <note priority="1" from="description">Audio</note>
-      </trans-unit>
-      <trans-unit id="2d1ea268a6a9f483dbc2cbfe19bf4256a57a6af4" datatype="html">
-        <source>Video</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
-          <context context-type="linenumber">13</context>
-        </context-group>
-        <note priority="1" from="description">Video</note>
-      </trans-unit>
-      <trans-unit id="f47e2d56dd8a145b2e9599da9730c049d52962a2" datatype="html">
-        <source>Audio files</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
-          <context context-type="linenumber">19</context>
-        </context-group>
-        <note priority="1" from="description">Audio files title</note>
-      </trans-unit>
-      <trans-unit id="a52dae09be10ca3a65da918533ced3d3f4992238" datatype="html">
-        <source>Videos</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <note priority="1" from="description">Videos title</note>
       </trans-unit>
       <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
         <source>About YoutubeDL-Material</source>
@@ -2108,7 +2056,7 @@
         <source>Download for <x id="url" equiv-text="url"/> has been queued!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
-          <context context-type="linenumber">403</context>
+          <context context-type="linenumber">397</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dad95154dcef3509b8cc705046061fd24994bbb7" datatype="html">
@@ -2905,14 +2853,6 @@
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">48</context>
         </context-group>
-      </trans-unit>
-      <trans-unit id="2054791b822475aeaea95c0119113de3200f5e1c" datatype="html">
-        <source>Length:</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/subscription/subscription-file-card/subscription-file-card.component.html</context>
-          <context context-type="linenumber">3</context>
-        </context-group>
-        <note priority="1" from="description">Video duration label</note>
       </trans-unit>
       <trans-unit id="e2319dec5b4ccfb6ed9f55ccabd63650a8fdf547" datatype="html">
         <source>Your subscriptions</source>

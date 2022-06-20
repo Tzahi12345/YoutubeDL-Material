@@ -1339,9 +1339,8 @@ app.post('/api/getSubscriptions', optionalJwt, async (req, res) => {
 app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let playlistName = req.body.playlistName;
     let uids = req.body.uids;
-    let type = req.body.type;
 
-    const new_playlist = await db_api.createPlaylist(playlistName, uids, type, req.isAuthenticated() ? req.user.uid : null);
+    const new_playlist = await db_api.createPlaylist(playlistName, uids, req.isAuthenticated() ? req.user.uid : null);
 
     res.send({
         new_playlist: new_playlist,
@@ -1369,7 +1368,6 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     res.send({
         playlist: playlist,
         file_objs: file_objs,
-        type: playlist && playlist.type,
         success: !!playlist
     });
 });
