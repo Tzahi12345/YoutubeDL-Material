@@ -96,18 +96,18 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
     let vodId = this.db_file.url.split('videos/').length > 1 && this.db_file.url.split('videos/')[1];
     vodId = vodId.split('?')[0];
     if (!vodId) {
-      this.postsService.openSnackBar('VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"');
+      this.postsService.openSnackBar($localize`VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"`);
     }
     this.postsService.downloadTwitchChat(this.db_file.id, this.db_file.isAudio ? 'audio' : 'video', vodId, null, this.sub).subscribe(res => {
       if (res['chat']) {
         this.initializeChatCheck(res['chat']);
       } else {
         this.downloading_chat = false;
-        this.postsService.openSnackBar('Download failed.')
+        this.postsService.openSnackBar($localize`Download failed.`)
       }
     }, err => {
       this.downloading_chat = false;
-      this.postsService.openSnackBar('Chat could not be downloaded.')
+      this.postsService.openSnackBar($localize`Chat could not be downloaded.`)
     });
   }
 

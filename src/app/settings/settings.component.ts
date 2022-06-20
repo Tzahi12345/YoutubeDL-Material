@@ -131,7 +131,7 @@ export class SettingsComponent implements OnInit {
     this.postsService.updateCategories(this.postsService.categories).subscribe(res => {
 
     }, () => {
-      this.postsService.openSnackBar('Failed to update categories!');
+      this.postsService.openSnackBar($localize`Failed to update categories!`);
     });
   }
 
@@ -205,7 +205,7 @@ export class SettingsComponent implements OnInit {
 
   localeSelectChanged(new_val: string): void {
     localStorage.setItem('locale', new_val);
-    this.postsService.openSnackBar('Language successfully changed! Reload to update the page.')
+    this.postsService.openSnackBar($localize`Language successfully changed! Reload to update the page.`)
   }
 
   generateBookmarklet(): void {
@@ -233,7 +233,7 @@ export class SettingsComponent implements OnInit {
         window['external']['AddFavorite'](url, title);
     } else if (window['chrome']) {
         // Google Chrome
-       this.postsService.openSnackBar('Chrome users must drag the \'Alternate URL\' link to your bookmarks.');
+       this.postsService.openSnackBar($localize`Chrome users must drag the \'Alternate URL\' link to your bookmarks.`);
     } else if (window['sidebar']) {
         // Firefox
         window['sidebar'].addPanel(title, url, '');
@@ -288,14 +288,14 @@ export class SettingsComponent implements OnInit {
         this.postsService.killAllDownloads().subscribe(res => {
           if (res['success']) {
             dialogRef.close();
-            this.postsService.openSnackBar('Successfully killed all downloads!');
+            this.postsService.openSnackBar($localize`Successfully killed all downloads!`);
           } else {
             dialogRef.close();
-            this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
+            this.postsService.openSnackBar($localize`Failed to kill all downloads! Check logs for details.`);
           }
         }, () => {
           dialogRef.close();
-          this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
+          this.postsService.openSnackBar($localize`Failed to kill all downloads! Check logs for details.`);
         });
       }
     });
@@ -303,9 +303,9 @@ export class SettingsComponent implements OnInit {
 
   restartServer(): void {
     this.postsService.restartServer().subscribe(() => {
-      this.postsService.openSnackBar('Restarting!');
+      this.postsService.openSnackBar($localize`Restarting!`);
     }, () => {
-      this.postsService.openSnackBar('Failed to restart the server.');
+      this.postsService.openSnackBar($localize`Failed to restart the server.`);
     });
   }
 
@@ -336,14 +336,14 @@ export class SettingsComponent implements OnInit {
       this.db_transferring = false;
       const success = res['success'];
       if (success) {
-        this.postsService.openSnackBar('Successfully transfered DB! Reloading info...');
+        this.postsService.openSnackBar($localize`Successfully transfered DB! Reloading info...`);
         this.getDBInfo();
       } else {
-        this.postsService.openSnackBar('Failed to transfer DB -- transfer was aborted. Error: ' + res['error']);
+        this.postsService.openSnackBar($localize`Failed to transfer DB -- transfer was aborted. Error: ` + res['error']);
       }
     }, err => {
       this.db_transferring = false;
-      this.postsService.openSnackBar('Failed to transfer DB -- API call failed. See browser logs for details.');
+      this.postsService.openSnackBar($localize`Failed to transfer DB -- API call failed. See browser logs for details.`);
       console.error(err);
     });
   }
@@ -353,13 +353,13 @@ export class SettingsComponent implements OnInit {
     this.postsService.testConnectionString(connection_string).subscribe(res => {
       this.testing_connection_string = false;
       if (res['success']) {
-        this.postsService.openSnackBar('Connection successful!');
+        this.postsService.openSnackBar($localize`Connection successful!`);
       } else {
-        this.postsService.openSnackBar('Connection failed! Error: ' + res['error']);
+        this.postsService.openSnackBar($localize`Connection failed! Error: ` + res['error']);
       }
     }, () => {
       this.testing_connection_string = false;
-      this.postsService.openSnackBar('Connection failed! Error: Server error. See logs for more info.');
+      this.postsService.openSnackBar($localize`Connection failed! Error: Server error. See logs for more info.`);
     });
   }
 }

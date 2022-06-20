@@ -53,17 +53,26 @@ export class CreatePlaylistComponent implements OnInit {
       } else {
         this.dialogRef.close(false);
       }
+    }, err => {
+      this.create_in_progress = false;
+      console.error(err);
     });
   }
 
   updatePlaylist(): void {
+    this.create_in_progress = true;
     this.playlist['name'] = this.name;
     this.playlist['uids'] = this.filesSelect.value;
     this.playlist_updated = true;
     this.postsService.updatePlaylist(this.playlist).subscribe(() => {
-      this.postsService.openSnackBar('Playlist updated successfully.');
+      this.create_in_progress = false;
+      this.postsService.openSnackBar($localize`Playlist updated successfully.`);
       this.getPlaylist();
       this.postsService.playlists_changed.next(true);
+    }, err => {
+      this.create_in_progress = false;
+      console.error(err)
+      this.postsService.openSnackBar($localize`Playlist updated successfully.`);
     });
   }
 

@@ -297,13 +297,13 @@ export class RecentVideosComponent implements OnInit {
   deleteNormalFile(file, blacklistMode = false) {
     this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
-        this.postsService.openSnackBar('Delete success!', 'OK.');
+        this.postsService.openSnackBar($localize`Delete success!', 'OK.`);
         this.removeFileCard(file);
       } else {
-        this.postsService.openSnackBar('Delete failed!', 'OK.');
+        this.postsService.openSnackBar($localize`Delete failed!', 'OK.`);
       }
     }, err => {
-      this.postsService.openSnackBar('Delete failed!', 'OK.');
+      this.postsService.openSnackBar($localize`Delete failed!', 'OK.`);
     });
   }
 

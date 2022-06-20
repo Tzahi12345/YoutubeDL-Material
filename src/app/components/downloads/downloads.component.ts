@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
 import { MatSort } from '@angular/material/sort';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { Download } from 'api-types';
 
 @Component({
   selector: 'app-downloads',
@@ -68,7 +69,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  sort_downloads = (a, b) => {
+  sort_downloads = (a: Download, b: Download): number => {
     const result = b.timestamp_start - a.timestamp_start;
     return result;
   }
@@ -166,7 +167,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   pauseDownload(download_uid: string): void {
     this.postsService.pauseDownload(download_uid).subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to pause download! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to pause download! See server logs for more info.`);
       }
     });
   }
@@ -174,7 +175,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   pauseAllDownloads(): void {
     this.postsService.pauseAllDownloads().subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to pause all downloads! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to pause all downloads! See server logs for more info.`);
       }
     });
   }
@@ -182,7 +183,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   resumeDownload(download_uid: string): void {
     this.postsService.resumeDownload(download_uid).subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to resume download! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to resume download! See server logs for more info.`);
       }
     });
   }
@@ -190,7 +191,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   resumeAllDownloads(): void {
     this.postsService.resumeAllDownloads().subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to resume all downloads! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to resume all downloads! See server logs for more info.`);
       }
     });
   }
@@ -198,7 +199,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   restartDownload(download_uid: string): void {
     this.postsService.restartDownload(download_uid).subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to restart download! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to restart download! See server logs for more info.`);
       }
     });
   }
@@ -206,7 +207,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   cancelDownload(download_uid: string): void {
     this.postsService.cancelDownload(download_uid).subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to cancel download! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to cancel download! See server logs for more info.`);
       }
     });
   }
@@ -214,12 +215,12 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   clearDownload(download_uid: string): void {
     this.postsService.clearDownload(download_uid).subscribe(res => {
       if (!res['success']) {
-        this.postsService.openSnackBar('Failed to pause download! See server logs for more info.');
+        this.postsService.openSnackBar($localize`Failed to pause download! See server logs for more info.`);
       }
     });
   }
 
-  watchContent(download): void {
+  watchContent(download: Download): void {
     const container = download['container'];
     localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
     const is_playlist = container['uids']; // hacky, TODO: fix
@@ -230,7 +231,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     }
   }
 
-  combineDownloads(downloads_old, downloads_new) {
+  combineDownloads(downloads_old: Download[], downloads_new: Download[]): Download[] {
     // only keeps downloads that exist in the new set
     downloads_old = downloads_old.filter(download_old => downloads_new.some(download_new => download_new.uid === download_old.uid));
 
@@ -251,7 +252,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     return downloads_old;
   }
 
-  showError(download) {
+  showError(download: Download): void {
     const copyToClipboardEmitter = new EventEmitter<boolean>();
     this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -271,11 +272,4 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       }
     });
   }
-}
-
-export interface Download {
-  timestamp_start: number;
-  title: string;
-  step_index: number;
-  progress: string;
 }

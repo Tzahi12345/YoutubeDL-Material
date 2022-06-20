@@ -147,7 +147,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.postsService.getFile(this.uid, this.uuid).subscribe(res => {
       this.db_file = res['file'];
       if (!this.db_file) {
-        this.postsService.openSnackBar('Failed to get file information from the server.', 'Dismiss');
+        this.postsService.openSnackBar($localize`Failed to get file information from the server.', 'Dismiss`);
         return;
       }
       this.postsService.incrementViewCount(this.db_file['uid'], null, this.uuid).subscribe(() => undefined, err => {
@@ -183,10 +183,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.show_player = true;
         this.parseFileNames();
       } else {
-        this.postsService.openSnackBar('Failed to load playlist!', '');
+        this.postsService.openSnackBar($localize`Failed to load playlist!', '`);
       }
     }, () => {
-      this.postsService.openSnackBar('Failed to load playlist!', '');
+      this.postsService.openSnackBar($localize`Failed to load playlist!', '`);
     });
   }
 
