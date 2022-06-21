@@ -17,7 +17,9 @@ async function getCommentsForVOD(clientID, clientSecret, vodId) {
         return null;
     }
 
-    const raw_json = fs.readJSONSync(path.join('appdata', `${vodId}.json`));
+    const temp_chat_path = path.join('appdata', `${vodId}.json`);
+
+    const raw_json = fs.readJSONSync(temp_chat_path);
     const new_json = raw_json.comments.map(comment_obj => {
         return {
             timestamp: comment_obj.content_offset_seconds,
@@ -27,6 +29,8 @@ async function getCommentsForVOD(clientID, clientSecret, vodId) {
             user_color: comment_obj.message.user_color
         }
     });
+
+    fs.unlinkSync(temp_chat_path);
 
     return new_json;
 }
