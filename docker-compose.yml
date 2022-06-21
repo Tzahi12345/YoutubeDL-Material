@@ -17,7 +17,7 @@ services:
             - ./users:/app/users
         ports:
             - "8998:17442"
-        image: tzahi12345/youtubedl-material:nightly
+        image: tzahi12345/youtubedl-material:latest
     ytdl-mongo-db:
         image: mongo
         ports:
