@@ -239,7 +239,7 @@ const DEFAULT_CONFIG = {
         "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib"
       },
       "Advanced": {
-        "default_downloader": "youtube-dl",
+        "default_downloader": "yt-dlp",
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",
         "multi_user_mode": false,
