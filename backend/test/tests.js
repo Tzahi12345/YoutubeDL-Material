@@ -1,6 +1,7 @@
-var assert = require('assert');
+const assert = require('assert');
 const low = require('lowdb')
-var winston = require('winston');
+const winston = require('winston');
+const path = require('path');
 
 process.chdir('./backend')
 
@@ -464,6 +465,20 @@ describe('Downloader', function() {
         const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert_thumbnails', 'jpg'];
         console.log(updated_args2);
         assert(JSON.stringify(updated_args2), JSON.stringify(expected_args2));
+    });
+    describe('Twitch', async function () {
+        const twitch_api = require('../twitch');
+        const example_vod = '1493770675';
+        it('Download VOD', async function() {
+            const sample_path = path.join('test', 'sample.twitch_chat.json');
+            if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
+            this.timeout(300000);
+            await twitch_api.downloadTwitchChatByVODID(example_vod, 'sample', null, null, null, './test');
+            assert(fs.existsSync(sample_path));
+
+            // cleanup
+            if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
+        });
     });
 });
 
