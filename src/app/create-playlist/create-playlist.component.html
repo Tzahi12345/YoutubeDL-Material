@@ -18,12 +18,12 @@
 <div class="spacer"></div>
 
 <mat-dialog-actions>
-    <div *ngIf="create_in_progress" style="float: left"><mat-spinner [diameter]="25"></mat-spinner></div>
     <button *ngIf="create_mode" (click)="createPlaylist()" [disabled]="!name || !filesSelect.value || filesSelect.value.length === 0" color="primary" style="float: right" mat-flat-button>
         <ng-container i18n="Create button">Create</ng-container>
     </button>
     <button *ngIf="!create_mode" (click)="updatePlaylist()" [disabled]="!name || !playlistChanged()" color="primary" style="float: right" mat-flat-button>
         <ng-container i18n="Save button">Save</ng-container>
     </button>
+    <div *ngIf="create_in_progress" style="margin-left: 10px"><mat-spinner [diameter]="25"></mat-spinner></div>
 </mat-dialog-actions>
 </div>
