@@ -9,6 +9,13 @@ async function getCommentsForVOD(clientID, clientSecret, vodId) {
     const { promisify } = require('util');
     const child_process = require('child_process');
     const exec = promisify(child_process.exec);
+    
+    // Reject invalid params to prevent command injection attack
+    if (!clientID.match(/^[0-9a-z]+$/) || !clientSecret.match(/^[0-9a-z]+$/) || !vodId.match(/^[0-9a-z]+$/)) {
+        logger.error('Client ID, client secret, and VOD ID must be purely alphanumeric. Twitch chat download failed!');
+        return null;
+    }
+
     const result = await exec(`tcd --video ${vodId} --client-id ${clientID} --client-secret ${clientSecret} --format json -o appdata`, {stdio:[0,1,2]});
 
     if (result['stderr']) {
