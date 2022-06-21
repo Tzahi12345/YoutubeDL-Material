@@ -52,6 +52,7 @@ RUN npm install -g pm2 && \
     apt install -y --no-install-recommends gosu python3-minimal python-is-python3 atomicparsley && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
+RUN pip install tcd
 WORKDIR /app
 # User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
