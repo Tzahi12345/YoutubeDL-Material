@@ -49,7 +49,7 @@ RUN npm config set strict-ssl false && \
 FROM base
 RUN npm install -g pm2 && \
     apt update && \
-    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python-pip atomicparsley && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 RUN pip install tcd
