@@ -173,8 +173,8 @@ function getExpectedFileSize(input_info_jsons) {
         let individual_expected_filesize = 0;
         formats.forEach(format_id => {
             info_json.formats.forEach(available_format => {
-                if (available_format.format_id === format_id && available_format.filesize) {
-                    individual_expected_filesize += available_format.filesize;
+                if (available_format.format_id === format_id && (available_format.filesize || available_format.filesize_approx)) {
+                    individual_expected_filesize += (available_format.filesize ? available_format.filesize : available_format.filesize_approx);
                 }
             });
         });
