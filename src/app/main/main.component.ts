@@ -50,8 +50,6 @@ export class MainComponent implements OnInit {
   allowQualitySelect = false;
   downloadOnlyMode = false;
   allowAutoplay = false;
-  audioFolderPath;
-  videoFolderPath;
   use_youtubedl_archive = false;
   globalCustomArgs = null;
   allowAdvancedDownload = false;
@@ -69,8 +67,6 @@ export class MainComponent implements OnInit {
   results_showing = true;
   results = [];
 
-  mp3s: any[] = [];
-  mp4s: any[] = [];
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
   downloads: Download[] = [];
@@ -200,8 +196,6 @@ export class MainComponent implements OnInit {
                               && this.postsService.hasPermission('filemanager');
     this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
     this.allowAutoplay = this.postsService.config['Extra']['allow_autoplay'];
-    this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
-    this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
     this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
     this.globalCustomArgs = this.postsService.config['Downloader']['custom_args'];
     this.youtubeSearchEnabled = this.postsService.config['API'] && this.postsService.config['API']['use_youtube_API'] &&
@@ -308,7 +302,7 @@ export class MainComponent implements OnInit {
   }
 
   // download helpers
-  downloadHelper(container, type: string, is_playlist = false, force_view = false, navigate_mode = false): void {
+  downloadHelper(container: DatabaseFile | Playlist, type: string, is_playlist = false, force_view = false, navigate_mode = false): void {
     this.downloadingfile = false;
     if (!this.autoplay && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
@@ -319,7 +313,7 @@ export class MainComponent implements OnInit {
         if (is_playlist) {
           this.downloadPlaylist(container['uid']);
         } else {
-          this.downloadFileFromServer(container, type);
+          this.downloadFileFromServer(container as DatabaseFile, type);
         }
         this.reloadRecentVideos();
       } else {
@@ -438,7 +432,7 @@ export class MainComponent implements OnInit {
     return null;
   }
 
-  getDownloadByUID(uid: string) {
+  getDownloadByUID(uid: string): Download {
     const index = this.downloads.findIndex(download => download.uid === uid);
     if (index !== -1) {
       return this.downloads[index];
@@ -447,7 +441,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  removeDownloadFromCurrentDownloads(download_to_remove): boolean {
+  removeDownloadFromCurrentDownloads(download_to_remove: Download): boolean {
     if (this.current_download === download_to_remove) {
       this.current_download = null;
     }
@@ -770,9 +764,10 @@ export class MainComponent implements OnInit {
 
         if (this.current_download['finished'] && !this.current_download['error']) {
           const container = this.current_download['container'];
-          const is_playlist = this.current_download['file_uids'].length > 1;    
-          this.downloadHelper(container, this.current_download['type'], is_playlist, false);
-          this.current_download = null;
+          const is_playlist = this.current_download['file_uids'].length > 1;
+          const type = this.current_download['type'];
+          this.current_download = null;  
+          this.downloadHelper(container, type, is_playlist, false);
         } else if (this.current_download['finished'] && this.current_download['error']) {
           this.downloadingfile = false;
           this.current_download = null;
