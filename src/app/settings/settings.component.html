@@ -328,6 +328,7 @@
 
                             <div class="test-connection-div">
                                 <button (click)="testConnectionString(new_config['Database']['mongodb_connection_string'])" [disabled]="testing_connection_string" mat-flat-button color="accent"><ng-container i18n="Test connection string button">Test connection string</ng-container></button>
+                                <mat-spinner class="test-connection-spinner" style="margin-left: 10px" *ngIf="testing_connection_string" [diameter]="25"></mat-spinner>
                             </div>
 
                             <div class="transfer-db-div">
