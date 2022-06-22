@@ -30,4 +30,6 @@ export type DatabaseFile = {
     category?: Category;
     view_count?: number;
     local_view_count?: number;
+    sub_id?: string;
+    registered?: number;
 };

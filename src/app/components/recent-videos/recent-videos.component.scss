@@ -110,3 +110,12 @@
     max-width: 70%;
     margin: 0 auto;
 }
+
+.blurred {
+    filter: blur(2px);
+}
+
+.downloading-spinner {
+    align-self: center;
+    position: absolute;
+}

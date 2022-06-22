@@ -41,7 +41,7 @@ export class RecentVideosComponent implements OnInit {
   subscription_files_received = false;
   file_count = 10;
   searchChangedSubject: Subject<string> = new Subject<string>();
-  downloading_content = {'video': {}, 'audio': {}};
+  downloading_content = {};
   search_mode = false;
   search_text = '';
   searchIsFocused = false;
@@ -148,7 +148,7 @@ export class RecentVideosComponent implements OnInit {
       });
   }
 
-  getAllPlaylists() {
+  getAllPlaylists(): void {
     this.postsService.getPlaylists().subscribe(res => {
       this.playlists = res['playlists'];
     });
@@ -156,22 +156,22 @@ export class RecentVideosComponent implements OnInit {
 
   // search
 
-  onSearchInputChanged(newvalue) {
+  onSearchInputChanged(newvalue: string): void {
     this.normal_files_received = false;
     this.searchChangedSubject.next(newvalue);
   }
 
-  filterOptionChanged(value) {
+  filterOptionChanged(value: string): void {
     localStorage.setItem('filter_property', value['key']);
     this.getAllFiles();
   }
 
-  fileTypeFilterChanged(value) {
+  fileTypeFilterChanged(value: string): void {
     localStorage.setItem('file_type_filter', value);
     this.getAllFiles();
   }
 
-  toggleModeChange() {
+  toggleModeChange(): void {
     this.descendingMode = !this.descendingMode;
     localStorage.setItem('recent_videos_sort_order', this.descendingMode ? 'descending' : 'ascending');
     this.getAllFiles();
@@ -179,7 +179,7 @@ export class RecentVideosComponent implements OnInit {
 
   // get files
 
-  getAllFiles(cache_mode = false) {
+  getAllFiles(cache_mode = false): void {
     this.normal_files_received = cache_mode;
     const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
     const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
@@ -212,7 +212,7 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  navigateToFile(file, new_tab) {
+  navigateToFile(file: DatabaseFile, new_tab: boolean): void {
     localStorage.setItem('player_navigator', this.router.url);
     if (file.sub_id) {
       const sub = this.postsService.getSubscriptionByID(file.sub_id);
@@ -234,46 +234,26 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  goToSubscription(file) {
+  goToSubscription(file: DatabaseFile): void {
     this.router.navigate(['/subscription', {id: file.sub_id}]);
   }
 
   // downloading
 
-  downloadFile(file) {
-    if (file.sub_id) {
-      this.downloadSubscriptionFile(file);
-    } else {
-      this.downloadNormalFile(file);
-    }
-  }
-
-  downloadSubscriptionFile(file) {
-    const type = (file.isAudio ? 'audio' : 'video') as FileType;
-    const ext = type === 'audio' ? '.mp3' : '.mp4'
-    const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
-          const blob: Blob = res;
-          saveAs(blob, file.id + ext);
-        }, err => {
-          console.log(err);
-      });
-  }
-
-  downloadNormalFile(file) {
+  downloadFile(file: DatabaseFile): void {
     const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const name = file.id;
-    this.downloading_content[type][name] = true;
+    this.downloading_content[file.uid] = true;
     this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
-      this.downloading_content[type][name] = false;
+      this.downloading_content[file.uid] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(name) + ext);
 
-      if (!this.postsService.config.Extra.file_manager_enabled) {
+      if (!this.postsService.config.Extra.file_manager_enabled && !file.sub_id) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(file.uid).subscribe(delRes => {
-          // reload mp4s
+        this.postsService.deleteFile(file.uid).subscribe(() => {
+          // reload files
           this.getAllFiles();
         });
       }
@@ -284,7 +264,6 @@ export class RecentVideosComponent implements OnInit {
 
   deleteFile(args) {
     const file = args.file;
-    const index = args.index;
     const blacklistMode = args.blacklistMode;
 
     if (file.sub_id) {
@@ -294,7 +273,7 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  deleteNormalFile(file, blacklistMode = false) {
+  deleteNormalFile(file: DatabaseFile, blacklistMode = false): void {
     this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
         this.postsService.openSnackBar($localize`Delete success!', 'OK.`);
@@ -302,12 +281,12 @@ export class RecentVideosComponent implements OnInit {
       } else {
         this.postsService.openSnackBar($localize`Delete failed!', 'OK.`);
       }
-    }, err => {
+    }, () => {
       this.postsService.openSnackBar($localize`Delete failed!', 'OK.`);
     });
   }
 
-  deleteSubscriptionFile(file, blacklistMode = false) {
+  deleteSubscriptionFile(file: DatabaseFile, blacklistMode = false): void {
     if (blacklistMode) {
       this.deleteForever(file);
     } else {
@@ -315,23 +294,23 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  deleteAndRedownload(file) {
+  deleteAndRedownload(file: DatabaseFile): void {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(res => {
+    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(() => {
       this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
       this.removeFileCard(file);
     });
   }
 
-  deleteForever(file) {
+  deleteForever(file: DatabaseFile): void {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(res => {
+    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(() => {
       this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
       this.removeFileCard(file);
     });
   }
 
-  removeFileCard(file_to_remove) {
+  removeFileCard(file_to_remove: DatabaseFile): void {
     const index = this.paged_data.map(e => e.uid).indexOf(file_to_remove.uid);
     this.paged_data.splice(index, 1);
     this.getAllFiles(true);
@@ -356,13 +335,13 @@ export class RecentVideosComponent implements OnInit {
 
   // sorting and filtering
 
-  sortFiles(a, b) {
+  sortFiles(a: DatabaseFile, b: DatabaseFile): number {
     // uses the 'registered' flag as the timestamp
     const result = b.registered - a.registered;
     return result;
   }
 
-  durationStringToNumber(dur_str) {
+  durationStringToNumber(dur_str: string): number {
     let num_sum = 0;
     const dur_str_parts = dur_str.split(':');
     for (let i = dur_str_parts.length - 1; i >= 0; i--) {

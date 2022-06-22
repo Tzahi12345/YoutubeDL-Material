@@ -2421,6 +2421,10 @@ components:
           type: number
         local_view_count:
           type: number
+        sub_id:
+          type: string
+        registered:
+          type: number
     Playlist:
       required:
         - uids
