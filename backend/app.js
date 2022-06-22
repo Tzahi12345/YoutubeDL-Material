@@ -500,7 +500,8 @@ async function loadConfig() {
     loadConfigValues();
 
     // connect to DB
-    await db_api.connectToDB();
+    if (!config_api.getConfigItem('ytdl_use_local_db'))
+        await db_api.connectToDB();
     db_api.database_initialized = true;
     db_api.database_initialized_bs.next(true);
 
