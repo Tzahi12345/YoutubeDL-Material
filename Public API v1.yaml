@@ -2512,6 +2512,8 @@ components:
           type: string
         sub_name:
           type: string
+        prefetched_info:
+          type: object
     Task:
       required:
         - key

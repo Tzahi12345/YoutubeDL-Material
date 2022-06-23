@@ -619,3 +619,11 @@ describe('Archive', async function() {
         assert(new_blacklist.includes('testing2'));
     });
 });
+
+describe('Utils', async function() {
+    it('Strip properties', async function() {
+        const test_obj = {test1: 'test1', test2: 'test2', test3: 'test3'};
+        const stripped_obj = utils.stripPropertiesFromObject(test_obj, ['test1', 'test3']);
+        assert(!stripped_obj['test1'] && stripped_obj['test2'] && !stripped_obj['test3'])
+    });
+});

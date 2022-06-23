@@ -26,7 +26,7 @@ if (db_api.database_initialized) {
     });
 }
 
-exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null) => {
+exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null, prefetched_info = null) => {
     return await mutex.runExclusive(async () => {
         const download = {
             url: url,
@@ -35,6 +35,7 @@ exports.createDownload = async (url, type, options, user_uid = null, sub_id = nu
             user_uid: user_uid,
             sub_id: sub_id,
             sub_name: sub_name,
+            prefetched_info: prefetched_info,
             options: options,
             uid: uuid(),
             step_index: 0,
@@ -185,7 +186,7 @@ async function collectInfo(download_uid) {
     let args = await exports.generateArgs(url, type, options, download['user_uid']);
 
     // get video info prior to download
-    let info = await exports.getVideoInfoByURL(url, args, download_uid);
+    let info = download['prefetched_info'] ? download['prefetched_info'] : await exports.getVideoInfoByURL(url, args, download_uid);
 
     if (!info) {
         // info failed, error presumably already recorded
@@ -227,7 +228,8 @@ async function collectInfo(download_uid) {
                                                                     options: options,
                                                                     files_to_check_for_progress: files_to_check_for_progress,
                                                                     expected_file_size: expected_file_size,
-                                                                    title: playlist_title ? playlist_title : info['title']
+                                                                    title: playlist_title ? playlist_title : info['title'],
+                                                                    prefetched_info: null
                                                                 });
 }
 
@@ -572,8 +574,7 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
 function filterArgs(args, isAudio) {
     const video_only_args = ['--add-metadata', '--embed-subs', '--xattrs'];
     const audio_only_args = ['-x', '--extract-audio', '--embed-thumbnail'];
-    const args_to_remove = isAudio ? video_only_args : audio_only_args;
-    return args.filter(x => !args_to_remove.includes(x));
+    return utils.filterArgs(args, isAudio ? video_only_args : audio_only_args);
 }
 
 async function checkDownloadPercent(download_uid) {

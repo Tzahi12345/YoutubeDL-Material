@@ -296,7 +296,8 @@ async function getVideosForSub(sub, user_uid = null) {
 
                 for (let j = 0; j < files_to_download.length; j++) {
                     const file_to_download = files_to_download[j];
-                    await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name);
+                    file_to_download['formats'] = utils.stripPropertiesFromObject(file_to_download['formats'], ['format_id', 'filesize', 'filesize_approx']);  // prevent download object from blowing up in size
+                    await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name, file_to_download);
                 }
 
                 resolve(files_to_download);
@@ -419,6 +420,8 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     if (default_downloader === 'yt-dlp') {
         downloadConfig.push('--no-clean-infojson');
     }
+
+    downloadConfig = utils.filterArgs(downloadConfig, ['--write-comments']);
 
     return downloadConfig;
 }

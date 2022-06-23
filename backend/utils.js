@@ -481,6 +481,10 @@ function injectArgs(original_args, new_args) {
     return updated_args;
 }
 
+function filterArgs(args, args_to_remove) {
+    return args.filter(x => !args_to_remove.includes(x));
+}
+
 const searchObjectByString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, '');           // strip a leading dot
@@ -494,6 +498,22 @@ const searchObjectByString = function(o, s) {
         }
     }
     return o;
+}
+
+function stripPropertiesFromObject(obj, properties, whitelist = false) {
+    if (!whitelist) {
+        const new_obj = JSON.parse(JSON.stringify(obj));
+        for (let field of properties) {
+            delete new_obj[field];
+        }
+        return new_obj;
+    }
+
+    const new_obj = {};
+    for (let field of properties) {
+        new_obj[field] = obj[field];
+    }
+    return new_obj;
 }
 
 function getArchiveFolder(type, user_uid = null, sub = null) {
@@ -561,7 +581,9 @@ module.exports = {
     fetchFile: fetchFile,
     restartServer: restartServer,
     injectArgs: injectArgs,
+    filterArgs: filterArgs,
     searchObjectByString: searchObjectByString,
+    stripPropertiesFromObject: stripPropertiesFromObject,
     getArchiveFolder: getArchiveFolder,
     File: File
 }
