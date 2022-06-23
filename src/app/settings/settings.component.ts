@@ -176,6 +176,7 @@ export class SettingsComponent implements OnInit {
       if (confirmed) {
         this.postsService.deleteCategory(category['uid']).subscribe(res => {
           if (res['success']) {
+            // TODO: Make translatable
             this.postsService.openSnackBar(`Successfully deleted ${category['name']}!`);
             this.postsService.reloadCategories();
           }
@@ -233,7 +234,7 @@ export class SettingsComponent implements OnInit {
         window['external']['AddFavorite'](url, title);
     } else if (window['chrome']) {
         // Google Chrome
-       this.postsService.openSnackBar($localize`Chrome users must drag the \'Alternate URL\' link to your bookmarks.`);
+       this.postsService.openSnackBar($localize`Chrome users must drag the 'Alternate URL' link to your bookmarks.`);
     } else if (window['sidebar']) {
         // Firefox
         window['sidebar'].addPanel(title, url, '');

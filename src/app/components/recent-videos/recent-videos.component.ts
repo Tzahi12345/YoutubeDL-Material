@@ -276,13 +276,13 @@ export class RecentVideosComponent implements OnInit {
   deleteNormalFile(file: DatabaseFile, blacklistMode = false): void {
     this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
-        this.postsService.openSnackBar($localize`Delete success!', 'OK.`);
+        this.postsService.openSnackBar($localize`Delete success!`, $localize`OK.`);
         this.removeFileCard(file);
       } else {
-        this.postsService.openSnackBar($localize`Delete failed!', 'OK.`);
+        this.postsService.openSnackBar($localize`Delete failed!`, $localize`OK.`);
       }
     }, () => {
-      this.postsService.openSnackBar($localize`Delete failed!', 'OK.`);
+      this.postsService.openSnackBar($localize`Delete failed!`, $localize`OK.`);
     });
   }
 
@@ -297,7 +297,7 @@ export class RecentVideosComponent implements OnInit {
   deleteAndRedownload(file: DatabaseFile): void {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
     this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(() => {
-      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
+      this.postsService.openSnackBar($localize`Successfully deleted file: ` + file.id);
       this.removeFileCard(file);
     });
   }
@@ -305,7 +305,7 @@ export class RecentVideosComponent implements OnInit {
   deleteForever(file: DatabaseFile): void {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
     this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(() => {
-      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
+      this.postsService.openSnackBar($localize`Successfully deleted file: ` + file.id);
       this.removeFileCard(file);
     });
   }
@@ -316,6 +316,7 @@ export class RecentVideosComponent implements OnInit {
     this.getAllFiles(true);
   }
 
+  // TODO: Add translation support for these snackbars
   addFileToPlaylist(info_obj) {
     const file = info_obj['file'];
     const playlist_id = info_obj['playlist_id'];

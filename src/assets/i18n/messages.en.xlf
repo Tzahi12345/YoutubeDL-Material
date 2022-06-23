@@ -448,6 +448,10 @@
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">270</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="024886ca34a6f309e3e51c2ed849320592c3faaa" datatype="html">
         <source>User name</source>
@@ -861,15 +865,19 @@
         </context-group>
         <note priority="1" from="description">Audio only</note>
       </trans-unit>
-      <trans-unit id="1999929479708078857" datatype="html">
-        <source>Delete success!&apos;, &apos;OK.</source>
+      <trans-unit id="4050356167294261426" datatype="html">
+        <source>Delete success!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">279</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="237825056557728747" datatype="html">
-        <source>Delete failed!&apos;, &apos;OK.</source>
+      <trans-unit id="8348223454028662277" datatype="html">
+        <source>OK.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">279</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">282</context>
@@ -877,6 +885,28 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7405156667148936748" datatype="html">
+        <source>Delete failed!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">282</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8937901770314883418" datatype="html">
+        <source>Successfully deleted file: </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">300</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">308</context>
         </context-group>
       </trans-unit>
       <trans-unit id="ddc31f2885b1b33a7651963254b0c197f2a64086" datatype="html">
@@ -1191,11 +1221,15 @@
         </context-group>
         <note priority="1" from="description">Delete and redownload subscription video button</note>
       </trans-unit>
-      <trans-unit id="2031adb51e07a41844e8ba7704b054e98345c9c1" datatype="html">
-        <source>Delete forever</source>
+      <trans-unit id="34504b488c24c27e68089be549f0eeae6ebaf30b" datatype="html">
+        <source>Delete and blacklist</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">37</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">40</context>
         </context-group>
         <note priority="1" from="description">Delete forever subscription video button</note>
       </trans-unit>
@@ -1210,14 +1244,6 @@
           <context context-type="linenumber">45</context>
         </context-group>
         <note priority="1" from="description">Delete video button</note>
-      </trans-unit>
-      <trans-unit id="34504b488c24c27e68089be549f0eeae6ebaf30b" datatype="html">
-        <source>Delete and blacklist</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">40</context>
-        </context-group>
-        <note priority="1" from="description">Delete and blacklist video button</note>
       </trans-unit>
       <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html">
         <source>Edit</source>
@@ -1817,6 +1843,48 @@
         </context-group>
         <note priority="1" from="description">Copy to clipboard button</note>
       </trans-unit>
+      <trans-unit id="4960870191807928282" datatype="html">
+        <source>Sharing enabled.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2720327817780634026" datatype="html">
+        <source>Failed to enable sharing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2859348955905483094" datatype="html">
+        <source>Failed to enable sharing - server error.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3561468911579213356" datatype="html">
+        <source>Sharing disabled.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7840375760456214518" datatype="html">
+        <source>Failed to disable sharing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8692976466689769553" datatype="html">
+        <source>Failed to disable sharing - server error.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="a9806cf78ce00eb2613eeca11354a97e033377b8" datatype="html">
         <source>Subscribe to playlist or channel</source>
         <context-group purpose="location">
@@ -1864,6 +1932,20 @@
           <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">Subscribe button</note>
+      </trans-unit>
+      <trans-unit id="5397815846940616259" datatype="html">
+        <source>You must specify an amount of time</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3544790314111256717" datatype="html">
+        <source>ERROR: </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="e78c0d60ac39787f62c9159646fe0b3c1ed55a1d" datatype="html">
         <source>Type:</source>
@@ -1920,6 +2002,13 @@
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Update progress dialog title</note>
+      </trans-unit>
+      <trans-unit id="2876893175497409225" datatype="html">
+        <source>Update failed. Check logs for more details.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="998793c78895d53576f462054f13d6e515e923d9" datatype="html">
         <source>Update task schedule</source>
@@ -2233,8 +2322,8 @@
         </context-group>
         <note priority="1" from="description">Crop to placeholder</note>
       </trans-unit>
-      <trans-unit id="3584603641930536311" datatype="html">
-        <source>Download failed!&apos;, &apos;OK.</source>
+      <trans-unit id="8314249599019746316" datatype="html">
+        <source>Download failed!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">387</context>
@@ -2259,22 +2348,22 @@
         </context-group>
         <note priority="1" from="description">View count label</note>
       </trans-unit>
-      <trans-unit id="8337232370469287368" datatype="html">
-        <source>Failed to get file information from the server.&apos;, &apos;Dismiss</source>
+      <trans-unit id="2734512985872312443" datatype="html">
+        <source>Failed to get file information from the server.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
           <context context-type="linenumber">150</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1908892469450872065" datatype="html">
-        <source>Failed to load playlist!&apos;, &apos;</source>
+      <trans-unit id="6789263921624845085" datatype="html">
+        <source>Failed to load playlist!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">187</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
-          <context context-type="linenumber">189</context>
+          <context context-type="linenumber">190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="82421c3e46a0453a70c42900eab51d58d79e6599" datatype="html">
@@ -3079,88 +3168,88 @@
         <source>Language successfully changed! Reload to update the page.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">208</context>
+          <context context-type="linenumber">209</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4604336107574138791" datatype="html">
         <source>Chrome users must drag the &apos;Alternate URL&apos; link to your bookmarks.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">236</context>
+          <context context-type="linenumber">237</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4257962986336738751" datatype="html">
         <source>Successfully killed all downloads!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">291</context>
+          <context context-type="linenumber">292</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2600933489084742998" datatype="html">
         <source>Failed to kill all downloads! Check logs for details.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">294</context>
+          <context context-type="linenumber">295</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">298</context>
+          <context context-type="linenumber">299</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1942965859829798388" datatype="html">
         <source>Restarting!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">306</context>
+          <context context-type="linenumber">307</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6224607866493148072" datatype="html">
         <source>Failed to restart the server.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">308</context>
+          <context context-type="linenumber">309</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6123898845299902958" datatype="html">
         <source>Successfully transfered DB! Reloading info...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">339</context>
+          <context context-type="linenumber">340</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5681417617361245213" datatype="html">
         <source>Failed to transfer DB -- transfer was aborted. Error: </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">342</context>
+          <context context-type="linenumber">343</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1716030487077666916" datatype="html">
         <source>Failed to transfer DB -- API call failed. See browser logs for details.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">346</context>
+          <context context-type="linenumber">347</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6018050954136387828" datatype="html">
         <source>Connection successful!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">356</context>
+          <context context-type="linenumber">357</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4021495815084152271" datatype="html">
         <source>Connection failed! Error: </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">358</context>
+          <context context-type="linenumber">359</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6519219215739537829" datatype="html">
         <source>Connection failed! Error: Server error. See logs for more info.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">362</context>
+          <context context-type="linenumber">363</context>
         </context-group>
       </trans-unit>
       <trans-unit id="e2319dec5b4ccfb6ed9f55ccabd63650a8fdf547" datatype="html">

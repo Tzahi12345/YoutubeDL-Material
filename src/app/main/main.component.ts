@@ -384,7 +384,7 @@ export class MainComponent implements OnInit {
       }, () => { // can't access server
         this.downloadingfile = false;
         this.current_download = null;
-        this.postsService.openSnackBar($localize`Download failed!', 'OK.`);
+        this.postsService.openSnackBar($localize`Download failed!`, 'OK.');
       });
 
       if (!this.autoplay && urls.length === 1) {
@@ -771,7 +771,7 @@ export class MainComponent implements OnInit {
         } else if (this.current_download['finished'] && this.current_download['error']) {
           this.downloadingfile = false;
           this.current_download = null;
-          this.postsService.openSnackBar($localize`Download failed!', 'OK.`);
+          this.postsService.openSnackBar($localize`Download failed!`, 'OK.');
         }
       } else {
         // console.log('failed to get new download');
