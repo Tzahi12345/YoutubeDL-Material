@@ -47,6 +47,14 @@
 
     <mat-divider style="margin-bottom: 16px;"></mat-divider>
 
+    <div *ngIf="!new_file.isAudio" class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Video resolution property">Resolution:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value">{{new_file.height ? new_file.height + 'p' : 'N/A'}}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-item-label"><strong><ng-container i18n="Video audio bitrate property">Audio bitrate:</ng-container>&nbsp;</strong></div>
+        <div class="info-item-value">{{new_file.abr ? new_file.abr + ' Kbps' : 'N/A'}}</div>
+    </div>
     <div class="info-item">
         <div class="info-item-label"><strong><ng-container i18n="Video file size property">File size:</ng-container>&nbsp;</strong></div>
         <div class="info-item-value">{{new_file.size ? filesize(new_file.size) : 'N/A'}}</div>

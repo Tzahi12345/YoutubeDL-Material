@@ -2425,6 +2425,12 @@ components:
           type: string
         registered:
           type: number
+        height:
+          type: number
+          description: In pixels, only for videos
+        abr:
+          type: number
+          description: In Kbps
     Playlist:
       required:
         - uids

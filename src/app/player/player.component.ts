@@ -361,12 +361,16 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   openFileInfoDialog(): void {
-    this.dialog.open(VideoInfoDialogComponent, {
+    const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
       data: {
         file: this.db_file,
       },
       minWidth: '50vw'
-    })
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.db_file = dialogRef.componentInstance.file;
+    });
   }
 
   setPlaybackTimestamp(time: number): void {
