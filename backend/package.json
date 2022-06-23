@@ -5,19 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
+    "start": "pm2-runtime --raw pm2.config.js",
     "debug": "set YTDL_MODE=debug && node app.js"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "*.js",
-      "appdata/*",
-      "public/*"
-    ],
-    "watch": [
-      "restart_update.json",
-      "restart_general.json"
-    ]
   },
   "repository": {
     "type": "git",
@@ -47,11 +36,10 @@
     "mocha": "^9.2.2",
     "moment": "^2.29.2",
     "mongodb": "^3.6.9",
-    "multer": "^1.4.2",
+    "multer": "1.4.5-lts.1",
     "node-fetch": "^2.6.7",
     "node-id3": "^0.1.14",
     "node-schedule": "^2.1.0",
-    "nodemon": "^2.0.7",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
