@@ -196,12 +196,11 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
             return false;
         } else {
             // check if the user wants the video to be redownloaded (deleteForever === false)
-            if (!deleteForever && useArchive && sub.archive && retrievedID) {
-                const archive_path = path.join(sub.archive, 'archive.txt')
-                // if archive exists, remove line with video ID
-                if (await fs.pathExists(archive_path)) {
-                    utils.removeIDFromArchive(archive_path, retrievedID);
-                }
+            if (useArchive && retrievedID) {
+                const archive_path = utils.getArchiveFolder(sub.type, user_uid, sub);
+
+                // Remove file ID from the archive file, and write it to the blacklist (if enabled)
+                await utils.deleteFileFromArchive(file_uid, sub.type, archive_path, retrievedID, deleteForever);
             }
             return true;
         }
@@ -322,7 +321,7 @@ function generateOptionsForSubscriptionDownload(sub, user_uid) {
         selectedHeight: sub.maxQuality && sub.maxQuality !== 'best' ? sub.maxQuality : null,
         customFileFolderPath: getAppendedBasePath(sub, basePath),
         customOutput: sub.custom_output ? `${sub.custom_output}` : `${default_output}`,
-        customArchivePath: path.join(__dirname, basePath, 'archives', sub.name),
+        customArchivePath: path.join(basePath, 'archives', sub.name),
         additionalArgs: sub.custom_args
     }
 

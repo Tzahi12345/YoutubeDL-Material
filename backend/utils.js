@@ -218,8 +218,11 @@ function deleteJSONFile(file_path, type) {
     if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
 }
 
-async function removeIDFromArchive(archive_path, id) {
-    let data = await fs.readFile(archive_path, {encoding: 'utf-8'});
+// archive helper functions
+
+async function removeIDFromArchive(archive_path, type, id) {
+    const archive_file = path.join(archive_path, `archive_${type}.txt`);
+    const data = await fs.readFile(archive_file, {encoding: 'utf-8'});
     if (!data) {
         logger.error('Archive could not be found.');
         return;
@@ -236,12 +239,34 @@ async function removeIDFromArchive(archive_path, id) {
         }
     }
 
+    if (lastIndex === -1) return null;
+
     const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
 
     // UPDATE FILE WITH NEW DATA
     const updatedData = dataArray.join('\n');
-    await fs.writeFile(archive_path, updatedData);
-    if (line) return line;
+    await fs.writeFile(archive_file, updatedData);
+    if (line) return Array.isArray(line) && line.length === 1 ? line[0] : line;
+}
+
+async function writeToBlacklist(archive_folder, type, line) {
+    let blacklistPath = path.join(archive_folder, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
+    // adds newline to the beginning of the line
+    line.replace('\n', '');
+    line.replace('\r', '');
+    line = '\n' + line;
+    await fs.appendFile(blacklistPath, line);
+}
+
+async function deleteFileFromArchive(uid, type, archive_path, id, blacklistMode) {
+    const archive_file = path.join(archive_path, `archive_${type}.txt`);
+    if (await fs.pathExists(archive_path)) {
+        const line = id ? await removeIDFromArchive(archive_path, type, id) : null;
+        if (blacklistMode && line) await writeToBlacklist(archive_path, type, line);
+    } else {
+        logger.info(`Could not find archive file for file ${uid}. Creating...`);
+        await fs.close(await fs.open(archive_file, 'w'));
+    }
 }
 
 function durationStringToNumber(dur_str) {
@@ -471,6 +496,25 @@ const searchObjectByString = function(o, s) {
     return o;
 }
 
+function getArchiveFolder(type, user_uid = null, sub = null) {
+    const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
+    const subsFolderPath  = config_api.getConfigItem('ytdl_subscriptions_base_path');
+
+    if (user_uid) {
+        if (sub) {
+            return path.join(usersFolderPath, user_uid, 'subscriptions', 'archives', sub.name);
+        } else {
+            return path.join(usersFolderPath, user_uid, type, 'archives');
+        }
+    } else {
+        if (sub) {
+            return path.join(subsFolderPath, 'archives', sub.name);
+        } else {
+            return path.join('appdata', 'archives');
+        }
+    }
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -500,6 +544,8 @@ module.exports = {
     fixVideoMetadataPerms: fixVideoMetadataPerms,
     deleteJSONFile: deleteJSONFile,
     removeIDFromArchive: removeIDFromArchive,
+    writeToBlacklist: writeToBlacklist,
+    deleteFileFromArchive: deleteFileFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
     createContainerZipFile: createContainerZipFile,
     durationStringToNumber: durationStringToNumber,
@@ -516,5 +562,6 @@ module.exports = {
     restartServer: restartServer,
     injectArgs: injectArgs,
     searchObjectByString: searchObjectByString,
+    getArchiveFolder: getArchiveFolder,
     File: File
 }

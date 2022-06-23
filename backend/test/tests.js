@@ -591,3 +591,31 @@ describe('Tasks', function() {
         assert(dummy_task_obj['data']);
     });
 });
+
+describe('Archive', async function() {
+    const archive_path = path.join('test', 'archives');
+    fs.ensureDirSync(archive_path);
+    const archive_file_path = path.join(archive_path, 'archive_video.txt');
+    const blacklist_file_path = path.join(archive_path, 'blacklist_video.txt');
+    beforeEach(async function() {
+        if (fs.existsSync(archive_file_path)) fs.unlinkSync(archive_file_path);
+        fs.writeFileSync(archive_file_path, 'youtube testing1\nyoutube testing2\nyoutube testing3\n');
+
+        if (fs.existsSync(blacklist_file_path)) fs.unlinkSync(blacklist_file_path);
+        fs.writeFileSync(blacklist_file_path, '');
+    });
+    
+    it('Delete from archive', async function() {
+        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', false);
+        const new_archive = fs.readFileSync(archive_file_path);
+        assert(!new_archive.includes('testing2'));
+    });
+
+    it('Delete from archive - blacklist', async function() {
+        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', true);
+        const new_archive = fs.readFileSync(archive_file_path);
+        const new_blacklist = fs.readFileSync(blacklist_file_path);
+        assert(!new_archive.includes('testing2'));
+        assert(new_blacklist.includes('testing2'));
+    });
+});

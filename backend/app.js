@@ -101,7 +101,6 @@ let backendPort = null;
 let useDefaultDownloadingAgent = null;
 let customDownloadingAgent = null;
 let allowSubscriptions = null;
-let archivePath = path.join(__dirname, 'appdata', 'archives');
 
 // other needed values
 let url_domain = null;
@@ -506,7 +505,7 @@ async function loadConfig() {
     db_api.database_initialized_bs.next(true);
 
     // creates archive path if missing
-    await fs.ensureDir(archivePath);
+    await fs.ensureDir(utils.getArchiveFolder());
 
     // check migrations
     await checkMigrations();

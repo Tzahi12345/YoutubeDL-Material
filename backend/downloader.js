@@ -18,8 +18,6 @@ const db_api = require('./db');
 const mutex = new Mutex();
 let should_check_downloads = true;
 
-const archivePath = path.join(__dirname, 'appdata', 'archives');
-
 if (db_api.database_initialized) {
     setupDownloads();
 } else {
@@ -242,6 +240,7 @@ async function downloadQueuedFile(download_uid) {
     return new Promise(async resolve => {
         const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+        const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
         await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 2, finished_step: false, running: true});
 
         const url = download['url'];
@@ -249,9 +248,11 @@ async function downloadQueuedFile(download_uid) {
         const options = download['options'];
         const args = download['args'];
         const category = download['category'];
-        let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath; // TODO: fix
+        let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
         if (options.customFileFolderPath) {
             fileFolderPath = options.customFileFolderPath;
+        } else if (download['user_uid']) {
+            fileFolderPath = path.join(usersFolderPath, download['user_uid'], type);
         }
         fs.ensureDirSync(fileFolderPath);
 
@@ -375,13 +376,19 @@ async function downloadQueuedFile(download_uid) {
 exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+    const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
 
     const videopath = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
     const globalArgs = config_api.getConfigItem('ytdl_custom_args');
     const useCookies = config_api.getConfigItem('ytdl_use_cookies');
     const is_audio = type === 'audio';
 
-    let fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+    let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath; // TODO: fix
+    if (options.customFileFolderPath) {
+        fileFolderPath = options.customFileFolderPath;
+    } else if (user_uid) {
+        fileFolderPath = path.join(usersFolderPath, user_uid, fileFolderPath);
+    }
 
     if (options.customFileFolderPath) fileFolderPath = options.customFileFolderPath;
 
@@ -628,6 +635,6 @@ function getArchiveFolder(fileFolderPath, options, user_uid) {
     } else if (user_uid) {
         return path.join(fileFolderPath, 'archives');
     } else {
-        return path.join(archivePath);
+        return path.join('appdata', 'archives');
     }
 }
