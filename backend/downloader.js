@@ -421,7 +421,7 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
         if (customQualityConfiguration) {
             qualityPath = ['-f', customQualityConfiguration, '--merge-output-format', 'mp4'];
         } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-            qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
+            qualityPath = ['-f', `'(mp4)[height=${selectedHeight}]`];
         } else if (is_audio) {
             qualityPath = ['--audio-quality', maxBitrate ? maxBitrate : '0']
         }
