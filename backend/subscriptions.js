@@ -476,6 +476,7 @@ async function updateSubscriptionProperty(sub, assignment_obj) {
 
 async function setFreshUploads(sub) {
     const sub_files = await db_api.getRecords('files', {sub_id: sub.id});
+    if (!sub_files) return;
     const current_date = new Date().toISOString().split('T')[0].replace(/-/g, '');
     sub_files.forEach(async file => {
         if (current_date === file['upload_date'].replace(/-/g, '')) {
