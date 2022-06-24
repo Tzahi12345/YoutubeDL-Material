@@ -244,7 +244,7 @@ async function getVideosForSub(sub, user_uid = null) {
                 if (err.stderr.includes('This video is unavailable') || err.stderr.includes('Private video')) {
                     logger.info('An error was encountered with at least one video, backup method will be used.')
                     try {
-                        const outputs = err.stdout.split(/\r\n|\r|\n/); // .map(jsonStr => JSON.parse(jsonStr));
+                        const outputs = err.stdout.split(/\r\n|\r|\n/);
                         const files_to_download = await handleOutputJSON(outputs, sub, user_uid);
                         resolve(files_to_download);
                     } catch(e) {
