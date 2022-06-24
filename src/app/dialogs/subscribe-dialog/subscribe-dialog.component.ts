@@ -21,9 +21,6 @@ export class SubscribeDialogComponent implements OnInit {
   // state
   subscribing = false;
 
-  // no videos actually downloaded, just streamed
-  streamingOnlyMode = false;
-
   // audio only mode
   audioOnlyMode = false;
 

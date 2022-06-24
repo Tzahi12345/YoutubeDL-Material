@@ -389,11 +389,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         downloadConfig.push('--download-archive', archive_path);
     }
 
-    // if streaming only mode, just get the list of videos
-    if (sub.streamingOnly) {
-        downloadConfig = ['-f', 'best', '--dump-json'];
-    }
-
     if (sub.timerange && !redownload) {
         downloadConfig.push('--dateafter', sub.timerange);
     }

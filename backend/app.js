@@ -1272,7 +1272,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     subscription = JSON.parse(JSON.stringify(subscription));
 
     // get sub videos
-    if (subscription.name && !subscription.streamingOnly) {
+    if (subscription.name) {
         var parsed_files = await db_api.getRecords('files', {sub_id: subscription.id}); // subscription.videos;
         subscription['videos'] = parsed_files;
         // loop through files for extra processing
@@ -1282,19 +1282,6 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
             if (file && file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
         }
 
-        res.send({
-            subscription: subscription,
-            files: parsed_files
-        });
-    } else if (subscription.name && subscription.streamingOnly) {
-        // return list of videos
-        let parsed_files = [];
-        if (subscription.videos) {
-            for (let i = 0; i < subscription.videos.length; i++) {
-                const video = subscription.videos[i];
-                parsed_files.push(new utils.File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date, video.view_count, video.height, video.abr));
-            }
-        }
         res.send({
             subscription: subscription,
             files: parsed_files

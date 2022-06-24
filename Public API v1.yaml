@@ -1826,7 +1826,6 @@ components:
       required:
         - name
         - url
-        - streamingOnly
       type: object
       properties:
         name:
@@ -2608,7 +2607,6 @@ components:
         - url
         - type
         - user_uid
-        - streamingOnly
         - isPlaylist
         - videos
       type: object
@@ -2624,8 +2622,6 @@ components:
         user_uid:
           type: string
           nullable: true
-        streamingOnly:
-          type: boolean
         isPlaylist:
           type: boolean
         archive:

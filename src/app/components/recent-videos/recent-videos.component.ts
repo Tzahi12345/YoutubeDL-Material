@@ -215,18 +215,9 @@ export class RecentVideosComponent implements OnInit {
   navigateToFile(file: DatabaseFile, new_tab: boolean): void {
     localStorage.setItem('player_navigator', this.router.url);
     if (file.sub_id) {
-      const sub = this.postsService.getSubscriptionByID(file.sub_id);
-      if (sub.streamingOnly) {
-        // streaming only mode subscriptions
-        // !new_tab ? this.router.navigate(['/player', {name: file.id,
-        //                                   url: file.requested_formats ? file.requested_formats[0].url : file.url}])
-        //         : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
-      } else {
-        // normal subscriptions
         !new_tab ? this.router.navigate(['/player', {uid: file.uid,
-                                          type: file.isAudio ? 'audio' : 'video'}]) 
+                                        type: file.isAudio ? 'audio' : 'video'}]) 
                  : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
-      }
     } else {
       // normal files
       !new_tab ? this.router.navigate(['/player', {type: file.isAudio ? 'audio' : 'video', uid: file.uid}])
