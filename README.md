@@ -82,7 +82,7 @@ Alternatively, you can port forward the port specified in the config (defaults t
 
 ### Host-specific instructions
 
-If you're on a Synology NAS, unRAID or any other possible special case you can check if there's known issues or instructions both in the issue tracker and in the [Wiki!](https://github.com/Tzahi12345/YoutubeDL-Material/wiki#environment-specific-guideshelp)
+If you're on a Synology NAS, unRAID, Raspberry Pi 4 or any other possible special case you can check if there's known issues or instructions both in the issue tracker and in the [Wiki!](https://github.com/Tzahi12345/YoutubeDL-Material/wiki#environment-specific-guideshelp)
 
 ### Setup
 
