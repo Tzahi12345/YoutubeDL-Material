@@ -47,8 +47,7 @@ RUN npm config set strict-ssl false && \
 
 # Final image
 FROM base
-RUN npm install -g pm2 && \
-    apt update && \
+RUN apt update && \
     apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
@@ -65,4 +64,4 @@ RUN chmod +x /app/fix-scripts/*.sh
 
 EXPOSE 17442
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD [ "pm2-runtime","--raw","pm2.config.js" ]
+CMD [ "npm","start" ]
