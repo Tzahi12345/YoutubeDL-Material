@@ -376,6 +376,8 @@ async function downloadQueuedFile(download_uid) {
 // helper functions
 
 exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
+    const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
     const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
@@ -413,8 +415,6 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     if (!is_audio && !is_youtube) {
         // tiktok videos fail when using the default format
         qualityPath = null;
-    } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
-        qualityPath = ['-f', 'bestvideo+bestaudio']
     }
 
     if (customArgs) {
@@ -505,7 +505,6 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
             downloadConfig.push('-r', rate_limit);
         }
         
-        const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
         if (default_downloader === 'yt-dlp') {
             downloadConfig.push('--no-clean-infojson');
         }
@@ -515,7 +514,7 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     // filter out incompatible args
     downloadConfig = filterArgs(downloadConfig, is_audio);
 
-    if (!simulated) logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
+    if (!simulated) logger.verbose(`${default_downloader} args being used: ${downloadConfig.join(',')}`);
     return downloadConfig;
 }
 

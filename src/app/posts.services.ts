@@ -100,7 +100,8 @@ import {
     UpdateFileRequest,
     Sort,
     FileTypeFilter,
-    GetAllFilesRequest
+    GetAllFilesRequest,
+    GetAllTasksResponse
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -596,7 +597,7 @@ export class PostsService implements CanActivate {
     }
 
     getTasks() {
-        return this.http.post<SuccessObject>(this.path + 'getTasks', {}, this.httpOptions);
+        return this.http.post<GetAllTasksResponse>(this.path + 'getTasks', {}, this.httpOptions);
     }
 
     resetTasks() {

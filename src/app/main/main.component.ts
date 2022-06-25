@@ -591,7 +591,8 @@ export class MainComponent implements OnInit {
           if (passwordIndex !== -1 && passwordIndex !== simulated_args.length - 1) {
             simulated_args[passwordIndex + 1] = simulated_args[passwordIndex + 1].replace(/./g, '*');
           }
-          this.simulatedOutput = `youtube-dl ${this.url} ${simulated_args.join(' ')}`;
+          const downloader = this.postsService.config.Advanced.default_downloader;
+          this.simulatedOutput = `${downloader} ${this.url} ${simulated_args.join(' ')}`;
         }
     });
   }
