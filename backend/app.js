@@ -187,7 +187,7 @@ async function checkMigrations() {
     if (!new_db_system_migration_complete) {
         logger.info('Beginning migration: 4.2->4.3+')
         let success = await db_api.importJSONToDB(db.value(), users_db.value());
-
+        await tasks_api.setupTasks(); // necessary as tasks were not properly initialized at first
         // sets migration to complete
         db.set('new_db_system_migration_complete', true).write();
         if (success) { logger.info('4.2->4.3+ migration complete!'); }
@@ -571,6 +571,9 @@ function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
 }
 
 async function watchSubscriptions() {
+    // auto pause deprecated streamingOnly mode
+    await db_api.updateRecords('subscriptions', {streamingOnly: true}, {paused: true});
+
     let subscriptions = await subscriptions_api.getAllSubscriptions();
 
     if (!subscriptions) return;
