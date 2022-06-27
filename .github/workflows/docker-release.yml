@@ -54,7 +54,6 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/${{ secrets.DOCKERHUB_REPO }}
           tags: |
             raw=${{ steps.tags.outputs.tags }}
-            raw=latest
 
       - name: setup platform emulator
         uses: docker/setup-qemu-action@v1
