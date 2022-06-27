@@ -55,6 +55,6 @@
     "uuidv4": "^6.0.6",
     "winston": "^3.7.2",
     "xmlbuilder2": "^3.0.2",
-    "youtube-dl": "^3.0.2"
+    "youtube-dl": "^3.5.0"
   }
 }
