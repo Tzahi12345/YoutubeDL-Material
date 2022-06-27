@@ -458,7 +458,7 @@ async function updateSubscription(sub) {
 
 async function updateSubscriptionPropertyMultiple(subs, assignment_obj) {
     subs.forEach(async sub => {
-        await updateSubscriptionProperty(sub, assignment_obj, sub.user_uid);
+        await updateSubscriptionProperty(sub, assignment_obj);
     });
 }
 

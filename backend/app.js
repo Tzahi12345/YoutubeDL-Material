@@ -571,14 +571,15 @@ function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
 }
 
 async function watchSubscriptions() {
-    // auto pause deprecated streamingOnly mode
-    await db_api.updateRecords('subscriptions', {streamingOnly: true}, {paused: true});
-
     let subscriptions = await subscriptions_api.getAllSubscriptions();
 
     if (!subscriptions) return;
 
-    const valid_subscriptions = subscriptions.filter(sub => !sub.paused);
+    // auto pause deprecated streamingOnly mode
+    const streaming_only_subs = subscriptions.filter(sub => sub.streamingOnly);
+    subscriptions_api.updateSubscriptionPropertyMultiple(streaming_only_subs, {paused: true});
+
+    const valid_subscriptions = subscriptions.filter(sub => !sub.paused && !sub.streamingOnly);
 
     let subscriptions_amount = valid_subscriptions.length;
     let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);

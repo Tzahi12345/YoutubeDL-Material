@@ -985,7 +985,7 @@ exports.backupDB = async () => {
     const backup_file_name = `${using_local_db ? 'local' : 'remote'}_db.json.${Date.now()/1000}.bak`;
     const path_to_backups = path.join(backup_dir, backup_file_name);
 
-    logger.verbose(`Backing up ${using_local_db ? 'local' : 'remote'} DB to ${path_to_backups}`);
+    logger.info(`Backing up ${using_local_db ? 'local' : 'remote'} DB to ${path_to_backups}`);
 
     const table_to_records = {};
     for (let i = 0; i < tables_list.length; i++) {
@@ -1032,10 +1032,11 @@ exports.transferDB = async (local_to_remote) => {
         table_to_records[table] = await exports.getRecords(table);
     }
 
+    logger.info('Backup up DB...');
+    await exports.backupDB(); // should backup always
+
     using_local_db = !local_to_remote;
     if (local_to_remote) {
-        logger.debug('Backup up DB...');
-        await exports.backupDB();
         const db_connected = await exports.connectToDB(5, true);
         if (!db_connected) {
             logger.error('Failed to transfer database - could not connect to MongoDB. Verify that your connection URL is valid.');
