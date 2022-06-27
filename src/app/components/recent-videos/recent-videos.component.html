@@ -95,7 +95,7 @@
         </mat-tab-group>
     </div>
 
-    <div style="position: relative;" *ngIf="usePaginator && selectedIndex > 0">
+    <div style="position: relative;" *ngIf="paged_data && paged_data.length > 0 && usePaginator && selectedIndex > 0">
         <div style="position: absolute; margin-left: 8px; margin-top: 5px; scale: 0.8">
             <mat-form-field>
                 <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>
