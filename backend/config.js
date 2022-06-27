@@ -206,7 +206,8 @@ const DEFAULT_CONFIG = {
         "use_youtube_API": false,
         "youtube_API_key": "",
         "use_twitch_API": false,
-        "twitch_API_key": "",
+        "twitch_client_ID": "",
+        "twitch_client_secret": "",
         "twitch_auto_download_chat": false,
         "use_sponsorblock_API": false,
         "generate_NFO_files": false
@@ -238,7 +239,7 @@ const DEFAULT_CONFIG = {
         "mongodb_connection_string": "mongodb://127.0.0.1:27017/?compressors=zlib"
       },
       "Advanced": {
-        "default_downloader": "youtube-dl",
+        "default_downloader": "yt-dlp",
         "use_default_downloading_agent": true,
         "custom_downloading_agent": "",
         "multi_user_mode": false,

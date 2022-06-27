@@ -101,7 +101,6 @@ let backendPort = null;
 let useDefaultDownloadingAgent = null;
 let customDownloadingAgent = null;
 let allowSubscriptions = null;
-let archivePath = path.join(__dirname, 'appdata', 'archives');
 
 // other needed values
 let url_domain = null;
@@ -500,12 +499,13 @@ async function loadConfig() {
     loadConfigValues();
 
     // connect to DB
-    await db_api.connectToDB();
+    if (!config_api.getConfigItem('ytdl_use_local_db'))
+        await db_api.connectToDB();
     db_api.database_initialized = true;
     db_api.database_initialized_bs.next(true);
 
     // creates archive path if missing
-    await fs.ensureDir(archivePath);
+    await fs.ensureDir(utils.getArchiveFolder());
 
     // check migrations
     await checkMigrations();
@@ -912,11 +912,11 @@ app.post('/api/getFile', optionalJwt, async function (req, res) {
 app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
     let files = null;
-    let playlists = null;
-    let sort = req.body.sort;
-    let range = req.body.range;
-    let text_search = req.body.text_search;
-    let file_type_filter = req.body.file_type_filter;
+    const sort = req.body.sort;
+    const range = req.body.range;
+    const text_search = req.body.text_search;
+    const file_type_filter = req.body.file_type_filter;
+    const sub_id = req.body.sub_id;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     const filter_obj = {user_uid: uuid};
@@ -927,6 +927,10 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
         } else {
             filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
         }
+    }
+
+    if (sub_id) {
+        filter_obj['sub_id'] = sub_id;
     }
 
     if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;
@@ -1268,7 +1272,7 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     subscription = JSON.parse(JSON.stringify(subscription));
 
     // get sub videos
-    if (subscription.name && !subscription.streamingOnly) {
+    if (subscription.name) {
         var parsed_files = await db_api.getRecords('files', {sub_id: subscription.id}); // subscription.videos;
         subscription['videos'] = parsed_files;
         // loop through files for extra processing
@@ -1278,19 +1282,6 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
             if (file && file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
         }
 
-        res.send({
-            subscription: subscription,
-            files: parsed_files
-        });
-    } else if (subscription.name && subscription.streamingOnly) {
-        // return list of videos
-        let parsed_files = [];
-        if (subscription.videos) {
-            for (let i = 0; i < subscription.videos.length; i++) {
-                const video = subscription.videos[i];
-                parsed_files.push(new utils.File(video.title, video.title, video.thumbnail, false, video.duration, video.url, video.uploader, video.size, null, null, video.upload_date, video.view_count, video.height, video.abr));
-            }
-        }
         res.send({
             subscription: subscription,
             files: parsed_files
@@ -1335,9 +1326,8 @@ app.post('/api/getSubscriptions', optionalJwt, async (req, res) => {
 app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let playlistName = req.body.playlistName;
     let uids = req.body.uids;
-    let type = req.body.type;
 
-    const new_playlist = await db_api.createPlaylist(playlistName, uids, type, req.isAuthenticated() ? req.user.uid : null);
+    const new_playlist = await db_api.createPlaylist(playlistName, uids, req.isAuthenticated() ? req.user.uid : null);
 
     res.send({
         new_playlist: new_playlist,
@@ -1365,7 +1355,6 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     res.send({
         playlist: playlist,
         file_objs: file_objs,
-        type: playlist && playlist.type,
         success: !!playlist
     });
 });

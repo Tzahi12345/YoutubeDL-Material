@@ -357,7 +357,7 @@ exports.addMetadataPropertyToDB = async (property_key) => {
     }
 }
 
-exports.createPlaylist = async (playlist_name, uids, type, user_uid = null) => {
+exports.createPlaylist = async (playlist_name, uids, user_uid = null) => {
     const first_video = await exports.getVideo(uids[0]);
     const thumbnailToUse = first_video['thumbnailURL'];
     
@@ -366,7 +366,6 @@ exports.createPlaylist = async (playlist_name, uids, type, user_uid = null) => {
         uids: uids,
         id: uuid(),
         thumbnailURL: thumbnailToUse,
-        type: type,
         registered: Date.now(),
         randomize_order: false
     };
@@ -495,8 +494,7 @@ exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
 
     let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
-        const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-        const archive_path = uuid ? path.join(usersFileFolder, uuid, 'archives', `archive_${type}.txt`) : path.join('appdata', 'archives', `archive_${type}.txt`);
+        const archive_path = utils.getArchiveFolder(type, uuid);
 
         // get ID from JSON
 
@@ -504,14 +502,8 @@ exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
         let id = null;
         if (jsonobj) id = jsonobj.id;
 
-        // use subscriptions API to remove video from the archive file, and write it to the blacklist
-        if (await fs.pathExists(archive_path)) {
-            const line = id ? await utils.removeIDFromArchive(archive_path, id) : null;
-            if (blacklistMode && line) await writeToBlacklist(type, line);
-        } else {
-            logger.info('Could not find archive file for audio files. Creating...');
-            await fs.close(await fs.open(archive_path, 'w'));
-        }
+        // Remove file ID from the archive file, and write it to the blacklist (if enabled)
+        await utils.deleteFileFromArchive(uid, type, archive_path, id, blacklistMode);
     }
 
     if (jsonExists) await fs.unlink(jsonPath);
@@ -1110,16 +1102,4 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
         return filtered;
     });
     return return_val;
-}
-
-// archive helper functions
-
-async function writeToBlacklist(type, line) {
-    const archivePath = path.join(__dirname, 'appdata', 'archives');
-    let blacklistPath = path.join(archivePath, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
-    // adds newline to the beginning of the line
-    line.replace('\n', '');
-    line.replace('\r', '');
-    line = '\n' + line;
-    await fs.appendFile(blacklistPath, line);
 }

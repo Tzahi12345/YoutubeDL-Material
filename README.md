@@ -12,16 +12,6 @@ Now with [Docker](#Docker) support!
 
 <hr>
 
-### USAGE OF THE NIGHTLY BUILDS IS HIGHLY RECOMMENDED.
-
-For much better scaling with large datasets please run your YTDL-M instance with a MongoDB backend rather than the json file-based default.
-It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
-The (closed) issues as well as the project's Wiki will give you good starting points for your journey!
-
-For MongoDB specifically there is [this little guide](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Setting-a-MongoDB-backend-to-use-as-database-provider-for-YTDL-M).
-
-<hr>
-
 ## Getting Started
 
 Check out the prerequisites, and go to the installation section. Easy as pie!
@@ -58,6 +48,7 @@ sudo yum install nodejs youtube-dl ffmpeg ffmpeg-devel
 Optional dependencies:
 
 * AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
+* [tcd](https://github.com/PetterKraabol/Twitch-Chat-Downloader) (for downloading Twitch VOD chats)
 
 ### Installing
 
@@ -91,7 +82,7 @@ Alternatively, you can port forward the port specified in the config (defaults t
 
 ### Host-specific instructions
 
-If you're on a Synology NAS, unRAID or any other possible special case you can check if there's known issues or instructions both in the issue tracker and in the [Wiki!](https://github.com/Tzahi12345/YoutubeDL-Material/wiki#environment-specific-guideshelp)
+If you're on a Synology NAS, unRAID, Raspberry Pi 4 or any other possible special case you can check if there's known issues or instructions both in the issue tracker and in the [Wiki!](https://github.com/Tzahi12345/YoutubeDL-Material/wiki#environment-specific-guideshelp)
 
 ### Setup
 
@@ -102,8 +93,6 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 3. Run `docker-compose up` to start it up. If successful, it should say "HTTP(S): Started on port 17443" or something similar. This tells you the *container-internal* port of the application. Please check your `docker-compose.yml` file for the *external* port. If you downloaded the file as described above, it defaults to **8998**.
 4. Make sure you can connect to the specified URL + *external* port, and if so, you are done!
 
-NOTE: It is currently recommended that you use the `nightly` tag on Docker. To do so, simply update the docker-compose.yml `image` field so that it points to `tzahi12345/youtubedl-material:nightly`.
-
 ### Custom UID/GID
 
 By default, the Docker container runs as non-root with UID=1000 and GID=1000. To set this to your own UID/GID, simply update the `environment` section in your `docker-compose.yml` like so:
@@ -113,6 +102,12 @@ environment:
     UID: YOUR_UID
     GID: YOUR_GID
 ```
+
+## MongoDB
+
+For much better scaling with large datasets please run your YoutubeDL-Material instance with MongoDB backend rather than the json file-based default. It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
+
+[Tutorial](https://github.com/Tzahi12345/YoutubeDL-Material/wiki/Setting-a-MongoDB-backend-to-use-as-database-provider-for-YTDL-M).
 
 ## API
 

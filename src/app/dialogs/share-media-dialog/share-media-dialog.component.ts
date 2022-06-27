@@ -58,31 +58,31 @@ export class ShareMediaDialogComponent implements OnInit {
   }
 
   copiedToClipboard() {
-    this.openSnackBar('Copied to clipboard!');
+    this.postsService.openSnackBar($localize`Copied to clipboard!`);
   }
 
   sharingChanged(event) {
     if (event.checked) {
       this.postsService.enableSharing(this.uid, this.is_playlist).subscribe(res => {
         if (res['success']) {
-          this.openSnackBar('Sharing enabled.');
+          this.postsService.openSnackBar($localize`Sharing enabled.`);
           this.sharing_enabled = true;
         } else {
-          this.openSnackBar('Failed to enable sharing.');
+          this.postsService.openSnackBar($localize`Failed to enable sharing.`);
         }
       }, err => {
-        this.openSnackBar('Failed to enable sharing - server error.');
+        this.postsService.openSnackBar($localize`Failed to enable sharing - server error.`);
       });
     } else {
       this.postsService.disableSharing(this.uid, this.is_playlist).subscribe(res => {
         if (res['success']) {
-          this.openSnackBar('Sharing disabled.');
+          this.postsService.openSnackBar($localize`Sharing disabled.`);
           this.sharing_enabled = false;
         } else {
-          this.openSnackBar('Failed to disable sharing.');
+          this.postsService.openSnackBar($localize`Failed to disable sharing.`);
         }
       }, err => {
-        this.openSnackBar('Failed to disable sharing - server error.');
+        this.postsService.openSnackBar($localize`Failed to disable sharing - server error.`);
       });
     }
   }

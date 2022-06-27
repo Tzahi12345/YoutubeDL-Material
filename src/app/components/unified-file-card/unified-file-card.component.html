@@ -23,7 +23,7 @@
         <ng-container *ngIf="!is_playlist && !loading">
             <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
             <button (click)="navigateToSubscription()" mat-menu-item *ngIf="file_obj.sub_id"><mat-icon>{{file_obj.isAudio ? 'library_music' : 'video_library'}}</mat-icon>&nbsp;<ng-container i18n="Go to subscription menu item">Go to subscription</ng-container></button>
-            <button *ngIf="availablePlaylists" [matMenuTriggerFor]="addtoplaylist" mat-menu-item><mat-icon>playlist_add</mat-icon>&nbsp;<ng-container i18n="Add to playlist menu item">Add to playlist</ng-container></button>
+            <button [disabled]="!availablePlaylists || availablePlaylists.length === 0" [matMenuTriggerFor]="addtoplaylist" mat-menu-item><mat-icon>playlist_add</mat-icon>&nbsp;<ng-container i18n="Add to playlist menu item">Add to playlist</ng-container></button>
             <mat-menu #addtoplaylist="matMenu">
                 <ng-container *ngFor="let playlist of availablePlaylists">
                     <button *ngIf="(playlist.type === 'audio') === file_obj.isAudio" [disabled]="playlist.uids?.includes(file_obj.uid)" (click)="emitAddFileToPlaylist(playlist.id)" mat-menu-item>{{playlist.name}}</button>
@@ -34,10 +34,10 @@
                 <mat-icon>restore</mat-icon><ng-container i18n="Delete and redownload subscription video button">Delete and redownload</ng-container>
             </button>
             <button *ngIf="file_obj.sub_id && use_youtubedl_archive" (click)="emitDeleteFile(true)" mat-menu-item>
-                <mat-icon>delete_forever</mat-icon><ng-container i18n="Delete forever subscription video button">Delete forever</ng-container>
+                <mat-icon>delete_forever</mat-icon><ng-container i18n="Delete forever subscription video button">Delete and don't download again</ng-container>
             </button>
             <button *ngIf="!file_obj.sub_id" (click)="emitDeleteFile()" mat-menu-item><mat-icon>delete</mat-icon><ng-container i18n="Delete video button">Delete</ng-container></button>
-            <button *ngIf="!file_obj.sub_id && use_youtubedl_archive" (click)="emitDeleteFile(true)" mat-menu-item><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete and blacklist video button">Delete and blacklist</ng-container></button>
+            <button *ngIf="!file_obj.sub_id && use_youtubedl_archive" (click)="emitDeleteFile(true)" mat-menu-item><mat-icon>delete_forever</mat-icon><ng-container i18n="Delete and don't download again">Delete and don't download again</ng-container></button>
         </ng-container>
         <ng-container *ngIf="is_playlist && !loading">
             <button (click)="emitEditPlaylist()" mat-menu-item><mat-icon>edit</mat-icon><ng-container i18n="Playlist edit button">Edit</ng-container></button>

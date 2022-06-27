@@ -10,7 +10,6 @@ export type Subscription = {
     id: string;
     type: FileType;
     user_uid: string | null;
-    streamingOnly: boolean;
     isPlaylist: boolean;
     archive?: string;
     timerange?: string;

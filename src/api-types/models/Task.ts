@@ -4,6 +4,7 @@
 
 export type Task = {
     key: string;
+    title?: string;
     last_ran: number;
     last_confirmed: number;
     running: boolean;

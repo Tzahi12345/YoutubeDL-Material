@@ -10,12 +10,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Platform } from '@angular/cdk/platform';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { RecentVideosComponent } from 'app/components/recent-videos/recent-videos.component';
-import { Download, FileType } from 'api-types';
-
-export let audioFilesMouseHovering = false;
-export let videoFilesMouseHovering = false;
-export let audioFilesOpened = false;
-export let videoFilesOpened = false;
+import { DatabaseFile, Download, FileType, Playlist } from 'api-types';
 
 @Component({
   selector: 'app-root',
@@ -55,8 +50,6 @@ export class MainComponent implements OnInit {
   allowQualitySelect = false;
   downloadOnlyMode = false;
   allowAutoplay = false;
-  audioFolderPath;
-  videoFolderPath;
   use_youtubedl_archive = false;
   globalCustomArgs = null;
   allowAdvancedDownload = false;
@@ -74,11 +67,8 @@ export class MainComponent implements OnInit {
   results_showing = true;
   results = [];
 
-  mp3s: any[] = [];
-  mp4s: any[] = [];
   playlists = {'audio': [], 'video': []};
   playlist_thumbnails = {};
-  downloading_content = {'audio': {}, 'video': {}};
   downloads: Download[] = [];
   download_uids: string[] = [];
   current_download: Download = null;
@@ -206,8 +196,6 @@ export class MainComponent implements OnInit {
                               && this.postsService.hasPermission('filemanager');
     this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
     this.allowAutoplay = this.postsService.config['Extra']['allow_autoplay'];
-    this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
-    this.videoFolderPath = this.postsService.config['Downloader']['path-video'];
     this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
     this.globalCustomArgs = this.postsService.config['Downloader']['custom_args'];
     this.youtubeSearchEnabled = this.postsService.config['API'] && this.postsService.config['API']['use_youtube_API'] &&
@@ -314,7 +302,7 @@ export class MainComponent implements OnInit {
   }
 
   // download helpers
-  downloadHelper(container, type: string, is_playlist = false, force_view = false, navigate_mode = false): void {
+  downloadHelper(container: DatabaseFile | Playlist, type: string, is_playlist = false, force_view = false, navigate_mode = false): void {
     this.downloadingfile = false;
     if (!this.autoplay && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
@@ -325,7 +313,7 @@ export class MainComponent implements OnInit {
         if (is_playlist) {
           this.downloadPlaylist(container['uid']);
         } else {
-          this.downloadFileFromServer(container, type);
+          this.downloadFileFromServer(container as DatabaseFile, type);
         }
         this.reloadRecentVideos();
       } else {
@@ -396,7 +384,7 @@ export class MainComponent implements OnInit {
       }, () => { // can't access server
         this.downloadingfile = false;
         this.current_download = null;
-        this.postsService.openSnackBar('Download failed!', 'OK.');
+        this.postsService.openSnackBar($localize`Download failed!`, 'OK.');
       });
 
       if (!this.autoplay && urls.length === 1) {
@@ -444,7 +432,7 @@ export class MainComponent implements OnInit {
     return null;
   }
 
-  getDownloadByUID(uid: string) {
+  getDownloadByUID(uid: string): Download {
     const index = this.downloads.findIndex(download => download.uid === uid);
     if (index !== -1) {
       return this.downloads[index];
@@ -453,7 +441,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  removeDownloadFromCurrentDownloads(download_to_remove): boolean {
+  removeDownloadFromCurrentDownloads(download_to_remove: Download): boolean {
     if (this.current_download === download_to_remove) {
       this.current_download = null;
     }
@@ -466,11 +454,9 @@ export class MainComponent implements OnInit {
     }
   }
 
-  downloadFileFromServer(file, type: string): void {
+  downloadFileFromServer(file: DatabaseFile, type: string): void {
     const ext = type === 'audio' ? 'mp3' : 'mp4'
-    this.downloading_content[type][file.id] = true;
     this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
-      this.downloading_content[type][file.id] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(file.id) + `.${ext}`);
 
@@ -481,9 +467,8 @@ export class MainComponent implements OnInit {
     });
   }
 
-  downloadPlaylist(playlist): void {
+  downloadPlaylist(playlist: Playlist): void {
     this.postsService.downloadPlaylistFromServer(playlist.id).subscribe(res => {
-      if (playlist.id) { this.downloading_content[playlist.type][playlist.id] = false };
       const blob: Blob = res;
       saveAs(blob, playlist.name + '.zip');
     });
@@ -603,11 +588,11 @@ export class MainComponent implements OnInit {
         if (simulated_args) {
           // hide password if needed
           const passwordIndex = simulated_args.indexOf('--password');
-          console.log(passwordIndex);
           if (passwordIndex !== -1 && passwordIndex !== simulated_args.length - 1) {
             simulated_args[passwordIndex + 1] = simulated_args[passwordIndex + 1].replace(/./g, '*');
           }
-          this.simulatedOutput = `youtube-dl ${this.url} ${simulated_args.join(' ')}`;
+          const downloader = this.postsService.config.Advanced.default_downloader;
+          this.simulatedOutput = `${downloader} ${this.url} ${simulated_args.join(' ')}`;
         }
     });
   }
@@ -780,13 +765,14 @@ export class MainComponent implements OnInit {
 
         if (this.current_download['finished'] && !this.current_download['error']) {
           const container = this.current_download['container'];
-          const is_playlist = this.current_download['file_uids'].length > 1;    
-          this.downloadHelper(container, this.current_download['type'], is_playlist, false);
-          this.current_download = null;
+          const is_playlist = this.current_download['file_uids'].length > 1;
+          const type = this.current_download['type'];
+          this.current_download = null;  
+          this.downloadHelper(container, type, is_playlist, false);
         } else if (this.current_download['finished'] && this.current_download['error']) {
           this.downloadingfile = false;
           this.current_download = null;
-          this.postsService.openSnackBar('Download failed!', 'OK.');
+          this.postsService.openSnackBar($localize`Download failed!`, 'OK.');
         }
       } else {
         // console.log('failed to get new download');

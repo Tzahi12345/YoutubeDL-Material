@@ -178,7 +178,7 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     ]);
 
     if (jsonExists) {
-        retrievedID = JSON.parse(await fs.readFile(jsonPath, 'utf8'))['id'];
+        retrievedID = fs.readJSONSync(jsonPath)['id'];
         await fs.unlink(jsonPath);
     }
 
@@ -196,12 +196,11 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
             return false;
         } else {
             // check if the user wants the video to be redownloaded (deleteForever === false)
-            if (!deleteForever && useArchive && sub.archive && retrievedID) {
-                const archive_path = path.join(sub.archive, 'archive.txt')
-                // if archive exists, remove line with video ID
-                if (await fs.pathExists(archive_path)) {
-                    utils.removeIDFromArchive(archive_path, retrievedID);
-                }
+            if (useArchive && retrievedID) {
+                const archive_path = utils.getArchiveFolder(sub.type, user_uid, sub);
+
+                // Remove file ID from the archive file, and write it to the blacklist (if enabled)
+                await utils.deleteFileFromArchive(file_uid, sub.type, archive_path, retrievedID, deleteForever);
             }
             return true;
         }
@@ -242,64 +241,22 @@ async function getVideosForSub(sub, user_uid = null) {
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
                 logger.error(err.stderr ? err.stderr : err.message);
-                if (err.stderr.includes('This video is unavailable')) {
+                if (err.stderr.includes('This video is unavailable') || err.stderr.includes('Private video')) {
                     logger.info('An error was encountered with at least one video, backup method will be used.')
                     try {
-                        // TODO: reimplement
-
-                        // const outputs = err.stdout.split(/\r\n|\r|\n/);
-                        // for (let i = 0; i < outputs.length; i++) {
-                        //     const output = JSON.parse(outputs[i]);
-                        //     await handleOutputJSON(sub, output, i === 0, multiUserMode)
-                        //     if (err.stderr.includes(output['id']) && archive_path) {
-                        //         // we found a video that errored! add it to the archive to prevent future errors
-                        //         if (sub.archive) {
-                        //             archive_dir = sub.archive;
-                        //             archive_path = path.join(archive_dir, 'archive.txt')
-                        //             fs.appendFileSync(archive_path, output['id']);
-                        //         }
-                        //     }
-                        // }
+                        const outputs = err.stdout.split(/\r\n|\r|\n/);
+                        const files_to_download = await handleOutputJSON(outputs, sub, user_uid);
+                        resolve(files_to_download);
                     } catch(e) {
                         logger.error('Backup method failed. See error below:');
                         logger.error(e);
                     }
+                } else {
+                    logger.error('Subscription check failed!');
                 }
                 resolve(false);
             } else if (output) {
-                if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
-                    await setFreshUploads(sub, user_uid);
-                    checkVideosForFreshUploads(sub, user_uid);
-                }
-
-                if (output.length === 0 || (output.length === 1 && output[0] === '')) {
-                    logger.verbose('No additional videos to download for ' + sub.name);
-                    resolve(true);
-                    return;
-                }
-
-                const output_jsons = [];
-                for (let i = 0; i < output.length; i++) {
-                    let output_json = null;
-                    try {
-                        output_json = JSON.parse(output[i]);
-                        output_jsons.push(output_json);
-                    } catch(e) {
-                        output_json = null;
-                    }
-                    if (!output_json) {
-                        continue;
-                    }
-                }
-
-                const files_to_download = await getFilesToDownload(sub, output_jsons);
-                const base_download_options = generateOptionsForSubscriptionDownload(sub, user_uid);
-
-                for (let j = 0; j < files_to_download.length; j++) {
-                    const file_to_download = files_to_download[j];
-                    await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name);
-                }
-
+                const files_to_download = await handleOutputJSON(output, sub, user_uid);
                 resolve(files_to_download);
            }
         });
@@ -307,6 +264,43 @@ async function getVideosForSub(sub, user_uid = null) {
         logger.error(err);
         updateSubscriptionProperty(sub, {downloading: false}, user_uid);
     });
+}
+
+async function handleOutputJSON(output, sub, user_uid) {
+    if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
+        await setFreshUploads(sub, user_uid);
+        checkVideosForFreshUploads(sub, user_uid);
+    }
+
+    if (output.length === 0 || (output.length === 1 && output[0] === '')) {
+        logger.verbose('No additional videos to download for ' + sub.name);
+        return [];
+    }
+
+    const output_jsons = [];
+    for (let i = 0; i < output.length; i++) {
+        let output_json = null;
+        try {
+            output_json = JSON.parse(output[i]);
+            output_jsons.push(output_json);
+        } catch(e) {
+            output_json = null;
+        }
+        if (!output_json) {
+            continue;
+        }
+    }
+
+    const files_to_download = await getFilesToDownload(sub, output_jsons);
+    const base_download_options = generateOptionsForSubscriptionDownload(sub, user_uid);
+
+    for (let j = 0; j < files_to_download.length; j++) {
+        const file_to_download = files_to_download[j];
+        file_to_download['formats'] = utils.stripPropertiesFromObject(file_to_download['formats'], ['format_id', 'filesize', 'filesize_approx']);  // prevent download object from blowing up in size
+        await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name, file_to_download);
+    }
+
+    return files_to_download;
 }
 
 function generateOptionsForSubscriptionDownload(sub, user_uid) {
@@ -322,7 +316,7 @@ function generateOptionsForSubscriptionDownload(sub, user_uid) {
         selectedHeight: sub.maxQuality && sub.maxQuality !== 'best' ? sub.maxQuality : null,
         customFileFolderPath: getAppendedBasePath(sub, basePath),
         customOutput: sub.custom_output ? `${sub.custom_output}` : `${default_output}`,
-        customArchivePath: path.join(__dirname, basePath, 'archives', sub.name),
+        customArchivePath: path.join(basePath, 'archives', sub.name),
         additionalArgs: sub.custom_args
     }
 
@@ -389,11 +383,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
         downloadConfig.push('--download-archive', archive_path);
     }
 
-    // if streaming only mode, just get the list of videos
-    if (sub.streamingOnly) {
-        downloadConfig = ['-f', 'best', '--dump-json'];
-    }
-
     if (sub.timerange && !redownload) {
         downloadConfig.push('--dateafter', sub.timerange);
     }
@@ -420,6 +409,8 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     if (default_downloader === 'yt-dlp') {
         downloadConfig.push('--no-clean-infojson');
     }
+
+    downloadConfig = utils.filterArgs(downloadConfig, ['--write-comments']);
 
     return downloadConfig;
 }
@@ -479,6 +470,7 @@ async function updateSubscriptionProperty(sub, assignment_obj) {
 
 async function setFreshUploads(sub) {
     const sub_files = await db_api.getRecords('files', {sub_id: sub.id});
+    if (!sub_files) return;
     const current_date = new Date().toISOString().split('T')[0].replace(/-/g, '');
     sub_files.forEach(async file => {
         if (current_date === file['upload_date'].replace(/-/g, '')) {

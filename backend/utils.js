@@ -173,8 +173,8 @@ function getExpectedFileSize(input_info_jsons) {
         let individual_expected_filesize = 0;
         formats.forEach(format_id => {
             info_json.formats.forEach(available_format => {
-                if (available_format.format_id === format_id && available_format.filesize) {
-                    individual_expected_filesize += available_format.filesize;
+                if (available_format.format_id === format_id && (available_format.filesize || available_format.filesize_approx)) {
+                    individual_expected_filesize += (available_format.filesize ? available_format.filesize : available_format.filesize_approx);
                 }
             });
         });
@@ -218,8 +218,11 @@ function deleteJSONFile(file_path, type) {
     if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
 }
 
-async function removeIDFromArchive(archive_path, id) {
-    let data = await fs.readFile(archive_path, {encoding: 'utf-8'});
+// archive helper functions
+
+async function removeIDFromArchive(archive_path, type, id) {
+    const archive_file = path.join(archive_path, `archive_${type}.txt`);
+    const data = await fs.readFile(archive_file, {encoding: 'utf-8'});
     if (!data) {
         logger.error('Archive could not be found.');
         return;
@@ -236,12 +239,34 @@ async function removeIDFromArchive(archive_path, id) {
         }
     }
 
+    if (lastIndex === -1) return null;
+
     const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
 
     // UPDATE FILE WITH NEW DATA
     const updatedData = dataArray.join('\n');
-    await fs.writeFile(archive_path, updatedData);
-    if (line) return line;
+    await fs.writeFile(archive_file, updatedData);
+    if (line) return Array.isArray(line) && line.length === 1 ? line[0] : line;
+}
+
+async function writeToBlacklist(archive_folder, type, line) {
+    let blacklistPath = path.join(archive_folder, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
+    // adds newline to the beginning of the line
+    line.replace('\n', '');
+    line.replace('\r', '');
+    line = '\n' + line;
+    await fs.appendFile(blacklistPath, line);
+}
+
+async function deleteFileFromArchive(uid, type, archive_path, id, blacklistMode) {
+    const archive_file = path.join(archive_path, `archive_${type}.txt`);
+    if (await fs.pathExists(archive_path)) {
+        const line = id ? await removeIDFromArchive(archive_path, type, id) : null;
+        if (blacklistMode && line) await writeToBlacklist(archive_path, type, line);
+    } else {
+        logger.info(`Could not find archive file for file ${uid}. Creating...`);
+        await fs.close(await fs.open(archive_file, 'w'));
+    }
 }
 
 function durationStringToNumber(dur_str) {
@@ -418,7 +443,7 @@ async function fetchFile(url, path, file_label) {
 async function restartServer(is_update = false) {
     logger.info(`${is_update ? 'Update complete! ' : ''}Restarting server...`);
 
-    // the following line restarts the server through nodemon
+    // the following line restarts the server through pm2
     fs.writeFileSync(`restart${is_update ? '_update' : '_general'}.json`, 'internal use only');
     process.exit(1);
 }
@@ -456,6 +481,10 @@ function injectArgs(original_args, new_args) {
     return updated_args;
 }
 
+function filterArgs(args, args_to_remove) {
+    return args.filter(x => !args_to_remove.includes(x));
+}
+
 const searchObjectByString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, '');           // strip a leading dot
@@ -469,6 +498,41 @@ const searchObjectByString = function(o, s) {
         }
     }
     return o;
+}
+
+function stripPropertiesFromObject(obj, properties, whitelist = false) {
+    if (!whitelist) {
+        const new_obj = JSON.parse(JSON.stringify(obj));
+        for (let field of properties) {
+            delete new_obj[field];
+        }
+        return new_obj;
+    }
+
+    const new_obj = {};
+    for (let field of properties) {
+        new_obj[field] = obj[field];
+    }
+    return new_obj;
+}
+
+function getArchiveFolder(type, user_uid = null, sub = null) {
+    const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
+    const subsFolderPath  = config_api.getConfigItem('ytdl_subscriptions_base_path');
+
+    if (user_uid) {
+        if (sub) {
+            return path.join(usersFolderPath, user_uid, 'subscriptions', 'archives', sub.name);
+        } else {
+            return path.join(usersFolderPath, user_uid, type, 'archives');
+        }
+    } else {
+        if (sub) {
+            return path.join(subsFolderPath, 'archives', sub.name);
+        } else {
+            return path.join('appdata', 'archives');
+        }
+    }
 }
 
 // objects
@@ -500,6 +564,8 @@ module.exports = {
     fixVideoMetadataPerms: fixVideoMetadataPerms,
     deleteJSONFile: deleteJSONFile,
     removeIDFromArchive: removeIDFromArchive,
+    writeToBlacklist: writeToBlacklist,
+    deleteFileFromArchive: deleteFileFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
     createContainerZipFile: createContainerZipFile,
     durationStringToNumber: durationStringToNumber,
@@ -515,6 +581,9 @@ module.exports = {
     fetchFile: fetchFile,
     restartServer: restartServer,
     injectArgs: injectArgs,
+    filterArgs: filterArgs,
     searchObjectByString: searchObjectByString,
+    stripPropertiesFromObject: stripPropertiesFromObject,
+    getArchiveFolder: getArchiveFolder,
     File: File
 }

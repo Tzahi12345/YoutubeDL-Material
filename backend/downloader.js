@@ -18,8 +18,6 @@ const db_api = require('./db');
 const mutex = new Mutex();
 let should_check_downloads = true;
 
-const archivePath = path.join(__dirname, 'appdata', 'archives');
-
 if (db_api.database_initialized) {
     setupDownloads();
 } else {
@@ -28,7 +26,7 @@ if (db_api.database_initialized) {
     });
 }
 
-exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null) => {
+exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null, prefetched_info = null) => {
     return await mutex.runExclusive(async () => {
         const download = {
             url: url,
@@ -37,6 +35,7 @@ exports.createDownload = async (url, type, options, user_uid = null, sub_id = nu
             user_uid: user_uid,
             sub_id: sub_id,
             sub_name: sub_name,
+            prefetched_info: prefetched_info,
             options: options,
             uid: uuid(),
             step_index: 0,
@@ -187,7 +186,7 @@ async function collectInfo(download_uid) {
     let args = await exports.generateArgs(url, type, options, download['user_uid']);
 
     // get video info prior to download
-    let info = await exports.getVideoInfoByURL(url, args, download_uid);
+    let info = download['prefetched_info'] ? download['prefetched_info'] : await exports.getVideoInfoByURL(url, args, download_uid);
 
     if (!info) {
         // info failed, error presumably already recorded
@@ -229,7 +228,8 @@ async function collectInfo(download_uid) {
                                                                     options: options,
                                                                     files_to_check_for_progress: files_to_check_for_progress,
                                                                     expected_file_size: expected_file_size,
-                                                                    title: playlist_title ? playlist_title : info['title']
+                                                                    title: playlist_title ? playlist_title : info['title'],
+                                                                    prefetched_info: null
                                                                 });
 }
 
@@ -242,6 +242,7 @@ async function downloadQueuedFile(download_uid) {
     return new Promise(async resolve => {
         const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
         const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+        const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
         await db_api.updateRecord('download_queue', {uid: download_uid}, {step_index: 2, finished_step: false, running: true});
 
         const url = download['url'];
@@ -249,9 +250,11 @@ async function downloadQueuedFile(download_uid) {
         const options = download['options'];
         const args = download['args'];
         const category = download['category'];
-        let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath; // TODO: fix
+        let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath;
         if (options.customFileFolderPath) {
             fileFolderPath = options.customFileFolderPath;
+        } else if (download['user_uid']) {
+            fileFolderPath = path.join(usersFolderPath, download['user_uid'], type);
         }
         fs.ensureDirSync(fileFolderPath);
 
@@ -373,15 +376,23 @@ async function downloadQueuedFile(download_uid) {
 // helper functions
 
 exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
+    const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
+    const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
 
     const videopath = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
     const globalArgs = config_api.getConfigItem('ytdl_custom_args');
     const useCookies = config_api.getConfigItem('ytdl_use_cookies');
     const is_audio = type === 'audio';
 
-    let fileFolderPath = is_audio ? audioFolderPath : videoFolderPath;
+    let fileFolderPath = type === 'audio' ? audioFolderPath : videoFolderPath; // TODO: fix
+    if (options.customFileFolderPath) {
+        fileFolderPath = options.customFileFolderPath;
+    } else if (user_uid) {
+        fileFolderPath = path.join(usersFolderPath, user_uid, fileFolderPath);
+    }
 
     if (options.customFileFolderPath) fileFolderPath = options.customFileFolderPath;
 
@@ -404,8 +415,6 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     if (!is_audio && !is_youtube) {
         // tiktok videos fail when using the default format
         qualityPath = null;
-    } else if (!is_audio && !is_youtube && (url.includes('reddit') || url.includes('pornhub'))) {
-        qualityPath = ['-f', 'bestvideo+bestaudio']
     }
 
     if (customArgs) {
@@ -414,7 +423,7 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
         if (customQualityConfiguration) {
             qualityPath = ['-f', customQualityConfiguration, '--merge-output-format', 'mp4'];
         } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-            qualityPath = ['-f', `'(mp4)[height=${selectedHeight}'`];
+            qualityPath = ['-f', `'(mp4)[height=${selectedHeight}]`];
         } else if (is_audio) {
             qualityPath = ['--audio-quality', maxBitrate ? maxBitrate : '0']
         }
@@ -496,7 +505,6 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
             downloadConfig.push('-r', rate_limit);
         }
         
-        const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
         if (default_downloader === 'yt-dlp') {
             downloadConfig.push('--no-clean-infojson');
         }
@@ -506,7 +514,7 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     // filter out incompatible args
     downloadConfig = filterArgs(downloadConfig, is_audio);
 
-    if (!simulated) logger.verbose(`youtube-dl args being used: ${downloadConfig.join(',')}`);
+    if (!simulated) logger.verbose(`${default_downloader} args being used: ${downloadConfig.join(',')}`);
     return downloadConfig;
 }
 
@@ -565,8 +573,7 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
 function filterArgs(args, isAudio) {
     const video_only_args = ['--add-metadata', '--embed-subs', '--xattrs'];
     const audio_only_args = ['-x', '--extract-audio', '--embed-thumbnail'];
-    const args_to_remove = isAudio ? video_only_args : audio_only_args;
-    return args.filter(x => !args_to_remove.includes(x));
+    return utils.filterArgs(args, isAudio ? video_only_args : audio_only_args);
 }
 
 async function checkDownloadPercent(download_uid) {
@@ -628,6 +635,6 @@ function getArchiveFolder(fileFolderPath, options, user_uid) {
     } else if (user_uid) {
         return path.join(fileFolderPath, 'archives');
     } else {
-        return path.join(archivePath);
+        return path.join('appdata', 'archives');
     }
 }

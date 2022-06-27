@@ -1,6 +1,7 @@
-var assert = require('assert');
+const assert = require('assert');
 const low = require('lowdb')
-var winston = require('winston');
+const winston = require('winston');
+const path = require('path');
 
 process.chdir('./backend')
 
@@ -39,6 +40,7 @@ const utils = require('../utils');
 const subscriptions_api = require('../subscriptions');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
+const NodeID3 = require('node-id3');
 
 db_api.initialize(db, users_db);
 
@@ -399,6 +401,19 @@ describe('Downloader', function() {
 
     });
 
+    it('Tag file', async function() {
+        const audio_path = './test/sample.mp3';
+        const sample_json = fs.readJSONSync('./test/sample.info.json');
+        const tags = {
+            title: sample_json['title'],
+            artist: sample_json['artist'] ? sample_json['artist'] : sample_json['uploader'],
+            TRCK: '27'
+        }
+        NodeID3.write(tags, audio_path);
+        const written_tags = NodeID3.read(audio_path);
+        assert(written_tags['raw']['TRCK'] === '27');
+    });
+
     it('Queue file', async function() {
         this.timeout(300000); 
         const returned_download = await downloader_api.createDownload(url, 'video', options);
@@ -450,6 +465,20 @@ describe('Downloader', function() {
         const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert_thumbnails', 'jpg'];
         console.log(updated_args2);
         assert(JSON.stringify(updated_args2), JSON.stringify(expected_args2));
+    });
+    describe('Twitch', async function () {
+        const twitch_api = require('../twitch');
+        const example_vod = '1493770675';
+        it('Download VOD', async function() {
+            const sample_path = path.join('test', 'sample.twitch_chat.json');
+            if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
+            this.timeout(300000);
+            await twitch_api.downloadTwitchChatByVODID(example_vod, 'sample', null, null, null, './test');
+            assert(fs.existsSync(sample_path));
+
+            // cleanup
+            if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
+        });
     });
 });
 
@@ -560,5 +589,41 @@ describe('Tasks', function() {
         await utils.wait(2000);
         const dummy_task_obj = await db_api.getRecord('tasks', {key: 'dummy_task'});
         assert(dummy_task_obj['data']);
+    });
+});
+
+describe('Archive', async function() {
+    const archive_path = path.join('test', 'archives');
+    fs.ensureDirSync(archive_path);
+    const archive_file_path = path.join(archive_path, 'archive_video.txt');
+    const blacklist_file_path = path.join(archive_path, 'blacklist_video.txt');
+    beforeEach(async function() {
+        if (fs.existsSync(archive_file_path)) fs.unlinkSync(archive_file_path);
+        fs.writeFileSync(archive_file_path, 'youtube testing1\nyoutube testing2\nyoutube testing3\n');
+
+        if (fs.existsSync(blacklist_file_path)) fs.unlinkSync(blacklist_file_path);
+        fs.writeFileSync(blacklist_file_path, '');
+    });
+    
+    it('Delete from archive', async function() {
+        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', false);
+        const new_archive = fs.readFileSync(archive_file_path);
+        assert(!new_archive.includes('testing2'));
+    });
+
+    it('Delete from archive - blacklist', async function() {
+        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', true);
+        const new_archive = fs.readFileSync(archive_file_path);
+        const new_blacklist = fs.readFileSync(blacklist_file_path);
+        assert(!new_archive.includes('testing2'));
+        assert(new_blacklist.includes('testing2'));
+    });
+});
+
+describe('Utils', async function() {
+    it('Strip properties', async function() {
+        const test_obj = {test1: 'test1', test2: 'test2', test3: 'test3'};
+        const stripped_obj = utils.stripPropertiesFromObject(test_obj, ['test1', 'test3']);
+        assert(!stripped_obj['test1'] && stripped_obj['test2'] && !stripped_obj['test3'])
     });
 });

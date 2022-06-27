@@ -10,38 +10,7 @@
     <br/>
 
     <div *ngIf="subscription">
-        <div class="flex-grid">
-            <div class="filter-select-parent">
-                <div style="display: inline-block;">
-                    <mat-select style="width: 110px;" [(ngModel)]="this.filterProperty" (selectionChange)="filterOptionChanged($event.value)">
-                        <mat-option *ngFor="let filterOption of filterProperties | keyvalue" [value]="filterOption.value">
-                            {{filterOption['value']['label']}}
-                        </mat-option>
-                    </mat-select>
-                </div>
-                <div style="display: inline-block;">
-                    <button (click)="toggleModeChange()" mat-icon-button><mat-icon>{{descendingMode ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
-                </div>
-            </div>
-            <div class="col">
-            </div>
-            <div class="col">
-                <h4 i18n="Subscription videos title" style="text-align: center; margin-bottom: 20px;">Videos</h4>
-            </div>
-            <div style="top: -12px;" class="col">
-                <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
-                    <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" placeholder="Search" i18n-placeholder="Subscription videos search placeholder" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
-                    <mat-icon matSuffix>search</mat-icon>
-                </mat-form-field>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div *ngFor="let file of filtered_files" class="col-6 col-lg-4 mb-2 mt-2 sub-file-col">
-                    <app-subscription-file-card (reloadSubscription)="getSubscription()" (goToFileEmit)="goToFile($event)" [file]="file" [sub]="subscription" [use_youtubedl_archive]="use_youtubedl_archive"></app-subscription-file-card>
-                </div>
-            </div>
-        </div>
+        <app-recent-videos [sub_id]="subscription.id" [usePaginator]="false"></app-recent-videos>
     </div>
     <button class="edit-button" color="primary" (click)="editSubscription()" [disabled]="downloading" mat-fab><mat-icon class="save-icon">edit</mat-icon></button>
     <button class="watch-button" color="primary" (click)="watchSubscription()" mat-fab><mat-icon class="save-icon">video_library</mat-icon></button>

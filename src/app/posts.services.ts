@@ -97,7 +97,11 @@ import {
     Schedule,
     ClearDownloadsRequest,
     Category,
-    UpdateFileRequest
+    UpdateFileRequest,
+    Sort,
+    FileTypeFilter,
+    GetAllFilesRequest,
+    GetAllTasksResponse
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -355,8 +359,9 @@ export class PostsService implements CanActivate {
         return this.http.post<GetFileResponse>(this.path + 'getFile', body, this.httpOptions);
     }
 
-    getAllFiles(sort, range, text_search, file_type_filter) {
-        return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter}, this.httpOptions);
+    getAllFiles(sort: Sort = null, range: number[] = null, text_search: string = null, file_type_filter: FileTypeFilter = FileTypeFilter.BOTH, sub_id: string = null) {
+        const body: GetAllFilesRequest = {sort: sort, range: range, text_search: text_search, file_type_filter: file_type_filter, sub_id: sub_id};
+        return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', body, this.httpOptions);
     }
 
     updateFile(uid: string, change_obj: Object) {
@@ -443,10 +448,9 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'disableSharing', body, this.httpOptions);
     }
 
-    createPlaylist(playlistName: string, uids: string[], type: FileType, thumbnailURL: string) {
+    createPlaylist(playlistName: string, uids: string[], thumbnailURL: string) {
         const body: CreatePlaylistRequest = {playlistName: playlistName,
             uids: uids,
-            type: type,
             thumbnailURL: thumbnailURL};
         return this.http.post<CreatePlaylistResponse>(this.path + 'createPlaylist', body, this.httpOptions);
     }
@@ -471,8 +475,8 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'updatePlaylist', body, this.httpOptions);
     }
 
-    removePlaylist(playlist_id: string, type: FileType) {
-        const body: DeletePlaylistRequest = {playlist_id: playlist_id, type: type};
+    removePlaylist(playlist_id: string) {
+        const body: DeletePlaylistRequest = {playlist_id: playlist_id};
         return this.http.post<SuccessObject>(this.path + 'deletePlaylist', body, this.httpOptions);
     }
 
@@ -593,7 +597,7 @@ export class PostsService implements CanActivate {
     }
 
     getTasks() {
-        return this.http.post<SuccessObject>(this.path + 'getTasks', {}, this.httpOptions);
+        return this.http.post<GetAllTasksResponse>(this.path + 'getTasks', {}, this.httpOptions);
     }
 
     resetTasks() {

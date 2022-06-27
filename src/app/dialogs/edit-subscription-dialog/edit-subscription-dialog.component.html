@@ -34,11 +34,6 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-12 mt-1">
-                <div>
-                    <mat-checkbox [disabled]="new_sub.type === 'audio'" [(ngModel)]="new_sub.streamingOnly"><ng-container i18n="Streaming-only mode">Streaming-only mode</ng-container></mat-checkbox>
-                </div>
-            </div>
             <div class="col-12 mb-3">
                 <mat-form-field color="accent">
                     <input [(ngModel)]="new_sub.custom_args" matInput placeholder="Custom args" i18n-placeholder="Subscription custom args placeholder">

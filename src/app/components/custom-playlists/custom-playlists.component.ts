@@ -3,7 +3,7 @@ import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
-import { ModifyPlaylistComponent } from 'app/dialogs/modify-playlist/modify-playlist.component';
+import { Playlist } from 'api-types';
 
 @Component({
   selector: 'app-custom-playlists',
@@ -32,7 +32,7 @@ export class CustomPlaylistsComponent implements OnInit {
     });
   }
 
-  getAllPlaylists() {
+  getAllPlaylists(): void {
     this.playlists_received = false;
     // must call getAllFiles as we need to get category playlists as well
     this.postsService.getPlaylists(true).subscribe(res => {
@@ -42,22 +42,25 @@ export class CustomPlaylistsComponent implements OnInit {
   }
 
   // creating a playlist
-  openCreatePlaylistDialog() {
+  openCreatePlaylistDialog(): void {
     const dialogRef = this.dialog.open(CreatePlaylistComponent, {
       data: {
-      }
+        create_mode: true
+      },
+      minWidth: '90vw',
+      minHeight: '95vh'
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.getAllPlaylists();
-        this.postsService.openSnackBar('Successfully created playlist!', '');
+        this.postsService.openSnackBar($localize`Successfully created playlist!', '`);
       } else if (result === false) {
-        this.postsService.openSnackBar('ERROR: failed to create playlist!', '');
+        this.postsService.openSnackBar($localize`ERROR: failed to create playlist!', '`);
       }
     });
   }
 
-  goToPlaylist(info_obj) {
+  goToPlaylist(info_obj: { file: Playlist; }): void {
     const playlist = info_obj.file;
     const playlistID = playlist.id;
 
@@ -76,7 +79,7 @@ export class CustomPlaylistsComponent implements OnInit {
     }
   }
 
-  downloadPlaylist(playlist_id, playlist_name) {
+  downloadPlaylist(playlist_id: string, playlist_name: string): void {
     this.downloading_content[playlist_id] = true;
     this.postsService.downloadPlaylistFromServer(playlist_id).subscribe(res => {
       this.downloading_content[playlist_id] = false;
@@ -86,33 +89,34 @@ export class CustomPlaylistsComponent implements OnInit {
 
   }
 
-  deletePlaylist(args) {
+  deletePlaylist(args: { file: Playlist; index: number; }): void {
     const playlist = args.file;
     const index = args.index;
     const playlistID = playlist.id;
-    this.postsService.removePlaylist(playlistID, playlist.type).subscribe(res => {
+    this.postsService.removePlaylist(playlistID).subscribe(res => {
       if (res['success']) {
         this.playlists.splice(index, 1);
-        this.postsService.openSnackBar('Playlist successfully removed.', '');
+        this.postsService.openSnackBar($localize`Playlist successfully removed.', '`);
       }
       this.getAllPlaylists();
     });
   }
 
-  editPlaylistDialog(args) {
+  editPlaylistDialog(args: { playlist: Playlist; index: number; }): void {
     const playlist = args.playlist;
     const index = args.index;
-    const dialogRef = this.dialog.open(ModifyPlaylistComponent, {
+    const dialogRef = this.dialog.open(CreatePlaylistComponent, {
       data: {
         playlist_id: playlist.id,
-        width: '65vw'
-      }
+        create_mode: false
+      },
+      minWidth: '85vw'
     });
 
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe(() => {
       // updates playlist in file manager if it changed
       if (dialogRef.componentInstance.playlist_updated) {
-        this.playlists[index] = dialogRef.componentInstance.original_playlist;
+        this.playlists[index] = dialogRef.componentInstance.playlist;
       }
     });
   }

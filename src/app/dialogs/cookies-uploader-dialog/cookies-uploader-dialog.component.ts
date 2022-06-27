@@ -39,7 +39,7 @@ export class CookiesUploaderDialogComponent implements OnInit {
             this.uploading = false;
             if (res['success']) {
               this.uploaded = true;
-              this.postsService.openSnackBar('Cookies successfully uploaded!');
+              this.postsService.openSnackBar($localize`Cookies successfully uploaded!`);
             }
           }, err => {
             this.uploading = false;

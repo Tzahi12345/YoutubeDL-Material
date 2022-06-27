@@ -3,7 +3,6 @@ import { VgApiService } from '@videogular/ngx-videogular/core';
 import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
 import { FileType } from '../../api-types';
@@ -109,7 +108,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(public postsService: PostsService, private route: ActivatedRoute, private dialog: MatDialog, private router: Router,
-              public snackBar: MatSnackBar, private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef) {
 
   }
   processConfig(): void {
@@ -147,7 +146,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.postsService.getFile(this.uid, this.uuid).subscribe(res => {
       this.db_file = res['file'];
       if (!this.db_file) {
-        this.postsService.openSnackBar('Failed to get file information from the server.', 'Dismiss');
+        this.postsService.openSnackBar($localize`Failed to get file information from the server.`, 'Dismiss');
         return;
       }
       this.postsService.incrementViewCount(this.db_file['uid'], null, this.uuid).subscribe(() => undefined, err => {
@@ -169,6 +168,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.uids = this.subscription.videos.map(video => video['uid']);
       this.parseFileNames();
     }, () => {
+      // TODO: Make translatable
       this.postsService.openSnackBar(`Failed to find subscription ${this.sub_id}`, 'Dismiss');
     });
   }
@@ -183,10 +183,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.show_player = true;
         this.parseFileNames();
       } else {
-        this.postsService.openSnackBar('Failed to load playlist!', '');
+        this.postsService.openSnackBar($localize`Failed to load playlist!`);
       }
     }, () => {
-      this.postsService.openSnackBar('Failed to load playlist!', '');
+      this.postsService.openSnackBar($localize`Failed to load playlist!`);
     });
   }
 
@@ -351,7 +351,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       width: '60vw'
     });
 
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe(() => {
       if (!this.playlist_id) {
         this.getFile();
       } else {
@@ -361,12 +361,16 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   openFileInfoDialog(): void {
-    this.dialog.open(VideoInfoDialogComponent, {
+    const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
       data: {
         file: this.db_file,
       },
       minWidth: '50vw'
-    })
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.db_file = dialogRef.componentInstance.file;
+    });
   }
 
   setPlaybackTimestamp(time: number): void {

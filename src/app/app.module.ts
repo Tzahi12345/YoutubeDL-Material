@@ -49,7 +49,6 @@ import { CreatePlaylistComponent } from './create-playlist/create-playlist.compo
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
-import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MatChipsModule } from '@angular/material/chips';
@@ -74,7 +73,6 @@ import { ManageUserComponent } from './components/manage-user/manage-user.compon
 import { ManageRoleComponent } from './components/manage-role/manage-role.component';
 import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
 import { LogsViewerComponent } from './components/logs-viewer/logs-viewer.component';
-import { ModifyPlaylistComponent } from './dialogs/modify-playlist/modify-playlist.component';
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
 import { UnifiedFileCardComponent } from './components/unified-file-card/unified-file-card.component';
 import { RecentVideosComponent } from './components/recent-videos/recent-videos.component';
@@ -102,7 +100,6 @@ registerLocaleData(es, 'es');
         SubscriptionsComponent,
         SubscribeDialogComponent,
         SubscriptionComponent,
-        SubscriptionFileCardComponent,
         SubscriptionInfoDialogComponent,
         SettingsComponent,
         AboutDialogComponent,
@@ -123,7 +120,6 @@ registerLocaleData(es, 'es');
         ManageRoleComponent,
         CookiesUploaderDialogComponent,
         LogsViewerComponent,
-        ModifyPlaylistComponent,
         ConfirmDialogComponent,
         UnifiedFileCardComponent,
         RecentVideosComponent,

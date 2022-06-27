@@ -13,6 +13,7 @@ import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/edit-category-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Category } from 'api-types';
 
 @Component({
   selector: 'app-settings',
@@ -62,7 +63,7 @@ export class SettingsComponent implements OnInit {
       Object.keys(this.INDEX_TO_TAB).forEach(key => { this.TAB_TO_INDEX[this.INDEX_TO_TAB[key]] = key; });
     }
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.postsService.initialized) {
       this.getConfig();
       this.getDBInfo();
@@ -90,16 +91,16 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  getConfig() {
+  getConfig(): void {
     this.initial_config = this.postsService.config;
     this.new_config = JSON.parse(JSON.stringify(this.initial_config));
   }
 
-  settingsSame() {
+  settingsSame(): boolean {
     return JSON.stringify(this.new_config) === JSON.stringify(this.initial_config);
   }
 
-  saveSettings() {
+  saveSettings(): void {
     const settingsToSave = {'YoutubeDLMaterial': this.new_config};
     this.postsService.setConfig(settingsToSave).subscribe(res => {
       if (res['success']) {
@@ -111,31 +112,31 @@ export class SettingsComponent implements OnInit {
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
         this.postsService.reload_config.next(true);
       }
-    }, err => {
+    }, () => {
       console.error('Failed to save config!');
     })
   }
 
-  cancelSettings() {
+  cancelSettings(): void {
     this.new_config = JSON.parse(JSON.stringify(this.initial_config));
   }
 
-  tabChanged(event) {
+  tabChanged(event): void {
     const index = event['index'];
     this.router.navigate(['/settings', {tab: this.INDEX_TO_TAB[index]}]);
   }
 
-  dropCategory(event: CdkDragDrop<string[]>) {
+  dropCategory(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.postsService.categories, event.previousIndex, event.currentIndex);
     this.postsService.updateCategories(this.postsService.categories).subscribe(res => {
 
-    }, err => {
-      this.postsService.openSnackBar('Failed to update categories!');
+    }, () => {
+      this.postsService.openSnackBar($localize`Failed to update categories!`);
     });
   }
 
-  openAddCategoryDialog() {
-    const done = new EventEmitter<any>();
+  openAddCategoryDialog(): void {
+    const done = new EventEmitter<boolean>();
     const dialogRef = this.dialog.open(InputDialogComponent, {
       width: '300px',
       data: {
@@ -162,7 +163,7 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  deleteCategory(category) {
+  deleteCategory(category: Category): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         dialogTitle: 'Delete category',
@@ -175,17 +176,18 @@ export class SettingsComponent implements OnInit {
       if (confirmed) {
         this.postsService.deleteCategory(category['uid']).subscribe(res => {
           if (res['success']) {
+            // TODO: Make translatable
             this.postsService.openSnackBar(`Successfully deleted ${category['name']}!`);
             this.postsService.reloadCategories();
           }
-        }, err => {
+        }, () => {
           this.postsService.openSnackBar(`Failed to delete ${category['name']}!`);
         });
       }
     });
   }
 
-  openEditCategoryDialog(category) {
+  openEditCategoryDialog(category: Category): void {
     this.dialog.open(EditCategoryDialogComponent, {
       data: {
         category: category
@@ -193,7 +195,7 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  generateAPIKey() {
+  generateAPIKey(): void {
     this.postsService.generateNewAPIKey().subscribe(res => {
       if (res['new_api_key']) {
         this.initial_config.API.API_key = res['new_api_key'];
@@ -202,16 +204,16 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  localeSelectChanged(new_val) {
+  localeSelectChanged(new_val: string): void {
     localStorage.setItem('locale', new_val);
-    this.openSnackBar('Language successfully changed! Reload to update the page.')
+    this.postsService.openSnackBar($localize`Language successfully changed! Reload to update the page.`)
   }
 
-  generateBookmarklet() {
+  generateBookmarklet(): void {
     this.bookmarksite('YTDL-Material', this.generated_bookmarklet_code);
   }
 
-  generateBookmarkletCode() {
+  generateBookmarkletCode(): string {
     const currentURL = window.location.href.split('#')[0];
     const homePageWithArgsURL = currentURL + '#/home;url=';
     const audioOnly = this.bookmarkletAudioOnly;
@@ -226,13 +228,13 @@ export class SettingsComponent implements OnInit {
   }
 
   // not currently functioning on most platforms. hence not in use
-  bookmarksite(title, url) {
+  bookmarksite(title: string, url: string): void {
     // Internet Explorer
     if (document.all) {
         window['external']['AddFavorite'](url, title);
     } else if (window['chrome']) {
         // Google Chrome
-       this.openSnackBar('Chrome users must drag the \'Alternate URL\' link to your bookmarks.');
+       this.postsService.openSnackBar($localize`Chrome users must drag the 'Alternate URL' link to your bookmarks.`);
     } else if (window['sidebar']) {
         // Firefox
         window['sidebar'].addPanel(title, url, '');
@@ -246,7 +248,7 @@ export class SettingsComponent implements OnInit {
     }
  }
 
- openArgsModifierDialog() {
+ openArgsModifierDialog(): void {
    const dialogRef = this.dialog.open(ArgModifierDialogComponent, {
      data: {
       initial_args: this.new_config['Downloader']['custom_args']
@@ -259,20 +261,20 @@ export class SettingsComponent implements OnInit {
    });
  }
 
- getLatestGithubRelease() {
+ getLatestGithubRelease(): void {
     this.postsService.getLatestGithubRelease().subscribe(res => {
       this.latestGithubRelease = res;
     });
   }
 
-  openCookiesUploaderDialog() {
+  openCookiesUploaderDialog(): void {
     this.dialog.open(CookiesUploaderDialogComponent, {
       width: '65vw'
     });
   }
 
-  killAllDownloads() {
-    const done = new EventEmitter<any>();
+  killAllDownloads(): void {
+    const done = new EventEmitter<boolean>();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         dialogTitle: 'Kill downloads',
@@ -287,34 +289,34 @@ export class SettingsComponent implements OnInit {
         this.postsService.killAllDownloads().subscribe(res => {
           if (res['success']) {
             dialogRef.close();
-            this.postsService.openSnackBar('Successfully killed all downloads!');
+            this.postsService.openSnackBar($localize`Successfully killed all downloads!`);
           } else {
             dialogRef.close();
-            this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
+            this.postsService.openSnackBar($localize`Failed to kill all downloads! Check logs for details.`);
           }
-        }, err => {
+        }, () => {
           dialogRef.close();
-          this.postsService.openSnackBar('Failed to kill all downloads! Check logs for details.');
+          this.postsService.openSnackBar($localize`Failed to kill all downloads! Check logs for details.`);
         });
       }
     });
   }
 
-  restartServer() {
-    this.postsService.restartServer().subscribe(res => {
-      this.postsService.openSnackBar('Restarting!');
-    }, err => {
-      this.postsService.openSnackBar('Failed to restart the server.');
+  restartServer(): void {
+    this.postsService.restartServer().subscribe(() => {
+      this.postsService.openSnackBar($localize`Restarting!`);
+    }, () => {
+      this.postsService.openSnackBar($localize`Failed to restart the server.`);
     });
   }
 
-  getDBInfo() {
+  getDBInfo(): void {
     this.postsService.getDBInfo().subscribe(res => {
       this.db_info = res['db_info'];
     });
   }
 
-  transferDB() {
+  transferDB(): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         dialogTitle: 'Transfer DB',
@@ -329,44 +331,36 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  _transferDB() {
+  _transferDB(): void {
     this.db_transferring = true;
     this.postsService.transferDB(this.db_info['using_local_db']).subscribe(res => {
       this.db_transferring = false;
       const success = res['success'];
       if (success) {
-        this.openSnackBar('Successfully transfered DB! Reloading info...');
+        this.postsService.openSnackBar($localize`Successfully transfered DB! Reloading info...`);
         this.getDBInfo();
       } else {
-        this.openSnackBar('Failed to transfer DB -- transfer was aborted. Error: ' + res['error']);
+        this.postsService.openSnackBar($localize`Failed to transfer DB -- transfer was aborted. Error: ` + res['error']);
       }
     }, err => {
       this.db_transferring = false;
-      this.openSnackBar('Failed to transfer DB -- API call failed. See browser logs for details.');
+      this.postsService.openSnackBar($localize`Failed to transfer DB -- API call failed. See browser logs for details.`);
       console.error(err);
     });
   }
 
-  testConnectionString(connection_string) {
+  testConnectionString(connection_string: string): void {
     this.testing_connection_string = true;
     this.postsService.testConnectionString(connection_string).subscribe(res => {
       this.testing_connection_string = false;
       if (res['success']) {
-        this.postsService.openSnackBar('Connection successful!');
+        this.postsService.openSnackBar($localize`Connection successful!`);
       } else {
-        this.postsService.openSnackBar('Connection failed! Error: ' + res['error']);
+        this.postsService.openSnackBar($localize`Connection failed! Error: ` + res['error']);
       }
-    }, err => {
+    }, () => {
       this.testing_connection_string = false;
-      this.postsService.openSnackBar('Connection failed! Error: Server error. See logs for more info.');
+      this.postsService.openSnackBar($localize`Connection failed! Error: Server error. See logs for more info.`);
     });
   }
-
-  // snackbar helper
-  public openSnackBar(message: string, action: string = '') {
-    this.snackBar.open(message, action, {
-      duration: 2000,
-    });
-  }
-
 }

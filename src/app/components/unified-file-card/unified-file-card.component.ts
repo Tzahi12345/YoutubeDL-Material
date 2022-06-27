@@ -9,7 +9,6 @@ import localeES from '@angular/common/locales/es';
 import localeDE from '@angular/common/locales/de';
 import localeZH from '@angular/common/locales/zh';
 import localeNB from '@angular/common/locales/nb';
-import { DatabaseFile, Playlist } from 'api-types';
 
 registerLocaleData(localeGB);
 registerLocaleData(localeFR);
@@ -105,12 +104,16 @@ export class UnifiedFileCardComponent implements OnInit {
   }
 
   openFileInfoDialog() {
-    this.dialog.open(VideoInfoDialogComponent, {
+    const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
       data: {
         file: this.file_obj,
       },
       minWidth: '50vw'
-    })
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.file_obj = dialogRef.componentInstance.file;
+    });
   }
 
   emitEditPlaylist() {

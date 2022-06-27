@@ -22,4 +22,5 @@ export type Download = {
     user_uid?: string;
     sub_id?: string;
     sub_name?: string;
+    prefetched_info?: any;
 };

@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
-import { FileType } from '../../../api-types';
+import { DatabaseFile, FileType, FileTypeFilter } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-recent-videos',
@@ -13,6 +14,26 @@ import { distinctUntilChanged } from 'rxjs/operators';
 })
 export class RecentVideosComponent implements OnInit {
 
+  @Input() usePaginator = true;
+
+  // File selection
+
+  @Input() selectMode = false;
+  @Input() defaultSelected: DatabaseFile[] = [];
+  @Input() sub_id = null;
+  @Input() customHeader = null;
+  @Input() selectedIndex = 1;
+  @Output() fileSelectionEmitter = new EventEmitter<{new_selection: string[], thumbnailURL: string}>();
+
+  pageSize = 10;
+  paged_data: DatabaseFile[] = null;
+
+  selected_data: string[] = [];
+  selected_data_objs: DatabaseFile[] = [];
+  reverse_order = false;
+
+  // File listing (with cards)
+
   cached_file_count = 0;
   loading_files = null;
 
@@ -20,7 +41,7 @@ export class RecentVideosComponent implements OnInit {
   subscription_files_received = false;
   file_count = 10;
   searchChangedSubject: Subject<string> = new Subject<string>();
-  downloading_content = {'video': {}, 'audio': {}};
+  downloading_content = {};
   search_mode = false;
   search_text = '';
   searchIsFocused = false;
@@ -57,17 +78,31 @@ export class RecentVideosComponent implements OnInit {
   
   playlists = null;
 
-  pageSize = 10;
-  paged_data = null;
-
   @ViewChild('paginator') paginator: MatPaginator
 
   constructor(public postsService: PostsService, private router: Router) {
     // get cached file count
     if (localStorage.getItem('cached_file_count')) {
       this.cached_file_count = +localStorage.getItem('cached_file_count') <= 10 ? +localStorage.getItem('cached_file_count') : 10;
-      
       this.loading_files = Array(this.cached_file_count).fill(0);
+    }
+
+    // set filter property to cached value
+    const cached_filter_property = localStorage.getItem('filter_property');
+    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
+      this.filterProperty = this.filterProperties[cached_filter_property];
+    }
+
+    // set file type filter to cached value
+    const cached_file_type_filter = localStorage.getItem('file_type_filter');
+    if (this.usePaginator && cached_file_type_filter) {
+      this.fileTypeFilter = cached_file_type_filter;
+    }
+
+    const sort_order = localStorage.getItem('recent_videos_sort_order');
+
+    if (sort_order) {
+      this.descendingMode = sort_order === 'descending';
     }
   }
 
@@ -96,23 +131,9 @@ export class RecentVideosComponent implements OnInit {
       }
     });
 
-    // set filter property to cached value
-    const cached_filter_property = localStorage.getItem('filter_property');
-    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
-      this.filterProperty = this.filterProperties[cached_filter_property];
-    }
-
-    // set file type filter to cached value
-    const cached_file_type_filter = localStorage.getItem('file_type_filter');
-    if (cached_file_type_filter) {
-      this.fileTypeFilter = cached_file_type_filter;
-    }
-
-    const sort_order = localStorage.getItem('recent_videos_sort_order');
-
-    if (sort_order) {
-      this.descendingMode = sort_order === 'descending';
-    }
+    
+    this.selected_data = this.defaultSelected.map(file => file.uid);
+    this.selected_data_objs = this.defaultSelected;    
 
     this.searchChangedSubject
       .debounceTime(500)
@@ -127,7 +148,7 @@ export class RecentVideosComponent implements OnInit {
       });
   }
 
-  getAllPlaylists() {
+  getAllPlaylists(): void {
     this.postsService.getPlaylists().subscribe(res => {
       this.playlists = res['playlists'];
     });
@@ -135,22 +156,22 @@ export class RecentVideosComponent implements OnInit {
 
   // search
 
-  onSearchInputChanged(newvalue) {
+  onSearchInputChanged(newvalue: string): void {
     this.normal_files_received = false;
     this.searchChangedSubject.next(newvalue);
   }
 
-  filterOptionChanged(value) {
+  filterOptionChanged(value: string): void {
     localStorage.setItem('filter_property', value['key']);
     this.getAllFiles();
   }
 
-  fileTypeFilterChanged(value) {
+  fileTypeFilterChanged(value: string): void {
     localStorage.setItem('file_type_filter', value);
     this.getAllFiles();
   }
 
-  toggleModeChange() {
+  toggleModeChange(): void {
     this.descendingMode = !this.descendingMode;
     localStorage.setItem('recent_videos_sort_order', this.descendingMode ? 'descending' : 'ascending');
     this.getAllFiles();
@@ -158,12 +179,12 @@ export class RecentVideosComponent implements OnInit {
 
   // get files
 
-  getAllFiles(cache_mode = false) {
+  getAllFiles(cache_mode = false): void {
     this.normal_files_received = cache_mode;
     const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
     const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
     const range = [current_file_index, current_file_index + this.pageSize];
-    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter).subscribe(res => {
+    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter as FileTypeFilter, this.sub_id).subscribe(res => {
       this.file_count = res['file_count'];
       this.paged_data = res['files'];
       for (let i = 0; i < this.paged_data.length; i++) {
@@ -191,21 +212,12 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  navigateToFile(file, new_tab) {
+  navigateToFile(file: DatabaseFile, new_tab: boolean): void {
     localStorage.setItem('player_navigator', this.router.url);
     if (file.sub_id) {
-      const sub = this.postsService.getSubscriptionByID(file.sub_id);
-      if (sub.streamingOnly) {
-        // streaming only mode subscriptions
-        // !new_tab ? this.router.navigate(['/player', {name: file.id,
-        //                                   url: file.requested_formats ? file.requested_formats[0].url : file.url}])
-        //         : window.open(`/#/player;name=${file.id};url=${file.requested_formats ? file.requested_formats[0].url : file.url}`);
-      } else {
-        // normal subscriptions
         !new_tab ? this.router.navigate(['/player', {uid: file.uid,
-                                          type: file.isAudio ? 'audio' : 'video'}]) 
+                                        type: file.isAudio ? 'audio' : 'video'}]) 
                  : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
-      }
     } else {
       // normal files
       !new_tab ? this.router.navigate(['/player', {type: file.isAudio ? 'audio' : 'video', uid: file.uid}])
@@ -213,46 +225,26 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  goToSubscription(file) {
+  goToSubscription(file: DatabaseFile): void {
     this.router.navigate(['/subscription', {id: file.sub_id}]);
   }
 
   // downloading
 
-  downloadFile(file) {
-    if (file.sub_id) {
-      this.downloadSubscriptionFile(file);
-    } else {
-      this.downloadNormalFile(file);
-    }
-  }
-
-  downloadSubscriptionFile(file) {
-    const type = (file.isAudio ? 'audio' : 'video') as FileType;
-    const ext = type === 'audio' ? '.mp3' : '.mp4'
-    const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
-          const blob: Blob = res;
-          saveAs(blob, file.id + ext);
-        }, err => {
-          console.log(err);
-      });
-  }
-
-  downloadNormalFile(file) {
+  downloadFile(file: DatabaseFile): void {
     const type = (file.isAudio ? 'audio' : 'video') as FileType;
     const ext = type === 'audio' ? '.mp3' : '.mp4'
     const name = file.id;
-    this.downloading_content[type][name] = true;
+    this.downloading_content[file.uid] = true;
     this.postsService.downloadFileFromServer(file.uid).subscribe(res => {
-      this.downloading_content[type][name] = false;
+      this.downloading_content[file.uid] = false;
       const blob: Blob = res;
       saveAs(blob, decodeURIComponent(name) + ext);
 
-      if (!this.postsService.config.Extra.file_manager_enabled) {
+      if (!this.postsService.config.Extra.file_manager_enabled && !file.sub_id) {
         // tell server to delete the file once downloaded
-        this.postsService.deleteFile(file.uid).subscribe(delRes => {
-          // reload mp4s
+        this.postsService.deleteFile(file.uid).subscribe(() => {
+          // reload files
           this.getAllFiles();
         });
       }
@@ -263,7 +255,6 @@ export class RecentVideosComponent implements OnInit {
 
   deleteFile(args) {
     const file = args.file;
-    const index = args.index;
     const blacklistMode = args.blacklistMode;
 
     if (file.sub_id) {
@@ -273,20 +264,20 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  deleteNormalFile(file, blacklistMode = false) {
+  deleteNormalFile(file: DatabaseFile, blacklistMode = false): void {
     this.postsService.deleteFile(file.uid, blacklistMode).subscribe(result => {
       if (result) {
-        this.postsService.openSnackBar('Delete success!', 'OK.');
+        this.postsService.openSnackBar($localize`Delete success!`, $localize`OK.`);
         this.removeFileCard(file);
       } else {
-        this.postsService.openSnackBar('Delete failed!', 'OK.');
+        this.postsService.openSnackBar($localize`Delete failed!`, $localize`OK.`);
       }
-    }, err => {
-      this.postsService.openSnackBar('Delete failed!', 'OK.');
+    }, () => {
+      this.postsService.openSnackBar($localize`Delete failed!`, $localize`OK.`);
     });
   }
 
-  deleteSubscriptionFile(file, blacklistMode = false) {
+  deleteSubscriptionFile(file: DatabaseFile, blacklistMode = false): void {
     if (blacklistMode) {
       this.deleteForever(file);
     } else {
@@ -294,28 +285,29 @@ export class RecentVideosComponent implements OnInit {
     }
   }
 
-  deleteAndRedownload(file) {
+  deleteAndRedownload(file: DatabaseFile): void {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(res => {
-      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
+    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(() => {
+      this.postsService.openSnackBar($localize`Successfully deleted file: ` + file.id);
       this.removeFileCard(file);
     });
   }
 
-  deleteForever(file) {
+  deleteForever(file: DatabaseFile): void {
     const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(res => {
-      this.postsService.openSnackBar(`Successfully deleted file: '${file.id}'`);
+    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(() => {
+      this.postsService.openSnackBar($localize`Successfully deleted file: ` + file.id);
       this.removeFileCard(file);
     });
   }
 
-  removeFileCard(file_to_remove) {
+  removeFileCard(file_to_remove: DatabaseFile): void {
     const index = this.paged_data.map(e => e.uid).indexOf(file_to_remove.uid);
     this.paged_data.splice(index, 1);
     this.getAllFiles(true);
   }
 
+  // TODO: Add translation support for these snackbars
   addFileToPlaylist(info_obj) {
     const file = info_obj['file'];
     const playlist_id = info_obj['playlist_id'];
@@ -335,13 +327,13 @@ export class RecentVideosComponent implements OnInit {
 
   // sorting and filtering
 
-  sortFiles(a, b) {
+  sortFiles(a: DatabaseFile, b: DatabaseFile): number {
     // uses the 'registered' flag as the timestamp
     const result = b.registered - a.registered;
     return result;
   }
 
-  durationStringToNumber(dur_str) {
+  durationStringToNumber(dur_str: string): number {
     let num_sum = 0;
     const dur_str_parts = dur_str.split(':');
     for (let i = dur_str_parts.length - 1; i >= 0; i--) {
@@ -354,5 +346,43 @@ export class RecentVideosComponent implements OnInit {
     this.pageSize = event.pageSize;
     this.loading_files = Array(this.pageSize).fill(0);
     this.getAllFiles();
+  }
+
+  fileSelectionChanged(event: { option: { _selected: boolean; value: DatabaseFile; } }): void {
+    const adding = event.option._selected;
+    const value = event.option.value;
+    if (adding) {
+      this.selected_data.push(value.uid);
+      this.selected_data_objs.push(value);
+    } else {
+      this.selected_data      = this.selected_data.filter(e => e !== value.uid);
+      this.selected_data_objs = this.selected_data_objs.filter(e => e.uid !== value.uid);
+    }
+
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
+  }
+
+  toggleSelectionOrder(): void {
+    this.reverse_order = !this.reverse_order;
+    localStorage.setItem('default_playlist_order_reversed', '' + this.reverse_order);
+  }
+
+  drop(event: CdkDragDrop<string[]>): void {
+    if (this.reverse_order) {
+      event.previousIndex = this.selected_data.length - 1 - event.previousIndex;
+      event.currentIndex = this.selected_data.length - 1 - event.currentIndex;
+    }
+    moveItemInArray(this.selected_data, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.selected_data_objs, event.previousIndex, event.currentIndex);
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
+  }
+
+  removeSelectedFile(index: number): void {
+    if (this.reverse_order) {
+      index = this.selected_data.length - 1 - index;
+    }
+    this.selected_data.splice(index, 1);
+    this.selected_data_objs.splice(index, 1);
+    this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
   }
 }

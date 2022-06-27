@@ -7,6 +7,7 @@ import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialo
 import { RestoreDbDialogComponent } from 'app/dialogs/restore-db-dialog/restore-db-dialog.component';
 import { UpdateTaskScheduleDialogComponent } from 'app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { PostsService } from 'app/posts.services';
+import { Task } from 'api-types';
 
 @Component({
   selector: 'app-tasks',
@@ -17,7 +18,7 @@ export class TasksComponent implements OnInit {
 
   interval_id = null;
   tasks_check_interval = 1500;
-  tasks = null;
+  tasks: Task[] = null;
   tasks_retrieved = false;
 
   displayedColumns: string[] = ['title', 'last_ran', 'last_confirmed', 'status', 'actions'];
@@ -55,6 +56,11 @@ export class TasksComponent implements OnInit {
 
   getTasks(): void {
     this.postsService.getTasks().subscribe(res => {
+      for (const task of res['tasks']) {
+        if (task.title.includes('youtube-dl')) {
+          task.title = task.title.replace('youtube-dl', this.postsService.config.Advanced.default_downloader);
+        }
+      }
       if (this.tasks) {
         if (JSON.stringify(this.tasks) === JSON.stringify(res['tasks'])) return;
         for (const task of res['tasks']) {
@@ -94,7 +100,7 @@ export class TasksComponent implements OnInit {
     });
   }
 
-  scheduleTask(task: any): void {
+  scheduleTask(task: Task): void {
     // open dialog
     const dialogRef = this.dialog.open(UpdateTaskScheduleDialogComponent, {
       data: {
@@ -151,14 +157,4 @@ export class TasksComponent implements OnInit {
     });
   }
 
-}
-
-export interface Task {
-  key: string;
-  title: string;
-  last_ran: number;
-  last_confirmed: number;
-  running: boolean;
-  confirming: boolean;
-  data: unknown;
 }
