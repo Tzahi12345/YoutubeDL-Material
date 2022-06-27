@@ -36,7 +36,7 @@ jobs:
       - name: Set image tag
         id: tags
         run: |
-          if [ ${{ github.event.inputs.tags }} == "workflow_dispatch" ]; then
+          if [ "${{ github.event.inputs.tags }}" != "" ]; then
             echo "::set-output name=tags::${{ github.event.inputs.tags }}"
           elif [ ${{ github.event.action }} == "release" ]; then
             echo "::set-output name=tags::${{ github.event.release.tag_name }}"
