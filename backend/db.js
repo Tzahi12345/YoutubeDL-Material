@@ -925,6 +925,7 @@ exports.importJSONToDB = async (db_json, users_json) => {
 const createFilesRecords = (files, subscriptions) => {
     for (let i = 0; i < subscriptions.length; i++) {
         const subscription = subscriptions[i];
+        if (!subscription['videos']) continue;
         subscription['videos'] = subscription['videos'].map(file => ({ ...file, sub_id: subscription['id'], user_uid: subscription['user_uid'] ? subscription['user_uid'] : undefined}));
         files = files.concat(subscriptions[i]['videos']);
     }
