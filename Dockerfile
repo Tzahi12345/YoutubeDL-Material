@@ -9,7 +9,7 @@ RUN sh ./ffmpeg-fetch.sh
 # Create our Ubuntu 22.04 with node 16
 # Go to 20.04
 FROM ubuntu:20.04 AS base
-ENV DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
 ENV GID=1000
 ENV USER=youtube
@@ -17,7 +17,7 @@ ENV NO_UPDATE_NOTIFIER=true
 ENV PM2_HOME=/app/pm2
 RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
-    apt install -y --no-install-recommends curl ca-certificates && \
+    apt install -y --no-install-recommends curl ca-certificates tzdata && \
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt install -y --no-install-recommends nodejs && \
     npm -g install npm && \
