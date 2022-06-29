@@ -2,7 +2,6 @@ version: "2"
 services:
     ytdl_material:
         environment: 
-            ALLOW_CONFIG_MUTATIONS: 'true'
             ytdl_mongodb_connection_string: 'mongodb://ytdl-mongo-db:27017'
             ytdl_use_local_db: 'false'
             write_ytdl_config: 'true'
