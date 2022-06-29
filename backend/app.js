@@ -147,16 +147,11 @@ if (fs.existsSync('version.json')) {
 
 // don't overwrite config if it already happened.. NOT
 // let alreadyWritten = db.get('configWriteFlag').value();
-let writeConfigMode = process.env.write_ytdl_config;
 
 // checks if config exists, if not, a config is auto generated
 config_api.configExistsCheck();
 
-if (writeConfigMode) {
-    setAndLoadConfig();
-} else {
-    loadConfig();
-}
+setAndLoadConfig();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
