@@ -172,11 +172,13 @@ function getExpectedFileSize(input_info_jsons) {
         const formats = info_json['format_id'].split('+');
         let individual_expected_filesize = 0;
         formats.forEach(format_id => {
-            info_json.formats.forEach(available_format => {
-                if (available_format.format_id === format_id && (available_format.filesize || available_format.filesize_approx)) {
+            if(info_json.formats !== undefined) {
+                info_json.formats.forEach(available_format => {
+                  if (available_format.format_id === format_id && (available_format.filesize || available_format.filesize_approx)) {
                     individual_expected_filesize += (available_format.filesize ? available_format.filesize : available_format.filesize_approx);
-                }
-            });
+                  }
+                });
+            }
         });
         expected_filesize += individual_expected_filesize;
     });
@@ -210,7 +212,7 @@ function deleteJSONFile(file_path, type) {
     const ext = type === 'audio' ? '.mp3' : '.mp4';
 
     const file_path_no_extension = removeFileExtension(file_path);
-    
+
     let json_path = file_path_no_extension + '.info.json';
     let alternate_json_path = file_path_no_extension + ext + '.info.json';
 
@@ -331,9 +333,9 @@ function createEdgeNGrams(str) {
     if (str && str.length > 3) {
         const minGram = 3
         const maxGram = str.length
-        
+
         return str.split(" ").reduce((ngrams, token) => {
-            if (token.length > minGram) {   
+            if (token.length > minGram) {
                 for (let i = minGram; i <= maxGram && i <= token.length; ++i) {
                     ngrams = [...ngrams, token.substr(0, i)]
                 }
@@ -343,7 +345,7 @@ function createEdgeNGrams(str) {
             return ngrams
         }, []).join(" ")
     }
-    
+
     return str
 }
 
@@ -459,7 +461,7 @@ function injectArgs(original_args, new_args) {
         for (let i = 0; i < new_args.length; i++) {
             const new_arg = new_args[i];
             if (!new_arg.startsWith('-') && !new_arg.startsWith('--') && i > 0 && original_args.includes(new_args[i - 1])) continue;
-            
+
             if (CONSTS.YTDL_ARGS_WITH_VALUES.has(new_arg)) {
                 if (original_args.includes(new_arg)) {
                     const original_index = original_args.indexOf(new_arg);
