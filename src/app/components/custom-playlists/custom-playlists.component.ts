@@ -53,9 +53,9 @@ export class CustomPlaylistsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.getAllPlaylists();
-        this.postsService.openSnackBar($localize`Successfully created playlist!', '`);
+        this.postsService.openSnackBar($localize`Successfully created playlist!`);
       } else if (result === false) {
-        this.postsService.openSnackBar($localize`ERROR: failed to create playlist!', '`);
+        this.postsService.openSnackBar($localize`ERROR: failed to create playlist!`);
       }
     });
   }
@@ -75,6 +75,7 @@ export class CustomPlaylistsComponent implements OnInit {
       }
     } else {
       // playlist not found
+      // TODO: Make translatable
       console.error(`Playlist with ID ${playlistID} not found!`);
     }
   }
@@ -96,7 +97,7 @@ export class CustomPlaylistsComponent implements OnInit {
     this.postsService.removePlaylist(playlistID).subscribe(res => {
       if (res['success']) {
         this.playlists.splice(index, 1);
-        this.postsService.openSnackBar($localize`Playlist successfully removed.', '`);
+        this.postsService.openSnackBar($localize`Playlist successfully removed.`);
       }
       this.getAllPlaylists();
     });
