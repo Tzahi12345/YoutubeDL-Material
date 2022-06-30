@@ -19,8 +19,6 @@ services:
         image: tzahi12345/youtubedl-material:latest
     ytdl-mongo-db:
         image: mongo
-        ports:
-            - "27017:27017"
         logging:
             driver: "none"          
         container_name: mongo-db
