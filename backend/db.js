@@ -198,7 +198,7 @@ async function registerFileDBManual(file_object) {
     path_object = path.parse(file_object['path']);
     file_object['path'] = path.format(path_object);
 
-    exports.insertRecordIntoTable('files', file_object, {path: file_object['path']})
+    await exports.insertRecordIntoTable('files', file_object, {path: file_object['path']})
 
     return file_object;
 }

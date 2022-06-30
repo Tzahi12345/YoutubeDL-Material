@@ -407,7 +407,7 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
     if (default_downloader === 'yt-dlp') {
-        downloadConfig.push('--no-clean-infojson');
+        downloadConfig.push('--no-clean-info-json');
     }
 
     downloadConfig = utils.filterArgs(downloadConfig, ['--write-comments']);

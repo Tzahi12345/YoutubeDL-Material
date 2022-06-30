@@ -306,7 +306,7 @@ export class MainComponent implements OnInit {
     this.downloadingfile = false;
     if (!this.autoplay && !this.downloadOnlyMode && !navigate_mode) {
       // do nothing
-      this.reloadRecentVideos();
+      this.reloadRecentVideos(is_playlist);
     } else {
       // if download only mode, just download the file. no redirect
       if (force_view === false && this.downloadOnlyMode && !this.iOS) {
@@ -315,7 +315,7 @@ export class MainComponent implements OnInit {
         } else {
           this.downloadFileFromServer(container as DatabaseFile, type);
         }
-        this.reloadRecentVideos();
+        this.reloadRecentVideos(is_playlist);
       } else {
         localStorage.setItem('player_navigator', this.router.url.split(';')[0]);
         if (is_playlist) {
@@ -780,8 +780,9 @@ export class MainComponent implements OnInit {
     });
   }
 
-  reloadRecentVideos(): void {
+  reloadRecentVideos(is_playlist = false): void {
     this.postsService.files_changed.next(true);
+    if (is_playlist) this.postsService.playlists_changed.next(true);
   }
 
   getURLArray(url_str: string): Array<string> {

@@ -203,6 +203,7 @@ async function collectInfo(download_uid) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
         args = await exports.generateArgs(url, type, options, download['user_uid']);
+        args = utils.filterArgs(args, ['--no-simulate']);
         info = await exports.getVideoInfoByURL(url, args, download_uid);
     }
 
@@ -356,7 +357,7 @@ async function downloadQueuedFile(download_uid) {
                 if (file_objs.length > 1) {
                     // create playlist
                     const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
-                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), type, download['user_uid']);
+                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {
@@ -506,7 +507,10 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
         }
         
         if (default_downloader === 'yt-dlp') {
-            downloadConfig.push('--no-clean-infojson');
+            downloadConfig = utils.filterArgs(downloadConfig, ['--print-json']);
+
+            // in yt-dlp -j --no-simulate is preferable
+            downloadConfig.push('--no-clean-info-json', '-j', '--no-simulate');
         }
 
     }
