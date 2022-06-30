@@ -14,12 +14,13 @@ export class ManageRoleComponent implements OnInit {
   permissions = null;
 
   permissionToLabel = {
-    'filemanager': 'File manager',
-    'settings': 'Settings access',
-    'subscriptions': 'Subscriptions',
-    'sharing': 'Share files',
-    'advanced_download': 'Use advanced download mode',
-    'downloads_manager': 'Use downloads manager'
+    'filemanager': $localize`File manager`,
+    'settings': $localize`Settings access`,
+    'subscriptions': $localize`Subscriptions`,
+    'sharing': $localize`Share files`,
+    'advanced_download': $localize`Use advanced download mode`,
+    'downloads_manager': $localize`Use downloads manager`,
+    'tasks_manager': $localize`Use tasks manager`,
   }
 
   constructor(public postsService: PostsService, private dialogRef: MatDialogRef<ManageRoleComponent>,

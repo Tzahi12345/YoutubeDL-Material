@@ -221,7 +221,8 @@ exports.AVAILABLE_PERMISSIONS = [
     'subscriptions',
     'sharing',
     'advanced_download',
-    'downloads_manager'
+    'downloads_manager',
+    'tasks_manager'
 ];
 
 exports.DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'

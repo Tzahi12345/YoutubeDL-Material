@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
-import { Router, CanActivate } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -229,12 +229,15 @@ export class PostsService implements CanActivate {
         }
 
     }
-    canActivate(route, state): Promise<boolean> {
-        return new Promise(resolve => {
-            resolve(true);
-        })
-        console.log(route);
-        throw new Error('Method not implemented.');
+    canActivate(route: ActivatedRouteSnapshot, state): Promise<boolean> {
+        const PATH_TO_REQUIRED_PERM = {
+            settings: 'settings',
+            subscriptions: 'subscriptions',
+            downloads: 'downloads_manager',
+            tasks: 'tasks_manager'
+        }
+        const required_perm = PATH_TO_REQUIRED_PERM[route.routeConfig.path];
+        return required_perm ? this.hasPermission(required_perm) : true;
     }
 
     setTheme(theme) {

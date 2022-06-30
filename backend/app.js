@@ -68,7 +68,8 @@ db.defaults(
         configWriteFlag: false,
         downloads: {},
         subscriptions: [],
-        files_to_db_migration_complete: false
+        files_to_db_migration_complete: false,
+        tasks_manager_role_migration_complete: false
 }).write();
 
 users_db.defaults(
@@ -187,6 +188,15 @@ async function checkMigrations() {
         db.set('new_db_system_migration_complete', true).write();
         if (success) { logger.info('4.2->4.3+ migration complete!'); }
         else { logger.error('Migration failed: 4.2->4.3+'); }
+    }
+
+    const tasks_manager_role_migration_complete = db.get('tasks_manager_role_migration_complete').value();
+    if (!tasks_manager_role_migration_complete) {
+        logger.info('Checking if tasks manager role permissions exist for admin user...');
+        const success = await auth_api.changeRolePermissions('admin', 'tasks_manager', 'yes');
+        if (success) logger.info('Task manager permissions check complete!');
+        else logger.error('Failed to auto add tasks manager permissions to admin role!');
+        db.set('tasks_manager_role_migration_complete', true).write();
     }
 
     return true;
