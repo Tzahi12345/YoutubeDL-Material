@@ -172,7 +172,7 @@ function getExpectedFileSize(input_info_jsons) {
         const formats = info_json['format_id'].split('+');
         let individual_expected_filesize = 0;
         formats.forEach(format_id => {
-            if(info_json.formats !== undefined) {
+            if (info_json.formats !== undefined) {
                 info_json.formats.forEach(available_format => {
                   if (available_format.format_id === format_id && (available_format.filesize || available_format.filesize_approx)) {
                     individual_expected_filesize += (available_format.filesize ? available_format.filesize : available_format.filesize_approx);

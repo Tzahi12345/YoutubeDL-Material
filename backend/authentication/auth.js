@@ -361,7 +361,6 @@ exports.userHasPermission = async function(user_uid, permission) {
     logger.error('Invalid role ' + role);
     return false;
   }
-  const role_permissions = (await db_api.getRecords('roles'))['permissions'];
 
   const user_has_explicit_permission = user_obj['permissions'].includes(permission);
   const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
@@ -376,12 +375,23 @@ exports.userHasPermission = async function(user_uid, permission) {
   }
 
   // no overrides, let's check if the role has the permission
-  if (role_permissions.includes(permission)) {
+  const role_has_permission = await exports.roleHasPermissions(role, permission);
+  if (role_has_permission) {
     return true;
   } else {
     logger.verbose(`User ${user_uid} failed to get permission ${permission}`);
     return false;
   }
+}
+
+exports.roleHasPermissions = async function(role, permission) {
+  const role_obj = await db_api.getRecord('roles', {key: role})
+  if (!role) {
+    logger.error(`Role ${role} does not exist!`);
+  }
+  const role_permissions = role_obj['permissions'];
+  if (role_permissions && role_permissions.includes(permission)) return true;
+  else return false;
 }
 
 exports.userPermissions = async function(user_uid) {
