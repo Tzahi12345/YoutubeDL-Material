@@ -478,8 +478,9 @@ async function setAndLoadConfig() {
 }
 
 async function setConfigFromEnv() {
-    let config_items = getEnvConfigItems();
-    let success = config_api.setConfigItems(config_items);
+    const config_items = getEnvConfigItems();
+    if (!config_items || config_items.length === 0) return true;
+    const success = config_api.setConfigItems(config_items);
     if (success) {
         logger.info('Config items set using ENV variables.');
         await utils.wait(100);
