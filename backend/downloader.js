@@ -403,6 +403,8 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
 
     // video-specific args
     const selectedHeight = options.selectedHeight;
+    const maxHeight = options.maxHeight;
+    const heightParam = selectedHeight || maxHeight;
 
     // audio-specific args
     const maxBitrate = options.maxBitrate;
@@ -423,8 +425,8 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     } else {
         if (customQualityConfiguration) {
             qualityPath = ['-f', customQualityConfiguration, '--merge-output-format', 'mp4'];
-        } else if (selectedHeight && selectedHeight !== '' && !is_audio) {
-            qualityPath = ['-f', `'(mp4)[height=${selectedHeight}]`];
+        } else if (heightParam && heightParam !== '' && !is_audio) {
+            qualityPath = ['-f', `'(mp4)[height${maxHeight ? '<' : ''}=${heightParam}]`];
         } else if (is_audio) {
             qualityPath = ['--audio-quality', maxBitrate ? maxBitrate : '0']
         }

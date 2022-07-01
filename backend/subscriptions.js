@@ -313,7 +313,7 @@ function generateOptionsForSubscriptionDownload(sub, user_uid) {
     let default_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
 
     const base_download_options = {
-        selectedHeight: sub.maxQuality && sub.maxQuality !== 'best' ? sub.maxQuality : null,
+        maxHeight: sub.maxQuality && sub.maxQuality !== 'best' ? sub.maxQuality : null,
         customFileFolderPath: getAppendedBasePath(sub, basePath),
         customOutput: sub.custom_output ? `${sub.custom_output}` : `${default_output}`,
         customArchivePath: path.join(basePath, 'archives', sub.name),
