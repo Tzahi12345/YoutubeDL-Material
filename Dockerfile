@@ -41,7 +41,8 @@ RUN npm install && \
 FROM base as backend
 WORKDIR /app
 COPY [ "backend/","/app/" ]
-RUN npm config set strict-ssl false && \
+RUN mkdir -p pm2 && \
+    npm config set strict-ssl false && \
     npm install --prod && \
     ls -al
 
