@@ -56,10 +56,10 @@ RUN npm install -g pm2 && \
 RUN pip install tcd
 WORKDIR /app
 # User 1000 already exist from base image
-COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
-COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
-COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
-COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
+COPY --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
+COPY --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
+COPY --from=backend ["/app/","/app/"]
+COPY --from=frontend [ "/build/backend/public/", "/app/public/" ]
 RUN chmod +x /app/fix-scripts/*.sh
 # Add some persistence data
 #VOLUME ["/app/appdata"]
