@@ -6,7 +6,7 @@ COPY ffmpeg-fetch.sh .
 RUN sh ./ffmpeg-fetch.sh
 
 
-# Create our Ubuntu 22.04 with node 16
+# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
 # Go to 20.04
 FROM ubuntu:20.04 AS base
 ARG DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,8 @@ RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt install -y --no-install-recommends curl ca-certificates tzdata && \
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt install -y --no-install-recommends nodejs && \
-    npm -g install npm && \
+    npm -g install npm n && \
+    n 16.14.2 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
