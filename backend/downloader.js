@@ -207,7 +207,7 @@ async function collectInfo(download_uid) {
         info = await exports.getVideoInfoByURL(url, args, download_uid);
     }
 
-    download['category'] = category;
+    const stripped_category = {name: category['name'], uid: category['uid']};
 
     // setup info required to calculate download progress
 
@@ -230,6 +230,7 @@ async function collectInfo(download_uid) {
                                                                     files_to_check_for_progress: files_to_check_for_progress,
                                                                     expected_file_size: expected_file_size,
                                                                     title: playlist_title ? playlist_title : info['title'],
+                                                                    category: stripped_category,
                                                                     prefetched_info: null
                                                                 });
 }
