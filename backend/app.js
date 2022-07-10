@@ -7,6 +7,7 @@ const path = require('path');
 const compression = require('compression');
 const multer  = require('multer');
 const express = require("express");
+const session = require("express-session");
 const bodyParser = require("body-parser");
 const archiver = require('archiver');
 const unzipper = require('unzipper');
@@ -158,7 +159,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // use passport
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: 'ytdl-material-secret' 
+}));
 app.use(auth_api.passport.initialize());
+app.use(auth_api.passport.session());
 
 // actual functions
 
