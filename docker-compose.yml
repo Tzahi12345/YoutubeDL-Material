@@ -21,7 +21,7 @@ services:
         image: mongo
         logging:
             driver: "none"          
-        container_name: mongo-db
+        container_name: ytdl-mongo-db
         restart: always
         volumes:
             - ./db/:/data/db
