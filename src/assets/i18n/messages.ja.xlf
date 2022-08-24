@@ -653,6 +653,7 @@
       </trans-unit>
       <trans-unit id="3d3ae7deebc5949b0c1c78b9847886a94321d9fd" datatype="html">
         <source>No</source>
+        <target state="translated">いいえ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">10</context>
@@ -665,6 +666,7 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
+        <target state="translated">閉鎖</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">18</context>
