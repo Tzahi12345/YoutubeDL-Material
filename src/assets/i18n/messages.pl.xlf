@@ -3040,7 +3040,7 @@
       </trans-unit>
       <trans-unit id="61f8fd90b5f8cb20c70371feb2ee5e1fac5a9095" datatype="html">
         <source>Top title</source>
-        <target state="translated">Tytuł główny</target>
+        <target state="translated">Tytuł strony</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">206</context>
@@ -3337,7 +3337,7 @@
       </trans-unit>
       <trans-unit id="3913164a51898aac444bf6c7150e46ad5a8a18ad" datatype="html">
         <source>MongoDB Connection String</source>
-        <target state="translated">Parametry połączenia MongoDB</target>
+        <target state="translated">Adres URL MongoDB</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">325</context>
