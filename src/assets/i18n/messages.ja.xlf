@@ -26,6 +26,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
+        <target state="translated">約</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">32</context>
@@ -711,6 +712,7 @@
       </trans-unit>
       <trans-unit id="4250042184551786923" datatype="html">
         <source>File manager</source>
+        <target state="translated">ファイルマネージャー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">17</context>
@@ -718,6 +720,7 @@
       </trans-unit>
       <trans-unit id="8525406024045742391" datatype="html">
         <source>Settings access</source>
+        <target state="translated">設定へのアクセス</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">18</context>
@@ -725,6 +728,7 @@
       </trans-unit>
       <trans-unit id="1812379335568847528" datatype="html">
         <source>Subscriptions</source>
+        <target state="translated">サブスクリプション</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">19</context>
@@ -732,6 +736,7 @@
       </trans-unit>
       <trans-unit id="4744991787069301975" datatype="html">
         <source>Share files</source>
+        <target state="translated">共有ファイル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">20</context>
@@ -739,6 +744,7 @@
       </trans-unit>
       <trans-unit id="5029464708330583545" datatype="html">
         <source>Use advanced download mode</source>
+        <target state="translated">高度なダウンロード モードを使用する</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">21</context>
@@ -746,6 +752,7 @@
       </trans-unit>
       <trans-unit id="4278268519633335280" datatype="html">
         <source>Use downloads manager</source>
+        <target state="translated">ダウンロード マネージャーを使用する</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -753,6 +760,7 @@
       </trans-unit>
       <trans-unit id="3426988753455920032" datatype="html">
         <source>Use tasks manager</source>
+        <target state="translated">タスクマネージャーを使う</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -760,6 +768,7 @@
       </trans-unit>
       <trans-unit id="2bd201aea09e43fbfd3cd15ec0499b6755302329" datatype="html">
         <source>Manage user</source>
+        <target state="translated">ユーザーの管理</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">1</context>
@@ -772,6 +781,7 @@
       </trans-unit>
       <trans-unit id="29c97c8e76763bb15b6d515648fa5bd1eb0f7510" datatype="html">
         <source>User UID:</source>
+        <target state="translated">ユーザー UID:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">4</context>
@@ -780,6 +790,7 @@
       </trans-unit>
       <trans-unit id="e70e209561583f360b1e9cefd2cbb1fe434b6229" datatype="html">
         <source>New password</source>
+        <target state="translated">新しいパスワード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">8</context>
@@ -788,6 +799,7 @@
       </trans-unit>
       <trans-unit id="6498fa1b8f563988f769654a75411bb8060134b9" datatype="html">
         <source>Set new password</source>
+        <target state="translated">新しいパスワードを設定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">10</context>
@@ -796,6 +808,7 @@
       </trans-unit>
       <trans-unit id="544e09cdc99a8978f48521d45f62db0da6dcf742" datatype="html">
         <source>Use role default</source>
+        <target state="translated">ロールのデフォルトを使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">19</context>
@@ -804,6 +817,7 @@
       </trans-unit>
       <trans-unit id="7e892ba15f2c6c17e83510e273b3e10fc32ea016" datatype="html">
         <source>Search</source>
+        <target state="translated">探す</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">7</context>
@@ -816,6 +830,7 @@
       </trans-unit>
       <trans-unit id="746f64ddd9001ac456327cd9a3d5152203a4b93c" datatype="html">
         <source>User name</source>
+        <target state="translated">ユーザー名</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">17</context>
@@ -824,6 +839,7 @@
       </trans-unit>
       <trans-unit id="52c1447c1ec9570a2a3025c7e566557b8d19ed92" datatype="html">
         <source>Role</source>
+        <target state="translated">役割</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">35</context>
@@ -832,6 +848,7 @@
       </trans-unit>
       <trans-unit id="59a8c38db3091a63ac1cb9590188dc3a972acfb3" datatype="html">
         <source>Actions</source>
+        <target state="translated">行動</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">55</context>
@@ -840,6 +857,7 @@
       </trans-unit>
       <trans-unit id="52c9a103b812f258bcddc3d90a6e3f46871d25fe" datatype="html">
         <source>Save</source>
+        <target state="translated">保存</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">58</context>
@@ -868,6 +886,7 @@
       </trans-unit>
       <trans-unit id="632e8b20c98e8eec4059a605a4b011bb476137af" datatype="html">
         <source>Edit user</source>
+        <target state="translated">ユーザーを編集</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">66</context>
@@ -876,6 +895,7 @@
       </trans-unit>
       <trans-unit id="95b95a9c79e4fd9ed41f6855e37b3b06af25bcab" datatype="html">
         <source>Delete user</source>
+        <target state="translated">ユーザーを削除</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">73</context>
@@ -884,6 +904,7 @@
       </trans-unit>
       <trans-unit id="4d92a0395dd66778a931460118626c5794a3fc7a" datatype="html">
         <source>Add Users</source>
+        <target state="translated">ユーザーを追加</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">90</context>
@@ -892,6 +913,7 @@
       </trans-unit>
       <trans-unit id="b0d7dd8a1b0349622d6e0c6e643e24a9ea0efa1d" datatype="html">
         <source>Edit Role</source>
+        <target state="translated">役割の編集</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">95</context>
@@ -900,6 +922,7 @@
       </trans-unit>
       <trans-unit id="52e0fa8ada52c3f29774a4508582fd98250b9f93" datatype="html">
         <source>My files</source>
+        <target state="translated">マイファイル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">20</context>
@@ -908,6 +931,7 @@
       </trans-unit>
       <trans-unit id="6827066f436adfc56a142d5816a8be6113d73b01" datatype="html">
         <source>No files found.</source>
+        <target state="translated">ファイルが見つかりません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">40</context>
@@ -916,6 +940,7 @@
       </trans-unit>
       <trans-unit id="5704ec2049d007c5f5fb495a5d8b607e68d58081" datatype="html">
         <source>Order</source>
+        <target state="translated">注文</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">53</context>
@@ -924,6 +949,7 @@
       </trans-unit>
       <trans-unit id="33026f57ea65cd9c8a5d917a08083f71a718933a" datatype="html">
         <source>Normal order</source>
+        <target state="translated">通常の注文</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">55</context>
@@ -932,6 +958,7 @@
       </trans-unit>
       <trans-unit id="29376982b1205d9d6ea3d289e8e2f8e1ac2839b1" datatype="html">
         <source>Reverse order</source>
+        <target state="translated">逆順</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">56</context>
@@ -940,6 +967,7 @@
       </trans-unit>
       <trans-unit id="ae9a5141f5c6bd62cee4ce837598ea8b0904e5cf" datatype="html">
         <source>Select files</source>
+        <target state="translated">ファイルを選択</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">71</context>
@@ -948,6 +976,7 @@
       </trans-unit>
       <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
         <source>File type</source>
+        <target state="translated">ファイルの種類</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">101</context>
@@ -956,6 +985,7 @@
       </trans-unit>
       <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
         <source>Both</source>
+        <target state="translated">両方</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">103</context>
@@ -964,6 +994,7 @@
       </trans-unit>
       <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html">
         <source>Video only</source>
+        <target state="translated">ビデオのみ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">104</context>
@@ -972,6 +1003,7 @@
       </trans-unit>
       <trans-unit id="742202f9ba533bc9a92a1aec2862b0485c5f601b" datatype="html">
         <source>Audio only</source>
+        <target state="translated">音声のみ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">105</context>
@@ -980,6 +1012,7 @@
       </trans-unit>
       <trans-unit id="4050356167294261426" datatype="html">
         <source>Delete success!</source>
+        <target state="translated">削除成功！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">270</context>
@@ -987,6 +1020,7 @@
       </trans-unit>
       <trans-unit id="8348223454028662277" datatype="html">
         <source>OK.</source>
+        <target state="translated">わかった。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">270</context>
@@ -1002,6 +1036,7 @@
       </trans-unit>
       <trans-unit id="7405156667148936748" datatype="html">
         <source>Delete failed!</source>
+        <target state="translated">削除に失敗しました!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">273</context>
@@ -1013,6 +1048,7 @@
       </trans-unit>
       <trans-unit id="8937901770314883418" datatype="html">
         <source>Successfully deleted file:</source>
+        <target state="translated">ファイルが正常に削除されました:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">291</context>
@@ -1024,6 +1060,7 @@
       </trans-unit>
       <trans-unit id="ddc31f2885b1b33a7651963254b0c197f2a64086" datatype="html">
         <source>See more.</source>
+        <target state="translated">続きを見る。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -1032,6 +1069,7 @@
       </trans-unit>
       <trans-unit id="56a2a773fbd5a6b9ac2e6b89d29d70a2ed0f3227" datatype="html">
         <source>See less.</source>
+        <target state="translated">もっと見る.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -1040,6 +1078,7 @@
       </trans-unit>
       <trans-unit id="82dbc50a84e5c0865aa27479b8ce82da3a85d29b" datatype="html">
         <source>Skip ad</source>
+        <target state="translated">広告をスキップ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/skip-ad-button/skip-ad-button.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1048,6 +1087,7 @@
       </trans-unit>
       <trans-unit id="e4c3cd97461b220b9cea67cfe08c5399799cfeed" datatype="html">
         <source>Last ran</source>
+        <target state="translated">前回の実行</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">16</context>
@@ -1056,6 +1096,7 @@
       </trans-unit>
       <trans-unit id="84a36cb75660b736773fe36ffa3d54f0f0fe363e" datatype="html">
         <source>N/A</source>
+        <target state="translated">N/A</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1068,6 +1109,7 @@
       </trans-unit>
       <trans-unit id="698f716f927f633b16cbe2308d90b2dba51f7556" datatype="html">
         <source>Last confirmed</source>
+        <target state="translated">最終確認済み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">25</context>
@@ -1076,6 +1118,7 @@
       </trans-unit>
       <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
         <source>Status</source>
+        <target state="translated">状態</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">34</context>
@@ -1084,6 +1127,7 @@
       </trans-unit>
       <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html">
         <source>Busy</source>
+        <target state="translated">忙しい</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1092,6 +1136,7 @@
       </trans-unit>
       <trans-unit id="7e121a443a8e9d92218f987001b650c59504d815" datatype="html">
         <source>Scheduled for</source>
+        <target state="translated">予定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">38</context>
@@ -1100,6 +1145,7 @@
       </trans-unit>
       <trans-unit id="3b7d6ff5d14ab177ce3e2d217b1927fb2e4aefd1" datatype="html">
         <source>Not scheduled</source>
+        <target state="translated">未定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">42</context>
@@ -1108,6 +1154,7 @@
       </trans-unit>
       <trans-unit id="5ff9ae1f4c26bf2ddf6e9d5e4136916c5ce6a941" datatype="html">
         <source>Clear missing files from DB:</source>
+        <target state="translated">から不足しているファイルを消去する DB:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">57</context>
@@ -1116,6 +1163,7 @@
       </trans-unit>
       <trans-unit id="4391397241847e675f6c38bbdec6b2883157fb1a" datatype="html">
         <source>Clear duplicate files from DB:</source>
+        <target state="translated">から重複ファイルを消去 DB:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">60</context>
@@ -1124,6 +1172,7 @@
       </trans-unit>
       <trans-unit id="9562dd1e902acc4cc6a6e09cba66a2775daf7794" datatype="html">
         <source>Update binary to:</source>
+        <target state="translated">バイナリを次のように更新します:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">63</context>
@@ -1132,6 +1181,7 @@
       </trans-unit>
       <trans-unit id="9b3d305551358858e1892169a94527e0cc4dbf5b" datatype="html">
         <source>Run</source>
+        <target state="translated">走る</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">69</context>
@@ -1140,6 +1190,7 @@
       </trans-unit>
       <trans-unit id="4a4f46a2dcec36bd5c8c371ceee55c2226dec27f" datatype="html">
         <source>Schedule</source>
+        <target state="translated">スケジュール</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">72</context>
@@ -1148,6 +1199,7 @@
       </trans-unit>
       <trans-unit id="40bd7093f5fbd3fbeff9a50baaf5d4c8416add1e" datatype="html">
         <source>Restore DB from backup</source>
+        <target state="translated">戻す BD バックアップから</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">89</context>
