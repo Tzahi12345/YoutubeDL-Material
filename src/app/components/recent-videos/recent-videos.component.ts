@@ -73,7 +73,7 @@ export class RecentVideosComponent implements OnInit {
       'property': 'duration'
     }
   };
-  filterProperty = this.filterProperties['upload_date'];
+  filterProperty = this.filterProperties['registered'];
   fileTypeFilter = 'both';
   
   playlists = null;
