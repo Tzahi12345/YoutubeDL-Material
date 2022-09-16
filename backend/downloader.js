@@ -203,7 +203,6 @@ async function collectInfo(download_uid) {
         options.customOutput = category['custom_output'];
         options.noRelativePath = true;
         args = await exports.generateArgs(url, type, options, download['user_uid']);
-        args = utils.filterArgs(args, ['--no-simulate']);
         info = await exports.getVideoInfoByURL(url, args, download_uid);
     }
 
@@ -528,7 +527,8 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
 exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
     return new Promise(resolve => {
         // remove bad args
-        const new_args = [...args];
+        const temp_args = utils.filterArgs(args, ['--no-simulate']);
+        const new_args = [...temp_args];
 
         const archiveArgIndex = new_args.indexOf('--download-archive');
         if (archiveArgIndex !== -1) {

@@ -159,6 +159,7 @@ app.use(bodyParser.json());
 
 // use passport
 app.use(auth_api.passport.initialize());
+app.use(auth_api.passport.session());
 
 // actual functions
 
