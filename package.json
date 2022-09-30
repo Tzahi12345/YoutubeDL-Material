@@ -39,7 +39,7 @@
     "core-js": "^2.4.1",
     "crypto-js": "^4.1.1",
     "file-saver": "^2.0.2",
-    "filesize": "^6.1.0",
+    "filesize": "^10.0.5",
     "fingerprintjs2": "^2.1.0",
     "fs-extra": "^10.0.0",
     "material-icons": "^1.10.8",
