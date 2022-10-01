@@ -1414,7 +1414,7 @@
       </trans-unit>
       <trans-unit id="2d2adf3ca26a676bca2269295b7455a26fd26980" datatype="html">
         <source>No default admin account detected. This will create and set the password for an admin account with the user name as 'admin'.</source>
-        <target state="translated">未检测到默认管理员账户。即将创建一个名为admin的管理员账户并设置密码。</target>
+        <target state="translated">未检测到默认管理员账户。即将创建一个名为 admin 的管理员账户并设置密码。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2742,8 +2742,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="translated"><x id="url" equiv-text="download['url']"/> 报错</target>
+        <source>Error for<x id="url" equiv-text="download['url']"/></source>
+        <target state="translated"><x id="url" equiv-text="download['url']"/>报错</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
