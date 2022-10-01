@@ -2787,8 +2787,8 @@
         <note priority="1" from="description">Confirm Password</note>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="translated">kesalahan untuk <x id="url" equiv-text="download['url']"/></target>
+        <source>Error for<x id="url" equiv-text="download['url']"/></source>
+        <target state="translated">kesalahan untuk<x id="url" equiv-text="download['url']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">259</context>
