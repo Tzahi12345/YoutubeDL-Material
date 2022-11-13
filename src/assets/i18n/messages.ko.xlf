@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="ko">
     <body>
@@ -2836,8 +2836,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="});      retu"/></source>
-        <target><x id="url" equiv-text="});      retu"/> 에 대한 에러</target>
+        <source>Error for<x id="url" equiv-text="download['url']"/></source>
+        <target state="needs-translation"><x id="url" equiv-text="download['url']"/>에 대한 오류</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
@@ -3075,6 +3075,128 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">469</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8485375438204712002" datatype="html">
+        <source>Finished downloads</source>
+        <target state="needs-translation">완료된 다운로드</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5801924165267871854" datatype="html">
+        <source>Paused downloads</source>
+        <target state="needs-translation">일시중지된 다운로드</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">142</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2723988842145709249" datatype="html">
+        <source>Errored downloads</source>
+        <target state="needs-translation">다운로드 오류</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7114033980971410157" datatype="html">
+        <source>Failed to pause download! See server logs for more info.</source>
+        <target state="needs-translation">다운로드를 일시 중지하지 못했습니다! 자세한 내용은 서버 로그를 참조하세요.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5223827577229167333" datatype="html">
+        <source>Failed to pause all downloads! See server logs for more info.</source>
+        <target state="needs-translation">모든 다운로드를 일시 중지하지 못했습니다! 자세한 내용은 서버 로그를 참조하세요.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5456775416888155476" datatype="html">
+        <source>Failed to resume download! See server logs for more info.</source>
+        <target state="needs-translation">다운로드를 재개하지 못했습니다! 자세한 내용은 서버 로그를 참조하세요.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6268791413935580107" datatype="html">
+        <source>Failed to resume all downloads! See server logs for more info.</source>
+        <target state="needs-translation">모든 다운로드를 다시 시작 실패! 더 많은 정보를 위해 서버 로그를 참조하십시오.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">194</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c1b7e6d75ff4285c7636c67e5ef259629b81725b" datatype="html">
+        <source>Confirm Password</source>
+        <target state="needs-translation">비밀번호 확인</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/login/login.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">Confirm Password</note>
+      </trans-unit>
+      <trans-unit id="1019978815798793544" datatype="html">
+        <source>Failed to retrieve logs!</source>
+        <target state="needs-translation">로그를 검색하지 못했습니다!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="87406377200084623" datatype="html">
+        <source>Logs copied to clipboard!</source>
+        <target state="needs-translation">로그가 클립보드에 복사되었습니다!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
+        <source>Tasks</source>
+        <target state="needs-translation">작업</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">Navigation menu Tasks Page title</note>
+      </trans-unit>
+      <trans-unit id="39921032161993566" datatype="html">
+        <source>Successfully created playlist!</source>
+        <target state="needs-translation">재생 목록을 성공적으로 만들었습니다!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2070856663109337061" datatype="html">
+        <source>ERROR: failed to create playlist!</source>
+        <target state="needs-translation">오류: 재생 목록을 만들지 못했습니다!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="820184305380634591" datatype="html">
+        <source>Playlist successfully removed.</source>
+        <target state="translated">재생목록이 성공적으로 삭제되었습니다.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
     </body>
