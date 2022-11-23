@@ -44,7 +44,7 @@ jobs:
         uses: docker/setup-qemu-action@v1
 
       - name: setup multi-arch docker build
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Generate Docker image metadata
         id: docker-meta
