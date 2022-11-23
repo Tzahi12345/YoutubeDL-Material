@@ -18,7 +18,7 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: create-json
         id: create-json
-        uses: jsdaniell/create-json@1.1.2
+        uses: jsdaniell/create-json@v1.2.1
         with:
           name: "version.json"
           json: '{"type": "docker", "tag": "nightly", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
