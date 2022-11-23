@@ -55,7 +55,7 @@ jobs:
           Copy-Item -Path ./backend/*.js -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/*.json -Destination ./build/youtubedl-material
       - name: upload build artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: youtubedl-material
           path: build
