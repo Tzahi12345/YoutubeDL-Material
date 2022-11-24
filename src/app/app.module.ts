@@ -87,6 +87,7 @@ import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-butto
 import { TasksComponent } from './components/tasks/tasks.component';
 import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 registerLocaleData(es, 'es');
 
@@ -132,7 +133,8 @@ registerLocaleData(es, 'es');
         SkipAdButtonComponent,
         TasksComponent,
         UpdateTaskScheduleDialogComponent,
-        RestoreDbDialogComponent
+        RestoreDbDialogComponent,
+        NotificationsComponent
     ],
     imports: [
         CommonModule,

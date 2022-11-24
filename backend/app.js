@@ -1992,6 +1992,44 @@ app.post('/api/changeRolePermissions', optionalJwt, async (req, res) => {
     res.send({success: success});
 });
 
+// notifications
+
+app.post('/api/getNotifications', optionalJwt, async (req, res) => {
+    const uuid = req.user.uid;
+
+    const notifications = await db_api.getRecords('notifications', {user_uid: uuid});
+
+    res.send({notifications: notifications});
+});
+
+// set notifications to read
+app.post('/api/setNotificationsToRead', optionalJwt, async (req, res) => {
+    const uids = req.body.uids;
+
+    // TODO: do a bulk update
+    const success = true; // await db_api.updateRecords('notifications', {user_uid: uuid});
+
+    res.send({success: success});
+});
+
+app.post('/api/deleteNotification', optionalJwt, async (req, res) => {
+    const uid = req.body.uid;
+
+    const success = await db_api.removeRecord('notifications', {uid: uid});
+
+    res.send({success: success});
+});
+
+app.post('/api/deleteAllNotifications', optionalJwt, async (req, res) => {
+    const uuid = req.user.uid;
+
+    const success = await db_api.removeAllRecords('notifications', {user_uid: uuid});
+
+    res.send({success: success});
+});
+
+// web server
+
 app.use(function(req, res, next) {
     //if the request is not html then move along
     var accept = req.accepts('html', 'json', 'xml');

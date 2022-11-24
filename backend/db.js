@@ -58,6 +58,10 @@ const tables = {
         name: 'tasks',
         primary_key: 'key'
     },
+    notifications: {
+        name: 'notifications',
+        primary_key: 'uid'
+    },
     test: {
         name: 'test'
     }

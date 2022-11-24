@@ -2755,6 +2755,36 @@ components:
           type: string
         date:
           type: string
+    Notification:
+      required:
+        - uid
+        - type
+        - text
+        - read
+      type: object
+      properties:
+        type:
+          type: string
+        text:
+          type: string
+        uid:
+          type: string
+        action:
+          $ref: '#/components/schemas/NotificationAction'
+        read:
+          type: boolean
+        data:
+          type: object
+    NotificationAction:
+      required:
+        - type
+        - icon
+      type: object
+      properties:
+        type:
+          type: string
+        icon:
+          type: string
     BaseChangePermissionsRequest:
       required:
         - permission
@@ -2886,6 +2916,29 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/UserPermission'
+    DeleteNotificationRequest:
+      required:
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+    SetNotificationsToReadRequest:
+      required:
+        - uids
+      type: object
+      properties:
+        uids:
+          type: array
+          items:
+            type: string
+    GetNotificationsResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
   securitySchemes:
     Auth query parameter:
       name: apiKey

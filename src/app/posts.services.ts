@@ -6,7 +6,7 @@ import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
 import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Fingerprint2 from 'fingerprintjs2';
 import {
@@ -101,7 +101,10 @@ import {
     Sort,
     FileTypeFilter,
     GetAllFilesRequest,
-    GetAllTasksResponse
+    GetAllTasksResponse,
+    DeleteNotificationRequest,
+    SetNotificationsToReadRequest,
+    GetNotificationsResponse
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -833,7 +836,31 @@ export class PostsService implements CanActivate {
         return this.http.get(sponsor_block_api_path + `skipSegments/${id_hash}`);
     }
 
-    public openSnackBar(message: string, action: string = '') {
+    // notifications
+
+    getNotifications(): Observable<GetNotificationsResponse> {
+        return this.http.post<GetNotificationsResponse>(this.path + 'getNotifications', {},
+                                                                    this.httpOptions);
+    }
+
+    setNotificationsToRead(uids: string[]): Observable<SuccessObject> {
+        const body: SetNotificationsToReadRequest = {uids: uids};
+        return this.http.post<SuccessObject>(this.path + 'setNotificationsToRead', body,
+                                                                    this.httpOptions);
+    }
+
+    deleteNotification(uid: string): Observable<SuccessObject> {
+        const body: DeleteNotificationRequest = {uid: uid};
+        return this.http.post<SuccessObject>(this.path + 'deleteNotification', body,
+                                                                    this.httpOptions);
+    }
+    
+    deleteAllNotifications(): Observable<SuccessObject> {
+        return this.http.post<SuccessObject>(this.path + 'deleteNotifications', {},
+                                                                    this.httpOptions);
+    }
+
+    public openSnackBar(message: string, action = ''): void {
         this.snackBar.open(message, action, {
           duration: 2000,
         });
