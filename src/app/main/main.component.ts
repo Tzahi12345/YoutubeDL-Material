@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import {PostsService} from '../posts.services';
 import { Observable, Subject } from 'rxjs';
-import {FormControl, Validators} from '@angular/forms';
+import {UntypedFormControl, Validators} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
@@ -73,7 +73,7 @@ export class MainComponent implements OnInit {
   download_uids: string[] = [];
   current_download: Download = null;
 
-  urlForm = new FormControl('', [Validators.required]);
+  urlForm = new UntypedFormControl('', [Validators.required]);
 
   qualityOptions = {
     'video': [
