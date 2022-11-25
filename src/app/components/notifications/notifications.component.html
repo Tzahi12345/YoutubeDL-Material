@@ -1,32 +1,10 @@
-<h4 *ngIf="notifications !== null && notifications.length === 0 && read_notifications.length === 0" style="text-align: center; margin: 10px;">No notifications available</h4>
+<h4 *ngIf="notifications !== null && notifications.length === 0 && read_notifications.length === 0" style="text-align: center; margin: 10px;" i18n="No notifications available">No notifications available</h4>
 <div style="margin: 10px;" *ngIf="notifications?.length > 0">
-    <h4 class="notification-title">New notifications</h4>
-    <div *ngFor="let notification of appService.notifications; let i = index;">
-        <mat-divider class="notification-divider"></mat-divider>
-        <div style="display: inline-block;">
-            <button (click)="deleteNotification(notification.id, i, false)" mat-icon-button><mat-icon>close</mat-icon></button>
-        </div>
-        <div style="display: inline-block">
-            {{notification.title}}
-        </div>
-        <div style="margin-left: 10px; float: right;" *ngIf="notification.action">
-            <button (click)="notificationAction(notification)" [color]="notification.action.warn ? 'warn' : 'primary'" mat-raised-button>{{notification.action.title}}</button>
-        </div>
-    </div>
+    <h4 class="notification-title" i18n="New notifications">New notifications</h4>
+    <app-notifications-list (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="notifications"></app-notifications-list>
 </div>
 
 <div style="margin: 10px;" *ngIf="read_notifications?.length > 0">
-    <h4 class="notification-title">Old notifications</h4>
-    <div *ngFor="let notification of appService.read_notifications; let i = index">
-        <mat-divider class="notification-divider"></mat-divider>
-        <div style="display: inline-block;">
-            <button (click)="deleteNotification(notification.id, i, true)" mat-icon-button><mat-icon>close</mat-icon></button>
-        </div>
-        <div style="display: inline-block">
-            {{notification.title}}
-        </div>
-        <div style="margin-left: 10px; float: right" *ngIf="notification.action">
-            <button (click)="notificationAction(notification)" [color]="notification.action.warn ? 'warn' : 'primary'" mat-raised-button>{{notification.action.title}}</button>
-        </div>
-    </div>
+    <h4 class="notification-title" i18n="Old notifications">Old notifications</h4>
+    <app-notifications-list (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="read_notifications"></app-notifications-list>
 </div>

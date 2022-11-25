@@ -14,6 +14,7 @@ const { create } = require('xmlbuilder2');
 const categories_api = require('./categories');
 const utils = require('./utils');
 const db_api = require('./db');
+const notifications_api = require('./notifications');
 
 const mutex = new Mutex();
 let should_check_downloads = true;
@@ -340,6 +341,8 @@ async function downloadQueuedFile(download_uid) {
 
                     // registers file in DB
                     const file_obj = await db_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
+
+                    notifications_api.sendDownloadNotification(file_obj, download['user_uid']);
 
                     file_objs.push(file_obj);
                 }

@@ -29,6 +29,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatBadgeModule } from '@angular/material/badge';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { TextFieldModule } from '@angular/cdk/text-field';
@@ -51,7 +53,6 @@ import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-d
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
-import { MatChipsModule } from '@angular/material/chips';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { AvatarModule } from 'ngx-avatars';
 import { ContentLoaderModule } from '@ngneat/content-loader';
@@ -88,6 +89,7 @@ import { TasksComponent } from './components/tasks/tasks.component';
 import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
 
 registerLocaleData(es, 'es');
 
@@ -134,7 +136,8 @@ registerLocaleData(es, 'es');
         TasksComponent,
         UpdateTaskScheduleDialogComponent,
         RestoreDbDialogComponent,
-        NotificationsComponent
+        NotificationsComponent,
+        NotificationsListComponent
     ],
     imports: [
         CommonModule,
@@ -172,6 +175,7 @@ registerLocaleData(es, 'es');
         MatTableModule,
         MatDatepickerModule,
         MatChipsModule,
+        MatBadgeModule,
         DragDropModule,
         ClipboardModule,
         TextFieldModule,

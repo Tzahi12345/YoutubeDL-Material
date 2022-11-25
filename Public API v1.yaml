@@ -2764,27 +2764,30 @@ components:
       type: object
       properties:
         type:
-          type: string
-        text:
-          type: string
+          $ref: '#/components/schemas/NotificationType'
         uid:
           type: string
+        user_uid:
+          type: string
         action:
-          $ref: '#/components/schemas/NotificationAction'
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationAction'
         read:
           type: boolean
         data:
           type: object
     NotificationAction:
-      required:
-        - type
-        - icon
-      type: object
-      properties:
-        type:
-          type: string
-        icon:
-          type: string
+      type: string
+      enum:
+      - play
+      - retry_download
+      - view_download_error
+    NotificationType:
+      type: string
+      enum:
+      - download_complete
+      - download_error
     BaseChangePermissionsRequest:
       required:
         - permission

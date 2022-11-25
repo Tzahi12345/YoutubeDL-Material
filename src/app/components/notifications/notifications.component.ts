@@ -1,11 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { PostsService } from 'app/posts.services';
 import { Notification } from 'api-types';
-
-// TODO: fill this out
-const NOTIFICATION_ACTION_TO_STRING = {}
+import { NotificationAction } from 'api-types/models/NotificationAction';
 
 @Component({
   selector: 'app-notifications',
@@ -17,7 +15,6 @@ export class NotificationsComponent implements OnInit {
   notifications = null;
   read_notifications = null;
 
-  @Input() menu: MatMenuTrigger;
   @Output() notificationCount = new EventEmitter<number>();
 
   constructor(public postsService: PostsService, private router: Router, private elRef: ElementRef) { }
@@ -37,21 +34,35 @@ export class NotificationsComponent implements OnInit {
 
   getNotifications(): void {
     this.postsService.getNotifications().subscribe(res => {
-      this.notifications = res['notifications'].filter(notification => notification.read == false);
-      this.read_notifications = res['notifications'].filter(notification => notification.read == true);
+      this.notifications = res['notifications'].filter(notification => !notification.read);
+      this.read_notifications = res['notifications'].filter(notification => notification.read);
       this.notificationCount.emit(this.notifications.length);
     });
   }
 
-  notificationAction(notification: Notification): void {
-    // TODO: implement
+  notificationAction(action_info: {notification: Notification, action: NotificationAction}): void {
+    switch (action_info['action']) {
+      case NotificationAction.PLAY:
+        this.router.navigate(['player', {uid: action_info['notification']['data']['file_uid']}]);
+        break;
+      case NotificationAction.VIEW_DOWNLOAD_ERROR:
+        this.router.navigate(['downloads']);
+        break;
+      case NotificationAction.RETRY_DOWNLOAD:
+        this.postsService.restartDownload(action_info['notification']['data']['download_uid'])
+        break;
+      default:
+        console.error(`Notification action ${action_info['action']} does not exist!`);
+        break;
+    }
   }
-  
-  deleteNotification(uid: string, index: number): void {
+
+  deleteNotification(uid: string): void {
     this.postsService.deleteNotification(uid).subscribe(res => {
-      console.log(res);
-      // TODO: remove from array
+      this.notifications.filter(notification => notification['uid'] !== uid);
+      this.read_notifications.filter(read_notification => read_notification['uid'] !== uid);
       this.notificationCount.emit(this.notifications.length);
+      this.getNotifications();
     });
   }
 
@@ -71,6 +82,12 @@ export class NotificationsComponent implements OnInit {
       console.log(res);
     });
     this.notificationCount.emit(0);
+  }
+
+  notificationMenuClosed(): void {
+    if (this.notifications.length > 0) {
+      this.setNotificationsToRead();
+    }
   }
 
 }

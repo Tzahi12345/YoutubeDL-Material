@@ -11,7 +11,11 @@
                         {{topBarTitle}}
                     </div>
                 </div>
-                <div class="flex-column" style="text-align: right; align-items: flex-end;">
+                <div class="flex-column" style="text-align: right; align-items: flex-end; display: inline-block">
+                    <button [matMenuTriggerFor]="notificationsMenu" mat-icon-button><mat-icon [matBadge]="notification_count" matBadgeColor="warn" matBadgeSize="small" *ngIf="notification_count > 0">notifications</mat-icon><mat-icon *ngIf="notification_count === 0">notifications_none</mat-icon></button>
+                    <mat-menu (close)="notificationMenuClosed()" #notificationsMenu="matMenu">
+                        <app-notifications #notifications (notificationCount)="notificationCountUpdate($event)" (click)="$event.stopPropagation()"></app-notifications>
+                    </mat-menu>
                     <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                     <mat-menu #menuSettings="matMenu">
                         <button (click)="openProfileDialog()" *ngIf="postsService.isLoggedIn" mat-menu-item>
@@ -23,10 +27,6 @@
                           <span i18n="Dark mode toggle label">Dark</span>
                           <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
                         </button>
-                        <!-- <button *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('settings')))" (click)="openSettingsDialog()" mat-menu-item>
-                          <mat-icon>settings</mat-icon>
-                          <span i18n="Settings menu label">Settings</span>
-                        </button> -->
                         <button (click)="openAboutDialog()" mat-menu-item>
                             <mat-icon>info</mat-icon>
                             <span i18n="About menu label">About</span>

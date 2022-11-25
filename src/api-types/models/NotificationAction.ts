@@ -2,7 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type NotificationAction = {
-    type: string;
-    icon: string;
-};
+export enum NotificationAction {
+    PLAY = 'play',
+    RETRY_DOWNLOAD = 'retry_download',
+    VIEW_DOWNLOAD_ERROR = 'view_download_error',
+}

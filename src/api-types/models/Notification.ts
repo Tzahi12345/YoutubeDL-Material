@@ -3,12 +3,13 @@
 /* eslint-disable */
 
 import type { NotificationAction } from './NotificationAction';
+import type { NotificationType } from './NotificationType';
 
 export type Notification = {
-    type: string;
-    text: string;
+    type: NotificationType;
     uid: string;
-    action?: NotificationAction;
+    user_uid?: string;
+    action?: Array<NotificationAction>;
     read: boolean;
     data?: any;
 };

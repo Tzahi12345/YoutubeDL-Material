@@ -1,0 +1,17 @@
+<div *ngFor="let notification of notifications; let i = index;">
+    <mat-divider class="notification-divider"></mat-divider>
+    <div style="display: inline-block">
+        <ng-container *ngIf="NOTIFICATION_PREFIX[notification.type]">
+            {{NOTIFICATION_PREFIX[notification.type]}}&nbsp;
+        </ng-container>
+        <ng-container *ngIf="NOTIFICATION_SUFFIX_KEY[notification.type]">
+            {{notification['data'][NOTIFICATION_SUFFIX_KEY[notification.type]]}}
+        </ng-container>
+    </div>
+    <div style="margin-left: 10px; float: right;" *ngIf="notification.actions?.length > 0">
+        <button (click)="emitDeleteNotification(notification.uid)" mat-icon-button><mat-icon>close</mat-icon></button>
+        <span *ngFor="let action of notification.actions">
+            <button [matTooltip]="NOTIFICATION_ACTION_TO_STRING[action]" (click)="emitNotificationAction(notification)" mat-icon-button><mat-icon>{{NOTIFICATION_ICON[action]}}</mat-icon></button>
+        </span>
+    </div>
+</div>
