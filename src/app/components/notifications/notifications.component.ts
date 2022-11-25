@@ -1,5 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { Component, ElementRef, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { PostsService } from 'app/posts.services';
 import { Notification } from 'api-types';

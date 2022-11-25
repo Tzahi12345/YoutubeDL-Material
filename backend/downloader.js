@@ -107,9 +107,10 @@ exports.clearDownload = async (download_uid) => {
     return await db_api.removeRecord('download_queue', {uid: download_uid});
 }
 
-async function handleDownloadError(download_uid, error_message) {
-    if (!download_uid) return;
-    await db_api.updateRecord('download_queue', {uid: download_uid}, {error: error_message, finished: true, running: false});
+async function handleDownloadError(download, error_message) {
+    if (!download || !download['uid']) return;
+    notifications_api.sendDownloadErrorNotification(download, download['user_uid']);
+    await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false});
 }
 
 async function setupDownloads() {
@@ -273,14 +274,14 @@ async function downloadQueuedFile(download_uid) {
             clearInterval(download_checker);
             if (err) {
                 logger.error(err.stderr);
-                await handleDownloadError(download_uid, err.stderr);
+                await handleDownloadError(download, err.stderr);
                 resolve(false);
                 return;
             } else if (output) {
                 if (output.length === 0 || output[0].length === 0) {
                     // ERROR!
                     const error_message = `No output received for video download, check if it exists in your archive.`;
-                    await handleDownloadError(download_uid, error_message);
+                    await handleDownloadError(download, error_message);
                     logger.warn(error_message);
                     resolve(false);
                     return;
@@ -366,7 +367,7 @@ async function downloadQueuedFile(download_uid) {
                 } else {
                     const error_message = 'Downloaded file failed to result in metadata object.';
                     logger.error(error_message);
-                    await handleDownloadError(download_uid, error_message);
+                    await handleDownloadError(download, error_message);
                 }
 
                 const file_uids = file_objs.map(file_obj => file_obj.uid);
@@ -562,7 +563,8 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
                     const error = `Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`;
                     logger.error(error);
                     if (download_uid) {
-                        await handleDownloadError(download_uid, error);
+                        const download = await db_api.getRecord('download_queue', {uid: download_uid});
+                        await handleDownloadError(download, error);
                     }
                     resolve(null);
                 }
@@ -571,7 +573,8 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
                 if (err.stderr) error_message += `\n\n${err.stderr}`;
                 logger.error(error_message);
                 if (download_uid) {
-                    await handleDownloadError(download_uid, error_message);
+                    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+                    await handleDownloadError(download, error_message);
                 }
                 resolve(null);
             }

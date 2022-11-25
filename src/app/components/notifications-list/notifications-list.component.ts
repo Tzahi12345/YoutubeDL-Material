@@ -21,7 +21,7 @@ export class NotificationsListComponent {
   // Attaches string to the end of the notification text
   NOTIFICATION_SUFFIX_KEY: { [key in NotificationType]: string } = {
     download_complete: 'file_title',
-    download_error: 'file_url'
+    download_error: 'download_url'
   }
 
   NOTIFICATION_ACTION_TO_STRING: { [key in NotificationAction]: string } = {
