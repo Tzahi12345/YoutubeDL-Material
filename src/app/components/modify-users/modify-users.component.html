@@ -1,10 +1,10 @@
 <div *ngIf="dataSource; else loading">
     <div style="padding: 15px">
     <div class="row">
-        <div class="table table-responsive pb-4 pt-2">
+        <div class="table table-responsive pb-4 pt-4">
         <div class="example-header">
-            <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search" i18n-placeholder="search field description">
+            <mat-form-field appearance="outline">
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search" i18n-placeholder="search field description">
             </mat-form-field>
         </div>
         

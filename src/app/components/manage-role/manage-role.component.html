@@ -3,13 +3,13 @@
 <mat-dialog-content *ngIf="role">
     <mat-list>
         <mat-list-item role="listitem" *ngFor="let permission of available_permissions">
-            <h3 matLine>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</h3>
-            <span matLine>
+            <div matListItemTitle>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</div>
+            <div matListItemLine>
                 <mat-radio-group [disabled]="permission === 'settings' && role.key === 'admin'" (change)="changeRolePermissions($event, permission, permissions[permission])" [(ngModel)]="permissions[permission]" [attr.aria-label]="'Give role permission for ' + permission">
                     <mat-radio-button value="yes"><ng-container i18n="Yes">Yes</ng-container></mat-radio-button>
                     <mat-radio-button value="no"><ng-container i18n="No">No</ng-container></mat-radio-button>
                 </mat-radio-group>
-            </span>
+            </div>
         </mat-list-item>
     </mat-list>
 </mat-dialog-content>

@@ -39,7 +39,7 @@
                     <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['allow_subscriptions']"><ng-container i18n="Allow subscriptions setting">Allow subscriptions</ng-container></mat-checkbox>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 mt-2 mb-3">
                         <mat-form-field class="text-field" color="accent">
                             <input [disabled]="!new_config['Subscriptions']['allow_subscriptions']" [(ngModel)]="new_config['Subscriptions']['subscriptions_base_path']" matInput placeholder="Subscriptions base path" i18n-placeholder="Subscriptions base path input setting placeholder">
                             <mat-hint><ng-container i18n="Subscriptions base path setting input hint">Base path for videos from your subscribed channels and playlists. It is relative to YTDL-Material's root folder.</ng-container></mat-hint>
@@ -51,7 +51,7 @@
                             <mat-hint><ng-container i18n="Check interval setting input hint">Unit is seconds, only include numbers.</ng-container></mat-hint>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-4 mb-3">
+                    <div class="col-12 mt-3 mb-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Subscriptions']['redownload_fresh_uploads']" matTooltip="Sometimes new videos are downloaded before being fully processed. This setting will mean new videos will be checked for a higher quality version the following day." i18n-matTooltip="Redownload fresh uploads tooltip"><ng-container i18n="Redownload fresh uploads">Redownload fresh uploads</ng-container></mat-checkbox>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-3">
+                    <div class="col-12 mt-3 mb-1">
                         <mat-form-field class="text-field" color="accent">
                             <input matInput [(ngModel)]="new_config['Downloader']['default_file_output']" matInput placeholder="Default file output" i18n-placeholder="Default file output placeholder">
                             <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
@@ -122,7 +122,7 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-12 mt-3 mb-4">
+                    <div class="col-12 mt-4 mb-5">
                         <mat-form-field class="text-field" style="margin-right: 12px;" color="accent">
                             <textarea matInput [(ngModel)]="new_config['Downloader']['custom_args']" placeholder="Global custom args" i18n-placeholder="Custom args input placeholder"></textarea>
                             <mat-hint><ng-container i18n="Custom args setting input hint">Global custom args for downloads on the home page. (Set args for subscriptions for each subscriptions separately!) Args are delimited using two commas like so: ,,</ng-container></mat-hint>
@@ -136,7 +136,7 @@
                 <div class="row">
                     <div class="col-12 mt-3">
                         <h6 i18n="Categories">Categories</h6>
-                        <div *ngIf="postsService.categories && postsService.categories.length > 0" kDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
+                        <div *ngIf="postsService.categories && postsService.categories.length > 0" cdkDropList class="category-list" (cdkDropListDropped)="dropCategory($event)">
                             <div class="category-box" *ngFor="let category of postsService.categories" cdkDrag>
                                 <div class="category-custom-placeholder" *cdkDragPlaceholder></div>
                                 {{category['name']}}
@@ -219,7 +219,7 @@
                     <div class="col-12">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['download_only_mode']"><ng-container i18n="Download only mode setting">Download only mode</ng-container></mat-checkbox>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['allow_autoplay']"><ng-container i18n="Allow autoplay setting">Allow autoplay</ng-container></mat-checkbox>
                     </div>
                 </div>
@@ -375,7 +375,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mt-2">
+                    <div class="col-12">
                         <mat-form-field>
                             <mat-label><ng-container i18n="Log Level label">Log Level</ng-container></mat-label>
                             <mat-select color="accent" [(ngModel)]="new_config['Advanced']['logger_level']">
@@ -387,7 +387,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-12 mb-1">
+                    <div class="col-12">
                         <mat-form-field>
                             <mat-label><ng-container i18n="Login expiration select label">Login expiration</ng-container></mat-label>
                             <mat-select color="accent" [(ngModel)]="new_config['Advanced']['jwt_expiration']">
@@ -399,7 +399,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 mb-1">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['allow_advanced_download']"><ng-container i18n="Allow advanced downloading setting">Allow advanced download</ng-container></mat-checkbox>
                     </div>
                 </div>
@@ -407,14 +407,14 @@
             <mat-divider></mat-divider>
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
-                    <div class="col-12 mt-4">
+                    <div class="col-12 mt-2 mb-2">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Advanced']['use_cookies']"><ng-container i18n="Use cookies setting">Use Cookies</ng-container></mat-checkbox>
                         <button class="checkbox-button" mat-stroked-button (click)="openCookiesUploaderDialog()"><ng-container i18n="Set cookies button">Set Cookies</ng-container></button>
                     </div>
                 </div>
             </div>
             <mat-divider></mat-divider>
-            <div *ngIf="new_config" class="container-fluid mt-1">
+            <div *ngIf="new_config" class="container-fluid mt-3">
                 <app-updater></app-updater>
             </div>
             <mat-divider></mat-divider>

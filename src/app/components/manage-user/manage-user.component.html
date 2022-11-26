@@ -13,14 +13,14 @@
     <div>
         <mat-list>
             <mat-list-item role="listitem" *ngFor="let permission of available_permissions">
-                <h3 matLine>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</h3>
-                <span matLine>
+                <div matListItemTitle>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</div>
+                <div matListItemLine>
                     <mat-radio-group [disabled]="permission === 'settings' && postsService.user.uid === user.uid" (change)="changeUserPermissions($event, permission)" [(ngModel)]="permissions[permission]" [attr.aria-label]="'Give user permission for ' + permission">
                         <mat-radio-button value="default"><ng-container i18n="Use role default">Use role default</ng-container></mat-radio-button>
                         <mat-radio-button value="yes"><ng-container i18n="Yes">Yes</ng-container></mat-radio-button>
                         <mat-radio-button value="no"><ng-container i18n="No">No</ng-container></mat-radio-button>
                     </mat-radio-group>
-                </span>
+                </div>
             </mat-list-item>
         </mat-list>
     </div>

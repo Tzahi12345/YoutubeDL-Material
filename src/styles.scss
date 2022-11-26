@@ -42,7 +42,7 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include angular-material-theme($dark-theme);
 }
 
-.mat-stroked-button, .mat-raised-button, .mat-flat-button {
+.mat-mdc-outlined-button, .mat-mdc-raised-button, .mat-mdc-flat-button {
   border-radius: 24px !important
 }
 

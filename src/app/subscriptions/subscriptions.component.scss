@@ -18,7 +18,13 @@
 
 .a-list-item {
     height: 48px;
-    padding-top: 12px !important;
+    color: unset;
+    display: flex;
+    align-items: center;
+}
+
+::ng-deep .mdc-list-item__primary-text {
+    display: flex;
 }
 
 .sub-nav-list {

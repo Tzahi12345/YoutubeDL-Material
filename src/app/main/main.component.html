@@ -2,7 +2,7 @@
 <div class="big demo-basic">
     <mat-card id="card" style="margin-right: 20px; margin-left: 20px;" [ngClass]="(allowAdvancedDownload) ? 'no-border-radius-bottom' : 'border-radius-both'">
         <mat-card-content style="padding: 0px 8px 0px 8px;">
-            <div style="position: relative; margin-right: 15px;">
+            <div style="position: relative; margin-right: 15px; margin-top: 20px;">
                 <form class="example-form">
                     <div class="container-fluid">
                         <div class="row">
@@ -31,16 +31,16 @@
                                             </ng-container>
                                         </ng-container>
                                     </mat-select>
-                                    <div class="spinner-div" *ngIf="url !== '' && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']">
-                                        <mat-spinner [diameter]="25"></mat-spinner>
-                                    </div>
                                 </mat-form-field>
+                                <div class="spinner-div" *ngIf="url !== '' && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']">
+                                    <mat-spinner [diameter]="25"></mat-spinner>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="results-div" *ngIf="results_showing">
                         <span *ngFor="let result of results; let i = index">
-                            <mat-card class="result-card mat-elevation-z7" [ngClass]="[(i === 0 && results.length > 1) ? 'first-result-card' : '', ((i === results.length-1) && results.length > 1) ? 'last-result-card' : '', (results.length === 1) ? 'only-result-card' : '']">
+                            <mat-card appearance="outlined" class="result-card mat-elevation-z7" [ngClass]="[(i === 0 && results.length > 1) ? 'first-result-card' : '', ((i === results.length-1) && results.length > 1) ? 'last-result-card' : '', (results.length === 1) ? 'only-result-card' : '']">
                                 <div class="search-card-title">
                                     {{result.title}}
                                 </div>

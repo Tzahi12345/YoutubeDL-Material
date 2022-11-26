@@ -3,7 +3,7 @@
         <div class="col-12 order-2 col-sm-4 order-sm-1 d-flex justify-content-center">
             <div>
                 <div style="display: inline-block;">
-                    <mat-form-field style="width: 132px;">
+                    <mat-form-field appearance="outline" style="width: 165px;">
                         <mat-select [(ngModel)]="this.filterProperty" (selectionChange)="filterOptionChanged($event.value)">
                             <mat-option *ngFor="let filterOption of filterProperties | keyvalue" [value]="filterOption.value">
                                 {{filterOption['value']['label']}}
@@ -21,7 +21,7 @@
             <h4 *ngIf="customHeader" class="my-videos-title">{{customHeader}}</h4>
         </div>
         <div class="col-12 order-3 col-sm-4 order-sm-3 d-flex justify-content-center">
-            <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
+            <mat-form-field appearance="outline" [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
                 <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" placeholder="Search" i18n-placeholder="Files search placeholder" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
                 <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
@@ -96,7 +96,7 @@
     </div>
 
     <div style="position: relative;" *ngIf="usePaginator && selectedIndex > 0">
-        <div style="position: absolute; margin-left: 8px; margin-top: 5px; scale: 0.8">
+        <div style="position: absolute; margin-left: 8px; margin-top: -2px; scale: 0.8">
             <mat-form-field>
                 <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>
                 <mat-select color="accent" [(ngModel)]="fileTypeFilter" (selectionChange)="fileTypeFilterChanged($event.value)">

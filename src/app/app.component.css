@@ -13,7 +13,6 @@
 }
 
 .theme-slide-toggle {
-    top: 2px;
     left: 10px;
     position: relative;
     pointer-events: none;
@@ -25,4 +24,9 @@
 
 .top-toolbar {
     height: 64px;
+}
+
+::ng-deep .mdc-list-item__primary-text {
+    width: 85px;
+    height: 26px;
 }
