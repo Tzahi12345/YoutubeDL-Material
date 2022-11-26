@@ -233,6 +233,18 @@ export class PostsService implements CanActivate {
 
     }
     canActivate(route: ActivatedRouteSnapshot, state): Promise<boolean> {
+        if (this.initialized) {
+            return this._canActivate(route);
+        } else {
+            this.service_initialized.subscribe(init => {
+                if (init) {
+                    return this._canActivate(route);
+                }
+            });
+        }
+    }
+
+    _canActivate(route: ActivatedRouteSnapshot): Promise<boolean> {
         const PATH_TO_REQUIRED_PERM = {
             settings: 'settings',
             subscriptions: 'subscriptions',
