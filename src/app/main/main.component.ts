@@ -237,6 +237,8 @@ export class MainComponent implements OnInit {
       if (customArgs && customArgs !== 'null') { this.customArgs = customArgs }
       if (customOutput && customOutput !== 'null') { this.customOutput = customOutput }
       if (youtubeUsername && youtubeUsername !== 'null') { this.youtubeUsername = youtubeUsername }
+
+      this.getSimulatedOutput();
     }
 
     // get downloads routine
