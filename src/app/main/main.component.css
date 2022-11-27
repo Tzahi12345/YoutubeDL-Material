@@ -132,7 +132,8 @@ mat-form-field.mat-mdc-form-field {
     margin-left: 5px;
     margin-top: -6px;
     margin-bottom: -5px;
-    top: -5px;
+    position: relative;
+    top: 6px;
 }
 
 .border-radius-both {

@@ -6,7 +6,7 @@
                     <button #hamburgerMenu style="outline: none" *ngIf="router.url.split(';')[0] !== '/player'" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
                     <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
                 </div>
-                <div class="flex-column" style="text-align: center; margin-top: 5px;">
+                <div class="flex-column" style="text-align: center; justify-content: center;">
                     <div style="font-size: 22px; text-shadow: #141414 0.25px 0.25px 1px;">
                         {{topBarTitle}}
                     </div>

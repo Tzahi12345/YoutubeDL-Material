@@ -11,7 +11,8 @@
         <div>
             <mat-checkbox style="margin-right: 15px;" (change)="useTimestampChanged()" [(ngModel)]="timestamp_enabled"><ng-container i18n="Use timestamp">Use timestamp</ng-container></mat-checkbox>
             <mat-form-field>
-                <input matInput type="number" [(ngModel)]="current_timestamp" [disabled]="!timestamp_enabled" (change)="timestampInputChanged($event)" placeholder="Seconds" i18n-placeholder="Seconds">
+                <mat-label i18n="Seconds">Seconds</mat-label>
+                <input matInput type="number" [(ngModel)]="current_timestamp" [disabled]="!timestamp_enabled" (change)="timestampInputChanged($event)">
             </mat-form-field>
         </div>
         <div>

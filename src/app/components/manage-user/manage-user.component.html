@@ -5,7 +5,8 @@
 
     <div>
         <mat-form-field style="margin-right: 15px;">
-            <input matInput [(ngModel)]="newPasswordInput" type="password" placeholder="New password" i18n-placeholder="New password placeholder">
+            <mat-label i18n="New password">New password</mat-label>
+            <input matInput [(ngModel)]="newPasswordInput" type="password">
         </mat-form-field>
         <button mat-raised-button color="accent" (click)="setNewPassword()" [disabled]="newPasswordInput.length === 0"><ng-container i18n="Set new password">Set new password</ng-container></button>
     </div>

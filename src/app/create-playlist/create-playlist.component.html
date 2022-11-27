@@ -7,7 +7,8 @@
         <div *ngIf="create_mode || playlist">
             <div>
                 <mat-form-field color="accent">
-                    <input [(ngModel)]="name" matInput placeholder="Name" i18n-placeholder="Playlist name placeholder" type="text" required aria-required [ngModelOptions]="{standalone: true}">
+                    <mat-label i18n="Playlist name">Name</mat-label>
+                    <input [(ngModel)]="name" matInput type="text" required aria-required [ngModelOptions]="{standalone: true}">
                 </mat-form-field>
             </div>
             <app-recent-videos [selectMode]="true" [defaultSelected]="preselected_files" [customHeader]="'Select files'" (fileSelectionEmitter)="fileSelectionChanged($event)" [selectedIndex]="create_mode ? 1 : 0"></app-recent-videos>

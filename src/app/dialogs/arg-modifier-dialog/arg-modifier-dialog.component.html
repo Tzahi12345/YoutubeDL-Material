@@ -25,7 +25,7 @@
                         <mat-autocomplete #autochip="matAutocomplete">
                             <mat-option *ngFor="let arg of filteredChipOptions | async" [value]="arg.key">
                                 <span [innerHTML]="arg.key | highlight : chipCtrl.value"></span>
-                                <button style="float: right" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
+                                <button class="info-autocomplete-icon" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
                             </mat-option>
                         </mat-autocomplete>
                     </mat-card-content>
@@ -38,12 +38,13 @@
                         <form >
                             <div>
                                 <mat-form-field style="width: 75%" color="accent">
-                                    <input matInput placeholder="Arg" [matAutocomplete]="auto" [formControl]="stateCtrl">
+                                    <mat-label i18n="Arg">Arg</mat-label>
+                                    <input matInput [matAutocomplete]="auto" [formControl]="stateCtrl">
                                 </mat-form-field>
                                 <mat-autocomplete #auto="matAutocomplete">
                                     <mat-option *ngFor="let arg of filteredOptions | async" [value]="arg.key">
                                         <span [innerHTML]="arg.key | highlight : stateCtrl.value"></span>
-                                        <button style="float: right" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
+                                        <button class="info-autocomplete-icon" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
                                     </mat-option>
                                 </mat-autocomplete>
 
@@ -68,7 +69,8 @@
                             </div>
                             <div *ngIf="secondArgEnabled">
                                 <mat-form-field style="width: 75%" color="accent">
-                                    <input [ngModelOptions]="{standalone: true}" matInput [disabled]="!secondArgEnabled" placeholder="Arg value" i18n-placeholder="Arg value placeholder" [(ngModel)]="secondArg">
+                                    <mat-label i18n="Arg value">Arg value</mat-label>
+                                    <input [ngModelOptions]="{standalone: true}" matInput [disabled]="!secondArgEnabled" [(ngModel)]="secondArg">
                                 </mat-form-field>
                             </div>
                         </form>

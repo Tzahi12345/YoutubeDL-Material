@@ -117,7 +117,8 @@
                             </ng-container>
                         </mat-checkbox>
                         <mat-form-field color="accent" style="margin-bottom: 42px;" class="advanced-input">
-                            <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput (ngModelChange)="argsChanged()" placeholder="Custom args" i18n-placeholder="Custom args placeholder">
+                            <mat-label i18n="Custom args">Custom args</mat-label>
+                            <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput (ngModelChange)="argsChanged()">
                             <mat-hint>
                                 <ng-container i18n="Custom Args input hint">
                                     No need to include URL, just everything after. Args are delimited using two commas like so: ,,
@@ -132,7 +133,8 @@
                             </ng-container>
                         </mat-checkbox>
                         <mat-form-field style="margin-bottom: 42px;" color="accent" class="advanced-input">
-                            <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput (ngModelChange)="argsChanged()" placeholder="Custom output" i18n-placeholder="Custom output placeholder">
+                            <mat-label i18n="Custom output">Custom output</mat-label>
+                            <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput (ngModelChange)="argsChanged()">
                             <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
                                 <ng-container i18n="Youtube-dl output template documentation link">Documentation</ng-container></a>.
                                 <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
@@ -146,12 +148,14 @@
                             </ng-container>
                         </mat-checkbox>
                         <mat-form-field *ngIf="youtubeAuthEnabled" color="accent" class="advanced-input">
-                            <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()" placeholder="Username" i18n-placeholder="YT Username placeholder">
+                            <mat-label i18n="Username">Username</mat-label>
+                            <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()">
                         </mat-form-field>
                     </div>
                     <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-3">
-                        <mat-form-field *ngIf="youtubeAuthEnabled" style="margin-top: 31px;" color="accent" class="advanced-input">
-                            <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()" placeholder="Password" i18n-placeholder="YT Password placeholder">
+                        <mat-form-field *ngIf="youtubeAuthEnabled" style="margin-top: 40px;" color="accent" class="advanced-input">
+                            <mat-label i18n="Password">Password</mat-label>
+                            <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()">
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-sm-6 mt-3">
@@ -161,12 +165,14 @@
                             </ng-container>
                         </mat-checkbox>
                         <mat-form-field *ngIf="cropFile" color="accent" class="advanced-input">
-                            <input [(ngModel)]="cropFileStart" type="number" [ngModelOptions]="{standalone: true}" matInput placeholder="Crop from (seconds)" i18n-placeholder="Crop from placeholder">
+                            <mat-label i18n="Crop from (seconds)">Crop from (seconds)</mat-label>
+                            <input [(ngModel)]="cropFileStart" type="number" [ngModelOptions]="{standalone: true}" matInput>
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-sm-6 mt-3">
-                        <mat-form-field *ngIf="cropFile" style="margin-top: 31px;" color="accent" class="advanced-input">
-                            <input [(ngModel)]="cropFileEnd" type="number" [ngModelOptions]="{standalone: true}" matInput placeholder="Crop to (seconds)" i18n-placeholder="Crop to placeholder">
+                        <mat-form-field *ngIf="cropFile" style="margin-top: 40px;" color="accent" class="advanced-input">
+                            <mat-label i18n="Crop to (seconds)">Crop to (seconds)</mat-label>
+                            <input [(ngModel)]="cropFileEnd" type="number" [ngModelOptions]="{standalone: true}" matInput>
                         </mat-form-field>
                     </div>
                 </div>

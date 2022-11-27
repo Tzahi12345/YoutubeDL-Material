@@ -4,7 +4,8 @@
         <div class="table table-responsive pb-4 pt-4">
         <div class="example-header">
             <mat-form-field appearance="outline">
-                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search" i18n-placeholder="search field description">
+                <mat-label i18n="Search">Search</mat-label>
+                <input matInput (keyup)="applyFilter($event.target.value)">
             </mat-form-field>
         </div>
         
