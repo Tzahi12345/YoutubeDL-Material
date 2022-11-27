@@ -26,7 +26,8 @@ exports.createNotification = (type, actions, data, user_uid) => {
         data: data,
         user_uid: user_uid,
         uid: uuid(),
-        read: false
+        read: false,
+        timestamp: Date.now()/1000
     }
     return notification;
 }

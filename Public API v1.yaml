@@ -2761,6 +2761,7 @@ components:
         - type
         - text
         - read
+        - timestamp
       type: object
       properties:
         type:
@@ -2777,6 +2778,8 @@ components:
           type: boolean
         data:
           type: object
+        timestamp:
+          type: number
     NotificationAction:
       type: string
       enum:

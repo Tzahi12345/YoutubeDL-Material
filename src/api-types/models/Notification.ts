@@ -12,4 +12,5 @@ export type Notification = {
     action?: Array<NotificationAction>;
     read: boolean;
     data?: any;
+    timestamp: number;
 };
