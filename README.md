@@ -70,7 +70,9 @@ If you'd like to install YoutubeDL-Material, go to the Installation section. If 
 
 To deploy, simply clone the repository, and go into the `youtubedl-material` directory. Type `npm install` and all the dependencies will install. Then type `cd backend` and again type `npm install` to install the dependencies for the backend.
 
-Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `npm build`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
+Once you do that, you're almost up and running. All you need to do is edit the configuration in `youtubedl-material/appdata`, go back into the `youtubedl-material` directory, and type `npm run build`. This will build the app, and put the output files in the `youtubedl-material/backend/public` folder.
+
+Lastly, type `npm -g install pm2` to install pm2 globally.
 
 The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
 
