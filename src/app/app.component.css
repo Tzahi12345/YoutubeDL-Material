@@ -26,7 +26,11 @@
     height: 64px;
 }
 
-::ng-deep .mdc-list-item__primary-text {
+::ng-deep .top-menu-button > span {
     width: 85px;
     height: 26px;
+}
+
+::ng-deep .mdc-switch {
+    outline: none !important;
 }
