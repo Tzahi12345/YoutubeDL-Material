@@ -1,10 +1,5 @@
-<strong *ngIf="notifications !== null && notifications.length === 0 && read_notifications.length === 0" style="text-align: center; margin: 10px; position: relative; top: 8px;" i18n="No notifications available">No notifications available</strong>
+<div *ngIf="notifications !== null && notifications.length === 0" style="text-align: center; margin: 10px;" i18n="No notifications available">No notifications available</div>
 <div style="margin: 10px;" *ngIf="notifications?.length > 0">
-    <strong class="notification-title" i18n="New notifications">New notifications</strong>
     <app-notifications-list (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="notifications"></app-notifications-list>
-</div>
-
-<div style="margin: 10px;" *ngIf="read_notifications?.length > 0">
-    <strong class="notification-title" i18n="Old notifications">Old notifications</strong>
-    <app-notifications-list (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="read_notifications"></app-notifications-list>
+    <button style="margin-top: 15px;" *ngIf="notifications?.length > 0" color="warn" (click)="deleteAllNotifications()" mat-stroked-button>Remove all</button>
 </div>

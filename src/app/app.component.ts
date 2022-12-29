@@ -211,6 +211,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.notification_count = new_count;
   }
 
+  notificationMenuOpened(): void {
+    this.notifications.getNotifications();
+  }
+
   notificationMenuClosed(): void {
     this.notifications.setNotificationsToRead();
   }

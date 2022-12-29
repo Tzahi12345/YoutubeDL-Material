@@ -354,7 +354,7 @@ exports.addMetadataPropertyToDB = async (property_key) => {
             }
         }
 
-        return await exports.bulkUpdateRecords('files', 'uid', update_obj);
+        return await exports.bulkUpdateRecordsByKey('files', 'uid', update_obj);
     } catch(err) {
         logger.error(err);
         return false;
@@ -681,7 +681,7 @@ exports.updateRecords = async (table, filter_obj, update_obj) => {
     return !!(output['result']['ok']);
 }
 
-exports.bulkUpdateRecords = async (table, key_label, update_obj) => {
+exports.bulkUpdateRecordsByKey = async (table, key_label, update_obj) => {
     // local db override
     if (using_local_db) {
         local_db.get(table).each((record) => {

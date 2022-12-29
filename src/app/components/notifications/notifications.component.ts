@@ -11,8 +11,7 @@ import { NotificationAction } from 'api-types/models/NotificationAction';
 })
 export class NotificationsComponent implements OnInit {
 
-  notifications = null;
-  read_notifications = null;
+  notifications: Notification[] = null;
 
   @Output() notificationCount = new EventEmitter<number>();
 
@@ -33,9 +32,8 @@ export class NotificationsComponent implements OnInit {
 
   getNotifications(): void {
     this.postsService.getNotifications().subscribe(res => {
-      this.notifications = res['notifications'].filter(notification => !notification.read);
-      this.read_notifications = res['notifications'].filter(notification => notification.read);
-      this.notificationCount.emit(this.notifications.length);
+      this.notifications = res['notifications'];
+      this.notificationCount.emit(this.notifications.filter(notification => !notification.read).length);
     });
   }
 
@@ -48,7 +46,10 @@ export class NotificationsComponent implements OnInit {
         this.router.navigate(['downloads']);
         break;
       case NotificationAction.RETRY_DOWNLOAD:
-        this.postsService.restartDownload(action_info['notification']['data']['download_uid'])
+        this.postsService.restartDownload(action_info['notification']['data']['download_uid']).subscribe(res => {
+          this.postsService.openSnackBar($localize`Download restarted!`);
+          this.deleteNotification(action_info['notification']['uid']);
+        });
         break;
       default:
         console.error(`Notification action ${action_info['action']} does not exist!`);
@@ -59,7 +60,6 @@ export class NotificationsComponent implements OnInit {
   deleteNotification(uid: string): void {
     this.postsService.deleteNotification(uid).subscribe(res => {
       this.notifications.filter(notification => notification['uid'] !== uid);
-      this.read_notifications.filter(read_notification => read_notification['uid'] !== uid);
       this.notificationCount.emit(this.notifications.length);
       this.getNotifications();
     });
@@ -67,9 +67,7 @@ export class NotificationsComponent implements OnInit {
 
   deleteAllNotifications(): void {
     this.postsService.deleteAllNotifications().subscribe(res => {
-      console.log(res);
       this.notifications = [];
-      this.read_notifications = [];
       this.getNotifications();
     });
     this.notificationCount.emit(0);
@@ -78,15 +76,9 @@ export class NotificationsComponent implements OnInit {
   setNotificationsToRead(): void {
     const uids = this.notifications.map(notification => notification.uid);
     this.postsService.setNotificationsToRead(uids).subscribe(res => {
-      console.log(res);
+      this.getNotifications();
     });
     this.notificationCount.emit(0);
-  }
-
-  notificationMenuClosed(): void {
-    if (this.notifications.length > 0) {
-      this.setNotificationsToRead();
-    }
   }
 
 }

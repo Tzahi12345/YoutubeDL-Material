@@ -2009,10 +2009,9 @@ app.post('/api/getNotifications', optionalJwt, async (req, res) => {
 
 // set notifications to read
 app.post('/api/setNotificationsToRead', optionalJwt, async (req, res) => {
-    const uids = req.body.uids;
+    const uuid = req.user.uid;
 
-    // TODO: do a bulk update
-    const success = true; // await db_api.updateRecords('notifications', {user_uid: uuid});
+    const success = await db_api.updateRecords('notifications', {user_uid: uuid}, {read: true});
 
     res.send({success: success});
 });

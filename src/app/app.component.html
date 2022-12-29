@@ -7,11 +7,11 @@
                         <div style="display: flex; align-items: center;">
                             <button #hamburgerMenu style="outline: none" *ngIf="router.url.split(';')[0] !== '/player'" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
                             <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
-                            <div style="margin-left: 8px; display: inline-block;"><a routerLink='/home'><img style="width: 32px;" src="assets/images/logo_128px.png"></a></div>
+                            <div style="margin-left: 8px; display: inline-block;"><button mat-icon-button routerLink='/home'><img style="width: 32px;" src="assets/images/logo_128px.png"></button></div>
                         </div>
                     </div>
                     <div class="col-6" style="text-align: right; align-items: flex-end; display: inline-block">
-                        <button [matMenuTriggerFor]="notificationsMenu" mat-icon-button><mat-icon [matBadge]="notification_count" matBadgeColor="warn" matBadgeSize="small" *ngIf="notification_count > 0">notifications</mat-icon><mat-icon *ngIf="notification_count === 0">notifications_none</mat-icon></button>
+                        <button [matMenuTriggerFor]="notificationsMenu" (menuOpened)="notificationMenuOpened()" mat-icon-button><mat-icon [matBadge]="notification_count" matBadgeColor="warn" matBadgeSize="small" *ngIf="notification_count > 0">notifications</mat-icon><mat-icon *ngIf="notification_count === 0">notifications_none</mat-icon></button>
                         <mat-menu (close)="notificationMenuClosed()" #notificationsMenu="matMenu">
                             <app-notifications #notifications (notificationCount)="notificationCountUpdate($event)" (click)="$event.stopPropagation()"></app-notifications>
                         </mat-menu>

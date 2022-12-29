@@ -1,17 +1,28 @@
-<div *ngFor="let notification of notifications; let i = index;">
-    <mat-divider class="notification-divider"></mat-divider>
-    <div class="notification-text">
-        <ng-container *ngIf="NOTIFICATION_PREFIX[notification.type]">
-            {{NOTIFICATION_PREFIX[notification.type]}}&nbsp;
-        </ng-container>
-        <ng-container *ngIf="NOTIFICATION_SUFFIX_KEY[notification.type]">
-            {{notification['data'][NOTIFICATION_SUFFIX_KEY[notification.type]]}}
-        </ng-container>
-    </div>
-    <div *ngIf="notification.actions?.length > 0">
-        <button matTooltip="Remove" i18n-matTooltip="Remove" (click)="emitDeleteNotification(notification.uid)" mat-icon-button><mat-icon>close</mat-icon></button>
-        <span *ngFor="let action of notification.actions">
-            <button [matTooltip]="NOTIFICATION_ACTION_TO_STRING[action]" (click)="emitNotificationAction(notification, action)" mat-icon-button><mat-icon>{{NOTIFICATION_ICON[action]}}</mat-icon></button>
-        </span>
-    </div>
+<div class="card-radius mat-elevation-z2" *ngFor="let notification of notifications; let i = index;">
+    <mat-card class="notification-card card-radius">
+        <mat-card-header>
+            <mat-card-subtitle>
+                <div>
+                    <span class="notification-timestamp">{{notification.timestamp * 1000 | date:'short'}}</span>
+                </div>
+            </mat-card-subtitle>
+            <mat-card-title>
+                <ng-container *ngIf="NOTIFICATION_PREFIX[notification.type]">
+                    {{NOTIFICATION_PREFIX[notification.type]}}&nbsp;
+                </ng-container>
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <ng-container *ngIf="NOTIFICATION_SUFFIX_KEY[notification.type]">
+                {{notification['data'][NOTIFICATION_SUFFIX_KEY[notification.type]]}}
+            </ng-container>
+        </mat-card-content>
+        <mat-card-actions *ngIf="notification.actions?.length > 0">
+            <button matTooltip="Remove" i18n-matTooltip="Remove" (click)="emitDeleteNotification(notification.uid)" mat-icon-button><mat-icon>close</mat-icon></button>
+            <span *ngFor="let action of notification.actions">
+                <button [matTooltip]="NOTIFICATION_ACTION_TO_STRING[action]" (click)="emitNotificationAction(notification, action)" mat-icon-button><mat-icon>{{NOTIFICATION_ICON[action]}}</mat-icon></button>
+            </span>
+        </mat-card-actions>
+        <span *ngIf="!notification.read" class="dot"></span>
+    </mat-card>
 </div>

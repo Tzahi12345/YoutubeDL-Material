@@ -212,7 +212,7 @@ describe('Database', async function() {
             const received_records = await db_api.getRecords('test');
             assert(received_records && received_records.length === NUM_RECORDS_TO_ADD);
 
-            success = await db_api.bulkUpdateRecords('test', 'uid', update_obj);
+            success = await db_api.bulkUpdateRecordsByKey('test', 'uid', update_obj);
             assert(success);
 
             const received_updated_records = await db_api.getRecords('test');

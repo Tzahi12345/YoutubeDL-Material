@@ -868,7 +868,7 @@ export class PostsService implements CanActivate {
     }
     
     deleteAllNotifications(): Observable<SuccessObject> {
-        return this.http.post<SuccessObject>(this.path + 'deleteNotifications', {},
+        return this.http.post<SuccessObject>(this.path + 'deleteAllNotifications', {},
                                                                     this.httpOptions);
     }
 

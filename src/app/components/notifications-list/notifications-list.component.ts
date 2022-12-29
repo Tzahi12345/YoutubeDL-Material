@@ -14,8 +14,8 @@ export class NotificationsListComponent {
   @Output() notificationAction = new EventEmitter<{notification: Notification, action: NotificationAction}>();
 
   NOTIFICATION_PREFIX: { [key in NotificationType]: string } = {
-    download_complete: $localize`Finished downloading:`,
-    download_error: $localize`Download failed:`
+    download_complete: $localize`Finished downloading`,
+    download_error: $localize`Download failed`
   }
 
   // Attaches string to the end of the notification text
