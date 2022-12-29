@@ -24,6 +24,7 @@
 
 .top-toolbar {
     height: 64px;
+    background: unset;
 }
 
 ::ng-deep .top-menu-button > span {
