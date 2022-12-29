@@ -1,4 +1,3 @@
-<div class="fixActionRow">
 <h4 mat-dialog-title *ngIf="create_mode" ><ng-container i18n="Create a playlist dialog title">Create a playlist</ng-container></h4>
 <h4 mat-dialog-title *ngIf="!create_mode"><ng-container i18n="Modify playlist dialog title">Modify playlist</ng-container></h4>
 
@@ -19,12 +18,11 @@
 <div class="spacer"></div>
 
 <mat-dialog-actions>
-    <button *ngIf="create_mode" (click)="createPlaylist()" [disabled]="!name || !filesSelect.value || filesSelect.value.length === 0" color="primary" style="float: right" mat-flat-button>
+    <button *ngIf="create_mode" (click)="createPlaylist()" [disabled]="!name || !filesSelect.value || filesSelect.value.length === 0" color="primary" style="float: right" mat-button>
         <ng-container i18n="Create button">Create</ng-container>
     </button>
-    <button *ngIf="!create_mode" (click)="updatePlaylist()" [disabled]="!name || !playlistChanged()" color="primary" style="float: right" mat-flat-button>
+    <button *ngIf="!create_mode" (click)="updatePlaylist()" [disabled]="!name || !playlistChanged()" color="primary" style="float: right" mat-button>
         <ng-container i18n="Save button">Save</ng-container>
     </button>
     <div *ngIf="create_in_progress" style="margin-left: 10px"><mat-spinner [diameter]="25"></mat-spinner></div>
 </mat-dialog-actions>
-</div>

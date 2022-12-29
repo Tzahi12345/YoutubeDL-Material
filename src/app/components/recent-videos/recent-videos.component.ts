@@ -6,8 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MatChipListboxChange, MatChipOption } from '@angular/material/chips';
-import { KeyValue } from '@angular/common';
+import { MatChipListboxChange } from '@angular/material/chips';
 
 @Component({
   selector: 'app-recent-videos',

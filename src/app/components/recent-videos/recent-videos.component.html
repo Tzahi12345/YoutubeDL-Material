@@ -87,7 +87,7 @@
                     <mat-list-option [selected]="selected_data.includes(file.uid)" *ngFor="let file of paged_data" [value]="file">
                         <div class="container">
                             <div class="row justify-content-center">
-                                <div class="col-10">
+                                <div class="col-10 select-file-title">
                                     <mat-icon class="audio-video-icon">{{(file.type === 'audio' || file.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
                                     {{file.title}}
                                 </div>

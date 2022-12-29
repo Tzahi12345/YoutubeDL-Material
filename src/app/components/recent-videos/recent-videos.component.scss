@@ -100,7 +100,7 @@
 .remove-item-button {
     right: 10px;
     position: absolute;
-    top: 4px;
+    top: 0px;
 }
 
 .playlist-item-text {
@@ -126,4 +126,10 @@
 
 .hide {
     display: none !important;
+}
+
+.select-file-title {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

@@ -143,3 +143,13 @@ $light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
     U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
     U+FEFF, U+FFFD;
 }
+
+.mat-mdc-icon {
+  align-items: center;
+  display: inline-flex;
+}
+
+.mdc-icon-button {
+  align-items: center !important;
+  display: inline-flex !important;
+}
