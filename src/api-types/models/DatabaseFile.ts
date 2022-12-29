@@ -40,4 +40,5 @@ export type DatabaseFile = {
      * In Kbps
      */
     abr?: number;
+    favorite: boolean;
 };

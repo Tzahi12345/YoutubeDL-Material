@@ -1746,6 +1746,9 @@ components:
           description: Filter files by title
         file_type_filter:
           $ref: '#/components/schemas/FileTypeFilter'
+        favorite_filter:
+          type: boolean
+          description: If set to true, only gets favorites
         sub_id:
           type: string
           description: Include if you want to filter by subscription
@@ -2383,6 +2386,7 @@ components:
         - upload_date
         - uploader
         - url
+        - favorite
       type: object
       properties:
         id:
@@ -2430,6 +2434,8 @@ components:
         abr:
           type: number
           description: In Kbps
+        favorite:
+          type: boolean
     Playlist:
       required:
         - uids

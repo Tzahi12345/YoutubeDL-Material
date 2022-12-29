@@ -9,6 +9,7 @@ import localeES from '@angular/common/locales/es';
 import localeDE from '@angular/common/locales/de';
 import localeZH from '@angular/common/locales/zh';
 import localeNB from '@angular/common/locales/nb';
+import { DatabaseFile } from 'api-types';
 
 registerLocaleData(localeGB);
 registerLocaleData(localeFR);
@@ -50,6 +51,7 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() jwtString = null;
   @Input() availablePlaylists = null;
   @Output() goToFile = new EventEmitter<any>();
+  @Output() toggleFavorite = new EventEmitter<DatabaseFile>();
   @Output() goToSubscription = new EventEmitter<any>();
   @Output() deleteFile = new EventEmitter<any>();
   @Output() addFileToPlaylist = new EventEmitter<any>();
@@ -156,6 +158,10 @@ export class UnifiedFileCardComponent implements OnInit {
   onMouseOut() {
     this.elevated = false;
     this.hide_image = false;
+  }
+
+  emitToggleFavorite() {
+    this.toggleFavorite.emit(this.file_obj);
   }
 
 }

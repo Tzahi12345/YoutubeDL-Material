@@ -554,6 +554,7 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
     this.view_count = view_count;
     this.height = height;
     this.abr = abr;
+    this.favorite = false;
 }
 
 module.exports = {

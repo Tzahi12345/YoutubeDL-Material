@@ -6,6 +6,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatChipListboxChange, MatChipOption } from '@angular/material/chips';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'app-recent-videos',
@@ -46,35 +48,54 @@ export class RecentVideosComponent implements OnInit {
   search_text = '';
   searchIsFocused = false;
   descendingMode = true;
-  filterProperties = {
+  sortProperties = {
     'registered': {
       'key': 'registered',
-      'label': 'Download Date',
+      'label': $localize`Download Date`,
       'property': 'registered'
     },
     'upload_date': {
       'key': 'upload_date',
-      'label': 'Upload Date',
+      'label': $localize`Upload Date`,
       'property': 'upload_date'
     },
     'name': {
       'key': 'name',
-      'label': 'Name',
+      'label': $localize`Name`,
       'property': 'title'
     },
     'file_size': {
       'key': 'file_size',
-      'label': 'File Size',
+      'label': $localize`File Size`,
       'property': 'size'
     },
     'duration': {
       'key': 'duration',
-      'label': 'Duration',
+      'label': $localize`Duration`,
       'property': 'duration'
     }
   };
-  filterProperty = this.filterProperties['upload_date'];
-  fileTypeFilter = 'both';
+
+  fileFilters = {
+    video_only: {
+      key: 'video_only',
+      label: $localize`Video only`,
+      incompatible: ['audio_only']
+    },
+    audio_only: {
+      key: 'audio_only',
+      label: $localize`Audio only`,
+      incompatible: ['video_only']
+    },
+    favorited: {
+      key: 'favorited',
+      label: $localize`Favorited`
+    },
+  };
+
+  selectedFilters = [];
+
+  sortProperty = this.sortProperties['upload_date'];
   
   playlists = null;
 
@@ -88,15 +109,17 @@ export class RecentVideosComponent implements OnInit {
     }
 
     // set filter property to cached value
-    const cached_filter_property = localStorage.getItem('filter_property');
-    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
-      this.filterProperty = this.filterProperties[cached_filter_property];
+    const cached_sort_property = localStorage.getItem('sort_property');
+    if (cached_sort_property && this.sortProperties[cached_sort_property]) {
+      this.sortProperty = this.sortProperties[cached_sort_property];
     }
 
     // set file type filter to cached value
-    const cached_file_type_filter = localStorage.getItem('file_type_filter');
-    if (this.usePaginator && cached_file_type_filter) {
-      this.fileTypeFilter = cached_file_type_filter;
+    const cached_file_filter = localStorage.getItem('file_filter');
+    if (this.usePaginator && cached_file_filter) {
+      this.selectedFilters = JSON.parse(cached_file_filter)
+    } else {
+      this.selectedFilters = [];
     }
 
     const sort_order = localStorage.getItem('recent_videos_sort_order');
@@ -107,6 +130,12 @@ export class RecentVideosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.sub_id) {
+      // subscriptions can't download both audio and video (for now), so don't let users filter for these
+      delete this.fileFilters['audio_only'];
+      delete this.fileFilters['video_only'];
+    }
+
     if (this.postsService.initialized) {
       this.getAllFiles();
       this.getAllPlaylists();
@@ -166,9 +195,37 @@ export class RecentVideosComponent implements OnInit {
     this.getAllFiles();
   }
 
-  fileTypeFilterChanged(value: string): void {
-    localStorage.setItem('file_type_filter', value);
-    this.getAllFiles();
+  filterChanged(value: string): void {
+    localStorage.setItem('file_filter', value);
+    // wait a bit for the animation to finish
+    setTimeout(() => this.getAllFiles(), 150);
+  }
+
+  selectedFiltersChanged(event: MatChipListboxChange): void {
+    // in some cases this function will fire even if the selected filters haven't changed
+    if (event.value.length === this.selectedFilters.length) return;
+    if (event.value.length > this.selectedFilters.length) {
+      const filter_key = event.value.filter(possible_new_key => !this.selectedFilters.includes(possible_new_key))[0];
+      this.selectedFilters = this.selectedFilters.filter(existing_filter => !this.fileFilters[existing_filter].incompatible || !this.fileFilters[existing_filter].incompatible.includes(filter_key));
+      this.selectedFilters.push(filter_key);
+    } else {
+      this.selectedFilters = event.value;
+    }
+    this.filterChanged(JSON.stringify(this.selectedFilters));
+  }
+
+  getFileTypeFilter(): string {
+    if (this.selectedFilters.includes('audio_only')) {
+      return 'audio_only';
+    } else if (this.selectedFilters.includes('video_only')) {
+      return 'video_only';
+    } else {
+      return 'both';
+    }
+  }
+
+  getFavoriteFilter(): boolean {
+    return this.selectedFilters.includes('favorited');
   }
 
   toggleModeChange(): void {
@@ -182,9 +239,11 @@ export class RecentVideosComponent implements OnInit {
   getAllFiles(cache_mode = false): void {
     this.normal_files_received = cache_mode;
     const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
-    const sort = {by: this.filterProperty['property'], order: this.descendingMode ? -1 : 1};
+    const sort = {by: this.sortProperty['property'], order: this.descendingMode ? -1 : 1};
     const range = [current_file_index, current_file_index + this.pageSize];
-    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, this.fileTypeFilter as FileTypeFilter, this.sub_id).subscribe(res => {
+    const fileTypeFilter = this.getFileTypeFilter();
+    const favoriteFilter = this.getFavoriteFilter();
+    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, fileTypeFilter as FileTypeFilter, favoriteFilter, this.sub_id).subscribe(res => {
       this.file_count = res['file_count'];
       this.paged_data = res['files'];
       for (let i = 0; i < this.paged_data.length; i++) {
@@ -384,5 +443,14 @@ export class RecentVideosComponent implements OnInit {
     this.selected_data.splice(index, 1);
     this.selected_data_objs.splice(index, 1);
     this.fileSelectionEmitter.emit({new_selection: this.selected_data, thumbnailURL: this.selected_data_objs[0].thumbnailURL});
+  }
+
+  originalOrder = (): number => {
+    return 0;
+  }
+
+  toggleFavorite(file_obj): void {
+    file_obj.favorite = !file_obj.favorite;
+    this.postsService.updateFile(file_obj.uid, {favorite: file_obj.favorite}).subscribe(res => {});
   }
 }

@@ -926,6 +926,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     const range = req.body.range;
     const text_search = req.body.text_search;
     const file_type_filter = req.body.file_type_filter;
+    const favorite_filter = req.body.favorite_filter;
     const sub_id = req.body.sub_id;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
@@ -937,6 +938,10 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
         } else {
             filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
         }
+    }
+
+    if (favorite_filter) {
+        filter_obj['favorite'] = true;
     }
 
     if (sub_id) {

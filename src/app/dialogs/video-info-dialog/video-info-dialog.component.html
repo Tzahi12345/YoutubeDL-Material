@@ -1,4 +1,7 @@
-<h4 mat-dialog-title>{{file.title}}</h4>
+<h4 mat-dialog-title>
+    {{file.title}}
+    <button [disabled]="!initialized || retrieving_file" (click)="toggleFavorite()" mat-icon-button class="favorite-button"><mat-icon>{{file.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon></button>
+</h4>
 
 <mat-dialog-content>
     <div style="width: 100%; position: relative;">
