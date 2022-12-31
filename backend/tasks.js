@@ -1,4 +1,5 @@
 const db_api = require('./db');
+const notifications_api = require('./notifications');
 const youtubedl_api = require('./youtube-dl');
 
 const fs = require('fs-extra');
@@ -128,6 +129,8 @@ exports.executeRun = async (task_key) => {
     const data = await TASKS[task_key].run();
     await db_api.updateRecord('tasks', {key: task_key}, {data: TASKS[task_key]['confirm'] ? data : null, last_ran: Date.now()/1000, running: false});
     logger.verbose(`Finished running task ${task_key}`);
+    const task_obj = await db_api.getRecord('tasks', {key: task_key});
+    await notifications_api.sendTaskNotification(task_obj, false);
 }
 
 exports.executeConfirm = async (task_key) => {
@@ -141,6 +144,7 @@ exports.executeConfirm = async (task_key) => {
     await TASKS[task_key].confirm(data);
     await db_api.updateRecord('tasks', {key: task_key}, {confirming: false, last_confirmed: Date.now()/1000, data: null});
     logger.verbose(`Finished confirming task ${task_key}`);
+    await notifications_api.sendTaskNotification(task_obj, false);
 }
 
 exports.updateTaskSchedule = async (task_key, schedule) => {

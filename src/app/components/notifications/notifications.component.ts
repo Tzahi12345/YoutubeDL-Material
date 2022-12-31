@@ -1,8 +1,9 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { PostsService } from 'app/posts.services';
-import { Notification } from 'api-types';
+import { Notification, NotificationType } from 'api-types';
 import { NotificationAction } from 'api-types/models/NotificationAction';
+import { MatChipListboxChange } from '@angular/material/chips';
 
 @Component({
   selector: 'app-notifications',
@@ -12,8 +13,26 @@ import { NotificationAction } from 'api-types/models/NotificationAction';
 export class NotificationsComponent implements OnInit {
 
   notifications: Notification[] = null;
+  filtered_notifications: Notification[] = null;
 
   @Output() notificationCount = new EventEmitter<number>();
+
+  notificationFilters: { [key in NotificationType]: {key: string, label: string} } = {
+    download_complete: {
+      key: 'download_complete',
+      label: $localize`Download completed`
+    },
+    download_error: {
+      key: 'download_error',
+      label: $localize`Download error`
+    },
+    task_finished: {
+      key: 'task_finished',
+      label: $localize`Task`
+    },
+  };
+
+  selectedFilters = [];
 
   constructor(public postsService: PostsService, private router: Router, private elRef: ElementRef) { }
 
@@ -33,7 +52,10 @@ export class NotificationsComponent implements OnInit {
   getNotifications(): void {
     this.postsService.getNotifications().subscribe(res => {
       this.notifications = res['notifications'];
+      this.notifications.sort((a, b) => b.timestamp - a.timestamp);
       this.notificationCount.emit(this.notifications.filter(notification => !notification.read).length);
+
+      this.filterNotifications();
     });
   }
 
@@ -51,6 +73,9 @@ export class NotificationsComponent implements OnInit {
           this.deleteNotification(action_info['notification']['uid']);
         });
         break;
+      case NotificationAction.VIEW_TASKS:
+        this.router.navigate(['tasks']);
+        break;
       default:
         console.error(`Notification action ${action_info['action']} does not exist!`);
         break;
@@ -60,6 +85,7 @@ export class NotificationsComponent implements OnInit {
   deleteNotification(uid: string): void {
     this.postsService.deleteNotification(uid).subscribe(res => {
       this.notifications.filter(notification => notification['uid'] !== uid);
+      this.filterNotifications();
       this.notificationCount.emit(this.notifications.length);
       this.getNotifications();
     });
@@ -68,6 +94,7 @@ export class NotificationsComponent implements OnInit {
   deleteAllNotifications(): void {
     this.postsService.deleteAllNotifications().subscribe(res => {
       this.notifications = [];
+      this.filtered_notifications = [];
       this.getNotifications();
     });
     this.notificationCount.emit(0);
@@ -79,6 +106,19 @@ export class NotificationsComponent implements OnInit {
       this.getNotifications();
     });
     this.notificationCount.emit(0);
+  }
+
+  filterNotifications(): void {
+    this.filtered_notifications = this.notifications.filter(notification => this.selectedFilters.length === 0 || this.selectedFilters.includes(notification.type));
+  }
+
+  selectedFiltersChanged(event: MatChipListboxChange): void {
+    this.selectedFilters = event.value;
+    this.filterNotifications();
+  }
+
+  originalOrder = (): number => {
+    return 0;
   }
 
 }

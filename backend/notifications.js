@@ -1,10 +1,20 @@
 const { uuid } = require('uuidv4');
 const db_api = require('./db');
+const config_api = require('./config');
 
 exports.sendNotification = async (notification) => {
     // TODO: hook into third party service
     await db_api.insertRecordIntoTable('notifications', notification);
     return notification;
+}
+
+exports.sendTaskNotification = async (task_obj, confirmed) => {
+    // workaround for tasks which are user_uid agnostic
+    const user_uid = config_api.getConfigItem('ytdl_multi_user_mode') ? 'admin' : null;
+    await db_api.removeAllRecords('notifications', {"data.task_key": task_obj.key});
+    const data = {task_key: task_obj.key, task_title: task_obj.title, confirmed: confirmed};
+    const notification = exports.createNotification('task_finished', ['view_tasks'], data, user_uid);
+    return await exports.sendNotification(notification);
 }
 
 exports.sendDownloadNotification = async (file, user_uid) => {

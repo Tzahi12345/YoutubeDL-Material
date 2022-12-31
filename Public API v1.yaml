@@ -2792,11 +2792,13 @@ components:
       - play
       - retry_download
       - view_download_error
+      - view_tasks
     NotificationType:
       type: string
       enum:
       - download_complete
       - download_error
+      - task_finished
     BaseChangePermissionsRequest:
       required:
         - permission
