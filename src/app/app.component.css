@@ -35,3 +35,9 @@
 ::ng-deep .mdc-switch {
     outline: none !important;
 }
+
+::ng-deep .notifications-menu {
+    width: 30vw !important;
+    max-width: 100% !important;
+    min-width: 280px !important;
+}

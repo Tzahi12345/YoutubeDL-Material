@@ -8,13 +8,15 @@
             </mat-card-subtitle>
             <mat-card-title>
                 <ng-container *ngIf="NOTIFICATION_PREFIX[notification.type]">
-                    {{NOTIFICATION_PREFIX[notification.type]}}&nbsp;
+                    {{NOTIFICATION_PREFIX[notification.type]}}
                 </ng-container>
             </mat-card-title>
         </mat-card-header>
         <mat-card-content>
             <ng-container *ngIf="NOTIFICATION_SUFFIX_KEY[notification.type]">
-                {{notification['data'][NOTIFICATION_SUFFIX_KEY[notification.type]]}}
+                <div style="word-break: break-word">
+                    {{notification['data'][NOTIFICATION_SUFFIX_KEY[notification.type]]}}
+                </div>
             </ng-container>
         </mat-card-content>
         <mat-card-actions *ngIf="notification.actions?.length > 0">
