@@ -88,6 +88,9 @@ export class SettingsComponent implements OnInit {
         this.supported_locales = ['en', 'en-GB']; // required
         this.supported_locales = this.supported_locales.concat(res['supported_locales']);
       }
+    }, err => {
+      console.error(`Failed to retrieve list of supported languages! You may need to run: 'node src/postbuild.mjs'. Error below:`);
+      console.error(err);
     });
   }
 
