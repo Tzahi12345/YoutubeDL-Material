@@ -3877,7 +3877,7 @@
       </trans-unit>
       <trans-unit id="3561468911579213356" datatype="html">
         <source>Sharing disabled.</source>
-        <target state="translated">Partage désactivé</target>
+        <target state="translated">Partage désactivé.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -4008,7 +4008,7 @@
       </trans-unit>
       <trans-unit id="8314249599019746316" datatype="html">
         <source>Download failed!</source>
-        <target state="translated">Échec du téléchargement</target>
+        <target state="translated">Échec du téléchargement!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">387</context>
