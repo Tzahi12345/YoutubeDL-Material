@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { User } from 'api-types';
 
 @Component({
   selector: 'app-manage-user',
@@ -26,7 +27,7 @@ export class ManageUserComponent implements OnInit {
 
   settingNewPassword = false;
 
-  constructor(public postsService: PostsService, @Inject(MAT_DIALOG_DATA) public data: any) {
+  constructor(public postsService: PostsService, @Inject(MAT_DIALOG_DATA) public data: {user: User}) {
     if (this.data) {
       this.user = this.data.user;
       this.available_permissions = this.postsService.available_permissions;
@@ -54,14 +55,14 @@ export class ManageUserComponent implements OnInit {
   }
 
   changeUserPermissions(change, permission) {
-    this.postsService.setUserPermission(this.user.uid, permission, change.value).subscribe(res => {
+    this.postsService.setUserPermission(this.user.uid, permission, change.value).subscribe(() => {
       // console.log(res);
     });
   }
 
   setNewPassword() {
     this.settingNewPassword = true;
-    this.postsService.changeUserPassword(this.user.uid, this.newPasswordInput).subscribe(res => {
+    this.postsService.changeUserPassword(this.user.uid, this.newPasswordInput).subscribe(() => {
       this.newPasswordInput = '';
       this.settingNewPassword = false;
     });
