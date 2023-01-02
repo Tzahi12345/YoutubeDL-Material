@@ -1,0 +1,5 @@
+{
+    "mochaExplorer.files": "backend/test/**/*.js",
+    "mochaExplorer.cwd": "backend",
+    "mochaExplorer.globImplementation": "vscode"
+}

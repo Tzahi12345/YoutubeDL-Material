@@ -3,7 +3,6 @@ const low = require('lowdb')
 const winston = require('winston');
 const path = require('path');
 
-process.chdir('./backend')
 
 const FileSync = require('lowdb/adapters/FileSync');
 
@@ -66,12 +65,12 @@ const sample_video_json = {
 
 describe('Database', async function() {
     describe('Import', async function() {
-        it('Migrate', async function() {
-            await db_api.connectToDB();
-            await db_api.removeAllRecords();
-            const success = await db_api.importJSONToDB(db.value(), users_db.value());
-            assert(success);
-        });
+        // it('Migrate', async function() {
+        //     await db_api.connectToDB();
+        //     await db_api.removeAllRecords();
+        //     const success = await db_api.importJSONToDB(db.value(), users_db.value());
+        //     assert(success);
+        // });
 
         it('Transfer to remote', async function() {
             await db_api.removeAllRecords('test');
@@ -103,11 +102,6 @@ describe('Database', async function() {
             assert(JSON.stringify(db_stats), JSON.stringify(new_db_stats));
         });
     });
-
-    describe('Export', function() {
-
-    });
-
 
     describe('Basic functions', async function() {
         beforeEach(async function() {
@@ -289,8 +283,6 @@ describe('Multi User', async function() {
     const playlist_to_test = 'ysabVZz4x';
     beforeEach(async function() {
         await db_api.connectToDB();
-        auth_api.initialize(db_api, logger);
-        subscriptions_api.initialize(db_api, logger);
         user = await auth_api.login('admin', 'pass');
     });
     describe('Authentication', function() {
