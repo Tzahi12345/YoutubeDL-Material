@@ -360,6 +360,58 @@
             </div>
         </ng-template>
     </mat-tab>
+    <!-- Notifications -->
+    <mat-tab label="Notifications" i18n-label="Notifications settings label">
+        <ng-template matTabContent>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['enable_notifications']"><ng-container i18n="Enable notifications setting">Enable notifications</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['enable_all_notifications']"><ng-container i18n="Enable all notifications setting">Enable all notifications</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mt-1">
+                        <mat-form-field class="text-field">
+                            <mat-label><ng-container i18n="Allowed notification types">Allowed notification types</ng-container></mat-label>
+                            <mat-select color="accent" [(ngModel)]="new_config['Extra']['allowed_notification_types']" [disabled]="!new_config['Extra']['enable_notifications'] || new_config['Extra']['enable_all_notifications']" multiple>
+                                <mat-option value="download_complete" i18n="Download complete">Download complete</mat-option>
+                                <mat-option value="download_error" i18n="Download error">Download error</mat-option>
+                                <mat-option value="task_finished" i18n="Task finished">Task finished</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [disabled]="!new_config['Extra']['enable_notifications']" [(ngModel)]="new_config['API']['use_ntfy_API']"><ng-container i18n="Use ntfy API setting">Use ntfy API</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="ntfy topic URL">ntfy topic URL</mat-label>
+                            <input placeholder="https://ntfy.sh/mytopic" [disabled]="!new_config['Extra']['enable_notifications'] || !new_config['API']['use_ntfy_API']" [(ngModel)]="new_config['API']['ntfy_topic_URL']" matInput required>
+                            <mat-hint><a target="_blank" href="https://docs.ntfy.sh/"><ng-container i18n="ntfy API setting hint">See docs here.</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [disabled]="!new_config['Extra']['enable_notifications']" [(ngModel)]="new_config['API']['use_gotify_API']"><ng-container i18n="Use gotify API setting">Use gotify API</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Gotify server URL">Gotify server URL</mat-label>
+                            <input placeholder="http://gotify.example.com" [disabled]="!new_config['Extra']['enable_notifications'] || !new_config['API']['use_gotify_API']" [(ngModel)]="new_config['API']['gotify_server_URL']" matInput required>
+                            <mat-hint><a target="_blank" href="https://gotify.net/docs/"><ng-container i18n="Gotify API setting hint">See docs here.</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Gotify app token">Gotify app token</mat-label>
+                            <input placeholder="yourAppToken" [disabled]="!new_config['Extra']['enable_notifications'] || !new_config['API']['use_gotify_API']" [(ngModel)]="new_config['API']['gotify_app_token']" matInput required>
+                            <mat-hint><a target="_blank" href="https://gotify.net/docs/"><ng-container i18n="Gotify API setting hint">See docs here.</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </mat-tab>
     <!-- Advanced -->
     <mat-tab label="Advanced" i18n-label="Host settings label">
         <ng-template matTabContent>

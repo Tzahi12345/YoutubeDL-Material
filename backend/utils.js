@@ -537,6 +537,10 @@ function getArchiveFolder(type, user_uid = null, sub = null) {
     }
 }
 
+function getBaseURL() {
+    return `${config_api.getConfigItem('ytdl_url')}:${config_api.getConfigItem('ytdl_port')}`
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -588,5 +592,6 @@ module.exports = {
     searchObjectByString: searchObjectByString,
     stripPropertiesFromObject: stripPropertiesFromObject,
     getArchiveFolder: getArchiveFolder,
+    getBaseURL: getBaseURL,
     File: File
 }

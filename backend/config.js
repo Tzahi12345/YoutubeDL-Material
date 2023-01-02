@@ -198,7 +198,10 @@ const DEFAULT_CONFIG = {
         "download_only_mode": false,
         "allow_autoplay": true,
         "enable_downloads_manager": true,
-        "allow_playlist_categorization": true
+        "allow_playlist_categorization": true,
+        "enable_notifications": true,
+        "enable_all_notifications": true,
+        "allowed_notification_types": [],
       },
       "API": {
         "use_API_key": false,
@@ -210,7 +213,12 @@ const DEFAULT_CONFIG = {
         "twitch_client_secret": "",
         "twitch_auto_download_chat": false,
         "use_sponsorblock_API": false,
-        "generate_NFO_files": false
+        "generate_NFO_files": false,
+        "use_ntfy_API": false,
+        "ntfy_topic_URL": "",
+        "use_gotify_API": false,
+        "gotify_server_URL": "",
+        "gotify_app_token": ""
       },
       "Themes": {
         "default_theme": "default",
