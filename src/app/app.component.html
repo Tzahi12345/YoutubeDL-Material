@@ -11,7 +11,7 @@
                         </div>
                     </div>
                     <div class="col-6" style="text-align: right; align-items: flex-end; display: inline-block">
-                        <button *ngIf="postsService.config.Extra.enable_notifications" [matMenuTriggerFor]="notificationsMenu" (menuOpened)="notificationMenuOpened()" mat-icon-button><mat-icon [matBadge]="notification_count" matBadgeColor="warn" matBadgeSize="small" *ngIf="notification_count > 0">notifications</mat-icon><mat-icon *ngIf="notification_count === 0">notifications_none</mat-icon></button>
+                        <button *ngIf="postsService.config?.Extra.enable_notifications" [matMenuTriggerFor]="notificationsMenu" (menuOpened)="notificationMenuOpened()" mat-icon-button><mat-icon [matBadge]="notification_count" matBadgeColor="warn" matBadgeSize="small" *ngIf="notification_count > 0">notifications</mat-icon><mat-icon *ngIf="notification_count === 0">notifications_none</mat-icon></button>
                         <mat-menu [classList]="'notifications-menu'" (close)="notificationMenuClosed()" #notificationsMenu="matMenu">
                             <app-notifications #notifications (notificationCount)="notificationCountUpdate($event)" (click)="$event.stopPropagation()"></app-notifications>
                         </mat-menu>
