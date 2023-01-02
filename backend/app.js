@@ -1814,6 +1814,15 @@ app.post('/api/updateTaskData', optionalJwt, async (req, res) => {
     res.send({success: success});
 });
 
+app.post('/api/updateTaskOptions', optionalJwt, async (req, res) => {
+    const task_key = req.body.task_key;
+    const new_options = req.body.new_options;
+  
+    const success = await db_api.updateRecord('tasks', {key: task_key}, {options: new_options});
+
+    res.send({success: success});
+});
+
 app.post('/api/getDBBackups', optionalJwt, async (req, res) => {
     const backup_dir = path.join('appdata', 'db_backup');
     fs.ensureDirSync(backup_dir);

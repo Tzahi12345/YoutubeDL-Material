@@ -1095,6 +1095,14 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
                         filtered &= (record[filter_prop].search(new RegExp(filter_prop_value['$regex'], filter_prop_value['$options'])) !== -1);
                     } else if ('$ne' in filter_prop_value) {
                         filtered &= filter_prop in record && record[filter_prop] !== filter_prop_value['$ne'];
+                    } else if ('$lt' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] < filter_prop_value['$lt'];
+                    } else if ('$gt' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] > filter_prop_value['$gt'];
+                    } else if ('$lte' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] <= filter_prop_value['$lt'];
+                    } else if ('$gte' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] >= filter_prop_value['$gt'];
                     }
                 } else {
                     // handle case of nested property check

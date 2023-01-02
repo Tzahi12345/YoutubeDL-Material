@@ -12,4 +12,5 @@ export type Task = {
     data: any;
     error: string;
     schedule: any;
+    options?: any;
 };

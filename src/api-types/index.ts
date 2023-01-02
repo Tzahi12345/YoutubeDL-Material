@@ -114,6 +114,7 @@ export type { UpdatePlaylistRequest } from './models/UpdatePlaylistRequest';
 export type { UpdaterStatus } from './models/UpdaterStatus';
 export type { UpdateServerRequest } from './models/UpdateServerRequest';
 export type { UpdateTaskDataRequest } from './models/UpdateTaskDataRequest';
+export type { UpdateTaskOptionsRequest } from './models/UpdateTaskOptionsRequest';
 export type { UpdateTaskScheduleRequest } from './models/UpdateTaskScheduleRequest';
 export type { UpdateUserRequest } from './models/UpdateUserRequest';
 export type { User } from './models/User';

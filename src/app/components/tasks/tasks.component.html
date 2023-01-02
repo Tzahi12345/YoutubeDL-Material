@@ -62,6 +62,9 @@
                                     <ng-container *ngIf="element.key == 'youtubedl_update_check'">
                                         <ng-container i18n="Update binary to">Update binary to:</ng-container>&nbsp;{{element.data}}
                                     </ng-container>
+                                    <ng-container *ngIf="element.key == 'delete_old_files'">
+                                        <ng-container i18n="Delete old files">Delete old files:</ng-container>&nbsp;{{element.data.uids.length}}
+                                    </ng-container>
                                 </button>
                             </ng-container>
                         </div>
@@ -70,6 +73,12 @@
                         </div>
                         <div class="col-3">
                             <button (click)="scheduleTask(element)" mat-icon-button matTooltip="Schedule" i18n-matTooltip="Schedule"><mat-icon>schedule</mat-icon></button>
+                        </div>
+                        <div class="col-3">
+                            <button (click)="openTaskSettings(element)" mat-icon-button matTooltip="Settings" i18n-matTooltip="Settings"><mat-icon>settings</mat-icon></button>
+                        </div>
+                        <div *ngIf="element.error" class="col-3">
+                            <button (click)="showError(element)" mat-icon-button matTooltip="Show error" i18n-matTooltip="Show error"><mat-icon>warning</mat-icon></button>
                         </div>
                     </div>
                 </div>
@@ -80,7 +89,7 @@
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
         </mat-table>
       
-        <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+        <mat-paginator [pageSizeOptions]="[10, 20]"
                        showFirstLastButtons 
                        aria-label="Select page of tasks">
         </mat-paginator>

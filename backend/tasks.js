@@ -34,6 +34,12 @@ const TASKS = {
         confirm: youtubedl_api.updateYoutubeDL,
         title: 'Update youtube-dl',
         job: null
+    },
+    delete_old_files: {
+        run: checkForAutoDeleteFiles,
+        confirm: autoDeleteFiles,
+        title: 'Delete old files',
+        job: null
     }
 }
 
@@ -124,6 +130,7 @@ exports.executeTask = async (task_key) => {
 
 exports.executeRun = async (task_key) => {
     logger.verbose(`Running task ${task_key}`);
+    await db_api.updateRecord('tasks', {key: task_key}, {error: null})
     // don't set running to true when backup up DB as it will be stick "running" if restored
     if (task_key !== 'backup_local_db') await db_api.updateRecord('tasks', {key: task_key}, {running: true});
     const data = await TASKS[task_key].run();
@@ -131,10 +138,15 @@ exports.executeRun = async (task_key) => {
     logger.verbose(`Finished running task ${task_key}`);
     const task_obj = await db_api.getRecord('tasks', {key: task_key});
     await notifications_api.sendTaskNotification(task_obj, false);
+
+    if (task_obj['options'] && task_obj['options']['auto_confirm']) {
+        exports.executeConfirm(task_key);
+    }
 }
 
 exports.executeConfirm = async (task_key) => {
     logger.verbose(`Confirming task ${task_key}`);
+    await db_api.updateRecord('tasks', {key: task_key}, {error: null})
     if (!TASKS[task_key]['confirm']) {
         return null;
     }
@@ -194,6 +206,31 @@ async function checkForDuplicateFiles() {
 async function removeDuplicates(data) {
     for (let i = 0; i < data['uids'].length; i++) {
         await db_api.removeRecord('files', {uid: data['uids'][i]});
+    }
+}
+
+// auto delete files
+
+async function checkForAutoDeleteFiles() {
+    const task_obj = await db_api.getRecord('tasks', {key: 'delete_old_files'});
+    if (!task_obj['options'] || !task_obj['options']['threshold_days']) {
+        const error_message = 'Failed to do delete check because no limit was set!';
+        logger.error(error_message);
+        await db_api.updateRecord('tasks', {key: 'delete_old_files'}, {error: error_message})
+        return null;
+    }
+    const delete_older_than_timestamp = Date.now() - task_obj['options']['threshold_days']*86400*1000;
+    const uids = (await db_api.getRecords('files', {registered: {$lt: delete_older_than_timestamp}})).map(file => file.uid);
+    return {uids: uids};
+}
+
+async function autoDeleteFiles(data) {
+    if (data['uids']) {
+        logger.info(`Removing ${data['uids'].length} old files!`);
+        for (let i = 0; i < data['uids'].length; i++) {
+            const file_to_remove = data['uids'][i];
+            await db_api.deleteFile(file_to_remove);
+        }
     }
 }
 

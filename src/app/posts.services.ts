@@ -104,7 +104,8 @@ import {
     GetAllTasksResponse,
     DeleteNotificationRequest,
     SetNotificationsToReadRequest,
-    GetNotificationsResponse
+    GetNotificationsResponse,
+    UpdateTaskOptionsRequest
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -645,6 +646,11 @@ export class PostsService implements CanActivate {
     updateTaskData(task_key: string, data: any) {
         const body: UpdateTaskDataRequest = {task_key: task_key, new_data: data};
         return this.http.post<SuccessObject>(this.path + 'updateTaskData', body, this.httpOptions);
+    }
+
+    updateTaskOptions(task_key: string, options: any) {
+        const body: UpdateTaskOptionsRequest = {task_key: task_key, new_options: options};
+        return this.http.post<SuccessObject>(this.path + 'updateTaskOptions', body, this.httpOptions);
     }
 
     getDBBackups() {

@@ -90,6 +90,7 @@ import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedul
 import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
+import { TaskSettingsComponent } from './components/task-settings/task-settings.component';
 
 registerLocaleData(es, 'es');
 
@@ -137,7 +138,8 @@ registerLocaleData(es, 'es');
         UpdateTaskScheduleDialogComponent,
         RestoreDbDialogComponent,
         NotificationsComponent,
-        NotificationsListComponent
+        NotificationsListComponent,
+        TaskSettingsComponent
     ],
     imports: [
         CommonModule,

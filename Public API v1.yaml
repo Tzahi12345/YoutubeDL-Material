@@ -1673,6 +1673,16 @@ components:
       required:
         - task_key
         - new_data
+    UpdateTaskOptionsRequest:
+      type: object
+      properties:
+        task_key:
+          type: string
+        new_options:
+          type: object
+      required:
+        - task_key
+        - new_options
     GetTaskResponse:
       type: object
       properties:
@@ -2548,6 +2558,8 @@ components:
         error:
           type: string
         schedule:
+          type: object
+        options:
           type: object
     Schedule:
       required:
