@@ -290,7 +290,10 @@ async function downloadQueuedFile(download_uid) {
                 for (let i = 0; i < output.length; i++) {
                     let output_json = null;
                     try {
-                        output_json = JSON.parse(output[i]);
+                        // we have to do this because sometimes there will be leading characters before the actual json
+                        const start_idx = output[i].indexOf('{"');
+                        const clean_output = output[i].slice(start_idx, output[i].length);
+                        output_json = JSON.parse(clean_output);
                     } catch(e) {
                         output_json = null;
                     }
