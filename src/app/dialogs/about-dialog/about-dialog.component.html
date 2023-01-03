@@ -38,7 +38,8 @@
         <mat-divider></mat-divider>
         <div style="margin-top: 10px;">
             <h5>Personal settings:</h5>
-            <mat-form-field placeholder="Sidepanel mode">
+            <mat-form-field>
+                <mat-label i18n="Sidepanel mode">Sidepanel mode</mat-label>
                 <mat-select [(ngModel)]="sidepanel_mode" (selectionChange)="sidePanelModeChanged($event.value)">
                     <mat-option value="over">
                         Over
@@ -49,7 +50,8 @@
                 </mat-select>
             </mat-form-field>
             <br/>
-            <mat-form-field placeholder="Card size">
+            <mat-form-field>
+                <mat-label i18n="File card size">File card size</mat-label>
                 <mat-select [(ngModel)]="card_size" (selectionChange)="cardSizeOptionChanged($event.value)">
                     <mat-option value="large">
                         Large
