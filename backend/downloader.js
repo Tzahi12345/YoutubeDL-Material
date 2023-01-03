@@ -433,7 +433,8 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
         if (customQualityConfiguration) {
             qualityPath = ['-f', customQualityConfiguration, '--merge-output-format', 'mp4'];
         } else if (heightParam && heightParam !== '' && !is_audio) {
-            qualityPath = ['-f', `'(mp4)[height${maxHeight ? '<' : ''}=${heightParam}]`];
+            const heightFilter = (maxHeight && default_downloader === 'yt-dlp') ? ['-S', `res:${heightParam}`] : ['-f', `best[height${maxHeight ? '<' : ''}=${heightParam}]+bestaudio`]
+            qualityPath = [...heightFilter, '--merge-output-format', 'mp4'];
         } else if (is_audio) {
             qualityPath = ['--audio-quality', maxBitrate ? maxBitrate : '0']
         }

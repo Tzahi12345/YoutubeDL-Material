@@ -1589,6 +1589,10 @@ components:
           type: string
           description: Height of the video, if known
           example: '1080'
+        maxHeight:
+          type: string
+          description: Max height that should be used, useful for playlists. selectedHeight will override this.
+          example: '1080'
         maxBitrate:
           type: string
           description: Specify ffmpeg/avconv audio quality

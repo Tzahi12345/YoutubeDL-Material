@@ -19,14 +19,21 @@
                                             Quality
                                         </ng-container>
                                     </mat-label>
-                                    <mat-select [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality" (ngModelChange)="argsChanged($event)">
-                                        <mat-option [value]="''">
-                                            Max
+                                    <mat-select [disabled]="url === '' || cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']" [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality" (ngModelChange)="argsChanged($event)">
+                                        <mat-option i18n="Best" [value]="''">
+                                            Best
                                         </mat-option>
-                                        <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats">
+                                        <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats && !cachedAvailableFormats[url]?.formats_failed">
                                             <ng-container *ngFor="let option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']">
                                                 <mat-option *ngIf="option.key !== 'best_audio_format'" [value]="option">
                                                     {{option.key}}
+                                                </mat-option>
+                                            </ng-container>
+                                        </ng-container>
+                                        <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats_failed">
+                                            <ng-container *ngFor="let option of qualityOptions[audioOnly ? 'audio' : 'video']">
+                                                <mat-option [value]="option.value">
+                                                    {{option.label}}
                                                 </mat-option>
                                             </ng-container>
                                         </ng-container>
@@ -60,7 +67,7 @@
                     </div>
                 </form>
                 <br/>
-                <mat-checkbox [disabled]="autoplay && current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px">
+                <mat-checkbox [disabled]="autoplay && current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px; margin-left: 4px;">
                     <ng-container i18n="Only Audio checkbox">
                         Only Audio
                     </ng-container>
@@ -74,7 +81,7 @@
             </div>
         </mat-card-content>
         <mat-card-actions>
-            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile" type="submit" mat-stroked-button color="accent">
+            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile || url === ''" type="submit" mat-stroked-button color="accent">
                 <ng-container i18n="Main download button">
                     Download
                 </ng-container>

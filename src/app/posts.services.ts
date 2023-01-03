@@ -288,10 +288,9 @@ export class PostsService implements CanActivate {
     }
 
     // tslint:disable-next-line: max-line-length
-    // tslint:disable-next-line: max-line-length
     downloadFile(url: string, type: FileType, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings: CropFileSettings = null) {
         const body: DownloadRequest = {url: url,
-            selectedHeight: selectedQuality,
+            maxHeight: selectedQuality,
             customQualityConfiguration: customQualityConfiguration,
             customArgs: customArgs,
             additionalArgs: additionalArgs,
@@ -305,7 +304,7 @@ export class PostsService implements CanActivate {
 
     generateArgs(url: string, type: FileType, selectedQuality: string, customQualityConfiguration: string, customArgs: string = null, additionalArgs: string = null, customOutput: string = null, youtubeUsername: string = null, youtubePassword: string = null, cropFileSettings = null) {
         const body: DownloadRequest = {url: url,
-            selectedHeight: selectedQuality,
+            maxHeight: selectedQuality,
             customQualityConfiguration: customQualityConfiguration,
             customArgs: customArgs,
             additionalArgs: additionalArgs,
