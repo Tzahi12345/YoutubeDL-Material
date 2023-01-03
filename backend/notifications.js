@@ -35,7 +35,7 @@ exports.sendNotification = async (notification) => {
     const title = NOTIFICATION_TYPE_TO_TITLE[type];
     const body = NOTIFICATION_TYPE_TO_BODY[type](notification);
     const url = NOTIFICATION_TYPE_TO_URL[type](notification);
-    const thumbnail = NOTIFICATION_TYPE_TO_THUMBNAIL[type](notification);
+    const thumbnail = NOTIFICATION_TYPE_TO_THUMBNAIL[type];
 
     if (config_api.getConfigItem('ytdl_use_ntfy_API') && config_api.getConfigItem('ytdl_ntfy_topic_url')) {
         sendNtfyNotification(body, title, type, url, thumbnail);
