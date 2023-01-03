@@ -72,7 +72,7 @@
                         Only Audio
                     </ng-container>
                 </mat-checkbox>
-                <mat-checkbox *ngIf="allowAutoplay" [disabled]="getURLArray(url).length > 1" (change)="autoplayChanged($event)" [(ngModel)]="autoplay" style="float: right; margin-top: -12px">
+                <mat-checkbox *ngIf="!forceAutoplay" [disabled]="getURLArray(url).length > 1" (change)="autoplayChanged($event)" [(ngModel)]="autoplay" style="float: right; margin-top: -12px">
                     <ng-container i18n="Autoplay checkbox">
                         Autoplay
                     </ng-container>

@@ -49,7 +49,7 @@ export class MainComponent implements OnInit {
   fileManagerEnabled = false;
   allowQualitySelect = false;
   downloadOnlyMode = false;
-  allowAutoplay = false;
+  forceAutoplay = false;
   use_youtubedl_archive = false;
   globalCustomArgs = null;
   allowAdvancedDownload = false;
@@ -187,7 +187,7 @@ export class MainComponent implements OnInit {
     this.fileManagerEnabled = this.postsService.config['Extra']['file_manager_enabled']
                               && this.postsService.hasPermission('filemanager');
     this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
-    this.allowAutoplay = this.postsService.config['Extra']['allow_autoplay'];
+    this.forceAutoplay = this.postsService.config['Extra']['force_autoplay'];
     this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
     this.globalCustomArgs = this.postsService.config['Downloader']['custom_args'];
     this.youtubeSearchEnabled = this.postsService.config['API'] && this.postsService.config['API']['use_youtube_API'] &&
@@ -268,7 +268,8 @@ export class MainComponent implements OnInit {
       this.audioOnly = localStorage.getItem('audioOnly') === 'true';
     }
 
-    if (localStorage.getItem('autoplay') !== null) {
+    this.autoplay = this.forceAutoplay;
+    if (!this.forceAutoplay && localStorage.getItem('autoplay') !== null) {
       this.autoplay = localStorage.getItem('autoplay') === 'true';
     }
 
