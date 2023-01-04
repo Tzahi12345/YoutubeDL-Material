@@ -2589,6 +2589,8 @@ components:
               type: number
             timestamp:
               type: number
+            tz:
+              type: string
     DBBackup:
       required:
         - name
