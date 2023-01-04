@@ -156,6 +156,13 @@ async function checkDownloads() {
         if (max_concurrent_downloads < 0 || running_downloads_count >= max_concurrent_downloads) break;
 
         if (waiting_download['finished_step'] && !waiting_download['finished']) {
+            if (waiting_download['sub_id']) {
+                const sub_missing = !(await db_api.getRecord('subscriptions', {id: waiting_download['sub_id']}));
+                if (sub_missing) {
+                    handleDownloadError(waiting_download, `Download failed as subscription with id '${waiting_download['sub_id']}' is missing!`);
+                    continue;
+                }
+            }
             // move to next step
             running_downloads_count++;
             if (waiting_download['step_index'] === 0) {
