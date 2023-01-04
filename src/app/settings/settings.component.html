@@ -300,6 +300,17 @@
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
                     <div class="col-12 mt-3">
+                        <h6>RSS Feed</h6>
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['enable_rss_feed']" ><ng-container i18n="Enable RSS Feed setting">Enable RSS Feed</ng-container></mat-checkbox>
+                        <p><ng-container i18n="RSS Feed prefix">Be careful enabling this with multi-user mode! User data may be exposed.</ng-container></p>
+                        <p><a target="_blank" href="https://github.com/Tzahi12345/YoutubeDL-Material/wiki/RSS-Feed"><ng-container i18n="RSS feed documentation">See documentation here.</ng-container></a></p>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
                         <h6>Chrome</h6>
                         <p><a href="https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/chrome-extension/youtubedl-material-chrome-extension.zip?raw=true"><ng-container i18n="Chrome ext click here">Click here</ng-container></a>&nbsp;<ng-container i18n="Chrome click here suffix">to download the official YoutubeDL-Material Chrome extension manually.</ng-container></p>
                         <p><ng-container i18n="Chrome setup suffix">You must manually load the extension and modify the extension's settings to set the frontend URL.</ng-container></p>

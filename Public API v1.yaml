@@ -111,6 +111,37 @@ paths:
                 $ref: '#/components/schemas/GetAllFilesResponse'
       security:
         - Auth query parameter: []
+  /api/rss:
+    get:
+      tags:
+        - files
+      summary: Generates an RSS feed
+      description: Generates an RSS feed for downloaded files
+      operationId: get-rss
+      parameters:
+        - in: query
+          name: params
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/GetAllFilesRequest'
+            - type: object
+              properties:
+                uuid:
+                  type: string
+                  description: user uid
+                  default: null
+          style: form
+          explode: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: RSS feed
+      security:
+        - Auth query parameter: []
   /api/getFile:
     post:
       tags:
@@ -1755,32 +1786,39 @@ components:
             description: Two elements allowed, start index and end index
           minItems: 2
           maxItems: 2
+          default: null
         text_search:
           type: string
           description: Filter files by title
+          default: null
         file_type_filter:
           $ref: '#/components/schemas/FileTypeFilter'
         favorite_filter:
           type: boolean
           description: If set to true, only gets favorites
+          default: false
         sub_id:
           type: string
           description: Include if you want to filter by subscription
+          default: null
     Sort:
       type: object
       properties:
         by:
           type: string
           description: Property to sort by
+          default: registered
         order:
           type: number
           description: 1 for ascending, -1 for descending
+          default: -1
     FileTypeFilter:
       type: string
       enum:
         - audio_only
         - video_only
         - both
+      default: both
     GetAllFilesResponse:
       required:
         - files

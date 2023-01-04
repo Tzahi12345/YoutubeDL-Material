@@ -538,8 +538,32 @@ exports.getVideo = async (file_uid) => {
     return await exports.getRecord('files', {uid: file_uid});
 }
 
-exports.getFiles = async (uuid = null) => {
-    return await exports.getRecords('files', {user_uid: uuid});
+exports.getAllFiles = async (sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid) => {
+    const filter_obj = {user_uid: uuid};
+    const regex = true;
+    if (text_search) {
+        if (regex) {
+            filter_obj['title'] = {$regex: `.*${text_search}.*`, $options: 'i'};
+        } else {
+            filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
+        }
+    }
+
+    if (favorite_filter) {
+        filter_obj['favorite'] = true;
+    }
+
+    if (sub_id) {
+        filter_obj['sub_id'] = sub_id;
+    }
+
+    if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;
+    else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
+    
+    const files = JSON.parse(JSON.stringify(await exports.getRecords('files', filter_obj, false, sort, range, text_search)));
+    const file_count = await exports.getRecords('files', filter_obj, true);
+
+    return {files, file_count};
 }
 
 exports.setVideoProperty = async (file_uid, assignment_obj) => {

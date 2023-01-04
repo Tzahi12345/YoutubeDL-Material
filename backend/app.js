@@ -18,6 +18,7 @@ const URL = require('url').URL;
 const CONSTS = require('./consts')
 const read_last_lines = require('read-last-lines');
 const ps = require('ps-node');
+const Feed = require('feed').Feed;
 
 // needed if bin/details somehow gets deleted
 if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
@@ -700,7 +701,7 @@ app.use(function(req, res, next) {
         next();
     } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
         next();
-    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/')) {
+    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/rss')) {
         next();
     } else {
         logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
@@ -923,7 +924,6 @@ app.post('/api/getFile', optionalJwt, async function (req, res) {
 
 app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     // these are returned
-    let files = null;
     const sort = req.body.sort;
     const range = req.body.range;
     const text_search = req.body.text_search;
@@ -932,31 +932,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     const sub_id = req.body.sub_id;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
-    const filter_obj = {user_uid: uuid};
-    const regex = true;
-    if (text_search) {
-        if (regex) {
-            filter_obj['title'] = {$regex: `.*${text_search}.*`, $options: 'i'};
-        } else {
-            filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
-        }
-    }
-
-    if (favorite_filter) {
-        filter_obj['favorite'] = true;
-    }
-
-    if (sub_id) {
-        filter_obj['sub_id'] = sub_id;
-    }
-
-    if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;
-    else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
-    
-    files = await db_api.getRecords('files', filter_obj, false, sort, range, text_search);
-    const file_count = await db_api.getRecords('files', filter_obj, true);
-
-    files = JSON.parse(JSON.stringify(files));
+    const {files, file_count} = await db_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
 
     res.send({
         files: files,
@@ -2041,6 +2017,56 @@ app.post('/api/deleteAllNotifications', optionalJwt, async (req, res) => {
     const success = await db_api.removeAllRecords('notifications', {user_uid: uuid});
 
     res.send({success: success});
+});
+
+// rss feed
+
+app.get('/api/rss', async function (req, res) {
+    if (!config_api.getConfigItem('ytdl_enable_rss_feed')) {
+        logger.error('RSS feed is disabled! It must be enabled in the settings before it can be generated.');
+        res.sendStatus(403);
+        return;
+    }
+
+    // these are returned
+    const sort = req.query.sort;
+    const range = req.query.range;
+    const text_search = req.query.text_search;
+    const file_type_filter = req.query.file_type_filter;
+    const favorite_filter = req.query.favorite_filter;
+    const sub_id = req.query.sub_id;
+    const uuid = req.query.uuid;
+
+    const {files} = await db_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
+
+    const feed = new Feed({
+            title: 'Downloads',
+            description: 'YoutubeDL-Material downloads',
+            id: utils.getBaseURL(),
+            link: utils.getBaseURL(),
+            image: 'https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/src/assets/images/logo_128px.png',
+            favicon: 'https://raw.githubusercontent.com/Tzahi12345/YoutubeDL-Material/master/src/favicon.ico',
+            generator: 'YoutubeDL-Material'
+    });
+
+    files.forEach(file => {
+        feed.addItem({
+            title: file.title,
+            link: `${utils.getBaseURL()}/#/player;uid=${file.uid}`,
+            description: file.description,
+            author: [
+                {
+                    name: file.uploader,
+                    link: file.url
+                }
+            ],
+            contributor: [],
+            date: file.timestamp,
+            // https://stackoverflow.com/a/45415677/8088021
+            image: file.thumbnailURL.replace('&', '&amp;')
+        });
+      });
+    res.send(feed.rss2());
 });
 
 // web server

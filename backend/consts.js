@@ -92,6 +92,10 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_allowed_notification_types',
         'path': 'YoutubeDLMaterial.Extra.allowed_notification_types'
     },
+    'ytdl_enable_rss_feed': {
+        'key': 'ytdl_enable_rss_feed',
+        'path': 'YoutubeDLMaterial.Extra.enable_rss_feed'
+    },
 
     // API
     'ytdl_use_api_key': {

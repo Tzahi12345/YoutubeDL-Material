@@ -202,6 +202,7 @@ const DEFAULT_CONFIG = {
         "enable_notifications": true,
         "enable_all_notifications": true,
         "allowed_notification_types": [],
+        "enable_rss_feed": false,
       },
       "API": {
         "use_API_key": false,
