@@ -2029,13 +2029,13 @@ app.get('/api/rss', async function (req, res) {
     }
 
     // these are returned
-    const sort = req.query.sort;
-    const range = req.query.range;
-    const text_search = req.query.text_search;
+    const sort = req.query.sort ? JSON.parse(decodeURIComponent(req.query.sort)) : {by: 'registered', order: -1};
+    const range = req.query.range ? req.query.range.map(range_num => parseInt(range_num)) : null;
+    const text_search = req.query.text_search ? decodeURIComponent(req.query.text_search) : null;
     const file_type_filter = req.query.file_type_filter;
-    const favorite_filter = req.query.favorite_filter;
-    const sub_id = req.query.sub_id;
-    const uuid = req.query.uuid;
+    const favorite_filter = req.query.favorite_filter === 'true';
+    const sub_id = req.query.sub_id ? decodeURIComponent(req.query.sub_id) : null;
+    const uuid = req.query.uuid ? decodeURIComponent(req.query.uuid) : null;
 
     const {files} = await db_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
 

@@ -14,6 +14,7 @@ import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/edit-category-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from 'api-types';
+import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-rss-url.component';
 
 @Component({
   selector: 'app-settings',
@@ -364,6 +365,13 @@ export class SettingsComponent implements OnInit {
     }, () => {
       this.testing_connection_string = false;
       this.postsService.openSnackBar($localize`Connection failed! Error: Server error. See logs for more info.`);
+    });
+  }
+
+  openGenerateRSSURLDialog(): void {
+    this.dialog.open(GenerateRssUrlComponent, {
+      width: '80vw',
+      maxWidth: '880px'
     });
   }
 }

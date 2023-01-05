@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { Router } from '@angular/router';
-import { DatabaseFile, FileType, FileTypeFilter } from '../../../api-types';
+import { DatabaseFile, FileType, FileTypeFilter, Sort } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -47,33 +47,6 @@ export class RecentVideosComponent implements OnInit {
   search_text = '';
   searchIsFocused = false;
   descendingMode = true;
-  sortProperties = {
-    'registered': {
-      'key': 'registered',
-      'label': $localize`Download Date`,
-      'property': 'registered'
-    },
-    'upload_date': {
-      'key': 'upload_date',
-      'label': $localize`Upload Date`,
-      'property': 'upload_date'
-    },
-    'name': {
-      'key': 'name',
-      'label': $localize`Name`,
-      'property': 'title'
-    },
-    'file_size': {
-      'key': 'file_size',
-      'label': $localize`File Size`,
-      'property': 'size'
-    },
-    'duration': {
-      'key': 'duration',
-      'label': $localize`Duration`,
-      'property': 'duration'
-    }
-  };
 
   fileFilters = {
     video_only: {
@@ -94,7 +67,7 @@ export class RecentVideosComponent implements OnInit {
 
   selectedFilters = [];
 
-  sortProperty = this.sortProperties['upload_date'];
+  sortProperty = 'registered';
   
   playlists = null;
 
@@ -109,8 +82,8 @@ export class RecentVideosComponent implements OnInit {
 
     // set filter property to cached value
     const cached_sort_property = localStorage.getItem('sort_property');
-    if (cached_sort_property && this.sortProperties[cached_sort_property]) {
-      this.sortProperty = this.sortProperties[cached_sort_property];
+    if (cached_sort_property) {
+      this.sortProperty = cached_sort_property;
     }
 
     // set file type filter to cached value
@@ -189,8 +162,12 @@ export class RecentVideosComponent implements OnInit {
     this.searchChangedSubject.next(newvalue);
   }
 
-  filterOptionChanged(value: string): void {
-    localStorage.setItem('filter_property', value['key']);
+  sortOptionChanged(value: Sort): void {
+    localStorage.setItem('sort_property', value['by']);
+    localStorage.setItem('recent_videos_sort_order', value['order'] === -1 ? 'descending' : 'ascending');
+    this.descendingMode = value['order'] === -1;
+    this.sortProperty = value['by'];
+    
     this.getAllFiles();
   }
 
@@ -227,18 +204,13 @@ export class RecentVideosComponent implements OnInit {
     return this.selectedFilters.includes('favorited');
   }
 
-  toggleModeChange(): void {
-    this.descendingMode = !this.descendingMode;
-    localStorage.setItem('recent_videos_sort_order', this.descendingMode ? 'descending' : 'ascending');
-    this.getAllFiles();
-  }
 
   // get files
 
   getAllFiles(cache_mode = false): void {
     this.normal_files_received = cache_mode;
     const current_file_index = (this.paginator?.pageIndex ? this.paginator.pageIndex : 0)*this.pageSize;
-    const sort = {by: this.sortProperty['property'], order: this.descendingMode ? -1 : 1};
+    const sort = {by: this.sortProperty, order: this.descendingMode ? -1 : 1};
     const range = [current_file_index, current_file_index + this.pageSize];
     const fileTypeFilter = this.getFileTypeFilter();
     const favoriteFilter = this.getFavoriteFilter();

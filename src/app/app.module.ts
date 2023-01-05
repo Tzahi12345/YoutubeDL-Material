@@ -91,6 +91,8 @@ import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
 import { TaskSettingsComponent } from './components/task-settings/task-settings.component';
+import { GenerateRssUrlComponent } from './dialogs/generate-rss-url/generate-rss-url.component';
+import { SortPropertyComponent } from './components/sort-property/sort-property.component';
 
 registerLocaleData(es, 'es');
 
@@ -139,7 +141,9 @@ registerLocaleData(es, 'es');
         RestoreDbDialogComponent,
         NotificationsComponent,
         NotificationsListComponent,
-        TaskSettingsComponent
+        TaskSettingsComponent,
+        GenerateRssUrlComponent,
+        SortPropertyComponent
     ],
     imports: [
         CommonModule,

@@ -303,7 +303,8 @@
                         <h6>RSS Feed</h6>
                         <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['enable_rss_feed']" ><ng-container i18n="Enable RSS Feed setting">Enable RSS Feed</ng-container></mat-checkbox>
                         <p><ng-container i18n="RSS Feed prefix">Be careful enabling this with multi-user mode! User data may be exposed.</ng-container></p>
-                        <p><a target="_blank" href="https://github.com/Tzahi12345/YoutubeDL-Material/wiki/RSS-Feed"><ng-container i18n="RSS feed documentation">See documentation here.</ng-container></a></p>
+                        <button mat-stroked-button (click)="openGenerateRSSURLDialog()" [disabled]="!new_config['Extra']['enable_rss_feed']" i18n="Generate RSS URL">Generate RSS URL</button>
+                        <p style="margin-top: 12px;"><a target="_blank" href="https://github.com/Tzahi12345/YoutubeDL-Material/wiki/RSS-Feed"><ng-container i18n="RSS feed documentation">See documentation here.</ng-container></a></p>
                     </div>
                 </div>
             </div>

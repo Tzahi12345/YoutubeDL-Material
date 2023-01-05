@@ -105,7 +105,8 @@ import {
     DeleteNotificationRequest,
     SetNotificationsToReadRequest,
     GetNotificationsResponse,
-    UpdateTaskOptionsRequest
+    UpdateTaskOptionsRequest,
+    User
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -134,7 +135,7 @@ export class PostsService implements CanActivate {
     // must be reset after logout
     isLoggedIn = false;
     token = null;
-    user = null;
+    user: User = null;
     permissions = null;
 
     available_permissions = null;
@@ -828,7 +829,7 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'auth/changePassword', {user_uid: user_uid, new_password: new_password}, this.httpOptions);
     }
 
-    getUsers() {
+    getUsers(): Observable<GetUsersResponse> {
         return this.http.post<GetUsersResponse>(this.path + 'getUsers', {}, this.httpOptions);
     }
 

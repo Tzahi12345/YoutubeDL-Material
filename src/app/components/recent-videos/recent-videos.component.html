@@ -2,20 +2,7 @@
     <div class="row">
         <!-- Sorting -->
         <div class="col-12 order-2 col-sm-4 order-sm-1 d-flex justify-content-center">
-            <div>
-                <div style="display: inline-block;">
-                    <mat-form-field appearance="outline" style="width: 165px;">
-                        <mat-select [(ngModel)]="this.sortProperty" (selectionChange)="filterOptionChanged($event.value)">
-                            <mat-option *ngFor="let sortOption of sortProperties | keyvalue" [value]="sortOption.value">
-                                {{sortOption['value']['label']}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="sort-dir-div">
-                    <button (click)="toggleModeChange()" mat-icon-button><mat-icon>{{descendingMode ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
-                </div>
-            </div>
+            <app-sort-property [(sortProperty)]="sortProperty" [(descendingMode)]="descendingMode" (sortOptionChanged)="sortOptionChanged($event)"></app-sort-property>
         </div>
         <!-- Files title -->
         <div class="col-12 order-1 col-sm-4 order-sm-2 d-flex justify-content-center">
