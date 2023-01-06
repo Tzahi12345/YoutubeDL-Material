@@ -26,7 +26,7 @@ apt-get update && apt-get -y install curl xz-utils
 echo "(2/5) DOWNLOAD - Acquire latest ffmpeg and ffprobe from John van Sickle's master-sourced builds in ffmpeg obtain layer"
 curl -o ffmpeg.txz \
     --connect-timeout 5 \
-    --max-time 10 \
+    --max-time 120 \
     --retry 5 \
     --retry-delay 0 \
     --retry-max-time 40 \
