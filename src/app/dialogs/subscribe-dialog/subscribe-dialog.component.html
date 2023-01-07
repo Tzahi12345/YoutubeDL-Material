@@ -25,17 +25,19 @@
                 <mat-checkbox [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
             </div>
             <div class="col-12" *ngIf="!download_all">
-                <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
-                <mat-form-field color="accent" style="width: 50px; text-align: center; margin-left: 10px;">
-                    <input type="number" matInput [(ngModel)]="timerange_amount">
-                </mat-form-field>
-                <mat-form-field class="unit-select">
-                    <mat-select color="accent" [(ngModel)]="timerange_unit">
-                        <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
-                            {{time_unit + (timerange_amount === 1 ? '' : 's')}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <span i18n="Download time range prefix">Download videos uploaded in the last</span>
+                <div>
+                    <mat-form-field color="accent" style="width: 100px; text-align: center;">
+                        <input type="number" matInput [(ngModel)]="timerange_amount">
+                    </mat-form-field>
+                    <mat-form-field class="unit-select">
+                        <mat-select color="accent" [(ngModel)]="timerange_unit">
+                            <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
+                                {{time_unit + (timerange_amount === 1 ? '' : 's')}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
             </div>
             <div class="col-12 mt-2">
                 <mat-form-field>
