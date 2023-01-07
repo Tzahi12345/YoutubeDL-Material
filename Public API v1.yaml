@@ -2519,6 +2519,8 @@ components:
           type: string
         auto:
           type: boolean
+        sharingEnabled:
+          type: boolean
     Download:
       required:
         - url

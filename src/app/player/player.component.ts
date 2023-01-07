@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
-import { FileType } from '../../api-types';
+import { DatabaseFile, FileType, Playlist } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 
@@ -15,6 +15,7 @@ export interface IMedia {
   type: string;
   label: string;
   url: string;
+  uid?: string;
 }
 
 @Component({
@@ -39,6 +40,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   uids: string[];
   type: FileType;
   playlist_id = null; // used for playlists (not subscription)
+  file_objs: DatabaseFile[] = []; // used for playlists
   uid = null; // used for non-subscription files (audio, video, playlist)
   subscription = null;
   sub_id = null;
@@ -47,8 +49,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   timestamp = null;
   auto = null;
 
-  db_playlist = null;
-  db_file = null;
+  db_playlist: Playlist = null;
+  db_file: DatabaseFile = null;
 
   baseStreamPath = null;
   audioFolderPath = null;
@@ -133,11 +135,11 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         label: this.name,
         src: this.url,
         type: 'video/mp4',
-        url: this.url
+        url: this.url,
+        uid: this.uid
       }
       this.playlist.push(imedia);
-      this.currentItem = this.playlist[0];
-      this.currentIndex = 0;
+      this.updateCurrentItem(this.playlist[0], 0);
       this.show_player = true;
     }
   }
@@ -177,7 +179,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.postsService.getPlaylist(this.playlist_id, this.uuid, true).subscribe(res => {
       if (res['playlist']) {
         this.db_playlist = res['playlist'];
-        this.db_playlist['file_objs'] = res['file_objs'];
+        this.file_objs = res['file_objs'];
         this.uids = this.db_playlist.uids;
         this.type = res['type'];
         this.show_player = true;
@@ -195,7 +197,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 0; i < this.uids.length; i++) {
       let file_obj = null;
       if (this.playlist_id) {
-        file_obj = this.db_playlist['file_objs'][i];
+        file_obj = this.file_objs[i];
       } else if (this.sub_id) {
         file_obj = this.subscription['videos'][i];
       } else {
@@ -226,7 +228,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         src: fullLocation,
         type: mime_type,
         label: file_obj['title'],
-        url: file_obj['url']
+        url: file_obj['url'],
+        uid: file_obj['uid']
       }
       this.playlist.push(mediaObject);
     }
@@ -272,8 +275,12 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
           return;
       }
 
-      this.currentIndex++;
-      this.currentItem = this.playlist[ this.currentIndex ];
+      this.updateCurrentItem(this.playlist[this.currentIndex], ++this.currentIndex);
+  }
+
+  updateCurrentItem(newCurrentItem: IMedia, newCurrentIndex: number) {
+    this.currentItem  = newCurrentItem;
+    this.currentIndex = newCurrentIndex;
   }
 
   playVideo(): void {
@@ -283,6 +290,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   onClickPlaylistItem(item: IMedia, index: number): void {
       this.currentIndex = index;
       this.currentItem = item;
+      this.updateCurrentItem(this.currentItem, this.currentIndex);
   }
 
   getFileNames(): string[] {
@@ -305,7 +313,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       const blob: Blob = res;
       saveAs(blob, zipName + '.zip');
     }, err => {
-      console.log(err);
+      console.error(err);
       this.downloading = false;
     });
   }
@@ -319,7 +327,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       const blob: Blob = res;
       saveAs(blob, filename + ext);
     }, err => {
-      console.log(err);
+      console.error(err);
       this.downloading = false;
     });
   }
@@ -361,16 +369,30 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   openFileInfoDialog(): void {
+    let file_obj = this.db_file;
+    const original_uid = this.currentItem.uid;
+    if (this.db_playlist) {
+      const idx = this.getPlaylistFileIndexUID(original_uid);
+      file_obj = this.file_objs[idx];
+    }
     const dialogRef = this.dialog.open(VideoInfoDialogComponent, {
       data: {
-        file: this.db_file,
+        file: file_obj,
       },
       minWidth: '50vw'
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      this.db_file = dialogRef.componentInstance.file;
+      if (this.db_file) this.db_file = dialogRef.componentInstance.file;
+      else if (this.db_playlist) {
+        const idx = this.getPlaylistFileIndexUID(original_uid);
+        this.file_objs[idx] = dialogRef.componentInstance.file;
+      } 
     });
+  }
+
+  getPlaylistFileIndexUID(uid: string): number {
+    return this.file_objs.findIndex(file_obj => file_obj['uid'] === uid);
   }
 
   setPlaybackTimestamp(time: number): void {

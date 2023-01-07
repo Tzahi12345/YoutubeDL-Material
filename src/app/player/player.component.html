@@ -35,8 +35,9 @@
                                     <ng-container *ngIf="db_file">
                                         <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
                                         <button *ngIf="type !== 'subscription' && (!postsService.isLoggedIn || postsService.permissions.includes('sharing'))" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
-                                        <button (click)="openFileInfoDialog()" *ngIf="db_file" mat-icon-button><mat-icon>info</mat-icon></button>
                                     </ng-container>
+                                    <ng-container *ngIf="db_file || playlist[currentIndex]"></ng-container>
+                                    <button (click)="openFileInfoDialog()" *ngIf="db_file || db_playlist" mat-icon-button><mat-icon>info</mat-icon></button>
                                     <button *ngIf="db_file && db_file.url.includes('twitch.tv') && postsService['config']['API']['use_twitch_API']" (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
                                 </div>
                             </div>
