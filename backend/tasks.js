@@ -1,6 +1,7 @@
 const db_api = require('./db');
 const notifications_api = require('./notifications');
 const youtubedl_api = require('./youtube-dl');
+const subscriptions_api = require('./subscriptions');
 
 const fs = require('fs-extra');
 const logger = require('./logger');
@@ -43,6 +44,17 @@ const TASKS = {
     }
 }
 
+const defaultOptions = {
+    all: {
+        auto_confirm: false
+    },
+    delete_old_files: {
+        blacklist_files: false,
+        blacklist_subscription_files: false,
+        threshold_days: ''
+    }
+}
+
 function scheduleJob(task_key, schedule) {
     // schedule has to be converted from our format to one node-schedule can consume
     let converted_schedule = null;
@@ -64,7 +76,7 @@ function scheduleJob(task_key, schedule) {
             logger.verbose(`Skipping running task ${task_state['key']} as it is already in progress.`);
             return;
         }
-        
+
         // remove schedule if it's a one-time task
         if (task_state['schedule']['type'] !== 'recurring') await db_api.updateRecord('tasks', {key: task_key}, {schedule: null});
         // we're just "running" the task, any confirmation should be user-initiated
@@ -84,9 +96,10 @@ exports.setupTasks = async () => {
     const tasks_keys = Object.keys(TASKS);
     for (let i = 0; i < tasks_keys.length; i++) {
         const task_key = tasks_keys[i];
+        const mergedDefaultOptions = Object.assign(defaultOptions['all'], defaultOptions[task_key] || {});
         const task_in_db = await db_api.getRecord('tasks', {key: task_key});
         if (!task_in_db) {
-            // insert task metadata into table if missing
+            // insert task metadata into table if missing, eventually move title to UI
             await db_api.insertRecordIntoTable('tasks', {
                 key: task_key,
                 title: TASKS[task_key]['title'],
@@ -97,9 +110,17 @@ exports.setupTasks = async () => {
                 data: null,
                 error: null,
                 schedule: null,
-                options: {}
+                options: Object.assign(defaultOptions['all'], defaultOptions[task_key] || {})
             });
         } else {
+            // verify all options exist in task
+            for (const key of Object.keys(mergedDefaultOptions)) {
+                if (!(task_in_db.options && task_in_db.options.hasOwnProperty(key))) {
+                    const option_key = `options.${key}`
+                    await db_api.updateRecord('tasks', {key: task_key}, {[option_key]: mergedDefaultOptions[key]});
+                }
+            }
+
             // reset task if necessary
             await db_api.updateRecord('tasks', {key: task_key}, {running: false, confirming: false});
 
@@ -220,16 +241,18 @@ async function checkForAutoDeleteFiles() {
         return null;
     }
     const delete_older_than_timestamp = Date.now() - task_obj['options']['threshold_days']*86400*1000;
-    const uids = (await db_api.getRecords('files', {registered: {$lt: delete_older_than_timestamp}})).map(file => file.uid);
-    return {uids: uids};
+    const files = (await db_api.getRecords('files', {registered: {$lt: delete_older_than_timestamp}}))
+    const files_to_remove = files.map(file => {return {uid: file.uid, sub_id: file.sub_id}});
+    return {files_to_remove: files_to_remove};
 }
 
 async function autoDeleteFiles(data) {
-    if (data['uids']) {
-        logger.info(`Removing ${data['uids'].length} old files!`);
-        for (let i = 0; i < data['uids'].length; i++) {
-            const file_to_remove = data['uids'][i];
-            await db_api.deleteFile(file_to_remove);
+    const task_obj = await db_api.getRecord('tasks', {key: 'delete_old_files'});
+    if (data['files_to_remove']) {
+        logger.info(`Removing ${data['files_to_remove'].length} old files!`);
+        for (let i = 0; i < data['files_to_remove'].length; i++) {
+            const file_to_remove = data['files_to_remove'][i];
+            await db_api.deleteFile(file_to_remove['uid'], task_obj['options']['blacklist_files'] || (file_to_remove['sub_id'] && file_to_remove['blacklist_subscription_files']));
         }
     }
 }

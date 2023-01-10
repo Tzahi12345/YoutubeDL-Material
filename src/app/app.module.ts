@@ -93,6 +93,7 @@ import { NotificationsListComponent } from './components/notifications-list/noti
 import { TaskSettingsComponent } from './components/task-settings/task-settings.component';
 import { GenerateRssUrlComponent } from './dialogs/generate-rss-url/generate-rss-url.component';
 import { SortPropertyComponent } from './components/sort-property/sort-property.component';
+import { OnlyNumberDirective } from './directives/only-number.directive';
 
 registerLocaleData(es, 'es');
 
@@ -143,7 +144,8 @@ registerLocaleData(es, 'es');
         NotificationsListComponent,
         TaskSettingsComponent,
         GenerateRssUrlComponent,
-        SortPropertyComponent
+        SortPropertyComponent,
+        OnlyNumberDirective
     ],
     imports: [
         CommonModule,
