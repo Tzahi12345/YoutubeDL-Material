@@ -225,30 +225,24 @@ function deleteJSONFile(file_path, type) {
 async function removeIDFromArchive(archive_path, type, id) {
     const archive_file = path.join(archive_path, `archive_${type}.txt`);
     const data = await fs.readFile(archive_file, {encoding: 'utf-8'});
-    if (!data) {
+    if (data === null || data === undefined) {
         logger.error('Archive could not be found.');
         return;
     }
 
     let dataArray = data.split('\n'); // convert file data in an array
     const searchKeyword = id; // we are looking for a line, contains, key word id in the file
-    let lastIndex = -1; // let say, we have not found the keyword
+    let foundLine = dataArray.find(line => line.includes(searchKeyword));
 
-    for (let index=0; index<dataArray.length; index++) {
-        if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
-            lastIndex = index; // found a line includes a id keyword
-            break;
-        }
-    }
+    dataArray = dataArray.filter(line => !line.includes(searchKeyword));
 
-    if (lastIndex === -1) return null;
-
-    const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
+    if (!foundLine) return null;
+    else foundLine = foundLine.trim();
 
     // UPDATE FILE WITH NEW DATA
     const updatedData = dataArray.join('\n');
     await fs.writeFile(archive_file, updatedData);
-    if (line) return Array.isArray(line) && line.length === 1 ? line[0] : line;
+    if (foundLine) return Array.isArray(foundLine) && foundLine.length === 1 ? foundLine[0] : foundLine;
 }
 
 async function writeToBlacklist(archive_folder, type, line) {

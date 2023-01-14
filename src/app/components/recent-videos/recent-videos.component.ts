@@ -316,16 +316,14 @@ export class RecentVideosComponent implements OnInit {
   }
 
   deleteAndRedownload(file: DatabaseFile): void {
-    const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, false, file.uid).subscribe(() => {
+    this.postsService.deleteSubscriptionFile(file.uid, false).subscribe(() => {
       this.postsService.openSnackBar($localize`Successfully deleted file: ` + file.id);
       this.removeFileCard(file);
     });
   }
 
   deleteForever(file: DatabaseFile): void {
-    const sub = this.postsService.getSubscriptionByID(file.sub_id);
-    this.postsService.deleteSubscriptionFile(sub, file.id, true, file.uid).subscribe(() => {
+    this.postsService.deleteSubscriptionFile(file.uid, true).subscribe(() => {
       this.postsService.openSnackBar($localize`Successfully deleted file: ` + file.id);
       this.removeFileCard(file);
     });

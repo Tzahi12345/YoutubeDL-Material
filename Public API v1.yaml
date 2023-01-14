@@ -1936,16 +1936,11 @@ components:
           description: Number of files removed
     DeleteSubscriptionFileRequest:
       required:
-        - file
-        - sub
+        - file_uid
       type: object
       properties:
-        file:
-          type: string
         file_uid:
           type: string
-        sub:
-          $ref: '#/components/schemas/SubscriptionRequestData'
         deleteForever:
           type: boolean
           description: 'If true, does not remove id from archive. Only valid if youtube-dl archive is enabled in settings.'

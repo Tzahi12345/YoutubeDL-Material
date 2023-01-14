@@ -451,8 +451,8 @@ exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) 
     return playlist_file_objs.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
 }
 
-exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
-    const file_obj = await exports.getVideo(uid, uuid);
+exports.deleteFile = async (uid, blacklistMode = false) => {
+    const file_obj = await exports.getVideo(uid);
     const type = file_obj.isAudio ? 'audio' : 'video';
     const folderPath = path.dirname(file_obj.path);
     const ext = type === 'audio' ? 'mp3' : 'mp4';
@@ -498,7 +498,7 @@ exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
 
     let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
-        const archive_path = utils.getArchiveFolder(type, uuid);
+        const archive_path = utils.getArchiveFolder(type, file_obj.user_uid, file_obj.sub_id ? (await exports.getRecord('subscriptions', {id: file_obj.sub_id})) : null);
 
         // get ID from JSON
 

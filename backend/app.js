@@ -1227,12 +1227,9 @@ app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
 
 app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
     let deleteForever = req.body.deleteForever;
-    let file = req.body.file;
     let file_uid = req.body.file_uid;
-    let sub = req.body.sub;
-    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let success = await subscriptions_api.deleteSubscriptionFile(sub, file, deleteForever, file_uid, user_uid);
+    let success = await db_api.deleteFile(file_uid, deleteForever);
 
     if (success) {
         res.send({
@@ -1413,10 +1410,9 @@ app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
 app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     const uid = req.body.uid;
     const blacklistMode = req.body.blacklistMode;
-    const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     let wasDeleted = false;
-    wasDeleted = await db_api.deleteFile(uid, uuid, blacklistMode);
+    wasDeleted = await db_api.deleteFile(uid, blacklistMode);
     res.send(wasDeleted);
 });
 
@@ -1448,7 +1444,7 @@ app.post('/api/deleteAllFiles', optionalJwt, async (req, res) => {
 
     for (let i = 0; i < files.length; i++) {    
         let wasDeleted = false;
-        wasDeleted = await db_api.deleteFile(files[i].uid, uuid, blacklistMode);
+        wasDeleted = await db_api.deleteFile(files[i].uid, blacklistMode);
         if (wasDeleted) {
             delete_count++;
         }

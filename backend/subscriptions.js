@@ -152,6 +152,10 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
 }
 
 async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
+    if (typeof sub === 'string') {
+        // TODO: fix bad workaround where sub is a sub_id
+        sub = await db_api.getRecord('subscriptions', {sub_id: sub});
+    }
     // TODO: combine this with deletefile
     let basePath = null;
     basePath = user_uid ? path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions')

@@ -552,9 +552,8 @@ export class PostsService implements CanActivate {
         return this.http.post<UnsubscribeResponse>(this.path + 'unsubscribe', body, this.httpOptions)
     }
 
-    deleteSubscriptionFile(sub: SubscriptionRequestData, file: string, deleteForever: boolean, file_uid: string) {
-        const body: DeleteSubscriptionFileRequest = {sub: sub, file: file, deleteForever: deleteForever,
-            file_uid: file_uid};
+    deleteSubscriptionFile(file_uid: string, deleteForever: boolean) {
+        const body: DeleteSubscriptionFileRequest = {file_uid: file_uid, deleteForever: deleteForever};
         return this.http.post<SuccessObject>(this.path + 'deleteSubscriptionFile', body, this.httpOptions)
     }
 
