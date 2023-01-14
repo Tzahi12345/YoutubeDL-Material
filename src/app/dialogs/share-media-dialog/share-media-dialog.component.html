@@ -6,7 +6,7 @@
 <mat-dialog-content>
     <div>
         <div>
-            <mat-checkbox [checked]="sharing_enabled" (change)="sharingChanged($event)"><ng-container i18n="Enable sharing checkbox">Enable sharing</ng-container></mat-checkbox>
+            <mat-checkbox [checked]="sharing_enabled" (change)="sharingChanged($event)" [disabled]="uuid && (!postsService.isLoggedIn || postsService.user?.uid !== uuid)"><ng-container i18n="Enable sharing checkbox">Enable sharing</ng-container></mat-checkbox>
         </div>
         <div>
             <mat-checkbox style="margin-right: 15px;" (change)="useTimestampChanged()" [(ngModel)]="timestamp_enabled"><ng-container i18n="Use timestamp">Use timestamp</ng-container></mat-checkbox>

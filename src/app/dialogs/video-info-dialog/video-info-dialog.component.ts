@@ -20,6 +20,7 @@ export class VideoInfoDialogComponent implements OnInit {
   editing = false;
   initialized = false;
   retrieving_file = false;
+  write_access = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public postsService: PostsService, private datePipe: DatePipe) { }
 
@@ -29,6 +30,7 @@ export class VideoInfoDialogComponent implements OnInit {
       this.initializeFile(this.data.file);
     }
     this.postsService.reloadCategories();
+    this.write_access = !this.file.user_uid || (this.file.user_uid && this.postsService.user?.uid === this.file.user_uid);
   }
 
   initializeFile(file: DatabaseFile): void {

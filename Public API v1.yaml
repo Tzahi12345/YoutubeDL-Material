@@ -2463,6 +2463,8 @@ components:
           type: string
         uid:
           type: string
+        user_uid:
+          type: string
         sharingEnabled:
           type: boolean
         category:

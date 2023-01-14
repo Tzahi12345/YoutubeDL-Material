@@ -26,6 +26,7 @@ export type DatabaseFile = {
     path: string;
     upload_date: string;
     uid: string;
+    user_uid?: string;
     sharingEnabled?: boolean;
     category?: Category;
     view_count?: number;

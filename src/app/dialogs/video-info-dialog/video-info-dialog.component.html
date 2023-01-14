@@ -1,8 +1,8 @@
 <h4 mat-dialog-title>
     {{file.title}}
     <div class="favorite-button">
-        <button mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
-        <button [disabled]="!initialized || retrieving_file" (click)="toggleFavorite()" mat-icon-button ><mat-icon>{{file.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon></button>
+        <button [disabled]="!initialized || retrieving_file || !write_access" mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
+        <button [disabled]="!initialized || retrieving_file || !write_access" (click)="toggleFavorite()" mat-icon-button ><mat-icon>{{file.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon></button>
     </div>
 </h4>
 

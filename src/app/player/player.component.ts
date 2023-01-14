@@ -353,7 +353,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         uid: this.playlist_id ? this.playlist_id : this.uid,
         sharing_enabled: this.playlist_id ? this.db_playlist.sharingEnabled : this.db_file.sharingEnabled,
         is_playlist: !!this.playlist_id,
-        uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : null,
+        uuid: this.postsService.isLoggedIn ? this.postsService.user.uid : this.uuid,
         current_timestamp: this.api.time.current
       },
       width: '60vw'
