@@ -1,12 +1,12 @@
 <h4 mat-dialog-title>
     {{file.title}}
-    <button [disabled]="!initialized || retrieving_file" (click)="toggleFavorite()" mat-icon-button class="favorite-button"><mat-icon>{{file.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon></button>
+    <div class="favorite-button">
+        <button mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
+        <button [disabled]="!initialized || retrieving_file" (click)="toggleFavorite()" mat-icon-button ><mat-icon>{{file.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon></button>
+    </div>
 </h4>
 
 <mat-dialog-content>
-    <div style="width: 100%; position: relative;">
-        <button style="position: absolute; right: 16px; top: 8px;" mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
-    </div>
     <mat-form-field class="info-field">
         <mat-label i18n="Name">Name</mat-label>
         <input [(ngModel)]="new_file.title" matInput [disabled]="!editing">
