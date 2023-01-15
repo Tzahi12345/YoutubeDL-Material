@@ -1092,7 +1092,7 @@ app.post('/api/disableSharing', optionalJwt, async function(req, res) {
     });
 });
 
-app.post('/api/incrementViewCount', optionalJwt, async (req, res) => {
+app.post('/api/incrementViewCount', async (req, res) => {
     let file_uid = req.body.file_uid;
     let sub_id = req.body.sub_id;
     let uuid = req.body.uuid;
