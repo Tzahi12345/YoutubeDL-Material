@@ -2,6 +2,7 @@ var fs = require('fs-extra')
 var path = require('path')
 const { MongoClient } = require("mongodb");
 const { uuid } = require('uuidv4');
+const _ = require('lodash');
 
 const config_api = require('./config');
 var utils = require('./utils')
@@ -152,6 +153,7 @@ exports._connectToDB = async (custom_connection_string = null) => {
                 await database.collection(table).createIndex(text_search);
             }
         });
+        using_local_db = false; // needs to happen for tests (in normal operation using_local_db is guaranteed false)
         return true;
     } catch(err) {
         logger.error(err);
@@ -578,7 +580,6 @@ exports.setVideoProperty = async (file_uid, assignment_obj) => {
 exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
     // local db override
     if (using_local_db) {
-        if (replaceFilter) local_db.get(table).remove(replaceFilter).write();
         local_db.get(table).push(doc).write();
         return true;
     }
@@ -1140,4 +1141,9 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
         return filtered;
     });
     return return_val;
+}
+
+// should only be used for tests
+exports.setLocalDBMode = (mode) => {
+    using_local_db = mode;
 }

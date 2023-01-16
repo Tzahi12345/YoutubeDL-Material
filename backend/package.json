@@ -32,6 +32,7 @@
     "fs-extra": "^9.0.0",
     "gotify": "^1.1.0",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
     "merge-files": "^0.1.2",
