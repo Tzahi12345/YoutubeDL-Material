@@ -1,7 +1,7 @@
 const db_api = require('./db');
 const notifications_api = require('./notifications');
 const youtubedl_api = require('./youtube-dl');
-const subscriptions_api = require('./subscriptions');
+const archive_api = require('./archive');
 
 const fs = require('fs-extra');
 const logger = require('./logger');
@@ -40,6 +40,11 @@ const TASKS = {
         run: checkForAutoDeleteFiles,
         confirm: autoDeleteFiles,
         title: 'Delete old files',
+        job: null
+    },
+    import_legacy_archives: {
+        run: archive_api.importArchives,
+        title: 'Import legacy archives',
         job: null
     }
 }

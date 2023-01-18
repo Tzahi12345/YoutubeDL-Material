@@ -63,6 +63,10 @@ const tables = {
         name: 'notifications',
         primary_key: 'uid'
     },
+    archives: {
+        name: 'archives',
+        primary_key: 'key'
+    },
     test: {
         name: 'test'
     }
@@ -258,13 +262,16 @@ exports.getFileDirectoriesAndDBs = async () => {
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'audio'),
                 user_uid: user.uid,
-                type: 'audio'
+                type: 'audio',
+                archive_path: utils.getArchiveFolder('audio', user.uid)
             });
 
             // add user's video dir to check list
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'video'),
-                type: 'video'
+                user_uid: user.uid,
+                type: 'video',
+                archive_path: utils.getArchiveFolder('video', user.uid)
             });
         }
     } else {
@@ -274,13 +281,15 @@ exports.getFileDirectoriesAndDBs = async () => {
         // add audio dir to check list
         dirs_to_check.push({
             basePath: audioFolderPath,
-            type: 'audio'
+            type: 'audio',
+            archive_path: utils.getArchiveFolder('audio')
         });
 
         // add video dir to check list
         dirs_to_check.push({
             basePath: videoFolderPath,
-            type: 'video'
+            type: 'video',
+            archive_path: utils.getArchiveFolder('video')
         });
     }
 
@@ -301,7 +310,8 @@ exports.getFileDirectoriesAndDBs = async () => {
                                       : path.join(subscriptions_base_path, subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name),
             user_uid: subscription_to_check.user_uid,
             type: subscription_to_check.type,
-            sub_id: subscription_to_check['id']
+            sub_id: subscription_to_check['id'],
+            archive_path: utils.getArchiveFolder(subscription_to_check.type, subscription_to_check.user_uid, subscription_to_check)
         });
     }
 
@@ -580,6 +590,7 @@ exports.setVideoProperty = async (file_uid, assignment_obj) => {
 exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
     // local db override
     if (using_local_db) {
+        if (replaceFilter) local_db.get(table).remove((doc) => _.isMatch(doc, replaceFilter)).write();
         local_db.get(table).push(doc).write();
         return true;
     }

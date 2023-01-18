@@ -37,6 +37,7 @@ var auth_api = require('../authentication/auth');
 var db_api = require('../db');
 const utils = require('../utils');
 const subscriptions_api = require('../subscriptions');
+const archive_api = require('../archive');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 const NodeID3 = require('node-id3');
@@ -180,6 +181,16 @@ describe('Database', async function() {
                     assert(delete_succeeded);
                     const deleted_record = await db_api.getRecord('test', {test_remove: 'test'});
                     assert(!deleted_record);
+                });
+
+                it('Remove records', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test', test_property: 'test'});
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test', test_property: 'test2'});
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test'});
+                    const delete_succeeded = await db_api.removeAllRecords('test', {test_remove: 'test'});
+                    assert(delete_succeeded);
+                    const count = await db_api.getRecords('test', {test_remove: 'test'}, true);
+                    assert(count === 0);
                 });
 
                 it('Push to record array', async function() {
@@ -613,30 +624,46 @@ describe('Tasks', function() {
 });
 
 describe('Archive', async function() {
-    const archive_path = path.join('test', 'archives');
-    fs.ensureDirSync(archive_path);
-    const archive_file_path = path.join(archive_path, 'archive_video.txt');
-    const blacklist_file_path = path.join(archive_path, 'blacklist_video.txt');
     beforeEach(async function() {
-        if (fs.existsSync(archive_file_path)) fs.unlinkSync(archive_file_path);
-        fs.writeFileSync(archive_file_path, 'youtube testing1\nyoutube testing2\nyoutube testing3\n');
-
-        if (fs.existsSync(blacklist_file_path)) fs.unlinkSync(blacklist_file_path);
-        fs.writeFileSync(blacklist_file_path, '');
-    });
-    
-    it('Delete from archive', async function() {
-        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', false);
-        const new_archive = fs.readFileSync(archive_file_path);
-        assert(!new_archive.includes('testing2'));
+        await db_api.removeAllRecords('archives', {user_uid: 'test_user'});
     });
 
-    it('Delete from archive - blacklist', async function() {
-        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', true);
-        const new_archive = fs.readFileSync(archive_file_path);
-        const new_blacklist = fs.readFileSync(blacklist_file_path);
-        assert(!new_archive.includes('testing2'));
-        assert(new_blacklist.includes('testing2'));
+    afterEach(async function() {
+        await db_api.removeAllRecords('archives', {user_uid: 'test_user'});
+    });
+
+    it('Import archive', async function() {
+        const archive_text = `
+            testextractor1 testing1
+            testextractor1 testing2
+            testextractor2 testing1
+            testextractor1 testing3
+
+        `;
+        const count = await archive_api.importArchiveFile(archive_text, 'video', 'test_user', 'test_sub');
+        assert(count === 4)
+        const archive_items = await db_api.getRecords('archives', {user_uid: 'test_user', sub_id: 'test_sub'});
+        console.log(archive_items);
+        assert(archive_items.length === 4);
+        assert(archive_items.filter(archive_item => archive_item.key.extractor === 'testextractor2').length === 1);
+        assert(archive_items.filter(archive_item => archive_item.key.extractor === 'testextractor1').length === 3);
+
+        const success = await db_api.removeAllRecords('archives', {user_uid: 'test_user', sub_id: 'test_sub'});
+        assert(success);
+    });
+
+    it('Get archive', async function() {
+        await archive_api.addToArchive('testextractor1', 'video', 'testing1', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'video', 'testing1', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'video', 'testing1', 'test_user');
+
+        const archive_item1 = await db_api.getRecord('archives', {key: {extractor: 'testextractor1', id: 'testing1'}});
+        const archive_item2 = await db_api.getRecord('archives', {key: {extractor: 'testextractor2', id: 'testing1'}});
+
+        assert(archive_item1 && archive_item2);
+
+        const count = await db_api.getRecords('archives', {key: {id: 'testing1'}}, true);
+        assert(count === 2);
     });
 });
 

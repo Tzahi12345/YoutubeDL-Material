@@ -33,6 +33,7 @@ const subscriptions_api = require('./subscriptions');
 const categories_api = require('./categories');
 const twitch_api = require('./twitch');
 const youtubedl_api = require('./youtube-dl');
+const archive_api = require('./archive');
 
 var app = express();
 
@@ -70,7 +71,8 @@ db.defaults(
         downloads: {},
         subscriptions: [],
         files_to_db_migration_complete: false,
-        tasks_manager_role_migration_complete: false
+        tasks_manager_role_migration_complete: false,
+        archives_migration_complete: false
 }).write();
 
 users_db.defaults(
@@ -198,6 +200,15 @@ async function checkMigrations() {
         if (success) logger.info('Task manager permissions check complete!');
         else logger.error('Failed to auto add tasks manager permissions to admin role!');
         db.set('tasks_manager_role_migration_complete', true).write();
+    }
+
+    const archives_migration_complete = db.get('archives_migration_complete').value();
+    if (!archives_migration_complete) {
+        logger.info('Checking if archives have been migrated...');
+        const imported_archives = await archive_api.importArchives();
+        if (imported_archives) logger.info('Archives migration complete!');
+        else logger.error('Failed to migrate archives!');
+        db.set('archives_migration_complete', true).write();
     }
 
     return true;
