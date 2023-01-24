@@ -15,6 +15,7 @@ const categories_api = require('./categories');
 const utils = require('./utils');
 const db_api = require('./db');
 const notifications_api = require('./notifications');
+const archive_api = require('./archive');
 
 const mutex = new Mutex();
 let should_check_downloads = true;
@@ -202,6 +203,20 @@ async function collectInfo(download_uid) {
         return;
     }
 
+    const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+    if (useYoutubeDLArchive && !options.ignoreArchive) {
+        const exists_in_archive = await archive_api.existsInArchive(info['extractor'], info['id'], type, download['user_uid'], download['sub_id']);
+        if (exists_in_archive) {
+            const error = `File '${info['title']}' already exists in archive! Disable the archive or override to continue downloading.`;
+            logger.warn(error);
+            if (download_uid) {
+                const download = await db_api.getRecord('download_queue', {uid: download_uid});
+                await handleDownloadError(download, error);
+                return;
+            }
+        }
+    }
+
     let category = null;
 
     // check if it fits into a category. If so, then get info again using new args
@@ -353,17 +368,12 @@ async function downloadQueuedFile(download_uid) {
                     // registers file in DB
                     const file_obj = await db_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
 
+                    const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+                    if (useYoutubeDLArchive && !options.ignoreArchive) await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, download['user_uid'], download['sub_id']);
+
                     notifications_api.sendDownloadNotification(file_obj, download['user_uid']);
 
                     file_objs.push(file_obj);
-                }
-
-                if (options.merged_string !== null && options.merged_string !== undefined) {
-                    const archive_folder = getArchiveFolder(fileFolderPath, options, download['user_uid']);
-                    const current_merged_archive = fs.readFileSync(path.join(archive_folder, `merged_${type}.txt`), 'utf8');
-                    const diff = current_merged_archive.replace(options.merged_string, '');
-                    const archive_path = path.join(archive_folder, `archive_${type}.txt`);
-                    fs.appendFileSync(archive_path, diff);
                 }
 
                 let container = null;
@@ -476,28 +486,6 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
         const customDownloadingAgent = config_api.getConfigItem('ytdl_custom_downloading_agent');
         if (!useDefaultDownloadingAgent && customDownloadingAgent) {
             downloadConfig.splice(0, 0, '--external-downloader', customDownloadingAgent);
-        }
-
-        let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-        if (useYoutubeDLArchive) {
-            const archive_folder = getArchiveFolder(fileFolderPath, options, user_uid);
-            const archive_path = path.join(archive_folder, `archive_${type}.txt`);
-
-            await fs.ensureDir(archive_folder);
-            await fs.ensureFile(archive_path);
-
-            const blacklist_path = path.join(archive_folder, `blacklist_${type}.txt`);
-            await fs.ensureFile(blacklist_path);
-
-            const merged_path = path.join(archive_folder, `merged_${type}.txt`);
-            await fs.ensureFile(merged_path);
-            // merges blacklist and regular archive
-            let inputPathList = [archive_path, blacklist_path];
-            await mergeFiles(inputPathList, merged_path);
-
-            options.merged_string = await fs.readFile(merged_path, "utf8");
-
-            downloadConfig.push('--download-archive', merged_path);
         }
 
         if (config_api.getConfigItem('ytdl_include_thumbnail')) {
@@ -650,14 +638,4 @@ exports.generateNFOFile = (info, output_path) => {
     const doc = create(nfo_obj);
     const xml = doc.end({ prettyPrint: true });
     fs.writeFileSync(output_path, xml);
-}
-
-function getArchiveFolder(fileFolderPath, options, user_uid) {
-    if (options.customArchivePath) {
-        return path.join(options.customArchivePath);
-    } else if (user_uid) {
-        return path.join(fileFolderPath, 'archives');
-    } else {
-        return path.join('appdata', 'archives');
-    }
 }

@@ -1632,6 +1632,9 @@ components:
           $ref: '#/components/schemas/FileType'
         cropFileSettings:
           $ref: '#/components/schemas/CropFileSettings'
+        ignoreArchive:
+          type: boolean
+          description: If using youtube-dl archive, download will ignore it
     DownloadResponse:
       type: object
       properties:
@@ -2080,17 +2083,12 @@ components:
         type:
           $ref: '#/components/schemas/FileType'
     DownloadArchiveRequest:
-      required:
-        - sub
       type: object
       properties:
-        sub:
-          required:
-            - archive_dir
-          type: object
-          properties:
-            archive_dir:
-              type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
     UpdaterStatus:
       required:
         - details

@@ -434,8 +434,8 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'uploadCookies', fileFormData, this.httpOptions);
     }
 
-    downloadArchive(sub) {
-        const body: DownloadArchiveRequest = {sub: sub};
+    downloadArchive(type: FileType, sub_id: string) {
+        const body: DownloadArchiveRequest = {type: type, sub_id: sub_id};
         return this.http.post(this.path + 'downloadArchive', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 

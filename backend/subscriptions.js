@@ -3,6 +3,7 @@ const path = require('path');
 const youtubedl = require('youtube-dl');
 
 const config_api = require('./config');
+const archive_api = require('./archive');
 const utils = require('./utils');
 const logger = require('./logger');
 
@@ -160,10 +161,10 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     let basePath = null;
     basePath = user_uid ? path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions')
                         : config_api.getConfigItem('ytdl_subscriptions_base_path');
-    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const name = file;
     let retrievedID = null;
+    let retrievedExtractor = null;
 
     await db_api.removeRecord('files', {uid: file_uid});
 
@@ -182,7 +183,9 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     ]);
 
     if (jsonExists) {
-        retrievedID = fs.readJSONSync(jsonPath)['id'];
+        const info_json = fs.readJSONSync(jsonPath);
+        retrievedID = info_json['id'];
+        retrievedExtractor = info_json['extractor'];
         await fs.unlink(jsonPath);
     }
 
@@ -200,11 +203,9 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
             return false;
         } else {
             // check if the user wants the video to be redownloaded (deleteForever === false)
-            if (useArchive && retrievedID) {
-                const archive_path = utils.getArchiveFolder(sub.type, user_uid, sub);
-
-                // Remove file ID from the archive file, and write it to the blacklist (if enabled)
-                await utils.deleteFileFromArchive(file_uid, sub.type, archive_path, retrievedID, deleteForever);
+            const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+            if (useArchive && !deleteForever) {
+                await archive_api.removeFromArchive(retrievedExtractor, retrievedID, sub.type, user_uid, sub.id);
             }
             return true;
         }
@@ -335,8 +336,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     else
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
-    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-
     let appendedBasePath = getAppendedBasePath(sub, basePath);
 
     const file_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
@@ -370,21 +369,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
             downloadConfig.splice(original_output_index, 2);
         }
         downloadConfig.push(...customArgsArray);
-    }
-
-    let archive_dir = null;
-    let archive_path = null;
-
-    if (useArchive && !redownload) {
-        if (sub.archive) {
-            archive_dir = sub.archive;
-            if (sub.type && sub.type === 'audio') {
-                archive_path = path.join(archive_dir, 'merged_audio.txt');
-            } else {
-                archive_path = path.join(archive_dir, 'merged_video.txt');
-            }            
-        }
-        downloadConfig.push('--download-archive', archive_path);
     }
 
     if (sub.timerange && !redownload) {
@@ -429,7 +413,14 @@ async function getFilesToDownload(sub, output_jsons) {
             if (file_with_path_exists) {
                 // or maybe just overwrite???
                 logger.info(`Skipping adding file ${output_json['_filename']} for subscription ${sub.name} as a file with that path already exists.`)
+                continue;
             }
+            const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+            if (useYoutubeDLArchive) {
+                const exists_in_archive = await archive_api.existsInArchive(output_json['extractor'], output_json['id'], sub.type, sub.user_uid, sub.id);
+                if (exists_in_archive) continue;
+            }
+
             files_to_download.push(output_json);
         }
     }

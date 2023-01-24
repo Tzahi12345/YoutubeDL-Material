@@ -64,8 +64,7 @@ const tables = {
         primary_key: 'uid'
     },
     archives: {
-        name: 'archives',
-        primary_key: 'key'
+        name: 'archives'
     },
     test: {
         name: 'test'
@@ -510,16 +509,22 @@ exports.deleteFile = async (uid, blacklistMode = false) => {
 
     let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
-        const archive_path = utils.getArchiveFolder(type, file_obj.user_uid, file_obj.sub_id ? (await exports.getRecord('subscriptions', {id: file_obj.sub_id})) : null);
+        // get id/extractor from JSON
 
-        // get ID from JSON
-
-        var jsonobj = await (type === 'audio' ? utils.getJSONMp3(name, folderPath) : utils.getJSONMp4(name, folderPath));
-        let id = null;
-        if (jsonobj) id = jsonobj.id;
+        const info_json = await (type === 'audio' ? utils.getJSONMp3(name, folderPath) : utils.getJSONMp4(name, folderPath));
+        let retrievedID = null;
+        let retrievedExtractor = null;
+        if (info_json) {
+            retrievedID = info_json['id'];
+            retrievedExtractor = info_json['extractor'];
+        }
 
         // Remove file ID from the archive file, and write it to the blacklist (if enabled)
-        await utils.deleteFileFromArchive(uid, type, archive_path, id, blacklistMode);
+        if (!blacklistMode) {
+            // workaround until a files_api is created (using archive_api would make a circular dependency)
+            await exports.removeAllRecords('archives', {extractor: retrievedExtractor, id: retrievedID, type: type, user_uid: file_obj.user_uid, sub_id: file_obj.sub_id});
+            // await archive_api.removeFromArchive(retrievedExtractor, retrievedID, type, file_obj.user_uid, file_obj.sub_id);
+        }
     }
 
     if (jsonExists) await fs.unlink(jsonPath);

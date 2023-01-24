@@ -522,9 +522,6 @@ async function loadConfig() {
     db_api.database_initialized = true;
     db_api.database_initialized_bs.next(true);
 
-    // creates archive path if missing
-    await fs.ensureDir(utils.getArchiveFolder());
-
     // check migrations
     await checkMigrations();
 
@@ -830,7 +827,8 @@ app.post('/api/downloadFile', optionalJwt, async function(req, res) {
         youtubeUsername: req.body.youtubeUsername,
         youtubePassword: req.body.youtubePassword,
         ui_uid: req.body.ui_uid,
-        cropFileSettings: req.body.cropFileSettings
+        cropFileSettings: req.body.cropFileSettings,
+        ignoreArchive: req.body.ignoreArchive
     };
 
     const download = await downloader_api.createDownload(url, type, options, user_uid);
@@ -1517,15 +1515,18 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/downloadArchive', optionalJwt, async (req, res) => {
-    let sub = req.body.sub;
-    let archive_dir = sub.archive;
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+    const sub_id = req.body.sub_id; 
+    const type = req.body.type;
 
-    let full_archive_path = path.join(archive_dir, 'archive.txt');
+    const archive_text = await archive_api.generateArchive(type, uuid, sub_id);
 
-    if (await fs.pathExists(full_archive_path)) {
-        res.sendFile(full_archive_path);
+    if (archive_text !== null && archive_text !== undefined) {
+        res.setHeader('Content-type', "application/octet-stream");
+        res.setHeader('Content-disposition', 'attachment; filename=archive.txt');
+        res.send(archive_text);
     } else {
-        res.sendStatus(404);
+        res.sendStatus(400);
     }
 
 });

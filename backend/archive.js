@@ -3,20 +3,27 @@ const fs = require('fs-extra');
 
 const db_api = require('./db');
 
-exports.generateArchive = async (user_uid = null, sub_id = null) => {
-    const archive_items = await db_api.getRecords('archives', {user_uid: user_uid, sub_id: sub_id});
+exports.generateArchive = async (type = null, user_uid = null, sub_id = null) => {
+    const filter = {user_uid: user_uid, sub_id: sub_id};
+    if (type) filter['type'] = type;
+    const archive_items = await db_api.getRecords('archives', filter);
     const archive_item_lines = archive_items.map(archive_item => `${archive_item['extractor']} ${archive_item['id']}`);
     return archive_item_lines.join('\n');
 }
 
 exports.addToArchive = async (extractor, id, type, user_uid = null, sub_id = null) => {
     const archive_item = createArchiveItem(extractor, id, type, user_uid, sub_id);
-    const success = await db_api.insertRecordIntoTable('archives', archive_item, {key: {extractor: extractor, id: id}, type: type});
+    const success = await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id, type: type});
+    return success;
+}
+
+exports.removeFromArchive = async (extractor, id, type, user_uid = null, sub_id = null) => {
+    const success = await db_api.removeAllRecords('archives', {extractor: extractor, id: id, type: type, user_uid: user_uid, sub_id: sub_id});
     return success;
 }
 
 exports.existsInArchive = async (extractor, id, type, user_uid, sub_id) => {
-    const archive_item = await db_api.getRecord('archives', {'key.extractor': extractor, 'key.id': id, type: type, user_uid: user_uid, sub_id: sub_id});
+    const archive_item = await db_api.getRecord('archives', {extractor: extractor, id: id, type: type, user_uid: user_uid, sub_id: sub_id});
     return !!archive_item;
 }
 
@@ -37,7 +44,7 @@ exports.importArchiveFile = async (archive_text, type, user_uid = null, sub_id =
         // we can't do a bulk write because we need to avoid duplicate archive items existing in db
 
         const archive_item = createArchiveItem(extractor, id, type, user_uid, sub_id);
-        await db_api.insertRecordIntoTable('archives', archive_item, {key: {extractor: extractor, id: id}});
+        await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id});
         archive_import_count++;
     }
     return archive_import_count;
@@ -71,10 +78,8 @@ exports.importArchives = async () => {
 
 const createArchiveItem = (extractor, id, type, user_uid = null, sub_id = null) => {
     return {
-        key: {
-            extractor: extractor,
-            id: id
-        },
+        extractor: extractor,
+        id: id,
         type: type,
         user_uid: user_uid ? user_uid : null,
         sub_id: sub_id ? sub_id : null
