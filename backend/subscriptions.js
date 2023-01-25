@@ -139,17 +139,10 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
 
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     if (deleteMode && (await fs.pathExists(appendedBasePath))) {
-        if (sub.archive && (await fs.pathExists(sub.archive))) {
-            const archive_file_path = path.join(sub.archive, 'archive.txt');
-            // deletes archive if it exists
-            // TODO: Keep entries in blacklist_video.txt by moving them to a global blacklist
-            if (await fs.pathExists(archive_file_path)) {
-                await fs.unlink(archive_file_path);
-            }
-            await fs.rmdir(sub.archive);
-        }
         await fs.remove(appendedBasePath);
     }
+
+    await db_api.removeAllRecords('archives', {sub_id: sub.id});
 }
 
 async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
