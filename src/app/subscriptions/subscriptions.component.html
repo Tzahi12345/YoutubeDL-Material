@@ -15,10 +15,10 @@
             </div>
         </a>
         <div style="pointer-events: auto; color: unset" matListItemMeta>
-            <button mat-icon-button (click)="editSubscription(sub)">
+            <button matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button (click)="editSubscription(sub)">
                 <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button (click)="showSubInfo(sub)">
+            <button matTooltip="Info" i18n-matTooltip="Info" mat-icon-button (click)="showSubInfo(sub)">
                 <mat-icon>info</mat-icon>
             </button>
         </div>
@@ -39,10 +39,10 @@
             </div>
         </a>
         <div style="pointer-events: auto; color: unset" matListItemMeta>
-            <button mat-icon-button (click)="editSubscription(sub)">
+            <button matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button (click)="editSubscription(sub)">
                 <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button (click)="showSubInfo(sub)">
+            <button matTooltip="Info" i18n-matTooltip="Info" mat-icon-button (click)="showSubInfo(sub)">
                 <mat-icon>info</mat-icon>
             </button>
         </div>
@@ -57,4 +57,4 @@
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
 
-<button class="add-subscription-button" (click)="openSubscribeDialog()" mat-fab><mat-icon>add</mat-icon></button>
+<button class="add-subscription-button" (click)="openSubscribeDialog()" matTooltip="Add subscription" i18n-matTooltip="Add subscription" mat-fab><mat-icon>add</mat-icon></button>

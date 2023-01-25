@@ -54,6 +54,9 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
           this.subscription['downloading'] = res['subscription']['downloading'];
         }
         return;
+      } else if (res['subscription']['videos'].length > (this.subscription?.videos.length || 0)) {
+        // only when files are added so we don't reload files when one is deleted
+        this.postsService.files_changed.next(true);
       }
       this.subscription = res['subscription'];
     });

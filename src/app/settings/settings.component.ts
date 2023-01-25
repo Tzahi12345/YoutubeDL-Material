@@ -170,9 +170,9 @@ export class SettingsComponent implements OnInit {
   deleteCategory(category: Category): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        dialogTitle: 'Delete category',
-        dialogText: `Would you like to delete ${category['name']}?`,
-        submitText: 'Delete',
+        dialogTitle: $localize`Delete category`,
+        dialogText: $localize`Would you like to delete ${category['name']}:category name:?`,
+        submitText: $localize`Delete`,
         warnSubmitColor: true
       }
     });
@@ -180,12 +180,11 @@ export class SettingsComponent implements OnInit {
       if (confirmed) {
         this.postsService.deleteCategory(category['uid']).subscribe(res => {
           if (res['success']) {
-            // TODO: Make translatable
-            this.postsService.openSnackBar(`Successfully deleted ${category['name']}!`);
+            this.postsService.openSnackBar($localize`Successfully deleted ${category['name']}:category name:!`);
             this.postsService.reloadCategories();
           }
         }, () => {
-          this.postsService.openSnackBar(`Failed to delete ${category['name']}!`);
+          this.postsService.openSnackBar($localize`Failed to delete ${category['name']}:category name:!`);
         });
       }
     });

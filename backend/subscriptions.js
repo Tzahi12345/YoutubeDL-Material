@@ -439,7 +439,11 @@ async function getAllSubscriptions() {
 }
 
 async function getSubscription(subID) {
-    return await db_api.getRecord('subscriptions', {id: subID});
+    const sub = await db_api.getRecord('subscriptions', {id: subID});
+    // now with the download_queue, we may need to override 'downloading'
+    const current_downloads = await db_api.getRecords('download_queue', {running: true, sub_id: sub.id}, true);
+    if (!sub['downloading']) sub['downloading'] = current_downloads > 0;
+    return sub;
 }
 
 async function getSubscriptionByName(subName, user_uid = null) {
