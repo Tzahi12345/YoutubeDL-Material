@@ -13,7 +13,7 @@ import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/edit-category-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Category } from 'api-types';
+import { Category, DBInfoResponse } from 'api-types';
 import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-rss-url.component';
 
 @Component({
@@ -32,7 +32,7 @@ export class SettingsComponent implements OnInit {
   generated_bookmarklet_code = null;
   bookmarkletAudioOnly = false;
 
-  db_info = null;
+  db_info: DBInfoResponse = null;
   db_transferring = false;
   testing_connection_string = false;
 
@@ -315,7 +315,7 @@ export class SettingsComponent implements OnInit {
 
   getDBInfo(): void {
     this.postsService.getDBInfo().subscribe(res => {
-      this.db_info = res['db_info'];
+      this.db_info = res;
     });
   }
 

@@ -42,7 +42,7 @@
                 N/A
             </mat-option>
             <mat-option *ngFor="let available_category of postsService.categories | keyvalue" [value]="available_category.value">
-                {{available_category.value.name}}
+                {{available_category.value['name']}}
             </mat-option>
         </mat-select>
     </mat-form-field>

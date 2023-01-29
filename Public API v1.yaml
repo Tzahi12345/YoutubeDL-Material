@@ -2109,8 +2109,6 @@ components:
         tag:
           type: string
     DBInfoResponse:
-      required:
-        - db_info
       type: object
       properties:
         using_local_db:
@@ -2131,6 +2129,8 @@ components:
             roles:
               $ref: '#/components/schemas/TableInfo'
             download_queue:
+              $ref: '#/components/schemas/TableInfo'
+            archives:
               $ref: '#/components/schemas/TableInfo'
     TransferDBResponse:
       required:

@@ -19,7 +19,7 @@
                                             Quality
                                         </ng-container>
                                     </mat-label>
-                                    <mat-select [disabled]="url === '' || cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']" [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality" (ngModelChange)="argsChanged($event)">
+                                    <mat-select [disabled]="url === '' || cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']" [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality" (ngModelChange)="argsChanged()">
                                         <mat-option i18n="Best" [value]="''">
                                             Best
                                         </mat-option>
@@ -67,7 +67,7 @@
                     </div>
                 </form>
                 <br/>
-                <mat-checkbox [disabled]="autoplay && current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px; margin-left: 4px;">
+                <mat-checkbox [disabled]="autoplay && !!current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px; margin-left: 4px;">
                     <ng-container i18n="Only Audio checkbox">
                         Only Audio
                     </ng-container>
@@ -112,13 +112,13 @@
             <div class="container" style="padding-bottom: 20px;">
                 <div class="row">
                     <div class="col-12 col-sm-6">
-                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                        <mat-checkbox color="accent" [disabled]="!!current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
                             <ng-container i18n="Use custom args checkbox">
                                 Use custom args
                             </ng-container>
                         </mat-checkbox>
                         <button class="edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
-                        <mat-checkbox color="accent" [disabled]="!customArgsEnabled || current_download" (change)="replaceArgsChanged($event)" [(ngModel)]="replaceArgs" style="z-index: 999; margin-left: 10px" [ngModelOptions]="{standalone: true}">
+                        <mat-checkbox color="accent" [disabled]="!customArgsEnabled || !!current_download" (change)="replaceArgsChanged($event)" [(ngModel)]="replaceArgs" style="z-index: 999; margin-left: 10px" [ngModelOptions]="{standalone: true}">
                             <ng-container i18n="Replace args">
                                 Replace args
                             </ng-container>
@@ -134,7 +134,7 @@
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-sm-6">
-                        <mat-checkbox color="accent" [disabled]="current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                        <mat-checkbox color="accent" [disabled]="!!current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
                             <ng-container i18n="Use custom output checkbox">
                                 Use custom output
                             </ng-container>
@@ -149,7 +149,7 @@
                         </mat-form-field>
                     </div>
                     <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-3">
-                        <mat-checkbox color="accent" [disabled]="current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                        <mat-checkbox color="accent" [disabled]="!!current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
                             <ng-container i18n="Use authentication checkbox">
                                 Use authentication
                             </ng-container>
@@ -166,7 +166,7 @@
                         </mat-form-field>
                     </div>
                     <div class="col-12 col-sm-6 mt-3">
-                        <mat-checkbox color="accent" [disabled]="current_download" [(ngModel)]="cropFile" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                        <mat-checkbox color="accent" [disabled]="!!current_download" [(ngModel)]="cropFile" style="z-index: 999" [ngModelOptions]="{standalone: true}">
                             <ng-container i18n="Crop video checkbox">
                                 Crop file
                             </ng-container>

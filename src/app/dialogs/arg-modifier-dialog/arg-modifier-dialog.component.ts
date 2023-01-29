@@ -3,7 +3,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UntypedFormControl } from '@angular/forms';
-import { args, args_info } from './youtubedl_args';
+import { args, ArgsByCategory, args_info } from './youtubedl_args';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators/map';
 import { startWith } from 'rxjs/operators/startWith';
@@ -38,7 +38,7 @@ export class ArgModifierDialogComponent implements OnInit, AfterViewInit {
   stateCtrl = new UntypedFormControl();
   chipCtrl = new UntypedFormControl();
   availableArgs = null;
-  argsByCategory = null;
+  argsByCategory: ArgsByCategory = null;
   argsByKey = null;
   argsInfo = null;
   filteredOptions: Observable<any>;

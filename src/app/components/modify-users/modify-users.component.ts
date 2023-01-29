@@ -63,7 +63,8 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
   }
 
-  applyFilter(filterValue: string) {
+  applyFilter(event: KeyboardEvent) {
+    let filterValue = (event.target as HTMLInputElement).value; // "as HTMLInputElement" is required: https://angular.io/guide/user-input#type-the-event
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;

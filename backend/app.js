@@ -782,7 +782,7 @@ app.post('/api/restartServer', optionalJwt, (req, res) => {
 
 app.get('/api/getDBInfo', optionalJwt, async (req, res) => {
     const db_info = await db_api.getDBStats();
-    res.send({db_info: db_info});
+    res.send(db_info);
 });
 
 app.post('/api/transferDB', optionalJwt, async (req, res) => {
@@ -1084,9 +1084,6 @@ app.post('/api/disableSharing', optionalJwt, async function(req, res) {
             await db_api.updateRecord('files', {uid: uid}, {sharingEnabled: false})
         } else if (is_playlist) {
             await db_api.updateRecord(`playlists`, {id: uid}, {sharingEnabled: false});
-        } else if (type === 'subscription') {
-            // TODO: Implement. Main blocker right now is subscription videos are not stored in the DB, they are searched for every
-            //          time they are requested from the subscription directory.
         } else {
             // error
             success = false;

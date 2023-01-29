@@ -45,7 +45,7 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
     return position > height - threshold;
   }
 
-  scrollToBottom = (force_scroll) => {
+  scrollToBottom = (force_scroll = false) => {
     if (force_scroll || this.isUserNearBottom()) {
       this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
     }

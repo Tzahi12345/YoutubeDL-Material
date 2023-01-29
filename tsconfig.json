@@ -26,4 +26,7 @@
   "exclude": [
     "assets/default.json"
   ],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+  }
 }

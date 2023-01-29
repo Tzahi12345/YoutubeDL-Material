@@ -75,7 +75,7 @@
                         <div class="container">
                             <div class="row justify-content-center">
                                 <div class="col-10 select-file-title">
-                                    <mat-icon class="audio-video-icon">{{(file.type === 'audio' || file.isAudio) ? 'audiotrack' : 'movie'}}</mat-icon>
+                                    <mat-icon class="audio-video-icon">{{file.isAudio ? 'audiotrack' : 'movie'}}</mat-icon>
                                     {{file.title}}
                                 </div>
                                 <div class="col-2">{{file.registered | date:'shortDate'}}</div>
@@ -88,7 +88,7 @@
                 <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
                     <mat-selection-list *ngIf="!normal_files_received">
                         <mat-list-option *ngFor="let file of paged_data">
-                            <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" width="250" height="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
+                            <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" [width]="250" [height]="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
                         </mat-list-option>
                     </mat-selection-list>
                 </ng-container>

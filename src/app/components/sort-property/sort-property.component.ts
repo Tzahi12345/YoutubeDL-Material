@@ -33,8 +33,8 @@ export class SortPropertyComponent {
   @Input() sortProperty = 'registered';
   @Input() descendingMode = true;
 
-  @Output() sortPropertyChange = new EventEmitter<unknown>();
-  @Output() descendingModeChange = new EventEmitter<number>();
+  @Output() sortPropertyChange = new EventEmitter<string>();
+  @Output() descendingModeChange = new EventEmitter<boolean>();
   @Output() sortOptionChanged = new EventEmitter<Sort>();
 
   toggleModeChange(): void {

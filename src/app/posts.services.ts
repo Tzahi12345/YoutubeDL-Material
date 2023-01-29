@@ -110,6 +110,7 @@ import {
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
+import { MatDrawerMode } from '@angular/material/sidenav';
 
 @Injectable()
 export class PostsService implements CanActivate {
@@ -119,7 +120,7 @@ export class PostsService implements CanActivate {
     THEMES_CONFIG = THEMES_CONFIG;
     theme;
     card_size = 'medium';
-    sidepanel_mode = 'over';
+    sidepanel_mode: MatDrawerMode = 'over';
 
     // auth
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
@@ -215,8 +216,8 @@ export class PostsService implements CanActivate {
             if (yes_reload) { this.reloadConfig(); }
         });
 
-        if (localStorage.getItem('sidepanel_mode')) {
-            this.sidepanel_mode = localStorage.getItem('sidepanel_mode');
+        if (localStorage.getItem('sidepanel_mode') as MatDrawerMode) {
+            this.sidepanel_mode = localStorage.getItem('sidepanel_mode') as MatDrawerMode;
         }
 
         if (localStorage.getItem('card_size')) {

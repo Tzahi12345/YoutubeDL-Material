@@ -10,7 +10,7 @@
                         <mat-chip-grid class="example-chip" #chipList aria-label="Args array" cdkDropList cdkDropListDisabled
                                 cdkDropListOrientation="horizontal"
                                 (cdkDropListDropped)="drop($event)">
-                                <mat-chip-row [matTooltip]="argsByKey[arg] ? argsByKey[arg]['description'] : null" *ngFor="let arg of args_array; let i = index;" [selectable]="selectable" [removable]="removable" (removed)="remove(i)" cdkDrag>
+                                <mat-chip-row [matTooltip]="argsByKey[arg] ? argsByKey[arg]['description'] : null" *ngFor="let arg of args_array; let i = index;" [removable]="removable" (removed)="remove(i)" cdkDrag>
                                     {{arg}}
                                     <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
                                 </mat-chip-row>

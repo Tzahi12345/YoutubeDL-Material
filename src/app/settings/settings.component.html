@@ -521,7 +521,7 @@
                 </div>
                 <mat-divider></mat-divider>
                 <mat-form-field style="margin-top: 15px;">
-                    <mat-input i18n="Auth method">Auth method</mat-input>
+                    <mat-label i18n="Auth method">Auth method</mat-label>
                     <mat-select [(ngModel)]="new_config['Users']['auth_method']">
                         <mat-option value="internal">
                             <ng-container i18n="Internal auth method">Internal</ng-container>
@@ -534,31 +534,31 @@
                 <div *ngIf="new_config['Users']['auth_method'] === 'ldap'">
                     <div>
                         <mat-form-field>
-                            <mat-input i18n="LDAP URL">LDAP URL</mat-input>
+                            <mat-label i18n="LDAP URL">LDAP URL</mat-label>
                             <input matInput [(ngModel)]="new_config['Users']['ldap_config']['url']">
                         </mat-form-field>
                     </div>
                     <div>
                         <mat-form-field>
-                            <mat-input i18n="Bind DN">Bind DN</mat-input>
+                            <mat-label i18n="Bind DN">Bind DN</mat-label>
                             <input matInput [(ngModel)]="new_config['Users']['ldap_config']['bindDN']">
                         </mat-form-field>
                     </div>
                     <div>
                         <mat-form-field>
-                            <mat-input i18n="Bind Credentials">Bind Credentials</mat-input>
+                            <mat-label i18n="Bind Credentials">Bind Credentials</mat-label>
                             <input matInput [(ngModel)]="new_config['Users']['ldap_config']['bindCredentials']">
                         </mat-form-field>
                     </div>
                     <div>
                         <mat-form-field>
-                            <mat-input i18n="Search Base">Search Base</mat-input>
+                            <mat-label i18n="Search Base">Search Base</mat-label>
                             <input matInput [(ngModel)]="new_config['Users']['ldap_config']['searchBase']">
                         </mat-form-field>
                     </div>
                     <div>
                         <mat-form-field>
-                            <mat-input i18n="Search Filter">Search Filter</mat-input>
+                            <mat-label i18n="Search Filter">Search Filter</mat-label>
                             <input matInput [(ngModel)]="new_config['Users']['ldap_config']['searchFilter']">
                         </mat-form-field>
                     </div>
