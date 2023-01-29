@@ -2560,6 +2560,10 @@ components:
           type: string
           description: Error text, set if download fails.
           nullable: true
+        error_type:
+          type: string
+          description: Error type, may or may not be set in case of an error
+          nullable: true
         user_uid:
           type: string
         sub_id:

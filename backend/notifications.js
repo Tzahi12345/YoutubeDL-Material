@@ -64,9 +64,9 @@ exports.sendDownloadNotification = async (file, user_uid) => {
     return await exports.sendNotification(notification);
 }
 
-exports.sendDownloadErrorNotification = async (download, user_uid) => {
+exports.sendDownloadErrorNotification = async (download, user_uid, error_type = null) => {
     if (!notificationEnabled('download_error')) return;
-    const data = {download_uid: download.uid, download_url: download.url};
+    const data = {download_uid: download.uid, download_url: download.url, download_error_type: error_type};
     const notification = exports.createNotification('download_error', ['view_download_error', 'retry_download'], data, user_uid);
     return await exports.sendNotification(notification);
 }

@@ -108,10 +108,10 @@ exports.clearDownload = async (download_uid) => {
     return await db_api.removeRecord('download_queue', {uid: download_uid});
 }
 
-async function handleDownloadError(download, error_message) {
+async function handleDownloadError(download, error_message, error_type = null) {
     if (!download || !download['uid']) return;
-    notifications_api.sendDownloadErrorNotification(download, download['user_uid']);
-    await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false});
+    notifications_api.sendDownloadErrorNotification(download, download['user_uid'], error_type);
+    await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false, error_type: error_type});
 }
 
 async function setupDownloads() {
@@ -160,7 +160,7 @@ async function checkDownloads() {
             if (waiting_download['sub_id']) {
                 const sub_missing = !(await db_api.getRecord('subscriptions', {id: waiting_download['sub_id']}));
                 if (sub_missing) {
-                    handleDownloadError(waiting_download, `Download failed as subscription with id '${waiting_download['sub_id']}' is missing!`);
+                    handleDownloadError(waiting_download, `Download failed as subscription with id '${waiting_download['sub_id']}' is missing!`, 'sub_id_missing');
                     continue;
                 }
             }
@@ -211,7 +211,7 @@ async function collectInfo(download_uid) {
             logger.warn(error);
             if (download_uid) {
                 const download = await db_api.getRecord('download_queue', {uid: download_uid});
-                await handleDownloadError(download, error);
+                await handleDownloadError(download, error, 'exists_in_archive');
                 return;
             }
         }
@@ -303,7 +303,7 @@ async function downloadQueuedFile(download_uid) {
                 if (output.length === 0 || output[0].length === 0) {
                     // ERROR!
                     const error_message = `No output received for video download, check if it exists in your archive.`;
-                    await handleDownloadError(download, error_message);
+                    await handleDownloadError(download, error_message, 'no_output');
                     logger.warn(error_message);
                     resolve(false);
                     return;
@@ -387,7 +387,7 @@ async function downloadQueuedFile(download_uid) {
                 } else {
                     const error_message = 'Downloaded file failed to result in metadata object.';
                     logger.error(error_message);
-                    await handleDownloadError(download, error_message);
+                    await handleDownloadError(download, error_message, 'no_metadata');
                 }
 
                 const file_uids = file_objs.map(file_obj => file_obj.uid);
@@ -563,7 +563,7 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
                     logger.error(error);
                     if (download_uid) {
                         const download = await db_api.getRecord('download_queue', {uid: download_uid});
-                        await handleDownloadError(download, error);
+                        await handleDownloadError(download, error, 'parse_failed');
                     }
                     resolve(null);
                 }
