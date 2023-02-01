@@ -1,5 +1,5 @@
 # Fetching our ffmpeg
-FROM ubuntu:22.04 AS ffmpeg
+FROM ubuntu:23.04 AS ffmpeg
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
 COPY ffmpeg-fetch.sh .
@@ -8,7 +8,7 @@ RUN sh ./ffmpeg-fetch.sh
 
 # Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
 # Go to 20.04
-FROM ubuntu:20.04 AS base
+FROM ubuntu:23.04 AS base
 ARG DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
 ENV GID=1000
