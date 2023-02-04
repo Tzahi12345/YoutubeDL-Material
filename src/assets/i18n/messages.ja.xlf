@@ -26,7 +26,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
-        <target state="translated">約</target>
+        <target state="translated">情報</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">32</context>
@@ -65,7 +65,7 @@
       </trans-unit>
       <trans-unit id="357064ca9d9ac859eb618e28e8126fa32be049e2" datatype="html">
         <source>Subscriptions</source>
-        <target state="translated">サブスクリプション</target>
+        <target state="translated">チャンネル登録</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">45</context>
@@ -151,7 +151,7 @@
       </trans-unit>
       <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html">
         <source>Subscription</source>
-        <target state="translated">サブスクリプション</target>
+        <target state="translated">チャンネル登録</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">23</context>
@@ -178,7 +178,7 @@
       </trans-unit>
       <trans-unit id="030b4423b92167200e39519599f9b863b4f7c62c" datatype="html">
         <source>Actions</source>
-        <target state="translated">アクション</target>
+        <target state="translated">操作</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">55</context>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="4cd979821c89535df23df1c8ac8f260673610d90" datatype="html">
         <source>Resume</source>
-        <target state="translated">再開する</target>
+        <target state="translated">再開</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">60</context>
@@ -286,7 +286,7 @@
       </trans-unit>
       <trans-unit id="b36b7458192b833592e13029fa8a0b3555e0d9bd" datatype="html">
         <source>Pause all downloads</source>
-        <target state="translated">すべてのダウンロードを一時停止します</target>
+        <target state="translated">すべてのダウンロードを一時停止</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">83</context>
@@ -295,7 +295,7 @@
       </trans-unit>
       <trans-unit id="9b2084f9aea764292cf0978cb083907d8be51bf7" datatype="html">
         <source>Resume all downloads</source>
-        <target state="translated">すべてのダウンロードを再開します</target>
+        <target state="translated">すべてのダウンロードを再開</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">84</context>
@@ -330,7 +330,7 @@
       </trans-unit>
       <trans-unit id="4027175717527633324" datatype="html">
         <source>Getting info</source>
-        <target state="translated">情報を取得する</target>
+        <target state="translated">情報を取得</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -469,8 +469,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="translated"><x id="url" equiv-text="download['url']"/>でエラー</target>
+        <source>Error for<x id="url" equiv-text="download['url']"/></source>
+        <target state="translated"><x id="url" equiv-text="download['url''url']"/>でエラー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">259</context>
@@ -478,7 +478,7 @@
       </trans-unit>
       <trans-unit id="8738732372986673558" datatype="html">
         <source>Copy to clipboard</source>
-        <target state="translated">クリップボードにコピーする</target>
+        <target state="translated">クリップボードにコピー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">261</context>
@@ -632,7 +632,7 @@
       </trans-unit>
       <trans-unit id="57c6c05d8ebf4ef1180c2705033c044f655bb2c4" datatype="html">
         <source>Manage role</source>
-        <target state="translated">役割を管理する</target>
+        <target state="translated">役割を管理</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">1</context>
@@ -940,7 +940,7 @@
       </trans-unit>
       <trans-unit id="5704ec2049d007c5f5fb495a5d8b607e68d58081" datatype="html">
         <source>Order</source>
-        <target state="translated">注文</target>
+        <target state="translated">順序</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">53</context>
@@ -949,7 +949,7 @@
       </trans-unit>
       <trans-unit id="33026f57ea65cd9c8a5d917a08083f71a718933a" datatype="html">
         <source>Normal order</source>
-        <target state="translated">通常の注文</target>
+        <target state="translated">普通</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">55</context>
@@ -994,7 +994,7 @@
       </trans-unit>
       <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html">
         <source>Video only</source>
-        <target state="translated">ビデオのみ</target>
+        <target state="translated">動画のみ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">104</context>
@@ -1020,7 +1020,7 @@
       </trans-unit>
       <trans-unit id="8348223454028662277" datatype="html">
         <source>OK.</source>
-        <target state="translated">わかった。</target>
+        <target state="translated">OK。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">270</context>
@@ -1060,7 +1060,7 @@
       </trans-unit>
       <trans-unit id="ddc31f2885b1b33a7651963254b0c197f2a64086" datatype="html">
         <source>See more.</source>
-        <target state="translated">続きを見る。</target>
+        <target state="translated">もっと見る。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -1069,7 +1069,7 @@
       </trans-unit>
       <trans-unit id="56a2a773fbd5a6b9ac2e6b89d29d70a2ed0f3227" datatype="html">
         <source>See less.</source>
-        <target state="translated">もっと見る.</target>
+        <target state="translated">表示を減らす。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -1096,7 +1096,7 @@
       </trans-unit>
       <trans-unit id="84a36cb75660b736773fe36ffa3d54f0f0fe363e" datatype="html">
         <source>N/A</source>
-        <target state="translated">N/A</target>
+        <target state="translated">なし</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1154,7 +1154,7 @@
       </trans-unit>
       <trans-unit id="5ff9ae1f4c26bf2ddf6e9d5e4136916c5ce6a941" datatype="html">
         <source>Clear missing files from DB:</source>
-        <target state="translated">から不足しているファイルを消去する DB:</target>
+        <target state="translated">DBから存在しないファイルを消去:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">57</context>
@@ -1163,7 +1163,7 @@
       </trans-unit>
       <trans-unit id="4391397241847e675f6c38bbdec6b2883157fb1a" datatype="html">
         <source>Clear duplicate files from DB:</source>
-        <target state="translated">から重複ファイルを消去 DB:</target>
+        <target state="translated">DBから重複ファイルを消去:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">60</context>
@@ -1199,7 +1199,7 @@
       </trans-unit>
       <trans-unit id="40bd7093f5fbd3fbeff9a50baaf5d4c8416add1e" datatype="html">
         <source>Restore DB from backup</source>
-        <target state="translated">戻す BD バックアップから</target>
+        <target state="translated">バックアップからDBを復元</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">89</context>
@@ -1212,6 +1212,7 @@
       </trans-unit>
       <trans-unit id="f8a2361f3bd8fb05bf92080e2755bddd56ab64d7" datatype="html">
         <source>Reset tasks</source>
+        <target state="translated">タスクを初期化</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">90</context>
@@ -1220,6 +1221,7 @@
       </trans-unit>
       <trans-unit id="5e96c9d4528bf259da3944daac3171d7462b065a" datatype="html">
         <source>No tasks available!</source>
+        <target state="translated">タスクはありません！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">94</context>
@@ -1228,6 +1230,7 @@
       </trans-unit>
       <trans-unit id="5615896113581458384" datatype="html">
         <source>Successfully ran task!</source>
+        <target state="translated">タスクの実行に成功</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">84</context>
@@ -1318,6 +1321,7 @@
       </trans-unit>
       <trans-unit id="880407735794041263" datatype="html">
         <source>Download failed.</source>
+        <target state="translated">ダウンロードに失敗</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">106</context>
@@ -1325,6 +1329,7 @@
       </trans-unit>
       <trans-unit id="7157191502004604261" datatype="html">
         <source>Chat could not be downloaded.</source>
+        <target state="translated">ダウンロードできませんでした。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">110</context>
@@ -1340,6 +1345,7 @@
       </trans-unit>
       <trans-unit id="ccf5ea825526ac490974336cb5c24352886abc07" datatype="html">
         <source>Open file</source>
+        <target state="translated">ファイルを開く</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1348,6 +1354,7 @@
       </trans-unit>
       <trans-unit id="5656a06f17c24b2d7eae9c221567b209743829a9" datatype="html">
         <source>Open file in new tab</source>
+        <target state="translated">新しいタブでファイルを開く</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1356,6 +1363,7 @@
       </trans-unit>
       <trans-unit id="321e4419a943044e674beb55b8039f42a9761ca5" datatype="html">
         <source>Info</source>
+        <target state="translated">情報</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">24</context>
@@ -1372,6 +1380,7 @@
       </trans-unit>
       <trans-unit id="50e85c3b33fb74c0d3c0f97182611f6c1d9cf10e" datatype="html">
         <source>Add to playlist</source>
+        <target state="translated">再生リストに追加</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">26</context>
@@ -1380,6 +1389,7 @@
       </trans-unit>
       <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
         <source>Delete and redownload</source>
+        <target state="translated">削除して再ダウンロード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">34</context>
@@ -1388,6 +1398,7 @@
       </trans-unit>
       <trans-unit id="e58f5716d6c08b6a841eb003c9f9774b5c5d34a9" datatype="html">
         <source>Delete and don't download again</source>
+        <target state="translated">削除して再びダウンロードしない</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">37</context>
@@ -1400,6 +1411,7 @@
       </trans-unit>
       <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html">
         <source>Delete</source>
+        <target state="translated">削除</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1412,6 +1424,7 @@
       </trans-unit>
       <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html">
         <source>Edit</source>
+        <target state="translated">編集</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1420,6 +1433,7 @@
       </trans-unit>
       <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6" datatype="html">
         <source>Create a playlist</source>
+        <target state="translated">再生リストの作成</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1428,6 +1442,7 @@
       </trans-unit>
       <trans-unit id="4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1" datatype="html">
         <source>Modify playlist</source>
+        <target state="translated">再生リストの編集</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1436,6 +1451,7 @@
       </trans-unit>
       <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
         <source>Name</source>
+        <target state="translated">名前</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1452,6 +1468,7 @@
       </trans-unit>
       <trans-unit id="70a67e04629f6d412db0a12d51820b480788d795" datatype="html">
         <source>Create</source>
+        <target state="translated">作成</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">22</context>
@@ -1464,6 +1481,7 @@
       </trans-unit>
       <trans-unit id="9203653061903371757" datatype="html">
         <source>Playlist updated successfully.</source>
+        <target state="translated">再生リストの更新に成功しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -1475,6 +1493,7 @@
       </trans-unit>
       <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
         <source>About YoutubeDL-Material</source>
+        <target state="translated">YoutubeDL-Material について</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1499,6 +1518,7 @@
       </trans-unit>
       <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
         <source>Installed version:</source>
+        <target state="translated">インストール済みのバージョン:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1507,6 +1527,7 @@
       </trans-unit>
       <trans-unit id="e22f3a5351944f3a1a10cfc7da6f65dfbe0037fe" datatype="html">
         <source>Checking for updates...</source>
+        <target state="translated">更新を確認中...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1515,6 +1536,7 @@
       </trans-unit>
       <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html">
         <source>Update available</source>
+        <target state="translated">最新版あり</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1523,6 +1545,7 @@
       </trans-unit>
       <trans-unit id="189b28aaa19b3c51c6111ad039c4fd5e2a22e370" datatype="html">
         <source>You can update from the settings menu.</source>
+        <target state="translated">設定メニューから更新可能です。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1531,6 +1554,7 @@
       </trans-unit>
       <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html">
         <source>Installation type:</source>
+        <target state="translated">インストールの種類:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">25</context>
@@ -1547,6 +1571,7 @@
       </trans-unit>
       <trans-unit id="682ca154aba791fe87aa293b29c921247e12da9c" datatype="html">
         <source>Commit hash:</source>
+        <target state="translated">コミットのハッシュ:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">31</context>
@@ -1555,6 +1580,7 @@
       </trans-unit>
       <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html">
         <source>Build date:</source>
+        <target state="translated">ビルド日:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">33</context>
@@ -1563,6 +1589,7 @@
       </trans-unit>
       <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html">
         <source>Found a bug or have a suggestion?</source>
+        <target state="translated">バグ報告や提案がありますか？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1571,6 +1598,7 @@
       </trans-unit>
       <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7" datatype="html">
         <source>Click here</source>
+        <target state="translated">ここをクリックして</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1587,6 +1615,7 @@
       </trans-unit>
       <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html">
         <source>to create an issue!</source>
+        <target state="translated">issue を作成！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1667,6 +1696,7 @@
       </trans-unit>
       <trans-unit id="2159130950882492111" datatype="html">
         <source>Cancel</source>
+        <target state="translated">キャンセル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/confirm-dialog/confirm-dialog.component.ts</context>
           <context context-type="linenumber">15</context>
@@ -1682,6 +1712,7 @@
       </trans-unit>
       <trans-unit id="98a8a42e5efffe17ab786636ed0139b4c7032d0e" datatype="html">
         <source>Drag and Drop</source>
+        <target state="translated">ドラッグドロップ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1745,6 +1776,7 @@
       </trans-unit>
       <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
         <source>Documentation</source>
+        <target state="translated">文書</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">47</context>
@@ -1789,6 +1821,7 @@
       </trans-unit>
       <trans-unit id="3697f8583ea42868aa269489ad366103d94aece7" datatype="html">
         <source>Editing</source>
+        <target state="translated">編集中</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1797,6 +1830,7 @@
       </trans-unit>
       <trans-unit id="303e45ffae995c9817e510e38cb969e6bb3adcbf" datatype="html">
         <source>(Paused)</source>
+        <target state="translated">(停止)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1821,6 +1855,7 @@
       </trans-unit>
       <trans-unit id="07db550ae114d9faad3a0cbb68bcc16ab6cd31fc" datatype="html">
         <source>Paused</source>
+        <target state="translated">停止済み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1829,6 +1864,7 @@
       </trans-unit>
       <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html">
         <source>Download all uploads</source>
+        <target state="translated">すべてのアップロードをダウンロード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1853,6 +1889,7 @@
       </trans-unit>
       <trans-unit id="c76a955642714b8949ff3e4b4990864a2e2cac95" datatype="html">
         <source>Audio-only mode</source>
+        <target state="translated">音声のみのモード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1905,6 +1942,7 @@
       </trans-unit>
       <trans-unit id="d5cec7468241d72cafd86ad1af6d55b09a6e3ae5" datatype="html">
         <source>Restore</source>
+        <target state="translated">復元</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
           <context context-type="linenumber">25</context>
@@ -1913,6 +1951,7 @@
       </trans-unit>
       <trans-unit id="3480433876298276350" datatype="html">
         <source>Database successfully restored!</source>
+        <target state="translated">データベースの復元に成功！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -1920,6 +1959,7 @@
       </trans-unit>
       <trans-unit id="643438049907907768" datatype="html">
         <source>Failed to restore database! See logs for more info.</source>
+        <target state="translated">デーベースの復元に失敗！詳細はログを参照。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
           <context context-type="linenumber">42</context>
@@ -1950,6 +1990,7 @@
       </trans-unit>
       <trans-unit id="a249a5ae13e0835383885aaf697d2890cc3e53e9" datatype="html">
         <source>Share playlist</source>
+        <target state="translated">再生リストの共有</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">2</context>
@@ -1958,6 +1999,7 @@
       </trans-unit>
       <trans-unit id="94e2674467c7a08a291f9bd97ce694d4e47ffd62" datatype="html">
         <source>Share file</source>
+        <target state="translated">ファイル共有</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">3</context>
@@ -1966,6 +2008,7 @@
       </trans-unit>
       <trans-unit id="1f6d14a780a37a97899dc611881e6bc971268285" datatype="html">
         <source>Enable sharing</source>
+        <target state="translated">共有を有効化</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1974,6 +2017,7 @@
       </trans-unit>
       <trans-unit id="6580b6a950d952df847cb3d8e7176720a740adc8" datatype="html">
         <source>Use timestamp</source>
+        <target state="translated">タイムスタンプを使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1982,6 +2026,7 @@
       </trans-unit>
       <trans-unit id="4f2ed9e71a7c981db3e50ae2fedb28aff2ec4e6c" datatype="html">
         <source>Seconds</source>
+        <target state="translated">秒</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1990,6 +2035,7 @@
       </trans-unit>
       <trans-unit id="3a6e5a6aa78ca864f6542410c5dafb6334538106" datatype="html">
         <source>Copy to clipboard</source>
+        <target state="translated">クリップボードへコピー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1998,6 +2044,7 @@
       </trans-unit>
       <trans-unit id="4960870191807928282" datatype="html">
         <source>Sharing enabled.</source>
+        <target state="translated">共有を有効化しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">68</context>
@@ -2005,6 +2052,7 @@
       </trans-unit>
       <trans-unit id="2720327817780634026" datatype="html">
         <source>Failed to enable sharing.</source>
+        <target state="translated">共有の有効化に失敗しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">71</context>
@@ -2012,6 +2060,7 @@
       </trans-unit>
       <trans-unit id="2859348955905483094" datatype="html">
         <source>Failed to enable sharing - server error.</source>
+        <target state="translated">共有の有効化に失敗 - サーバーエラー。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">74</context>
@@ -2019,6 +2068,7 @@
       </trans-unit>
       <trans-unit id="3561468911579213356" datatype="html">
         <source>Sharing disabled.</source>
+        <target state="translated">共有を無効化しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">79</context>
@@ -2026,6 +2076,7 @@
       </trans-unit>
       <trans-unit id="7840375760456214518" datatype="html">
         <source>Failed to disable sharing.</source>
+        <target state="translated">共有の無効化に失敗しました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">82</context>
@@ -2033,6 +2084,7 @@
       </trans-unit>
       <trans-unit id="8692976466689769553" datatype="html">
         <source>Failed to disable sharing - server error.</source>
+        <target state="translated">共有の無効化に失敗 - サーバーエラー。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">85</context>
@@ -2048,6 +2100,7 @@
       </trans-unit>
       <trans-unit id="801b98c6f02fe3b32f6afa3ee854c99ed83474e6" datatype="html">
         <source>URL</source>
+        <target state="translated">URL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2064,6 +2117,7 @@
       </trans-unit>
       <trans-unit id="93efc99ae087fc116de708ecd3ace86ca237cf30" datatype="html">
         <source>The playlist or channel URL</source>
+        <target state="translated">再生リストやチャンネルのURL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -2095,6 +2149,7 @@
       </trans-unit>
       <trans-unit id="3544790314111256717" datatype="html">
         <source>ERROR:</source>
+        <target state="translated">エラー:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
           <context context-type="linenumber">95</context>
@@ -2102,6 +2157,7 @@
       </trans-unit>
       <trans-unit id="e78c0d60ac39787f62c9159646fe0b3c1ed55a1d" datatype="html">
         <source>Type:</source>
+        <target state="translated">種類:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">5</context>
@@ -2110,6 +2166,7 @@
       </trans-unit>
       <trans-unit id="c52db455cca9109ee47e1a612c3f4117c09eb71b" datatype="html">
         <source>URL:</source>
+        <target state="translated">URL:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -2118,6 +2175,7 @@
       </trans-unit>
       <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1" datatype="html">
         <source>ID:</source>
+        <target state="translated">ID:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">13</context>
@@ -2142,6 +2200,7 @@
       </trans-unit>
       <trans-unit id="3042bd3ad8dffcfeca5fd1ae6159fd1047434e95" datatype="html">
         <source>Unsubscribe</source>
+        <target state="translated">登録解除</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -2150,6 +2209,7 @@
       </trans-unit>
       <trans-unit id="91ecce65f1d23f9419d1c953cd6b7bc7f91c110e" datatype="html">
         <source>Updater</source>
+        <target state="translated">アップデーター</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2158,6 +2218,7 @@
       </trans-unit>
       <trans-unit id="2876893175497409225" datatype="html">
         <source>Update failed. Check logs for more details.</source>
+        <target state="translated">更新に失敗しました。詳細はログを参照。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.ts</context>
           <context context-type="linenumber">30</context>
@@ -2189,6 +2250,7 @@
       </trans-unit>
       <trans-unit id="3317b8688eb2cfabc4021cd7b2926b32f3864ad2" datatype="html">
         <source>Choose a date</source>
+        <target state="translated">日付を選択</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">22</context>
@@ -2197,6 +2259,7 @@
       </trans-unit>
       <trans-unit id="047f50bc5b5d17b5bec0196355953e1a5c590ddb" datatype="html">
         <source>Update</source>
+        <target state="translated">更新</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">52</context>
@@ -2205,6 +2268,7 @@
       </trans-unit>
       <trans-unit id="42ff677ec14f111e88bd6cdd30145378e994d1bf" datatype="html">
         <source>Your Profile</source>
+        <target state="translated">あなたのプロファイル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2213,6 +2277,7 @@
       </trans-unit>
       <trans-unit id="616e206cb4f25bd5885fc35925365e43cf5fb929" datatype="html">
         <source>Name:</source>
+        <target state="translated">名前:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">6</context>
@@ -2221,6 +2286,7 @@
       </trans-unit>
       <trans-unit id="ac9d09de42edca1296371e4d801349c9096ac8de" datatype="html">
         <source>UID:</source>
+        <target state="translated">UID:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -2229,6 +2295,7 @@
       </trans-unit>
       <trans-unit id="a5ed099ffc9e96f6970df843289ade8a7d20ab9f" datatype="html">
         <source>Created:</source>
+        <target state="translated">作成日:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2237,6 +2304,7 @@
       </trans-unit>
       <trans-unit id="fa96f2137af0a24e6d6d54c598c0af7d5d5ad344" datatype="html">
         <source>You are not logged in.</source>
+        <target state="translated">ログインしていません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">19</context>
@@ -2245,6 +2313,7 @@
       </trans-unit>
       <trans-unit id="bb694b49d408265c91c62799c2b3a7e3151c824d" datatype="html">
         <source>Logout</source>
+        <target state="translated">ログアウト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2253,6 +2322,7 @@
       </trans-unit>
       <trans-unit id="f8c7be184fefd6750e4e5d0c7a90e74721c58f8a" datatype="html">
         <source>Uploader</source>
+        <target state="translated">アップローダー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">17</context>
@@ -2261,6 +2331,7 @@
       </trans-unit>
       <trans-unit id="22bac71dbdc1ac62607135994f81cca8094cb251" datatype="html">
         <source>Upload date</source>
+        <target state="translated">アップロード日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -2269,6 +2340,7 @@
       </trans-unit>
       <trans-unit id="d49d5d6786b69d140e20cfddfe29690a19641a88" datatype="html">
         <source>Thumbnail path</source>
+        <target state="translated">サムネイルのパス</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -2277,6 +2349,7 @@
       </trans-unit>
       <trans-unit id="f4003b626fcbf3a871778d4dba166e109d02f87c" datatype="html">
         <source>Thumbnail URL</source>
+        <target state="translated">サムネイルのURL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">29</context>
@@ -2309,6 +2382,7 @@
       </trans-unit>
       <trans-unit id="9fa37704969eeebd496a172c5077370f569df3ae" datatype="html">
         <source>Resolution:</source>
+        <target state="translated">解像度:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">51</context>
@@ -2317,6 +2391,7 @@
       </trans-unit>
       <trans-unit id="9fc54db2830fbbd332b1adebe28e9283069107ef" datatype="html">
         <source>Audio bitrate:</source>
+        <target state="translated">音声ビットレート:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">55</context>
@@ -2325,6 +2400,7 @@
       </trans-unit>
       <trans-unit id="109c6f4a5e46efb933612ededfaf52a13178b7e0" datatype="html">
         <source>File size:</source>
+        <target state="translated">ファイルサイズ:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">59</context>
@@ -2333,6 +2409,7 @@
       </trans-unit>
       <trans-unit id="bd630d8669b16e5f264ec4649d9b469fe03e5ff4" datatype="html">
         <source>Path:</source>
+        <target state="translated">パス:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">63</context>
@@ -2341,6 +2418,7 @@
       </trans-unit>
       <trans-unit id="a38ae1082fec79ba1f379978337385a539a28e73" datatype="html">
         <source>Quality</source>
+        <target state="translated">品質</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">19,20</context>
@@ -2357,6 +2435,7 @@
       </trans-unit>
       <trans-unit id="d3f02f845e62cebd75fde451ab8479d2a8ad784d" datatype="html">
         <source>View</source>
+        <target state="translated">表示</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">55,57</context>
@@ -2365,6 +2444,7 @@
       </trans-unit>
       <trans-unit id="4a9889d36910edc8323d7bab60858ab3da6d91df" datatype="html">
         <source>Only Audio</source>
+        <target state="translated">音声のみ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">65,67</context>
@@ -2373,6 +2453,7 @@
       </trans-unit>
       <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html">
         <source>Autoplay</source>
+        <target state="translated">自動再生</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">70,72</context>
@@ -2381,6 +2462,7 @@
       </trans-unit>
       <trans-unit id="6a21ba5fb0ac804a525bf9ab168038c3ee88e661" datatype="html">
         <source>Download</source>
+        <target state="translated">ダウンロード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">79,82</context>
@@ -2389,6 +2471,7 @@
       </trans-unit>
       <trans-unit id="6a3777f913cf3f288664f0632b9f24794fdcc24e" datatype="html">
         <source>Cancel</source>
+        <target state="translated">キャンセル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">84,87</context>
@@ -2453,6 +2536,7 @@
       </trans-unit>
       <trans-unit id="8fad10737d3e3735a6699a4d89cbf6c20f6bb55f" datatype="html">
         <source>Use authentication</source>
+        <target state="translated">認証を使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">145,147</context>
@@ -2461,6 +2545,7 @@
       </trans-unit>
       <trans-unit id="08c74dc9762957593b91f6eb5d65efdfc975bf48" datatype="html">
         <source>Username</source>
+        <target state="translated">ユーザー名</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">149,151</context>
@@ -2469,6 +2554,7 @@
       </trans-unit>
       <trans-unit id="4e1291cb1d579e7b7a1b802e6a8fd16ef7a557fa" datatype="html">
         <source>Crop file</source>
+        <target state="translated">ファイルの切り取り</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">160,162</context>
@@ -2477,6 +2563,7 @@
       </trans-unit>
       <trans-unit id="44d007f6f8a2b19f12d85f9e49647b4ac02d7cbe" datatype="html">
         <source>Crop from (seconds)</source>
+        <target state="translated">開始 (秒)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">164,166</context>
@@ -2485,6 +2572,7 @@
       </trans-unit>
       <trans-unit id="661206c3ab91fa81e9d8b40afb29f1866b78432f" datatype="html">
         <source>Crop to (seconds)</source>
+        <target state="translated">終了 (秒)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">169,171</context>
@@ -2493,6 +2581,7 @@
       </trans-unit>
       <trans-unit id="8314249599019746316" datatype="html">
         <source>Download failed!</source>
+        <target state="translated">ダウンロードに失敗！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">387</context>
@@ -2504,6 +2593,7 @@
       </trans-unit>
       <trans-unit id="7220285196408439810" datatype="html">
         <source>Download for <x id="url" equiv-text="url"/> has been queued!</source>
+        <target state="translated"><x id="url" equiv-text="url"/> をダウンロード待ちに追加！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">391</context>
@@ -2511,6 +2601,7 @@
       </trans-unit>
       <trans-unit id="dad95154dcef3509b8cc705046061fd24994bbb7" datatype="html">
         <source>views</source>
+        <target state="translated">再生</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2519,6 +2610,7 @@
       </trans-unit>
       <trans-unit id="2734512985872312443" datatype="html">
         <source>Failed to get file information from the server.</source>
+        <target state="translated">サーバーからファイル情報の取得に失敗！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
           <context context-type="linenumber">149</context>
@@ -2526,6 +2618,7 @@
       </trans-unit>
       <trans-unit id="6789263921624845085" datatype="html">
         <source>Failed to load playlist!</source>
+        <target state="translated">再生リストの読み込みに失敗！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
           <context context-type="linenumber">186</context>
@@ -2553,6 +2646,7 @@
       </trans-unit>
       <trans-unit id="cb2741a46e3560f6bc6dfd99d385e86b08b26d72" datatype="html">
         <source>Port</source>
+        <target state="translated">ポート</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">16</context>
@@ -2561,6 +2655,7 @@
       </trans-unit>
       <trans-unit id="22e8f1d0423a3b784fe40fab187b92c06541b577" datatype="html">
         <source>The desired port. Default is 17442.</source>
+        <target state="translated">ポート番号。既定は17442。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">17</context>
@@ -2569,6 +2664,7 @@
       </trans-unit>
       <trans-unit id="d4477669a560750d2064051a510ef4d7679e2f3e" datatype="html">
         <source>Multi-user mode</source>
+        <target state="translated">マルチユーザー モード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">26</context>
@@ -2617,6 +2713,7 @@
       </trans-unit>
       <trans-unit id="5bef4b25ba680da7fff06b86a91b1fc7e6a926e3" datatype="html">
         <source>Check interval</source>
+        <target state="translated">確認する間隔</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">50</context>
@@ -2625,6 +2722,7 @@
       </trans-unit>
       <trans-unit id="0f56a7449b77630c114615395bbda4cab398efd8" datatype="html">
         <source>Unit is seconds, only include numbers.</source>
+        <target state="translated">単位は秒、数字のみ。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">51</context>
@@ -2649,6 +2747,7 @@
       </trans-unit>
       <trans-unit id="27a56aad79d8b61269ed303f11664cc78bcc2522" datatype="html">
         <source>Theme</source>
+        <target state="translated">テーマ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">64</context>
@@ -2657,6 +2756,7 @@
       </trans-unit>
       <trans-unit id="ff7cee38a2259526c519f878e71b964f41db4348" datatype="html">
         <source>Default</source>
+        <target state="translated">既定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">66</context>
@@ -2665,6 +2765,7 @@
       </trans-unit>
       <trans-unit id="7a6bacee4c31cb5c0ac2d24274fb4610d8858602" datatype="html">
         <source>Allow theme change</source>
+        <target state="translated">テーマの変更を許可</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">72</context>
@@ -2673,6 +2774,7 @@
       </trans-unit>
       <trans-unit id="fe46ccaae902ce974e2441abe752399288298619" datatype="html">
         <source>Language</source>
+        <target state="translated">言語</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">81</context>
@@ -2681,6 +2783,7 @@
       </trans-unit>
       <trans-unit id="0ba25ad86a240576c4f20a2fada4722ebba77b1e" datatype="html">
         <source>Downloader</source>
+        <target state="translated">ダウンローダー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">96</context>
@@ -2689,6 +2792,7 @@
       </trans-unit>
       <trans-unit id="ab2756805742e84ad0cc0468f4be2d8aa9f855a5" datatype="html">
         <source>Audio folder path</source>
+        <target state="translated">音声のフォルダーのパス</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">103</context>
@@ -2705,6 +2809,7 @@
       </trans-unit>
       <trans-unit id="46826331da1949bd6fb74624447057099c9d20cd" datatype="html">
         <source>Video folder path</source>
+        <target state="translated">動画のフォルダーのパス</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">110</context>
@@ -2785,6 +2890,7 @@
       </trans-unit>
       <trans-unit id="ffc19f32b1cba0daefc0e5668f89346db1db83ad" datatype="html">
         <source>Include thumbnail</source>
+        <target state="translated">サムネイルを含める</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">164</context>
@@ -2793,6 +2899,7 @@
       </trans-unit>
       <trans-unit id="384de8f8f112c9e6092eb2698706d391553f3e8d" datatype="html">
         <source>Include metadata</source>
+        <target state="translated">メタデータを含める</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">168</context>
@@ -2817,6 +2924,7 @@
       </trans-unit>
       <trans-unit id="a30fc9944a494022ba67b3046ad3d27c62dd7fee" datatype="html">
         <source>Download rate limit</source>
+        <target state="translated">ダウンロード速度の上限</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">183</context>
@@ -2889,6 +2997,7 @@
       </trans-unit>
       <trans-unit id="4920978fc336333b5cda11b1dedf172c3183d2da" datatype="html">
         <source>Allow autoplay</source>
+        <target state="translated">自動再生を許可</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">223</context>
@@ -2897,6 +3006,7 @@
       </trans-unit>
       <trans-unit id="1c4dbce56d96b8974aac24a02f7ab2ee81415014" datatype="html">
         <source>Enable Public API</source>
+        <target state="translated">APIの公開を許可</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">231</context>
@@ -2905,6 +3015,7 @@
       </trans-unit>
       <trans-unit id="23bd81dcc30b74d06279a26d7a42e8901c1b124e" datatype="html">
         <source>Public API Key</source>
+        <target state="translated">公開APIのキー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">236</context>
@@ -2913,6 +3024,7 @@
       </trans-unit>
       <trans-unit id="41016a73d8ad85e6cb26dffa0a8fab9fe8f60d8e" datatype="html">
         <source>View documentation</source>
+        <target state="translated">文書を表示</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">237</context>
@@ -2929,6 +3041,7 @@
       </trans-unit>
       <trans-unit id="1b258b258b4cc475ceb2871305b61756b0134f4a" datatype="html">
         <source>Generate</source>
+        <target state="translated">精製</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">241</context>
@@ -2937,6 +3050,7 @@
       </trans-unit>
       <trans-unit id="d5d7c61349f3b0859336066e6d453fc35d334fe5" datatype="html">
         <source>Use YouTube API</source>
+        <target state="translated">YouTube APIを使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">250</context>
@@ -2945,6 +3059,7 @@
       </trans-unit>
       <trans-unit id="ce10d31febb3d9d60c160750570310f303a22c22" datatype="html">
         <source>Youtube API Key</source>
+        <target state="translated">YouTube API のキー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">254</context>
@@ -2961,6 +3076,7 @@
       </trans-unit>
       <trans-unit id="d162f9fcd6a7187b391e004f072ab3da8377c47d" datatype="html">
         <source>Use Twitch API</source>
+        <target state="translated">Twitch API を使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">259</context>
@@ -2969,6 +3085,7 @@
       </trans-unit>
       <trans-unit id="5fb1e0083c9b2a40ac8ae7dcb2618311c291b8b9" datatype="html">
         <source>Auto-download Twitch Chat</source>
+        <target state="translated">Twitchのチャットを自動ダウンロード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">262</context>
@@ -2977,6 +3094,7 @@
       </trans-unit>
       <trans-unit id="5d78fe9ba69a8710613d3f7c35b22e9c8226e4dc" datatype="html">
         <source>Twitch Client ID</source>
+        <target state="translated">Twitch クライアントID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">266</context>
@@ -3009,6 +3127,7 @@
       </trans-unit>
       <trans-unit id="4c8f776635ead63103de9d21b28e95eceaf5ab53" datatype="html">
         <source>Use SponsorBlock API</source>
+        <target state="translated">SponsorBlock API を使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">276</context>
@@ -3025,6 +3144,7 @@
       </trans-unit>
       <trans-unit id="e65fce85d6177d3582b376f9d622daebca5ee0da" datatype="html">
         <source>Generate NFO files</source>
+        <target state="translated">NFOファイルを生成</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">279</context>
@@ -3089,6 +3209,7 @@
       </trans-unit>
       <trans-unit id="fb324ec7da611c6283caa6fc6257c39a56d6aaf7" datatype="html">
         <source>Database</source>
+        <target state="translated">データベース</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">310</context>
@@ -3097,6 +3218,7 @@
       </trans-unit>
       <trans-unit id="47955e2cc6986625528b4352034858180d675281" datatype="html">
         <source>Database location:</source>
+        <target state="translated">データベースの場所:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">316</context>
@@ -3313,6 +3435,7 @@
       </trans-unit>
       <trans-unit id="eb3d5aefff38a814b76da74371cbf02c0789a1ef" datatype="html">
         <source>Logs</source>
+        <target state="translated">ログ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">484</context>
@@ -3455,6 +3578,7 @@
       </trans-unit>
       <trans-unit id="47546e45bbb476baaaad38244db444c427ddc502" datatype="html">
         <source>Playlists</source>
+        <target state="translated">再生リスト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
           <context context-type="linenumber">30</context>
@@ -3479,6 +3603,7 @@
       </trans-unit>
       <trans-unit id="1372e61c5bd06100844bd43b98b016aabc468f62" datatype="html">
         <source>Select a version:</source>
+        <target state="translated">バージョンを選択:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/updater/updater.component.html</context>
           <context context-type="linenumber">3</context>
