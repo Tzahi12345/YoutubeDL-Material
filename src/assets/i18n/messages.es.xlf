@@ -2733,8 +2733,8 @@
         <note priority="1" from="description">Clear missing files from DB</note>
       </trans-unit>
       <trans-unit id="39921032161993566" datatype="html">
-        <source>Successfully created playlist!</source>
-        <target state="translated">¡Lista de reproducción creada correctamente!</target>
+        <source>Playlist created.</source>
+        <target state="translated">Lista de reproducción creada.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">56</context>
