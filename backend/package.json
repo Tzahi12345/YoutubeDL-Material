@@ -38,7 +38,7 @@
     "mongodb": "^3.6.9",
     "multer": "1.4.5-lts.1",
     "node-fetch": "^2.6.7",
-    "node-id3": "^0.1.14",
+    "node-id3": "^0.2.6",
     "node-schedule": "^2.1.0",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
