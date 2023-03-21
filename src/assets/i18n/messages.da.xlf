@@ -4,6 +4,7 @@
     <body>
       <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html">
         <source>Profile</source>
+        <target state="translated">Profil</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">19</context>
@@ -24,6 +25,7 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
+        <target state="translated">Om</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">32</context>
@@ -32,6 +34,7 @@
       </trans-unit>
       <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html">
         <source>Home</source>
+        <target state="translated">Hjem</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">43</context>
@@ -40,6 +43,7 @@
       </trans-unit>
       <trans-unit id="6765b4c916060f6bc42d9bb69e80377dbcb5e4e9" datatype="html">
         <source>Login</source>
+        <target state="translated">Login</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">44</context>
@@ -60,6 +64,7 @@
       </trans-unit>
       <trans-unit id="357064ca9d9ac859eb618e28e8126fa32be049e2" datatype="html">
         <source>Subscriptions</source>
+        <target state="translated">Abonnementer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">45</context>
@@ -68,6 +73,7 @@
       </trans-unit>
       <trans-unit id="822fab38216f64e8166d368b59fe756ca39d301b" datatype="html">
         <source>Downloads</source>
+        <target state="translated">Downloads</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">46</context>
@@ -76,6 +82,7 @@
       </trans-unit>
       <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
         <source>Tasks</source>
+        <target state="translated">Opgaver</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">47</context>
@@ -84,6 +91,7 @@
       </trans-unit>
       <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716" datatype="html">
         <source>Settings</source>
+        <target state="translated">Indstillinger</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">50</context>
@@ -96,6 +104,7 @@
       </trans-unit>
       <trans-unit id="39921032161993566" datatype="html">
         <source>Playlist created.</source>
+        <target state="translated">Playlist oprettet.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -103,6 +112,7 @@
       </trans-unit>
       <trans-unit id="2070856663109337061" datatype="html">
         <source>ERROR: failed to create playlist!</source>
+        <target state="translated">FEJL: Fejlede i oprettelse af playlist!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -110,6 +120,7 @@
       </trans-unit>
       <trans-unit id="820184305380634591" datatype="html">
         <source>Playlist successfully removed.</source>
+        <target state="translated">Playlist fjernet succesfuldt.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">100</context>
@@ -117,6 +128,7 @@
       </trans-unit>
       <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
         <source>Date</source>
+        <target state="translated">Dato</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">7</context>
@@ -125,6 +137,7 @@
       </trans-unit>
       <trans-unit id="fdf7cbdc140d0aab0f0b6c06065a0fd448ed6a2e" datatype="html">
         <source>Title</source>
+        <target state="translated">Titel</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">13</context>
