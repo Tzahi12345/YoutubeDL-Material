@@ -420,6 +420,23 @@
                             <mat-hint><a target="_blank" href="https://gotify.net/docs/"><ng-container i18n="Gotify API setting hint">See docs here.</ng-container></a></mat-hint>
                         </mat-form-field>
                     </div>
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [disabled]="!new_config['Extra']['enable_notifications']" [(ngModel)]="new_config['API']['use_telegram_API']"><ng-container i18n="Use Telegram API setting">Use Telegram API</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Telegram bot token">Telegram bot token</mat-label>
+                            <input placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" [disabled]="!new_config['Extra']['enable_notifications'] || !new_config['API']['use_telegram_API']" [(ngModel)]="new_config['API']['telegram_bot_token']" matInput required>
+                            <mat-hint><a target="_blank" href="https://telegram.me/botfather"><ng-container i18n="Telegram bot create link">Create bot here.</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Telegram chat ID">Telegram chat ID</mat-label>
+                            <input placeholder="-210987654" [disabled]="!new_config['Extra']['enable_notifications'] || !new_config['API']['use_telegram_API']" [(ngModel)]="new_config['API']['telegram_chat_id']" matInput required>
+                            <mat-hint><a target="_blank" href="https://stackoverflow.com/a/37396871/8088021"><ng-container i18n="Telegram chat ID help">How do I get the chat ID?</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
                 </div>
             </div>
         </ng-template>

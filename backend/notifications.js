@@ -4,8 +4,10 @@ const logger = require('./logger');
 const utils = require('./utils');
 
 const { uuid } = require('uuidv4');
+
 const fetch = require('node-fetch');
 const { gotify } = require("gotify");
+const TelegramBot = require('node-telegram-bot-api');
 
 const NOTIFICATION_TYPE_TO_TITLE = {
     task_finished: 'Task finished',
@@ -22,7 +24,7 @@ const NOTIFICATION_TYPE_TO_BODY = {
 const NOTIFICATION_TYPE_TO_URL = {
     task_finished: () => {return `${utils.getBaseURL()}/#/tasks`},
     download_complete: (notification) => {return `${utils.getBaseURL()}/#/player;uid=${notification['data']['file_uid']}`},
-    download_error: () => {return `${utils.getBaseURL()}/#/tasks`},
+    download_error: () => {return `${utils.getBaseURL()}/#/downloads`},
 }
 
 const NOTIFICATION_TYPE_TO_THUMBNAIL = {
@@ -35,13 +37,16 @@ exports.sendNotification = async (notification) => {
     const title = NOTIFICATION_TYPE_TO_TITLE[type];
     const body = NOTIFICATION_TYPE_TO_BODY[type](notification);
     const url = NOTIFICATION_TYPE_TO_URL[type](notification);
-    const thumbnail = NOTIFICATION_TYPE_TO_THUMBNAIL[type];
+    const thumbnail = NOTIFICATION_TYPE_TO_THUMBNAIL[type](notification);
 
     if (config_api.getConfigItem('ytdl_use_ntfy_API') && config_api.getConfigItem('ytdl_ntfy_topic_url')) {
         sendNtfyNotification(body, title, type, url, thumbnail);
     }
     if (config_api.getConfigItem('ytdl_use_gotify_API') && config_api.getConfigItem('ytdl_gotify_server_url') && config_api.getConfigItem('ytdl_gotify_app_token')) {
         sendGotifyNotification(body, title, type, url, thumbnail);
+    }
+    if (config_api.getConfigItem('ytdl_use_telegram_API') && config_api.getConfigItem('ytdl_telegram_bot_token') && config_api.getConfigItem('ytdl_telegram_chat_id')) {
+        sendTelegramNotification(body, title, type, url, thumbnail);
     }
     await db_api.insertRecordIntoTable('notifications', notification);
     return notification;
@@ -118,4 +123,13 @@ async function sendGotifyNotification(body, title, type, url, thumbnail) {
             }
         }
       });
+}
+
+async function sendTelegramNotification(body, title, type, url, thumbnail) {
+    logger.verbose('Sending notification to Telegram');
+    const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
+    const chat_id = config_api.getConfigItem('ytdl_telegram_chat_id');
+    const bot = new TelegramBot(bot_token);
+    if (thumbnail) await bot.sendPhoto(chat_id, thumbnail);
+    bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n${url}`, {parse_mode: 'HTML'});
 }

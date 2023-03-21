@@ -219,7 +219,10 @@ const DEFAULT_CONFIG = {
         "ntfy_topic_URL": "",
         "use_gotify_API": false,
         "gotify_server_URL": "",
-        "gotify_app_token": ""
+        "gotify_app_token": "",
+        "use_telegram_API": false,
+        "telegram_bot_token": "",
+        "telegram_chat_id": ""
       },
       "Themes": {
         "default_theme": "default",
