@@ -45,4 +45,8 @@ export type DownloadRequest = {
     maxBitrate?: string;
     type?: FileType;
     cropFileSettings?: CropFileSettings;
+    /**
+     * If using youtube-dl archive, download will ignore it
+     */
+    ignoreArchive?: boolean;
 };
