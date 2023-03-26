@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
+const { uuid } = require('uuidv4');
 
 const db_api = require('./db');
 
@@ -11,8 +12,8 @@ exports.generateArchive = async (type = null, user_uid = null, sub_id = null) =>
     return archive_item_lines.join('\n');
 }
 
-exports.addToArchive = async (extractor, id, type, user_uid = null, sub_id = null) => {
-    const archive_item = createArchiveItem(extractor, id, type, user_uid, sub_id);
+exports.addToArchive = async (extractor, id, type, title, user_uid = null, sub_id = null) => {
+    const archive_item = createArchiveItem(extractor, id, type, title, user_uid, sub_id);
     const success = await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id, type: type});
     return success;
 }
@@ -43,7 +44,7 @@ exports.importArchiveFile = async (archive_text, type, user_uid = null, sub_id =
 
         // we can't do a bulk write because we need to avoid duplicate archive items existing in db
 
-        const archive_item = createArchiveItem(extractor, id, type, user_uid, sub_id);
+        const archive_item = createArchiveItem(extractor, id, type, null, user_uid, sub_id);
         await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id});
         archive_import_count++;
     }
@@ -76,12 +77,15 @@ exports.importArchives = async () => {
     return imported_archives;
 }
 
-const createArchiveItem = (extractor, id, type, user_uid = null, sub_id = null) => {
+const createArchiveItem = (extractor, id, type, title = null, user_uid = null, sub_id = null) => {
     return {
         extractor: extractor,
         id: id,
         type: type,
+        title: title,
         user_uid: user_uid ? user_uid : null,
-        sub_id: sub_id ? sub_id : null
+        sub_id: sub_id ? sub_id : null,
+        timestamp: Date.now() / 1000,
+        uid: uuid()
     }
 }

@@ -369,7 +369,7 @@ async function downloadQueuedFile(download_uid) {
                     const file_obj = await db_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
 
                     const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-                    if (useYoutubeDLArchive && !options.ignoreArchive) await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, download['user_uid'], download['sub_id']);
+                    if (useYoutubeDLArchive && !options.ignoreArchive) await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, output_json['title'], download['user_uid'], download['sub_id']);
 
                     notifications_api.sendDownloadNotification(file_obj, download['user_uid']);
 

@@ -578,6 +578,69 @@ paths:
           description: If the archive dir is not found, 404 is sent as a response
       security:
         - Auth query parameter: []
+  /api/deleteArchiveItem:
+    post:
+      tags:
+        - archive
+      summary: Delete item from archive
+      description: 'Deletes an item from the archive'
+      operationId: post-api-deleteArchiveItem
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteArchiveItemRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/importArchive:
+    post:
+      tags:
+        - archive
+      summary: Imports archive
+      description: 'Imports an existing archive.txt file'
+      operationId: post-api-importArchive
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportArchiveRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/uploadCookies:
+    post:
+      tags:
+        - downloader
+      summary: Upload cookies
+      description: 'Uploads cookies file to be used during downloading'
+      operationId: post-api-uploadCookies
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadCookiesRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
   /api/updaterStatus:
     get:
       tags:
@@ -2089,6 +2152,84 @@ components:
           $ref: '#/components/schemas/FileType'
         sub_id:
           type: string
+    Archive:
+      required:
+        - extractor
+        - id
+        - type
+        - title
+        - timestamp
+        - uid
+      type: object
+      properties:
+        extractor:
+          type: string
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        title:
+          type: string
+        user_uid:
+          type: string
+        sub_id:
+          type: string
+        timestamp:
+          type: number
+        uid:
+          type: string
+    DeleteArchiveItemRequest:
+      type: object
+      required:
+        - extractor
+        - id
+        - type
+      properties:
+        extractor:
+          type: string
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
+    ImportArchiveRequest:
+      type: object
+      required:
+        - archive
+        - type
+      properties:
+        archive:
+          type: string
+          format: binary
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
+    GetArchivesRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
+    GetArchivesResponse:
+      type: object
+      required:
+        - archives
+      properties:
+        archives:
+          type: array
+          items:
+            $ref: '#/components/schemas/Archive'
+    UploadCookiesRequest:
+      type: object
+      required:
+        - cookies
+      properties:
+        cookies:
+          type: string
+          format: binary
     UpdaterStatus:
       required:
         - details

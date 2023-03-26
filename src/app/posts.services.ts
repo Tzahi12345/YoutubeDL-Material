@@ -106,7 +106,10 @@ import {
     SetNotificationsToReadRequest,
     GetNotificationsResponse,
     UpdateTaskOptionsRequest,
-    User
+    User,
+    DeleteArchiveItemRequest,
+    GetArchivesRequest,
+    GetArchivesResponse
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -431,13 +434,34 @@ export class PostsService implements CanActivate {
         return this.http.post<UpdateConcurrentStreamResponse>(this.path + 'updateConcurrentStream', body, this.httpOptions);
     }
 
-    uploadCookiesFile(fileFormData) {
-        return this.http.post<SuccessObject>(this.path + 'uploadCookies', fileFormData, this.httpOptions);
+    uploadCookiesFile(cookiesFile: File, cookiesFilePath: string) {
+        const formData = new FormData()
+        formData.append('cookies', cookiesFile, cookiesFilePath);
+        // const body: UploadCookiesRequest = formData;
+        return this.http.post<SuccessObject>(this.path + 'uploadCookies', formData, this.httpOptions);
     }
 
     downloadArchive(type: FileType, sub_id: string) {
         const body: DownloadArchiveRequest = {type: type, sub_id: sub_id};
         return this.http.post(this.path + 'downloadArchive', body, {responseType: 'blob', params: this.httpOptions.params});
+    }
+
+    getArchives(sub_id: string) {
+        const body: GetArchivesRequest = {sub_id: sub_id};
+        return this.http.post<GetArchivesResponse>(this.path + 'getArchives', body, this.httpOptions);
+    }
+
+    importArchive(archiveFile: File, type: FileType, sub_id: string = null) {
+        const formData = new FormData()
+        formData.append('archive', archiveFile, 'archive.txt');
+        formData.append('type', type);
+        formData.append('sub_id', sub_id);
+        return this.http.post<SuccessObject>(this.path + 'importArchive', formData, this.httpOptions);
+    }
+
+    deleteArchiveItem(extractor: string, id: string, type: FileType, sub_id: string = null) {
+        const body: DeleteArchiveItemRequest = {extractor: extractor, id: id, type: type, sub_id: sub_id};
+        return this.http.post<SuccessObject>(this.path + 'deleteArchiveItem', body, this.httpOptions);
     }
 
     getFileFormats(url) {

@@ -1,0 +1,51 @@
+<!-- (selectionChange)="sidePanelModeChanged($event.value)" -->
+
+<div [hidden]="!(archives && archives.length > 0)">
+    <div style="overflow: hidden;" class="mat-elevation-z8">
+        <mat-table style="overflow: hidden" matSort [dataSource]="dataSource">
+      
+          <!-- Date Column -->
+          <ng-container matColumnDef="timestamp">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.timestamp | date: 'short'}} </mat-cell>
+          </ng-container>
+      
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="one-line" [matTooltip]="element.title ? element.title : null">
+                    {{element.title}}
+                </span>
+            </mat-cell>
+          </ng-container>
+      
+           <!-- ID Column -->
+           <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="ID">ID</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="one-line" [matTooltip]="element.title ? element.title : null">
+                    {{element.id}}
+                </span>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Extractor Column -->
+          <ng-container matColumnDef="extractor">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Extractor">Extractor</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="one-line" [matTooltip]="element.extractor? element.extractor : null">
+                    {{element.extractor}}
+                </span>
+            </mat-cell>
+          </ng-container>
+      
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      </div>
+</div>
+
+<div *ngIf="(!archives || archives.length === 0)">
+  <h4 style="text-align: center; margin-top: 10px;" i18n="Archives empty">Archives empty</h4>
+</div>

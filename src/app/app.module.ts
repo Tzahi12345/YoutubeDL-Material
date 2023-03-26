@@ -94,6 +94,7 @@ import { TaskSettingsComponent } from './components/task-settings/task-settings.
 import { GenerateRssUrlComponent } from './dialogs/generate-rss-url/generate-rss-url.component';
 import { SortPropertyComponent } from './components/sort-property/sort-property.component';
 import { OnlyNumberDirective } from './directives/only-number.directive';
+import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
 
 registerLocaleData(es, 'es');
 
@@ -145,7 +146,8 @@ registerLocaleData(es, 'es');
         TaskSettingsComponent,
         GenerateRssUrlComponent,
         SortPropertyComponent,
-        OnlyNumberDirective
+        OnlyNumberDirective,
+        ArchiveViewerComponent
     ],
     imports: [
         CommonModule,

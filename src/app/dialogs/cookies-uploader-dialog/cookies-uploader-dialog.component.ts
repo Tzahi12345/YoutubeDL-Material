@@ -31,11 +31,8 @@ export class CookiesUploaderDialogComponent implements OnInit {
       // Is it a file?
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-        fileEntry.file((file: File) => {
-          // You could upload it like this:
-          const formData = new FormData()
-          formData.append('cookies', file, droppedFile.relativePath);
-          this.postsService.uploadCookiesFile(formData).subscribe(res => {
+        fileEntry.file((file: File) => {          
+          this.postsService.uploadCookiesFile(file, droppedFile.relativePath).subscribe(res => {
             this.uploading = false;
             if (res['success']) {
               this.uploaded = true;
