@@ -1,7 +1,7 @@
 <mat-form-field class="filter">
   <mat-icon matPrefix>search</mat-icon>
   <mat-label i18n="Filter">Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" #input>
+  <input matInput [(ngModel)]="text_filter" (keyup)="applyFilter($event)" #input>
 </mat-form-field>
 
 <div [hidden]="!(archives && archives.length > 0)">

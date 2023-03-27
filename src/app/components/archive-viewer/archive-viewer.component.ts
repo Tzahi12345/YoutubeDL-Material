@@ -23,6 +23,7 @@ export class ArchiveViewerComponent {
   // general
   archives = null;
   archives_retrieved = false;
+  text_filter = '';
   sub_id = 'none';
   upload_sub_id = 'none';
   type: FileType | 'both' = 'both';
@@ -78,11 +79,15 @@ export class ArchiveViewerComponent {
 
   typeFilterSelectionChanged(value): void {
     this.type = value;
+    this.dataSource.filter = '';
+    this.text_filter = '';
     this.getArchives();
   }
 
   subFilterSelectionChanged(value): void {
     this.sub_id = value;
+    this.dataSource.filter = '';
+    this.text_filter = '';
     if (this.sub_id !== 'none') {
       this.type = this.postsService.getSubscriptionByID(this.sub_id)['type'];
     }
