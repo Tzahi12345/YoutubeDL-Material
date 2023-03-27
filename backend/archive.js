@@ -45,7 +45,7 @@ exports.importArchiveFile = async (archive_text, type, user_uid = null, sub_id =
         // we can't do a bulk write because we need to avoid duplicate archive items existing in db
 
         const archive_item = createArchiveItem(extractor, id, type, null, user_uid, sub_id);
-        await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id});
+        await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id, type: type, sub_id: sub_id, user_uid: user_uid});
         archive_import_count++;
     }
     return archive_import_count;

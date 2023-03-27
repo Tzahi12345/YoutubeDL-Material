@@ -27,7 +27,7 @@
                                 <strong>{{ item.relativePath }}</strong>
                             </td>
                             <td>
-                                <button [disabled]="uploading || uploaded" (click)="uploadFile()" style="float: right" matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon><mat-spinner *ngIf="uploading" class="spinner" [diameter]="38"></mat-spinner></button>
+                                <button [disabled]="uploading || uploaded" (click)="uploadFile()" style="float: right" matTooltip="Upload" i18n-matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon><mat-spinner *ngIf="uploading" class="spinner" [diameter]="38"></mat-spinner></button>
                             </td>
                         </tr>
                     </tbody>

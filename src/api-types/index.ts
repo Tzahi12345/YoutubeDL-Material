@@ -27,7 +27,7 @@ export type { DatabaseFile } from './models/DatabaseFile';
 export { DBBackup } from './models/DBBackup';
 export type { DBInfoResponse } from './models/DBInfoResponse';
 export type { DeleteAllFilesResponse } from './models/DeleteAllFilesResponse';
-export type { DeleteArchiveItemRequest } from './models/DeleteArchiveItemRequest';
+export type { DeleteArchiveItemsRequest } from './models/DeleteArchiveItemsRequest';
 export type { DeleteCategoryRequest } from './models/DeleteCategoryRequest';
 export type { DeleteMp3Mp4Request } from './models/DeleteMp3Mp4Request';
 export type { DeleteNotificationRequest } from './models/DeleteNotificationRequest';

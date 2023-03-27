@@ -1511,6 +1511,22 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
     });
 });
 
+app.post('/api/getArchives', optionalJwt, async (req, res) => {
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+    const sub_id = req.body.sub_id;
+    const filter_obj = {user_uid: uuid, sub_id: sub_id};
+    const type = req.body.type;
+
+    // we do this for file types because if type is null, that means get files of all types
+    if (type) filter_obj['type'] = type;
+
+    const archives = await db_api.getRecords('archives', filter_obj);
+
+    res.send({
+        archives: archives
+    });
+});
+
 app.post('/api/downloadArchive', optionalJwt, async (req, res) => {
     const uuid = req.isAuthenticated() ? req.user.uid : null;
     const sub_id = req.body.sub_id; 
@@ -1526,6 +1542,36 @@ app.post('/api/downloadArchive', optionalJwt, async (req, res) => {
         res.sendStatus(400);
     }
 
+});
+
+app.post('/api/importArchive', optionalJwt, async (req, res) => {
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+    const archive = req.body.archive;
+    const sub_id = req.body.sub_id; 
+    const type = req.body.type;
+
+    const archive_text = Buffer.from(archive.split(',')[1], 'base64').toString();
+
+    const imported_count = await archive_api.importArchiveFile(archive_text, type, uuid, sub_id);
+
+    res.send({
+        success: !!imported_count,
+        imported_count: imported_count
+    });
+});
+
+app.post('/api/deleteArchiveItems', optionalJwt, async (req, res) => {
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
+    const archives = req.body.archives;
+
+    let success = true;
+    for (const archive of archives) {
+        success &= await archive_api.removeFromArchive(archive['extractor'], archive['id'], archive['type'], uuid, archive['sub_id']);
+    }
+
+    res.send({
+        success: success
+    });
 });
 
 var upload_multer = multer({ dest: __dirname + '/appdata/' });

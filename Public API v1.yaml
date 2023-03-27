@@ -578,18 +578,18 @@ paths:
           description: If the archive dir is not found, 404 is sent as a response
       security:
         - Auth query parameter: []
-  /api/deleteArchiveItem:
+  /api/deleteArchiveItems:
     post:
       tags:
         - archive
       summary: Delete item from archive
       description: 'Deletes an item from the archive'
-      operationId: post-api-deleteArchiveItem
+      operationId: post-api-deleteArchiveItems
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteArchiveItemRequest'
+              $ref: '#/components/schemas/DeleteArchiveItemsRequest'
       responses:
         '200':
           description: OK
@@ -608,7 +608,7 @@ paths:
       operationId: post-api-importArchive
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/ImportArchiveRequest'
       responses:
@@ -2178,21 +2178,15 @@ components:
           type: number
         uid:
           type: string
-    DeleteArchiveItemRequest:
+    DeleteArchiveItemsRequest:
       type: object
       required:
-        - extractor
-        - id
-        - type
+        - archives
       properties:
-        extractor:
-          type: string
-        id:
-          type: string
-        type:
-          $ref: '#/components/schemas/FileType'
-        sub_id:
-          type: string
+        archives:
+          type: array
+          items:
+            $ref: '#/components/schemas/Archive'
     ImportArchiveRequest:
       type: object
       required:
@@ -2201,7 +2195,6 @@ components:
       properties:
         archive:
           type: string
-          format: binary
         type:
           $ref: '#/components/schemas/FileType'
         sub_id:

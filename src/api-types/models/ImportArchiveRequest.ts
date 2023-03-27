@@ -5,7 +5,7 @@
 import type { FileType } from './FileType';
 
 export type ImportArchiveRequest = {
-    archive: Blob;
+    archive: string;
     type: FileType;
     sub_id?: string;
 };

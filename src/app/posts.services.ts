@@ -107,9 +107,12 @@ import {
     GetNotificationsResponse,
     UpdateTaskOptionsRequest,
     User,
-    DeleteArchiveItemRequest,
+    DeleteArchiveItemsRequest,
     GetArchivesRequest,
-    GetArchivesResponse
+    GetArchivesResponse,
+    ImportArchiveRequest,
+    Archive,
+    Subscription
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -159,7 +162,7 @@ export class PostsService implements CanActivate {
 
     // global vars
     config = null;
-    subscriptions = null;
+    subscriptions: Subscription[] = null;
     categories: Category[] = null;
     sidenav = null;
     locale = isoLangs['en'];
@@ -265,7 +268,7 @@ export class PostsService implements CanActivate {
         this.theme = this.THEMES_CONFIG[theme];
     }
 
-    getSubscriptionByID(sub_id) {
+    getSubscriptionByID(sub_id: string): Subscription {
         for (let i = 0; i < this.subscriptions.length; i++) {
             if (this.subscriptions[i]['id'] === sub_id) {
                 return this.subscriptions[i];
@@ -446,22 +449,19 @@ export class PostsService implements CanActivate {
         return this.http.post(this.path + 'downloadArchive', body, {responseType: 'blob', params: this.httpOptions.params});
     }
 
-    getArchives(sub_id: string) {
-        const body: GetArchivesRequest = {sub_id: sub_id};
+    getArchives(type: FileType = null, sub_id: string = null) {
+        const body: GetArchivesRequest = {type: type, sub_id: sub_id};
         return this.http.post<GetArchivesResponse>(this.path + 'getArchives', body, this.httpOptions);
     }
 
-    importArchive(archiveFile: File, type: FileType, sub_id: string = null) {
-        const formData = new FormData()
-        formData.append('archive', archiveFile, 'archive.txt');
-        formData.append('type', type);
-        formData.append('sub_id', sub_id);
-        return this.http.post<SuccessObject>(this.path + 'importArchive', formData, this.httpOptions);
+    importArchive(archive_base64: string, type: FileType, sub_id: string = null) {
+        const body: ImportArchiveRequest = {archive: archive_base64, type: type, sub_id: sub_id}
+        return this.http.post<SuccessObject>(this.path + 'importArchive', body, this.httpOptions);
     }
 
-    deleteArchiveItem(extractor: string, id: string, type: FileType, sub_id: string = null) {
-        const body: DeleteArchiveItemRequest = {extractor: extractor, id: id, type: type, sub_id: sub_id};
-        return this.http.post<SuccessObject>(this.path + 'deleteArchiveItem', body, this.httpOptions);
+    deleteArchiveItems(archives: Archive[]) {
+        const body: DeleteArchiveItemsRequest = {archives: archives};
+        return this.http.post<SuccessObject>(this.path + 'deleteArchiveItems', body, this.httpOptions);
     }
 
     getFileFormats(url) {

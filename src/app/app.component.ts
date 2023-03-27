@@ -21,6 +21,7 @@ import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.compon
 import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
 import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
 
 @Component({
   selector: 'app-root',
@@ -204,6 +205,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   openProfileDialog(): void {
     this.dialog.open(UserProfileDialogComponent, {
       width: '60vw'
+    });
+  }
+
+  openArchivesDialog(): void {
+    this.dialog.open(ArchiveViewerComponent, {
+      width: '85vw'
     });
   }
 
