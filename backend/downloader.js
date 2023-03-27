@@ -86,10 +86,10 @@ exports.resumeDownload = async (download_uid) => {
 exports.restartDownload = async (download_uid) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     await exports.clearDownload(download_uid);
-    const success = !!(await exports.createDownload(download['url'], download['type'], download['options'], download['user_uid']));
+    const new_download = await exports.createDownload(download['url'], download['type'], download['options'], download['user_uid']);
     
     should_check_downloads = true;
-    return success;
+    return new_download;
 }
 
 exports.cancelDownload = async (download_uid) => {

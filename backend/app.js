@@ -1765,8 +1765,8 @@ app.post('/api/resumeAllDownloads', optionalJwt, async (req, res) => {
 
 app.post('/api/restartDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
-    const success = await downloader_api.restartDownload(download_uid);
-    res.send({success: success});
+    const new_download = await downloader_api.restartDownload(download_uid);
+    res.send({success: !!new_download, new_download_uid: new_download ? new_download['uid'] : null});
 });
 
 app.post('/api/cancelDownload', optionalJwt, async (req, res) => {

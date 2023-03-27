@@ -905,7 +905,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessObject'
+                $ref: '#/components/schemas/RestartDownloadResponse'
       requestBody:
         content:
           application/json:
@@ -1722,6 +1722,13 @@ components:
       properties:
         download:
           $ref: '#/components/schemas/Download'
+    RestartDownloadResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessObject'
+        - type: object
+          properties:
+            new_download_uid:
+              type: string
     GetAllDownloadsRequest:
       type: object
       properties:

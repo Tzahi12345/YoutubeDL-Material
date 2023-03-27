@@ -90,6 +90,7 @@ export { NotificationType } from './models/NotificationType';
 export type { Playlist } from './models/Playlist';
 export type { RegisterRequest } from './models/RegisterRequest';
 export type { RegisterResponse } from './models/RegisterResponse';
+export type { RestartDownloadResponse } from './models/RestartDownloadResponse';
 export type { RestoreDBBackupRequest } from './models/RestoreDBBackupRequest';
 export { Schedule } from './models/Schedule';
 export type { SetConfigRequest } from './models/SetConfigRequest';

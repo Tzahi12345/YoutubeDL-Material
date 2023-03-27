@@ -112,7 +112,8 @@ import {
     GetArchivesResponse,
     ImportArchiveRequest,
     Archive,
-    Subscription
+    Subscription,
+    RestartDownloadResponse
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -621,7 +622,7 @@ export class PostsService implements CanActivate {
 
     restartDownload(download_uid: string) {
         const body: GetDownloadRequest = {download_uid: download_uid};
-        return this.http.post<SuccessObject>(this.path + 'restartDownload', body, this.httpOptions);
+        return this.http.post<RestartDownloadResponse>(this.path + 'restartDownload', body, this.httpOptions);
     }
 
     cancelDownload(download_uid: string) {
