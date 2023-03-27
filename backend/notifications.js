@@ -17,8 +17,8 @@ const NOTIFICATION_TYPE_TO_TITLE = {
 
 const NOTIFICATION_TYPE_TO_BODY = {
     task_finished: (notification) => notification['data']['task_title'],
-    download_complete: (notification) => notification['data']['file_title'],
-    download_error: (notification) => notification['data']['download_url']
+    download_complete: (notification) => {return `${notification['data']['file_title']}\nOriginal URL: ${notification['data']['original_url']}`},
+    download_error: (notification) => {return `Error: ${notification['data']['download_error_type']}\nURL: ${notification['data']['download_url']}`}
 }
 
 const NOTIFICATION_TYPE_TO_URL = {
@@ -28,7 +28,9 @@ const NOTIFICATION_TYPE_TO_URL = {
 }
 
 const NOTIFICATION_TYPE_TO_THUMBNAIL = {
-    download_complete: (notification) => notification['data']['file_thumbnail']
+    task_finished: () => null,
+    download_complete: (notification) => notification['data']['file_thumbnail'],
+    download_error: () => null
 }
 
 exports.sendNotification = async (notification) => {
@@ -64,7 +66,7 @@ exports.sendTaskNotification = async (task_obj, confirmed) => {
 
 exports.sendDownloadNotification = async (file, user_uid) => {
     if (!notificationEnabled('download_complete')) return;
-    const data = {file_uid: file.uid, file_title: file.title, file_thumbnail: file.thumbnailURL};
+    const data = {file_uid: file.uid, file_title: file.title, file_thumbnail: file.thumbnailURL, original_url: file.url};
     const notification = exports.createNotification('download_complete', ['play'], data, user_uid);
     return await exports.sendNotification(notification);
 }
@@ -131,5 +133,5 @@ async function sendTelegramNotification(body, title, type, url, thumbnail) {
     const chat_id = config_api.getConfigItem('ytdl_telegram_chat_id');
     const bot = new TelegramBot(bot_token);
     if (thumbnail) await bot.sendPhoto(chat_id, thumbnail);
-    bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n${url}`, {parse_mode: 'HTML'});
+    bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
 }
