@@ -3,6 +3,7 @@ FROM ubuntu:22.04 AS ffmpeg
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
 COPY ffmpeg-fetch.sh .
+RUN chmod +x ffmpeg-fetch.sh
 RUN sh ./ffmpeg-fetch.sh
 
 
