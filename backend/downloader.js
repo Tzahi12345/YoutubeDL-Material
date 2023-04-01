@@ -403,6 +403,10 @@ async function downloadQueuedFile(download_uid) {
 exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
     const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
 
+    if (!simulated && (default_downloader === 'youtube-dl' || default_downloader === 'youtube-dlc')) {
+        logger.warn('It is recommended you use yt-dlp! To prevent failed downloads, change the downloader in your settings menu to yt-dlp and restart your instance.')
+    }
+
     const audioFolderPath = config_api.getConfigItem('ytdl_audio_folder_path');
     const videoFolderPath = config_api.getConfigItem('ytdl_video_folder_path');
     const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
