@@ -215,7 +215,7 @@ export class RecentVideosComponent implements OnInit {
     const range = [current_file_index, current_file_index + this.pageSize];
     const fileTypeFilter = this.getFileTypeFilter();
     const favoriteFilter = this.getFavoriteFilter();
-    this.postsService.getAllFiles(sort, range, this.search_mode ? this.search_text : null, fileTypeFilter as FileTypeFilter, favoriteFilter, this.sub_id).subscribe(res => {
+    this.postsService.getAllFiles(sort, this.usePaginator ? range : null, this.search_mode ? this.search_text : null, fileTypeFilter as FileTypeFilter, favoriteFilter, this.sub_id).subscribe(res => {
       this.file_count = res['file_count'];
       this.paged_data = res['files'];
       for (let i = 0; i < this.paged_data.length; i++) {

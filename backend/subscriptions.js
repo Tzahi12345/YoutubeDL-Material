@@ -432,7 +432,8 @@ async function getAllSubscriptions() {
 }
 
 async function getSubscription(subID) {
-    const sub = await db_api.getRecord('subscriptions', {id: subID});
+    // stringify and parse because we may override the 'downloading' property
+    const sub = JSON.parse(JSON.stringify(await db_api.getRecord('subscriptions', {id: subID})));
     // now with the download_queue, we may need to override 'downloading'
     const current_downloads = await db_api.getRecords('download_queue', {running: true, sub_id: sub.id}, true);
     if (!sub['downloading']) sub['downloading'] = current_downloads > 0;
