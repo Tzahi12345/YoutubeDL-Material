@@ -72,17 +72,20 @@
   <h4 style="text-align: center; margin-top: 10px;" i18n="Archives empty">Archives empty</h4>
 </div>
 
-<div style="margin: 10px 10px 10px 0px;">
-  <button [disabled]="selection.selected.length === 0" color="warn" style="margin: 10px;" mat-stroked-button i18n="Delete selected" (click)="openDeleteSelectedArchivesDialog()">Delete selected</button>
-  <span style="float: right">
-    <mat-form-field style="width: 150px;">
+<div style="margin: 10px 10px 10px 0px; display: flex;">
+  <span style="flex-grow: 1;" class="flex-items">
+    <button [disabled]="selection.selected.length === 0" color="warn" style="margin: 10px;" mat-stroked-button i18n="Delete selected" (click)="openDeleteSelectedArchivesDialog()">Delete selected</button>
+  </span>
+  <span class="flex-items">
+    <button [disabled]="!(archives && archives.length > 0)" (click)="downloadArchive()" mat-stroked-button i18n="Download archive">Download archive</button>
+    <mat-form-field style="width: 150px; margin-bottom: -1.25em; margin-left: 10px;">
       <mat-label i18n="Subscription">Subscription</mat-label>
       <mat-select [ngModel]="sub_id" (ngModelChange)="subFilterSelectionChanged($event)">
         <mat-option [value]="'none'" i18n="None">None</mat-option>
         <mat-option *ngFor="let sub of postsService.subscriptions" [value]="sub.id">{{sub.name}}</mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field style="width: 100px; margin-left: 10px;">
+    <mat-form-field style="width: 100px; margin-bottom: -1.25em; margin-left: 10px;">
       <mat-label i18n="File type">File type</mat-label>
       <mat-select [ngModel]="type" (ngModelChange)="typeFilterSelectionChanged($event)" [disabled]="sub_id !== 'none'">
         <mat-option [value]="'both'" i18n="Both">Both</mat-option>
@@ -93,7 +96,7 @@
   </span>
 </div>
 
-<div>
+<div class="file-drop-parent">
   <ngx-file-drop [multiple]="false" accept=".txt" dropZoneLabel="Drop file here" (onFileDrop)="dropped($event)">
       <ng-template class="file-drop" ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
           <div style="text-align: center">

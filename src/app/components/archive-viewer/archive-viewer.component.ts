@@ -139,6 +139,13 @@ export class ArchiveViewerComponent {
     }
   }
 
+  downloadArchive(): void {
+    this.postsService.downloadArchive(this.type === 'both' ? null : this.type, this.sub_id === 'none' ? null : this.sub_id).subscribe(res => {
+      const blob: Blob = res;
+      saveAs(blob, 'archive.txt');
+    });
+  }
+
   openDeleteSelectedArchivesDialog(): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
