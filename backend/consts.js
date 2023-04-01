@@ -350,4 +350,4 @@ const YTDL_ARGS_WITH_VALUES = [
 // we're using a Set here for performance
 exports.YTDL_ARGS_WITH_VALUES = new Set(YTDL_ARGS_WITH_VALUES);
 
-exports.CURRENT_VERSION = 'v4.3';
+exports.CURRENT_VERSION = 'v4.3.1';
