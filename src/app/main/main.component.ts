@@ -683,6 +683,7 @@ export class MainComponent implements OnInit {
         format_obj['format_id'] = format.format_id;
         format_obj['ext'] = format.ext;
         format_obj['label'] = key;
+        format_obj['expected_filesize'] = format.filesize ? format.filesize : (format.filesize_approx || null);
 
         // don't overwrite if not m4a
         if (audio_formats[key]) {
@@ -702,6 +703,7 @@ export class MainComponent implements OnInit {
           format_obj['format_id'] = format.format_id;
           format_obj['label'] = key;
           format_obj['fps'] = Math.round(format.fps);
+          format_obj['expected_filesize'] = format.filesize ? format.filesize : (format.filesize_approx || null);
 
           // no acodec means no overwrite
           if (!(video_formats[key]) || format_obj['acodec'] !== 'none') {
@@ -714,6 +716,14 @@ export class MainComponent implements OnInit {
     const parsed_formats: any = {};
 
     parsed_formats['best_audio_format'] = this.getBestAudioFormatForMp4(audio_formats);
+
+    // add audio file size to the expected video file size -- but only if best_audio_format will be used (i.e. when the video has no acodec already). if acodec is present expected filesize will include it
+    for (const video_format of Object.values(video_formats)) {
+      if ((!video_format['acodec'] || video_format['acodec'] === 'none')
+        && video_format['expected_filesize']
+        && parsed_formats['best_audio_format']?.filesize) 
+          video_format['expected_filesize'] += parsed_formats['best_audio_format'].filesize;
+    }
 
     parsed_formats['video'] = Object.values(video_formats);
     parsed_formats['audio'] = Object.values(audio_formats);
@@ -789,5 +799,38 @@ export class MainComponent implements OnInit {
     let lines = url_str.split('\n');
     lines = lines.filter(line => line);
     return lines;
+  }
+
+    /**
+   * Format bytes as human-readable text.
+   * From: https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string
+   * 
+   * @param bytes Number of bytes.
+   * @param si True to use metric (SI) units, aka powers of 1000. False to use 
+   *           binary (IEC), aka powers of 1024.
+   * @param dp Number of decimal places to display.
+   * 
+   * @return Formatted string.
+   */
+  humanFileSize(bytes: number, si=true, dp=1) {
+    const thresh = si ? 1000 : 1024;
+
+    if (Math.abs(bytes) < thresh) {
+      return bytes + ' B';
+    }
+
+    const units = si 
+      ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
+      : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+    let u = -1;
+    const r = 10**dp;
+
+    do {
+      bytes /= thresh;
+      ++u;
+    } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+
+
+    return bytes.toFixed(dp) + ' ' + units[u];
   }
 }

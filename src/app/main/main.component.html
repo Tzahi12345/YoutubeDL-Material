@@ -25,7 +25,7 @@
                                         </mat-option>
                                         <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats && !cachedAvailableFormats[url]?.formats_failed">
                                             <ng-container *ngFor="let option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']">
-                                                <mat-option *ngIf="option.key !== 'best_audio_format'" [value]="option">
+                                                <mat-option [matTooltip]="option.expected_filesize ? humanFileSize(option.expected_filesize) : null" *ngIf="option.key !== 'best_audio_format'" [value]="option">
                                                     {{option.key}}
                                                 </mat-option>
                                             </ng-container>
