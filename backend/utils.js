@@ -220,57 +220,6 @@ function deleteJSONFile(file_path, type) {
     if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
 }
 
-// archive helper functions
-
-async function removeIDFromArchive(archive_path, type, id) {
-    const archive_file = path.join(archive_path, `archive_${type}.txt`);
-    const data = await fs.readFile(archive_file, {encoding: 'utf-8'});
-    if (!data) {
-        logger.error('Archive could not be found.');
-        return;
-    }
-
-    let dataArray = data.split('\n'); // convert file data in an array
-    const searchKeyword = id; // we are looking for a line, contains, key word id in the file
-    let lastIndex = -1; // let say, we have not found the keyword
-
-    for (let index=0; index<dataArray.length; index++) {
-        if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
-            lastIndex = index; // found a line includes a id keyword
-            break;
-        }
-    }
-
-    if (lastIndex === -1) return null;
-
-    const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
-
-    // UPDATE FILE WITH NEW DATA
-    const updatedData = dataArray.join('\n');
-    await fs.writeFile(archive_file, updatedData);
-    if (line) return Array.isArray(line) && line.length === 1 ? line[0] : line;
-}
-
-async function writeToBlacklist(archive_folder, type, line) {
-    let blacklistPath = path.join(archive_folder, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
-    // adds newline to the beginning of the line
-    line.replace('\n', '');
-    line.replace('\r', '');
-    line = '\n' + line;
-    await fs.appendFile(blacklistPath, line);
-}
-
-async function deleteFileFromArchive(uid, type, archive_path, id, blacklistMode) {
-    const archive_file = path.join(archive_path, `archive_${type}.txt`);
-    if (await fs.pathExists(archive_path)) {
-        const line = id ? await removeIDFromArchive(archive_path, type, id) : null;
-        if (blacklistMode && line) await writeToBlacklist(archive_path, type, line);
-    } else {
-        logger.info(`Could not find archive file for file ${uid}. Creating...`);
-        await fs.close(await fs.open(archive_file, 'w'));
-    }
-}
-
 function durationStringToNumber(dur_str) {
     if (typeof dur_str === 'number') return dur_str;
     let num_sum = 0;
@@ -537,6 +486,10 @@ function getArchiveFolder(type, user_uid = null, sub = null) {
     }
 }
 
+function getBaseURL() {
+    return `${config_api.getConfigItem('ytdl_url')}:${config_api.getConfigItem('ytdl_port')}`
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
@@ -554,6 +507,7 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
     this.view_count = view_count;
     this.height = height;
     this.abr = abr;
+    this.favorite = false;
 }
 
 module.exports = {
@@ -565,9 +519,6 @@ module.exports = {
     getExpectedFileSize: getExpectedFileSize,
     fixVideoMetadataPerms: fixVideoMetadataPerms,
     deleteJSONFile: deleteJSONFile,
-    removeIDFromArchive: removeIDFromArchive,
-    writeToBlacklist: writeToBlacklist,
-    deleteFileFromArchive: deleteFileFromArchive,
     getDownloadedFilesByType: getDownloadedFilesByType,
     createContainerZipFile: createContainerZipFile,
     durationStringToNumber: durationStringToNumber,
@@ -587,5 +538,6 @@ module.exports = {
     searchObjectByString: searchObjectByString,
     stripPropertiesFromObject: stripPropertiesFromObject,
     getArchiveFolder: getArchiveFolder,
+    getBaseURL: getBaseURL,
     File: File
 }

@@ -2,8 +2,8 @@ import { Component, OnInit, Inject, Pipe, PipeTransform, ViewChild, AfterViewIni
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { FormControl } from '@angular/forms';
-import { args, args_info } from './youtubedl_args';
+import { UntypedFormControl } from '@angular/forms';
+import { args, ArgsByCategory, args_info } from './youtubedl_args';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators/map';
 import { startWith } from 'rxjs/operators/startWith';
@@ -30,15 +30,15 @@ export class HighlightPipe implements PipeTransform {
   styleUrls: ['./arg-modifier-dialog.component.scss'],
 })
 export class ArgModifierDialogComponent implements OnInit, AfterViewInit {
-  myGroup = new FormControl();
+  myGroup = new UntypedFormControl();
   firstArg = '';
   secondArg = '';
   secondArgEnabled = false;
   modified_args = '';
-  stateCtrl = new FormControl();
-  chipCtrl = new FormControl();
+  stateCtrl = new UntypedFormControl();
+  chipCtrl = new UntypedFormControl();
   availableArgs = null;
-  argsByCategory = null;
+  argsByCategory: ArgsByCategory = null;
   argsByKey = null;
   argsInfo = null;
   filteredOptions: Observable<any>;

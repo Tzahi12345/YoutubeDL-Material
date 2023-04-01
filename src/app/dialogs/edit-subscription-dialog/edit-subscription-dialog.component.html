@@ -9,13 +9,13 @@
             <div class="col-12 mt-3">
                 <mat-checkbox (change)="downloadAllToggled()" [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
             </div>
-            <div class="col-12" *ngIf="!download_all && editor_initialized">
+            <div class="col-12" *ngIf="editor_initialized">
                 <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
-                <mat-form-field color="accent" style="width: 50px; text-align: center; margin-left: 10px;">
-                    <input type="number" matInput [(ngModel)]="timerange_amount" (ngModelChange)="timerangeChanged($event, false)">
+                <mat-form-field color="accent" class="amount-select">
+                    <input type="number" matInput [(ngModel)]="timerange_amount" (ngModelChange)="timerangeChanged($event, false)" [disabled]="download_all">
                 </mat-form-field>
                 <mat-form-field class="unit-select">
-                    <mat-select color="accent" [(ngModel)]="timerange_unit" (ngModelChange)="timerangeChanged($event, true)">
+                    <mat-select color="accent" [(ngModel)]="timerange_unit" (ngModelChange)="timerangeChanged($event, true)" [disabled]="download_all">
                         <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
                             {{time_unit + (timerange_amount === 1 ? '' : 's')}}
                         </mat-option>
@@ -29,23 +29,26 @@
             </div>
             <div class="col-12 mt-2">
                 <mat-form-field>
-                    <mat-select placeholder="Max quality" i18n-placeholder="Max quality placeholder" [disabled]="new_sub.type === 'audio'" [(ngModel)]="new_sub.maxQuality">
+                    <mat-label i18n="Max quality">Max quality</mat-label>
+                    <mat-select [disabled]="new_sub.type === 'audio'" [(ngModel)]="new_sub.maxQuality">
                         <mat-option *ngFor="let available_quality of available_qualities" [value]="available_quality['value']">{{available_quality['label']}}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-12 mb-3">
                 <mat-form-field color="accent">
-                    <input [(ngModel)]="new_sub.custom_args" matInput placeholder="Custom args" i18n-placeholder="Subscription custom args placeholder">
+                    <mat-label i18n="Custom args">Custom args</mat-label>
+                    <input [(ngModel)]="new_sub.custom_args" matInput>
                     <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
                     <mat-hint>
                         <ng-container i18n="Custom args hint">These are added after the standard args.</ng-container>
                     </mat-hint>
                 </mat-form-field>
             </div>
-            <div class="col-12">
+            <div class="col-12 mt-2">
                 <mat-form-field color="accent">
-                    <input [(ngModel)]="new_sub.custom_output" matInput placeholder="Custom file output" i18n-placeholder="Subscription custom file output placeholder">
+                    <mat-label i18n="Custom file output">Custom file output</mat-label>
+                    <input [(ngModel)]="new_sub.custom_output" matInput>
                     <mat-hint>
                         <a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
                         <ng-container i18n="Custom output template documentation link">Documentation</ng-container></a>.

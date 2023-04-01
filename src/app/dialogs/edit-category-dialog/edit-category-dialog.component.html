@@ -2,7 +2,8 @@
 
 <mat-dialog-content style="max-height: 50vh">
     <mat-form-field style="width: 250px; margin-bottom: 5px;">
-        <input matInput placeholder="Name" i18n-placeholder="Name" [(ngModel)]="category['name']" required>
+        <mat-label i18n="Category name">Name</mat-label>
+        <input matInput [(ngModel)]="category['name']" required>
     </mat-form-field>
 
     <mat-divider></mat-divider>
@@ -41,7 +42,8 @@
     <mat-divider></mat-divider>
 
     <mat-form-field style="width: 250px; margin-top: 10px;">
-        <input matInput [(ngModel)]="category['custom_output']" placeholder="Custom file output" i18n-placeholder="Category custom file output placeholder">
+        <mat-label i18n="Custom file output">Custom file output</mat-label>
+        <input matInput [(ngModel)]="category['custom_output']">
         <mat-hint>
             <a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
             <ng-container i18n="Custom output template documentation link">Documentation</ng-container></a>.

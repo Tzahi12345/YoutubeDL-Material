@@ -1,0 +1,67 @@
+<h4 mat-dialog-title><ng-container i18n="Generate RSS URL">Generate RSS URL</ng-container></h4>
+
+<mat-dialog-content>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 mt-2">
+                <mat-form-field class="filter-field">
+                    <mat-label i18n="Title filter">Title filter</mat-label>
+                    <input [(ngModel)]="titleFilter" matInput (input)="rebuildURL()">
+                    <mat-hint i18n="Supports regex">Supports regex</mat-hint>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6 mt-2">
+                <mat-form-field class="filter-field">
+                    <mat-label><ng-container i18n="File type">File type</ng-container></mat-label>
+                    <mat-select color="accent" [(ngModel)]="fileTypeFilter" (selectionChange)="rebuildURL()">
+                        <mat-option value="both"><ng-container i18n="Both">Both</ng-container></mat-option>
+                        <mat-option value="video_only"><ng-container i18n="Video only">Video only</ng-container></mat-option>
+                        <mat-option value="audio_only"><ng-container i18n="Audio only">Audio only</ng-container></mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6 mt-2">
+                <mat-form-field class="filter-field">
+                    <mat-label><ng-container i18n="User">User</ng-container></mat-label>
+                    <mat-select color="accent" [(ngModel)]="userFilter" (selectionChange)="rebuildURL()" [disabled]="!usersList">
+                        <mat-option [value]="''"><ng-container i18n="None">None</ng-container></mat-option>
+                        <mat-option *ngFor="let user of usersList" [value]="user.uid"><ng-container>{{user.name}}</ng-container></mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6 mt-2">
+                <mat-form-field class="filter-field">
+                    <mat-label><ng-container i18n="Subscription">Subscription</ng-container></mat-label>
+                    <mat-select color="accent" [(ngModel)]="subscriptionFilter" (selectionChange)="rebuildURL()">
+                        <mat-option [value]="''"><ng-container i18n="None">None</ng-container></mat-option>
+                        <mat-option *ngFor="let sub of postsService.subscriptions" [value]="sub.id"><ng-container>{{sub.name}}</ng-container></mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-6 mt-2">
+                <app-sort-property (sortOptionChanged)="sortOptionChanged($event)"></app-sort-property>
+            </div>
+            <div class="col-12 col-md-6 mt-2">
+                <mat-form-field class="filter-field">
+                    <mat-label i18n="Item limit">Item limit</mat-label>
+                    <input type="number" [(ngModel)]="itemLimit" (input)="rebuildURL()" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-12 mb-4">
+                <mat-checkbox (change)="rebuildURL()" [(ngModel)]="favoriteFilter"><ng-container i18n="Favorited">Favorited</ng-container></mat-checkbox>
+            </div>
+        </div>
+    </div>
+
+    <mat-form-field style="width: 100%;">
+        <mat-label i18n="URL">URL</mat-label>
+        <input readonly [(ngModel)]="url" matInput>
+        <button mat-icon-button matSuffix (click)="copyURL()">
+            <mat-icon>content_copy</mat-icon>
+        </button>
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Close">Close</ng-container></button>
+</mat-dialog-actions>

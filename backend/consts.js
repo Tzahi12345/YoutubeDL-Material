@@ -30,10 +30,6 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_custom_args',
         'path': 'YoutubeDLMaterial.Downloader.custom_args'
     },
-    'ytdl_safe_download_override': {
-        'key': 'ytdl_safe_download_override',
-        'path': 'YoutubeDLMaterial.Downloader.safe_download_override'
-    },
     'ytdl_include_thumbnail': {
         'key': 'ytdl_include_thumbnail',
         'path': 'YoutubeDLMaterial.Downloader.include_thumbnail'
@@ -68,9 +64,9 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_download_only_mode',
         'path': 'YoutubeDLMaterial.Extra.download_only_mode'
     },
-    'ytdl_allow_autoplay': {
-        'key': 'ytdl_allow_autoplay',
-        'path': 'YoutubeDLMaterial.Extra.allow_autoplay'
+    'ytdl_force_autoplay': {
+        'key': 'ytdl_force_autoplay',
+        'path': 'YoutubeDLMaterial.Extra.force_autoplay'
     },
     'ytdl_enable_downloads_manager': {
         'key': 'ytdl_enable_downloads_manager',
@@ -79,6 +75,22 @@ exports.CONFIG_ITEMS = {
     'ytdl_allow_playlist_categorization': {
         'key': 'ytdl_allow_playlist_categorization',
         'path': 'YoutubeDLMaterial.Extra.allow_playlist_categorization'
+    },
+    'ytdl_enable_notifications': {
+        'key': 'ytdl_enable_notifications',
+        'path': 'YoutubeDLMaterial.Extra.enable_notifications'
+    },
+    'ytdl_enable_all_notifications': {
+        'key': 'ytdl_enable_all_notifications',
+        'path': 'YoutubeDLMaterial.Extra.enable_all_notifications'
+    },
+    'ytdl_allowed_notification_types': {
+        'key': 'ytdl_allowed_notification_types',
+        'path': 'YoutubeDLMaterial.Extra.allowed_notification_types'
+    },
+    'ytdl_enable_rss_feed': {
+        'key': 'ytdl_enable_rss_feed',
+        'path': 'YoutubeDLMaterial.Extra.enable_rss_feed'
     },
 
     // API
@@ -121,6 +133,38 @@ exports.CONFIG_ITEMS = {
     'ytdl_generate_nfo_files': {
         'key': 'ytdl_generate_nfo_files',
         'path': 'YoutubeDLMaterial.API.generate_NFO_files'
+    },
+    'ytdl_use_ntfy_API': {
+        'key': 'ytdl_use_ntfy_API',
+        'path': 'YoutubeDLMaterial.API.use_ntfy_API'
+    },
+    'ytdl_ntfy_topic_url': {
+        'key': 'ytdl_ntfy_topic_url',
+        'path': 'YoutubeDLMaterial.API.ntfy_topic_URL'
+    },
+    'ytdl_use_gotify_API': {
+        'key': 'ytdl_use_gotify_API',
+        'path': 'YoutubeDLMaterial.API.use_gotify_API'
+    },
+    'ytdl_gotify_server_url': {
+        'key': 'ytdl_gotify_server_url',
+        'path': 'YoutubeDLMaterial.API.gotify_server_URL'
+    },
+    'ytdl_gotify_app_token': {
+        'key': 'ytdl_gotify_app_token',
+        'path': 'YoutubeDLMaterial.API.gotify_app_token'
+    },
+    'ytdl_use_telegram_API': {
+        'key': 'ytdl_use_telegram_API',
+        'path': 'YoutubeDLMaterial.API.use_telegram_API'
+    },
+    'ytdl_telegram_bot_token': {
+        'key': 'ytdl_telegram_bot_token',
+        'path': 'YoutubeDLMaterial.API.telegram_bot_token'
+    },
+    'ytdl_telegram_chat_id': {
+        'key': 'ytdl_telegram_chat_id',
+        'path': 'YoutubeDLMaterial.API.telegram_chat_id'
     },
 
 

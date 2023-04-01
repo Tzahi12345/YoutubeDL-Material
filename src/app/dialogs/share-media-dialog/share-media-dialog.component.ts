@@ -21,7 +21,7 @@ export class ShareMediaDialogComponent implements OnInit {
   timestamp_enabled = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public router: Router, private snackBar: MatSnackBar,
-              private postsService: PostsService) { }
+              public postsService: PostsService) { }
 
   ngOnInit(): void {
     if (this.data) {

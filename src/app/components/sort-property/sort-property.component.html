@@ -1,0 +1,14 @@
+<div>
+    <div style="display: inline-block;">
+        <mat-form-field appearance="outline" style="width: 165px;">
+            <mat-select [(ngModel)]="this.sortProperty" (selectionChange)="emitSortOptionChanged()">
+                <mat-option *ngFor="let sortOption of sortProperties | keyvalue" [value]="sortOption.key">
+                    {{sortOption['value']['label']}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="sort-dir-div">
+        <button (click)="toggleModeChange()" mat-icon-button><mat-icon>{{descendingMode ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
+    </div>
+</div>

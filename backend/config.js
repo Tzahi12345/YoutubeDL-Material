@@ -185,7 +185,6 @@ const DEFAULT_CONFIG = {
         "default_file_output": "",
         "use_youtubedl_archive": false,
         "custom_args": "",
-        "safe_download_override": false,
         "include_thumbnail": true,
         "include_metadata": true,
         "max_concurrent_downloads": 5,
@@ -196,9 +195,13 @@ const DEFAULT_CONFIG = {
         "file_manager_enabled": true,
         "allow_quality_select": true,
         "download_only_mode": false,
-        "allow_autoplay": true,
+        "force_autoplay": false,
         "enable_downloads_manager": true,
-        "allow_playlist_categorization": true
+        "allow_playlist_categorization": true,
+        "enable_notifications": true,
+        "enable_all_notifications": true,
+        "allowed_notification_types": [],
+        "enable_rss_feed": false,
       },
       "API": {
         "use_API_key": false,
@@ -210,7 +213,15 @@ const DEFAULT_CONFIG = {
         "twitch_client_secret": "",
         "twitch_auto_download_chat": false,
         "use_sponsorblock_API": false,
-        "generate_NFO_files": false
+        "generate_NFO_files": false,
+        "use_ntfy_API": false,
+        "ntfy_topic_URL": "",
+        "use_gotify_API": false,
+        "gotify_server_URL": "",
+        "gotify_app_token": "",
+        "use_telegram_API": false,
+        "telegram_bot_token": "",
+        "telegram_chat_id": ""
       },
       "Themes": {
         "default_theme": "default",

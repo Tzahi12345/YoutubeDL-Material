@@ -17,6 +17,7 @@
     height: 75vh;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
 ::ng-deep .mat-button-toggle-label-content {
     text-overflow: ellipsis;
     overflow: hidden;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -8,6 +8,8 @@ import { RestoreDbDialogComponent } from 'app/dialogs/restore-db-dialog/restore-
 import { UpdateTaskScheduleDialogComponent } from 'app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { PostsService } from 'app/posts.services';
 import { Task } from 'api-types';
+import { TaskSettingsComponent } from '../task-settings/task-settings.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-tasks',
@@ -29,7 +31,7 @@ export class TasksComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private postsService: PostsService, private dialog: MatDialog) { }
+  constructor(private postsService: PostsService, private dialog: MatDialog, private clipboard: Clipboard) { }
 
   ngOnInit(): void {
     if (this.postsService.initialized) {
@@ -117,6 +119,14 @@ export class TasksComponent implements OnInit {
     });
   }
 
+  openTaskSettings(task: Task): void {
+    this.dialog.open(TaskSettingsComponent, {
+      data: {
+        task: task
+      }
+    });
+  }
+
   getDBBackups(): void {
     this.postsService.getDBBackups().subscribe(res => {
       this.db_backups = res['db_backups'];
@@ -157,4 +167,24 @@ export class TasksComponent implements OnInit {
     });
   }
 
+  showError(task: Task): void {
+    const copyToClipboardEmitter = new EventEmitter<boolean>();
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        dialogTitle: $localize`Error for: ${task['title']}`,
+        dialogText: task['error'],
+        submitText: $localize`Copy to clipboard`,
+        cancelText: $localize`Close`,
+        closeOnSubmit: false,
+        onlyEmitOnDone: true,
+        doneEmitter: copyToClipboardEmitter
+      }
+    });
+    copyToClipboardEmitter.subscribe((done: boolean) => {
+      if (done) {
+        this.postsService.openSnackBar($localize`Copied to clipboard!`);
+        this.clipboard.copy(task['error']);
+      }
+    });
+  }
 }

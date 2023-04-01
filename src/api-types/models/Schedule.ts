@@ -9,6 +9,7 @@ dayOfWeek?: Array<number>;
 hour?: number;
 minute?: number;
 timestamp?: number;
+tz?: string;
 };
 };
 

@@ -13,7 +13,6 @@
 }
 
 .theme-slide-toggle {
-    top: 2px;
     left: 10px;
     position: relative;
     pointer-events: none;
@@ -25,4 +24,20 @@
 
 .top-toolbar {
     height: 64px;
+    background: unset;
+}
+
+::ng-deep .top-menu-button > span {
+    width: 85px;
+    height: 26px;
+}
+
+::ng-deep .mdc-switch {
+    outline: none !important;
+}
+
+::ng-deep .notifications-menu {
+    width: 30vw !important;
+    max-width: 100% !important;
+    min-width: 280px !important;
 }

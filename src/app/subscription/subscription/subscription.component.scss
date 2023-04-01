@@ -62,15 +62,18 @@
     left: 25px;
     position: fixed;
     bottom: 25px;
+    z-index: 99999;
 }
 
 .save-icon {
     bottom: 1px;
     position: relative;
+    z-index: 99999;
 }
 
 .watch-button {
     left: 90px;
     position: fixed;
     bottom: 25px;
+    z-index: 99999;
 }

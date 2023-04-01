@@ -1,31 +1,36 @@
 <mat-card class="login-card">
-    <mat-tab-group style="margin-bottom: 20px" [(selectedIndex)]="selectedTabIndex">
+    <mat-tab-group mat-stretch-tabs style="margin-bottom: 20px" [(selectedIndex)]="selectedTabIndex">
         <mat-tab label="Login" i18n-label="Login">
             <div style="margin-top: 10px;">
-                <mat-form-field>
-                    <input [(ngModel)]="loginUsernameInput" matInput placeholder="User name" i18n-placeholder="User name">
+                <mat-form-field style="width: 100%">
+                    <mat-label i18n="User name">User name</mat-label>
+                    <input [(ngModel)]="loginUsernameInput" matInput>
                 </mat-form-field>
             </div>
             <div>
-                <mat-form-field>
-                    <input [(ngModel)]="loginPasswordInput" (keyup.enter)="login()" type="password" matInput placeholder="Password" i18n-placeholder="Password">
+                <mat-form-field style="width: 100%">
+                    <mat-label i18n="Password">Password</mat-label>
+                    <input [(ngModel)]="loginPasswordInput" (keyup.enter)="login()" type="password" matInput>
                 </mat-form-field>
             </div>
         </mat-tab>
         <mat-tab *ngIf="registrationEnabled" label="Register" i18n-label="Register">
             <div style="margin-top: 10px;">
-                <mat-form-field>
-                    <input [(ngModel)]="registrationUsernameInput" matInput placeholder="User name" i18n-placeholder="User name">
+                <mat-form-field style="width: 100%">
+                    <mat-label i18n="User name">User name</mat-label>
+                    <input [(ngModel)]="registrationUsernameInput" matInput>
                 </mat-form-field>
             </div>
             <div>
-                <mat-form-field>
-                    <input [(ngModel)]="registrationPasswordInput" (click)="register()" type="password" matInput placeholder="Password" i18n-placeholder="Password">
+                <mat-form-field style="width: 100%">
+                    <mat-label i18n="Password">Password</mat-label>
+                    <input [(ngModel)]="registrationPasswordInput" (click)="register()" type="password" matInput>
                 </mat-form-field>
             </div>
             <div>
-                <mat-form-field>
-                    <input [(ngModel)]="registrationPasswordConfirmationInput" (click)="register()" type="password" matInput placeholder="Confirm Password" i18n-placeholder="Confirm Password">
+                <mat-form-field style="width: 100%">
+                    <mat-label i18n="Confirm Password">Confirm Password</mat-label>
+                    <input [(ngModel)]="registrationPasswordConfirmationInput" (click)="register()" type="password" matInput>
                 </mat-form-field>
             </div>
         </mat-tab>

@@ -3,6 +3,7 @@ const path = require('path');
 const youtubedl = require('youtube-dl');
 
 const config_api = require('./config');
+const archive_api = require('./archive');
 const utils = require('./utils');
 const logger = require('./logger');
 
@@ -138,28 +139,25 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
 
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     if (deleteMode && (await fs.pathExists(appendedBasePath))) {
-        if (sub.archive && (await fs.pathExists(sub.archive))) {
-            const archive_file_path = path.join(sub.archive, 'archive.txt');
-            // deletes archive if it exists
-            // TODO: Keep entries in blacklist_video.txt by moving them to a global blacklist
-            if (await fs.pathExists(archive_file_path)) {
-                await fs.unlink(archive_file_path);
-            }
-            await fs.rmdir(sub.archive);
-        }
         await fs.remove(appendedBasePath);
     }
+
+    await db_api.removeAllRecords('archives', {sub_id: sub.id});
 }
 
 async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
+    if (typeof sub === 'string') {
+        // TODO: fix bad workaround where sub is a sub_id
+        sub = await db_api.getRecord('subscriptions', {sub_id: sub});
+    }
     // TODO: combine this with deletefile
     let basePath = null;
     basePath = user_uid ? path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions')
                         : config_api.getConfigItem('ytdl_subscriptions_base_path');
-    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const name = file;
     let retrievedID = null;
+    let retrievedExtractor = null;
 
     await db_api.removeRecord('files', {uid: file_uid});
 
@@ -178,7 +176,9 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     ]);
 
     if (jsonExists) {
-        retrievedID = fs.readJSONSync(jsonPath)['id'];
+        const info_json = fs.readJSONSync(jsonPath);
+        retrievedID = info_json['id'];
+        retrievedExtractor = info_json['extractor'];
         await fs.unlink(jsonPath);
     }
 
@@ -196,11 +196,9 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
             return false;
         } else {
             // check if the user wants the video to be redownloaded (deleteForever === false)
-            if (useArchive && retrievedID) {
-                const archive_path = utils.getArchiveFolder(sub.type, user_uid, sub);
-
-                // Remove file ID from the archive file, and write it to the blacklist (if enabled)
-                await utils.deleteFileFromArchive(file_uid, sub.type, archive_path, retrievedID, deleteForever);
+            const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+            if (useArchive && !deleteForever) {
+                await archive_api.removeFromArchive(retrievedExtractor, retrievedID, sub.type, user_uid, sub.id);
             }
             return true;
         }
@@ -331,8 +329,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     else
         basePath = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
-    const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-
     let appendedBasePath = getAppendedBasePath(sub, basePath);
 
     const file_output = config_api.getConfigItem('ytdl_default_file_output') ? config_api.getConfigItem('ytdl_default_file_output') : '%(title)s';
@@ -366,21 +362,6 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
             downloadConfig.splice(original_output_index, 2);
         }
         downloadConfig.push(...customArgsArray);
-    }
-
-    let archive_dir = null;
-    let archive_path = null;
-
-    if (useArchive && !redownload) {
-        if (sub.archive) {
-            archive_dir = sub.archive;
-            if (sub.type && sub.type === 'audio') {
-                archive_path = path.join(archive_dir, 'merged_audio.txt');
-            } else {
-                archive_path = path.join(archive_dir, 'merged_video.txt');
-            }            
-        }
-        downloadConfig.push('--download-archive', archive_path);
     }
 
     if (sub.timerange && !redownload) {
@@ -425,7 +406,14 @@ async function getFilesToDownload(sub, output_jsons) {
             if (file_with_path_exists) {
                 // or maybe just overwrite???
                 logger.info(`Skipping adding file ${output_json['_filename']} for subscription ${sub.name} as a file with that path already exists.`)
+                continue;
             }
+            const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+            if (useYoutubeDLArchive) {
+                const exists_in_archive = await archive_api.existsInArchive(output_json['extractor'], output_json['id'], sub.type, sub.user_uid, sub.id);
+                if (exists_in_archive) continue;
+            }
+
             files_to_download.push(output_json);
         }
     }
@@ -444,7 +432,12 @@ async function getAllSubscriptions() {
 }
 
 async function getSubscription(subID) {
-    return await db_api.getRecord('subscriptions', {id: subID});
+    // stringify and parse because we may override the 'downloading' property
+    const sub = JSON.parse(JSON.stringify(await db_api.getRecord('subscriptions', {id: subID})));
+    // now with the download_queue, we may need to override 'downloading'
+    const current_downloads = await db_api.getRecords('download_queue', {running: true, sub_id: sub.id}, true);
+    if (!sub['downloading']) sub['downloading'] = current_downloads > 0;
+    return sub;
 }
 
 async function getSubscriptionByName(subName, user_uid = null) {

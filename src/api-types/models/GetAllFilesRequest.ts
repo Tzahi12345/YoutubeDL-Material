@@ -14,6 +14,10 @@ export type GetAllFilesRequest = {
     text_search?: string;
     file_type_filter?: FileTypeFilter;
     /**
+     * If set to true, only gets favorites
+     */
+    favorite_filter?: boolean;
+    /**
      * Include if you want to filter by subscription
      */
     sub_id?: string;

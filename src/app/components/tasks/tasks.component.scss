@@ -30,3 +30,7 @@ mat-header-cell, mat-cell {
 .rounded {
     border-radius: 16px 16px 16px 16px !important;
 }
+
+::ng-deep mat-row {
+    height: fit-content !important;
+}

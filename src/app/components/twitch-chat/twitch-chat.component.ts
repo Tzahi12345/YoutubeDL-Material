@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { DatabaseFile } from 'api-types';
 import { PostsService } from 'app/posts.services';
 
 @Component({
@@ -20,7 +21,7 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
 
   scrollContainer = null;
 
-  @Input() db_file = null;
+  @Input() db_file: DatabaseFile = null;
   @Input() sub = null;
   @Input() current_timestamp = null;
 
@@ -44,7 +45,7 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
     return position > height - threshold;
   }
 
-  scrollToBottom = (force_scroll) => {
+  scrollToBottom = (force_scroll = false) => {
     if (force_scroll || this.isUserNearBottom()) {
       this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
     }

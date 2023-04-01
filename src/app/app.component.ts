@@ -20,6 +20,8 @@ import { SettingsComponent } from './settings/settings.component';
 import { AboutDialogComponent } from './dialogs/about-dialog/about-dialog.component';
 import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-profile-dialog.component';
 import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
 
 @Component({
   selector: 'app-root',
@@ -45,8 +47,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   enableDownloadsManager = false;
 
   @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('notifications') notifications: NotificationsComponent;
   @ViewChild('hamburgerMenu', { read: ElementRef }) hamburgerMenuButton: ElementRef;
   navigator: string = null;
+
+  notification_count = 0;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
     public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
@@ -71,7 +76,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (localStorage.getItem('theme')) {
       this.setTheme(localStorage.getItem('theme'));
     }
@@ -90,15 +95,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.postsService.sidenav = this.sidenav;
   }
 
-  toggleSidenav() {
+  toggleSidenav(): void {
     this.sidenav.toggle();
   }
 
-  loadConfig() {
+  loadConfig(): void {
     // loading config
     this.topBarTitle = this.postsService.config['Extra']['title_top'];
     const themingExists = this.postsService.config['Themes'];
@@ -164,7 +169,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.componentCssClass = theme;
   }
 
-  flipTheme() {
+  flipTheme(): void {
     if (this.postsService.theme.key === 'default') {
       this.setTheme('dark');
     } else if (this.postsService.theme.key === 'dark') {
@@ -172,17 +177,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  themeMenuItemClicked(event) {
+  themeMenuItemClicked(event): void {
     this.flipTheme();
     event.stopPropagation();
   }
 
-  getSubscriptions() {
-
-  }
-
-
-  goBack() {
+  goBack(): void {
     if (!this.navigator) {
       this.router.navigate(['/home']);
     } else {
@@ -190,22 +190,40 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openSettingsDialog() {
-    const dialogRef = this.dialog.open(SettingsComponent, {
+  openSettingsDialog(): void {
+    this.dialog.open(SettingsComponent, {
       width: '80vw'
     });
   }
 
-  openAboutDialog() {
-    const dialogRef = this.dialog.open(AboutDialogComponent, {
+  openAboutDialog(): void {
+    this.dialog.open(AboutDialogComponent, {
       width: '80vw'
     });
   }
 
-  openProfileDialog() {
-    const dialogRef = this.dialog.open(UserProfileDialogComponent, {
+  openProfileDialog(): void {
+    this.dialog.open(UserProfileDialogComponent, {
       width: '60vw'
     });
+  }
+
+  openArchivesDialog(): void {
+    this.dialog.open(ArchiveViewerComponent, {
+      width: '85vw'
+    });
+  }
+
+  notificationCountUpdate(new_count: number): void {
+    this.notification_count = new_count;
+  }
+
+  notificationMenuOpened(): void {
+    this.notifications.getNotifications();
+  }
+
+  notificationMenuClosed(): void {
+    this.notifications.setNotificationsToRead();
   }
 
 }

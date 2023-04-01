@@ -33,7 +33,14 @@ exports.initialize = function () {
 
   saltRounds = 10;
 
+  // Sometimes this value is not properly typed: https://github.com/Tzahi12345/YoutubeDL-Material/issues/813
   JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
+  if (!(+JWT_EXPIRATION)) {
+    logger.warn(`JWT expiration value improperly set to ${JWT_EXPIRATION}, auto setting to 1 day.`);
+    JWT_EXPIRATION = 86400;
+  } else {
+    JWT_EXPIRATION = +JWT_EXPIRATION;
+  }
 
   SERVER_SECRET = null;
   if (db_api.users_db.get('jwt_secret').value()) {
