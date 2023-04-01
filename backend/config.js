@@ -185,7 +185,6 @@ const DEFAULT_CONFIG = {
         "default_file_output": "",
         "use_youtubedl_archive": false,
         "custom_args": "",
-        "safe_download_override": false,
         "include_thumbnail": true,
         "include_metadata": true,
         "max_concurrent_downloads": 5,
