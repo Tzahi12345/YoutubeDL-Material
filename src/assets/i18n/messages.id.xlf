@@ -2787,8 +2787,8 @@
         <note priority="1" from="description">Confirm Password</note>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="translated">kesalahan untuk <x id="url" equiv-text="download['url']"/></target>
+        <source>Error for<x id="url" equiv-text="download['url']"/></source>
+        <target state="translated">kesalahan untuk<x id="url" equiv-text="download['url']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">259</context>
@@ -4051,6 +4051,86 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="39921032161993566" datatype="html">
+        <source>Successfully created playlist!</source>
+        <target state="translated">berhasil membuat paftar putar!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2070856663109337061" datatype="html">
+        <source>ERROR: failed to create playlist!</source>
+        <target state="translated">KESALAHAN: gagal membuat daftar putar!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1812379335568847528" datatype="html">
+        <source>Subscriptions</source>
+        <target state="translated">berlangganan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4744991787069301975" datatype="html">
+        <source>Share files</source>
+        <target state="translated">berbagi file</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4278268519633335280" datatype="html">
+        <source>Use downloads manager</source>
+        <target state="translated">gunakan manager unduhan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3426988753455920032" datatype="html">
+        <source>Use tasks manager</source>
+        <target state="translated">gunakan manager tugas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5029464708330583545" datatype="html">
+        <source>Use advanced download mode</source>
+        <target state="translated">gunakan mode unduh lanjutan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="820184305380634591" datatype="html">
+        <source>Playlist successfully removed.</source>
+        <target state="translated">daftar putar berhasil dihapus.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4250042184551786923" datatype="html">
+        <source>File manager</source>
+        <target state="translated">manager file</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8525406024045742391" datatype="html">
+        <source>Settings access</source>
+        <target state="translated">akses pengaturan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">18</context>
         </context-group>
       </trans-unit>
     </body>

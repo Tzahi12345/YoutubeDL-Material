@@ -1591,7 +1591,7 @@
       </trans-unit>
       <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html">
         <source>Kill all downloads</source>
-        <target>Finalitzar totes les descàrregues</target>
+        <target state="translated">Avortar totes les descàrregues</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">175</context>
@@ -3071,8 +3071,8 @@
         <note priority="1" from="description">Installation type</note>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
-        <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target>Error a <x id="url" equiv-text="download['url']"/></target>
+        <source>Error for<x id="url" equiv-text="download['url']"/></source>
+        <target state="translated">Error a<x id="url" equiv-text="download['url']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
@@ -3393,6 +3393,754 @@
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Update task schedule</note>
+      </trans-unit>
+      <trans-unit id="39921032161993566" datatype="html">
+        <source>Successfully created playlist!</source>
+        <target state="translated">Llista de reproducció creada correctament!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2070856663109337061" datatype="html">
+        <source>ERROR: failed to create playlist!</source>
+        <target state="translated">ERROR: no s'ha pogut crear la llista de reproducció!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4250042184551786923" datatype="html">
+        <source>File manager</source>
+        <target state="translated">Gestor de fitxers</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8525406024045742391" datatype="html">
+        <source>Settings access</source>
+        <target state="translated">Configuració d'accés</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4744991787069301975" datatype="html">
+        <source>Share files</source>
+        <target state="translated">Compartir fitxers</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5029464708330583545" datatype="html">
+        <source>Use advanced download mode</source>
+        <target state="translated">Utilitza el mode de descàrrega avançat</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3426988753455920032" datatype="html">
+        <source>Use tasks manager</source>
+        <target state="translated">Utilitza el gestor de tasques</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ae9a5141f5c6bd62cee4ce837598ea8b0904e5cf" datatype="html">
+        <source>Select files</source>
+        <target state="translated">Seleccionar fitxers</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <note priority="1" from="description">Select files</note>
+      </trans-unit>
+      <trans-unit id="4050356167294261426" datatype="html">
+        <source>Delete success!</source>
+        <target state="translated">Eliminat!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">270</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8348223454028662277" datatype="html">
+        <source>OK.</source>
+        <target state="translated">OK.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">270</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">273</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">276</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7405156667148936748" datatype="html">
+        <source>Delete failed!</source>
+        <target state="translated">No s'ha pogut eliminar!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">273</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">276</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8937901770314883418" datatype="html">
+        <source>Successfully deleted file:</source>
+        <target state="translated">Fitxer suprimit correctament:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">291</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">299</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9203653061903371757" datatype="html">
+        <source>Playlist updated successfully.</source>
+        <target state="translated">La llista de reproducció s'ha actualitzat correctament.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1946323844380374711" datatype="html">
+        <source>Failed to restore database! See browser console for more info.</source>
+        <target state="translated">No s'ha pogut restaurar la base de dades! Veure la consola del navegador per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="a4a4a5f03d7d0831ccf6774094e66a9507a42b58" datatype="html">
+        <source>Clear downloads</source>
+        <target state="translated">Neteja les baixades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <note priority="1" from="description">Clear downloads</note>
+      </trans-unit>
+      <trans-unit id="3299455901271096793" datatype="html">
+        <source>Clear downloads</source>
+        <target state="translated">Neteja les baixades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5456775416888155476" datatype="html">
+        <source>Failed to resume download! See server logs for more info.</source>
+        <target state="translated">No s'ha pogut reprendre la baixada! Veure els registres del servidor per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6268791413935580107" datatype="html">
+        <source>Failed to resume all downloads! See server logs for more info.</source>
+        <target state="translated">No s'han pogut reprendre totes les baixades! Veure els registres del servidor per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">194</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="571023367671104036" datatype="html">
+        <source>Failed to restart download! See server logs for more info.</source>
+        <target state="translated">No s'ha pogut reiniciar la baixada! Veure els registres del servidor per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">202</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4529487534884306633" datatype="html">
+        <source>Failed to cancel download! See server logs for more info.</source>
+        <target state="translated">No s'ha pogut cancel·lar la baixada! Veure els registres del servidor per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">210</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1019978815798793544" datatype="html">
+        <source>Failed to retrieve logs!</source>
+        <target state="translated">No s'han pogut recuperar els registres!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2293081271355999967" datatype="html">
+        <source>Logs successfully cleared!</source>
+        <target state="translated">Els registres s'han netejat correctament!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="52e0fa8ada52c3f29774a4508582fd98250b9f93" datatype="html">
+        <source>My files</source>
+        <target state="translated">Els meus fitxers</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note priority="1" from="description">My files title</note>
+      </trans-unit>
+      <trans-unit id="6827066f436adfc56a142d5816a8be6113d73b01" datatype="html">
+        <source>No files found.</source>
+        <target state="translated">No s'han trobat fitxers.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">No files found</note>
+      </trans-unit>
+      <trans-unit id="5704ec2049d007c5f5fb495a5d8b607e68d58081" datatype="html">
+        <source>Order</source>
+        <target state="translated">Ordenar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <note priority="1" from="description">Order</note>
+      </trans-unit>
+      <trans-unit id="820184305380634591" datatype="html">
+        <source>Playlist successfully removed.</source>
+        <target state="translated">La llista de reproducció s'ha eliminat correctament.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
+          <context context-type="linenumber">100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5215119607776782829" datatype="html">
+        <source>Select downloads to clear</source>
+        <target state="translated">Seleccioneu les baixades a netejar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8485375438204712002" datatype="html">
+        <source>Finished downloads</source>
+        <target state="translated">Descàrregues finalitzades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5801924165267871854" datatype="html">
+        <source>Paused downloads</source>
+        <target state="translated">Descàrregues en pausa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">142</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e58f5716d6c08b6a841eb003c9f9774b5c5d34a9" datatype="html">
+        <source>Delete and don't download again</source>
+        <target state="translated">Suprimeix i no el tornis a baixar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">Delete forever subscription video button</note>
+      </trans-unit>
+      <trans-unit id="1709839462010459086" datatype="html">
+        <source>Cookies successfully uploaded!</source>
+        <target state="translated">Les galetes s'han carregat correctament!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c1b7e6d75ff4285c7636c67e5ef259629b81725b" datatype="html">
+        <source>Confirm Password</source>
+        <target state="translated">Confirmeu la contrasenya</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/login/login.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+        <note priority="1" from="description">Confirm Password</note>
+      </trans-unit>
+      <trans-unit id="87406377200084623" datatype="html">
+        <source>Logs copied to clipboard!</source>
+        <target state="translated">Registres copiats al porta-retalls!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4516710756538206828" datatype="html">
+        <source>Failed to clear logs!</source>
+        <target state="translated">No s'han pogut netejar els registres!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1812379335568847528" datatype="html">
+        <source>Subscriptions</source>
+        <target state="translated">Subscripcions</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4278268519633335280" datatype="html">
+        <source>Use downloads manager</source>
+        <target state="translated">Utilitza el gestor de descàrregues</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="880407735794041263" datatype="html">
+        <source>Download failed.</source>
+        <target state="translated">La baixada ha fallat.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
+          <context context-type="linenumber">106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3481862581074838726" datatype="html">
+        <source>VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"</source>
+        <target state="translated">L'URL de VOD d'aquest vídeo no és compatible. L'identificador de VOD ha de ser posterior a "twitch.tv/videos/"</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
+          <context context-type="linenumber">99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7157191502004604261" datatype="html">
+        <source>Chat could not be downloaded.</source>
+        <target state="translated">No s'ha pogut baixar el xat.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2159130950882492111" datatype="html">
+        <source>Cancel</source>
+        <target state="translated">_Cancel·la</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/confirm-dialog/confirm-dialog.component.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3480433876298276350" datatype="html">
+        <source>Database successfully restored!</source>
+        <target state="translated">La base de dades s'ha restaurat correctament!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="643438049907907768" datatype="html">
+        <source>Failed to restore database! See logs for more info.</source>
+        <target state="translated">No s'ha pogut restaurar la base de dades! Veure els registres per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4960870191807928282" datatype="html">
+        <source>Sharing enabled.</source>
+        <target state="translated">Ús compartit habilitat.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2720327817780634026" datatype="html">
+        <source>Failed to enable sharing.</source>
+        <target state="translated">No s'ha pogut habilitar l'ús compartit.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2859348955905483094" datatype="html">
+        <source>Failed to enable sharing - server error.</source>
+        <target state="translated">No s'ha pogut activar l'ús compartit: error del servidor.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7840375760456214518" datatype="html">
+        <source>Failed to disable sharing.</source>
+        <target state="translated">No s'ha pogut desactivar l'ús compartit.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8692976466689769553" datatype="html">
+        <source>Failed to disable sharing - server error.</source>
+        <target state="translated">No s'ha pogut desactivar l'ús compartit: error del servidor.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3561468911579213356" datatype="html">
+        <source>Sharing disabled.</source>
+        <target state="translated">Compartició desactivada.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3544790314111256717" datatype="html">
+        <source>ERROR:</source>
+        <target state="translated">ERROR:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5397815846940616259" datatype="html">
+        <source>You must specify an amount of time</source>
+        <target state="translated">Heu d'especificar una quantitat de temps</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2876893175497409225" datatype="html">
+        <source>Update failed. Check logs for more details.</source>
+        <target state="translated">L'actualització ha fallat. Comprova els registres per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3317b8688eb2cfabc4021cd7b2926b32f3864ad2" datatype="html">
+        <source>Choose a date</source>
+        <target state="translated">Tria una data</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <note priority="1" from="description">Choose a date</note>
+      </trans-unit>
+      <trans-unit id="d49d5d6786b69d140e20cfddfe29690a19641a88" datatype="html">
+        <source>Thumbnail path</source>
+        <target state="translated">Camí de la miniatura</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">Thumbnail path</note>
+      </trans-unit>
+      <trans-unit id="f4003b626fcbf3a871778d4dba166e109d02f87c" datatype="html">
+        <source>Thumbnail URL</source>
+        <target state="translated">URL de les miniatures</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <note priority="1" from="description">Thumbnail URL</note>
+      </trans-unit>
+      <trans-unit id="22bac71dbdc1ac62607135994f81cca8094cb251" datatype="html">
+        <source>Upload date</source>
+        <target state="translated">Data de càrrega</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <note priority="1" from="description">Upload date</note>
+      </trans-unit>
+      <trans-unit id="f8c7be184fefd6750e4e5d0c7a90e74721c58f8a" datatype="html">
+        <source>Uploader</source>
+        <target state="translated">Carregador</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">Uploader</note>
+      </trans-unit>
+      <trans-unit id="607de17c2a755f65775881c19e276e7c933bcf94" datatype="html">
+        <source>Category</source>
+        <target state="translated">Categoria</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+        <note priority="1" from="description">Category</note>
+      </trans-unit>
+      <trans-unit id="989f5aa799ee9672675d68109bff29d1d88ebd49" datatype="html">
+        <source>Local view count</source>
+        <target state="translated">Recompte de visualitzacions locals</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+        <note priority="1" from="description">Local view count</note>
+      </trans-unit>
+      <trans-unit id="3f741a2c015bb728088b630296ca401e823c6af8" datatype="html">
+        <source>View count</source>
+        <target state="translated">Recompte de visualitzacions</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">View count</note>
+      </trans-unit>
+      <trans-unit id="9fc54db2830fbbd332b1adebe28e9283069107ef" datatype="html">
+        <source>Audio bitrate:</source>
+        <target state="translated">Taxa de bits d'àudio:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="description">Video audio bitrate property</note>
+      </trans-unit>
+      <trans-unit id="9fa37704969eeebd496a172c5077370f569df3ae" datatype="html">
+        <source>Resolution:</source>
+        <target state="translated">Resolució:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+        <note priority="1" from="description">Video resolution property</note>
+      </trans-unit>
+      <trans-unit id="2734512985872312443" datatype="html">
+        <source>Failed to get file information from the server.</source>
+        <target state="translated">No s'ha pogut obtenir informació del fitxer del servidor.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/player/player.component.ts</context>
+          <context context-type="linenumber">149</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4c9a15ab7fb3dce1002ea7aea4ecada3c1ee12e9" datatype="html">
+        <source>Generating an ID/secret is easy!</source>
+        <target state="translated">Generar un ID/secret és fàcil!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">267</context>
+        </context-group>
+        <note priority="1" from="description">Twitch Client ID setting hint</note>
+      </trans-unit>
+      <trans-unit id="5d78fe9ba69a8710613d3f7c35b22e9c8226e4dc" datatype="html">
+        <source>Twitch Client ID</source>
+        <target state="translated">ID de client de Twitch</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">266</context>
+        </context-group>
+        <note priority="1" from="description">Twitch Client ID setting placeholder</note>
+      </trans-unit>
+      <trans-unit id="8506540da14d205ea092b4c856e242ed7f500643" datatype="html">
+        <source>Twitch Client Secret</source>
+        <target state="translated">Secret client de Twitch</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">272</context>
+        </context-group>
+        <note priority="1" from="description">Twitch Client Secret setting placeholder</note>
+      </trans-unit>
+      <trans-unit id="4604336107574138791" datatype="html">
+        <source>Chrome users must drag the 'Alternate URL' link to your bookmarks.</source>
+        <target state="translated">Els usuaris de Chrome han d'arrossegar l'enllaç "URL alternatiu" a les adreces d'interès.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">237</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9208873922277364009" datatype="html">
+        <source>Failed to update categories!</source>
+        <target state="translated">No s'han pogut actualitzar les categories!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">134</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7180231139026789468" datatype="html">
+        <source>Language successfully changed! Reload to update the page.</source>
+        <target state="translated">L'idioma ha canviat correctament! Torna a carregar per a actualitzar la pàgina.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">209</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1942965859829798388" datatype="html">
+        <source>Restarting!</source>
+        <target state="translated">Reiniciant!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">307</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4257962986336738751" datatype="html">
+        <source>Successfully killed all downloads!</source>
+        <target state="translated">S'han avortat totes les descàrregues correctament!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">292</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4021495815084152271" datatype="html">
+        <source>Connection failed! Error:</source>
+        <target state="translated">La connexió ha fallat! Error:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">359</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6018050954136387828" datatype="html">
+        <source>Connection successful!</source>
+        <target state="translated">Connexió correcta!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">357</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6224607866493148072" datatype="html">
+        <source>Failed to restart the server.</source>
+        <target state="translated">No s'ha pogut reiniciar el servidor.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">309</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6123898845299902958" datatype="html">
+        <source>Successfully transfered DB! Reloading info...</source>
+        <target state="translated">Base de dades transferida correctament! S'està tornant a carregar la informació...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">340</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3961621815065792326" datatype="html">
+        <source>Failed to clear finished downloads!</source>
+        <target state="translated">No s'han pogut esborrar les descàrregues acabades!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5223827577229167333" datatype="html">
+        <source>Failed to pause all downloads! See server logs for more info.</source>
+        <target state="translated">No s'han pogut aturar totes les descàrregues. Veure els registres del servidor per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2600933489084742998" datatype="html">
+        <source>Failed to kill all downloads! Check logs for details.</source>
+        <target state="translated">No s'han pogut avortar totes les baixades! Consulta els registres per a informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">295</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">299</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5823550543348347814" datatype="html">
+        <source>Cleared downloads!</source>
+        <target state="translated">Descàrregues suprimides!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">159</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8314249599019746316" datatype="html">
+        <source>Download failed!</source>
+        <target state="translated">La descàrrega ha fallat!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">387</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.ts</context>
+          <context context-type="linenumber">775</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2723988842145709249" datatype="html">
+        <source>Errored downloads</source>
+        <target state="translated">Descàrregues amb errors</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6789263921624845085" datatype="html">
+        <source>Failed to load playlist!</source>
+        <target state="translated">No s'ha pogut carregar la llista de reproducció!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/player/player.component.ts</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/player/player.component.ts</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1716030487077666916" datatype="html">
+        <source>Failed to transfer DB -- API call failed. See browser logs for details.</source>
+        <target state="translated">No s'ha pogut transferir DB -- La trucada API ha fallat. Veure els registres del navegador per a informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">347</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7114033980971410157" datatype="html">
+        <source>Failed to pause download! See server logs for more info.</source>
+        <target state="translated">No s'ha pogut posar en pausa la baixada! Veure els registres del servidor per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">170</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5681417617361245213" datatype="html">
+        <source>Failed to transfer DB -- transfer was aborted. Error:</source>
+        <target state="translated">No s'ha pogut transferir la base de dades; la transferència s'ha avortat. Error:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">343</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6519219215739537829" datatype="html">
+        <source>Connection failed! Error: Server error. See logs for more info.</source>
+        <target state="translated">La connexió ha fallat! Error: Error del servidor. Veure registres per a més informació.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">363</context>
+        </context-group>
       </trans-unit>
     </body>
   </file>
