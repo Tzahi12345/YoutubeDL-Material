@@ -28,6 +28,25 @@ if (db_api.database_initialized) {
     });
 }
 
+/*
+
+This file handles all the downloading functionality.
+
+To download a file, we go through 4 steps. Here they are with their respective index & function:
+
+0: Create the download
+ - createDownload()
+1: Get info for the download (we need this step for categories and archive functionality)
+ - collectInfo()
+2: Download the file
+ - downloadQueuedFile()
+3: Complete
+ - N/A
+
+We use checkDownloads() to move downloads through the steps and call their respective functions.
+
+*/
+
 exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null, prefetched_info = null) => {
     return await mutex.runExclusive(async () => {
         const download = {
