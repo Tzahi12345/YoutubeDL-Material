@@ -567,14 +567,7 @@ function loadConfigValues() {
     url_domain = new URL(url);
 
     let logger_level = config_api.getConfigItem('ytdl_logger_level');
-    const possible_levels = ['error', 'warn', 'info', 'verbose', 'debug'];
-    if (!possible_levels.includes(logger_level)) {
-        logger.error(`${logger_level} is not a valid logger level! Choose one of the following: ${possible_levels.join(', ')}.`)
-        logger_level = 'info';
-    }
-    logger.level = logger_level;
-    winston.loggers.get('console').level = logger_level;
-    logger.transports[2].level = logger_level;
+    utils.updateLoggerLevel(logger_level);
 }
 
 function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
