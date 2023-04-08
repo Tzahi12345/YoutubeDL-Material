@@ -6,7 +6,7 @@
 [![GitHub issues badge](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
 [![License badge](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
 
-YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 13](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 15](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
 Now with [Docker](#Docker) support!
 
@@ -14,7 +14,7 @@ Now with [Docker](#Docker) support!
 
 ## Getting Started
 
-Check out the prerequisites, and go to the installation section. Easy as pie!
+Check out the prerequisites, and go to the [installation](#Installing) section. Easy as pie!
 
 Here's an image of what it'll look like once you're done:
 
@@ -51,6 +51,8 @@ Optional dependencies:
 * [tcd](https://github.com/PetterKraabol/Twitch-Chat-Downloader) (for downloading Twitch VOD chats)
 
 ### Installing
+
+If you are using Docker, skip to the [Docker](#Docker) section. Otherwise, continue:
 
 1. First, download the [latest release](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest)!
 
