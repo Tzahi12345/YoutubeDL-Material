@@ -221,7 +221,8 @@ const DEFAULT_CONFIG = {
         "gotify_app_token": "",
         "use_telegram_API": false,
         "telegram_bot_token": "",
-        "telegram_chat_id": ""
+        "telegram_chat_id": "",
+        "webhook_URL": ""
       },
       "Themes": {
         "default_theme": "default",

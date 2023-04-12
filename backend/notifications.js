@@ -36,20 +36,28 @@ const NOTIFICATION_TYPE_TO_THUMBNAIL = {
 exports.sendNotification = async (notification) => {
     // info necessary if we are using 3rd party APIs
     const type = notification['type'];
-    const title = NOTIFICATION_TYPE_TO_TITLE[type];
-    const body = NOTIFICATION_TYPE_TO_BODY[type](notification);
-    const url = NOTIFICATION_TYPE_TO_URL[type](notification);
-    const thumbnail = NOTIFICATION_TYPE_TO_THUMBNAIL[type](notification);
+
+    const data = {
+        title: NOTIFICATION_TYPE_TO_TITLE[type],
+        body: NOTIFICATION_TYPE_TO_BODY[type](notification),
+        type: type,
+        url: NOTIFICATION_TYPE_TO_URL[type](notification),
+        thumbnail: NOTIFICATION_TYPE_TO_THUMBNAIL[type](notification)
+    }
 
     if (config_api.getConfigItem('ytdl_use_ntfy_API') && config_api.getConfigItem('ytdl_ntfy_topic_url')) {
-        sendNtfyNotification(body, title, type, url, thumbnail);
+        sendNtfyNotification(data);
     }
     if (config_api.getConfigItem('ytdl_use_gotify_API') && config_api.getConfigItem('ytdl_gotify_server_url') && config_api.getConfigItem('ytdl_gotify_app_token')) {
-        sendGotifyNotification(body, title, type, url, thumbnail);
+        sendGotifyNotification(data);
     }
     if (config_api.getConfigItem('ytdl_use_telegram_API') && config_api.getConfigItem('ytdl_telegram_bot_token') && config_api.getConfigItem('ytdl_telegram_chat_id')) {
-        sendTelegramNotification(body, title, type, url, thumbnail);
+        sendTelegramNotification(data);
     }
+    if (config_api.getConfigItem('ytdl_webhook_url')) {
+        sendGenericNotification(data);
+    }
+
     await db_api.insertRecordIntoTable('notifications', notification);
     return notification;
 }
@@ -95,7 +103,7 @@ function notificationEnabled(type) {
     return config_api.getConfigItem('ytdl_enable_notifications') && (config_api.getConfigItem('ytdl_enable_all_notifications') || config_api.getConfigItem('ytdl_allowed_notification_types').includes(type));
 }
 
-function sendNtfyNotification(body, title, type, url, thumbnail) {
+function sendNtfyNotification({body, title, type, url, thumbnail}) {
     logger.verbose('Sending notification to ntfy');
     fetch(config_api.getConfigItem('ytdl_ntfy_topic_url'), {
         method: 'POST',
@@ -109,7 +117,7 @@ function sendNtfyNotification(body, title, type, url, thumbnail) {
     });
 }
 
-async function sendGotifyNotification(body, title, type, url, thumbnail) {
+async function sendGotifyNotification({body, title, type, url, thumbnail}) {
     logger.verbose('Sending notification to gotify');
     await gotify({
         server: config_api.getConfigItem('ytdl_gotify_server_url'),
@@ -127,11 +135,23 @@ async function sendGotifyNotification(body, title, type, url, thumbnail) {
       });
 }
 
-async function sendTelegramNotification(body, title, type, url, thumbnail) {
+async function sendTelegramNotification({body, title, type, url, thumbnail}) {
     logger.verbose('Sending notification to Telegram');
     const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
     const chat_id = config_api.getConfigItem('ytdl_telegram_chat_id');
     const bot = new TelegramBot(bot_token);
     if (thumbnail) await bot.sendPhoto(chat_id, thumbnail);
     bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
+}
+
+function sendGenericNotification(data) {
+    const webhook_url = config_api.getConfigItem('ytdl_webhook_url');
+    logger.verbose(`Sending generic notification to ${webhook_url}`);
+    fetch(webhook_url, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data),
+    });
 }
