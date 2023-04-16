@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CMD="npm start"
+CMD="npm start && pm2 start"
 
 # if the first arg starts with "-" pass it to program
 if [ "${1#-}" != "$1" ]; then
