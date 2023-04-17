@@ -698,9 +698,15 @@ exports.getRecords = async (table, filter_obj = null, return_count = false, sort
 
 // Update
 
-exports.updateRecord = async (table, filter_obj, update_obj) => {
+exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false) => {
     // local db override
     if (using_local_db) {
+        if (nested_mode) {
+            // if object is nested we need to handle it differently
+            update_obj = utils.convertFlatObjectToNestedObject(update_obj);
+            exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').merge(update_obj).write();
+            return true;
+        }
         exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').assign(update_obj).write();
         return true;
     }
@@ -719,6 +725,18 @@ exports.updateRecords = async (table, filter_obj, update_obj) => {
     }
 
     const output = await database.collection(table).updateMany(filter_obj, {$set: update_obj});
+    return !!(output['result']['ok']);
+}
+
+exports.removePropertyFromRecord = async (table, filter_obj, remove_obj) => {
+    // local db override
+    if (using_local_db) {
+        const props_to_remove = Object.keys(remove_obj);
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').unset(props_to_remove).write();
+        return true;
+    }
+
+    const output = await database.collection(table).updateOne(filter_obj, {$unset: remove_obj});
     return !!(output['result']['ok']);
 }
 

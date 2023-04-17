@@ -101,7 +101,7 @@ exports.setupTasks = async () => {
     const tasks_keys = Object.keys(TASKS);
     for (let i = 0; i < tasks_keys.length; i++) {
         const task_key = tasks_keys[i];
-        const mergedDefaultOptions = Object.assign(defaultOptions['all'], defaultOptions[task_key] || {});
+        const mergedDefaultOptions = Object.assign({}, defaultOptions['all'], defaultOptions[task_key] || {});
         const task_in_db = await db_api.getRecord('tasks', {key: task_key});
         if (!task_in_db) {
             // insert task metadata into table if missing, eventually move title to UI
@@ -115,14 +115,16 @@ exports.setupTasks = async () => {
                 data: null,
                 error: null,
                 schedule: null,
-                options: Object.assign(defaultOptions['all'], defaultOptions[task_key] || {})
+                options: Object.assign({}, defaultOptions['all'], defaultOptions[task_key] || {})
             });
         } else {
             // verify all options exist in task
             for (const key of Object.keys(mergedDefaultOptions)) {
+                const option_key = `options.${key}`;
+                // Remove any potential mangled option keys (#861)
+                await db_api.removePropertyFromRecord('tasks', {key: task_key}, {[option_key]: true});
                 if (!(task_in_db.options && task_in_db.options.hasOwnProperty(key))) {
-                    const option_key = `options.${key}`
-                    await db_api.updateRecord('tasks', {key: task_key}, {[option_key]: mergedDefaultOptions[key]});
+                    await db_api.updateRecord('tasks', {key: task_key}, {[option_key]: mergedDefaultOptions[key]}, true);
                 }
             }
 

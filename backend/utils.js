@@ -501,6 +501,23 @@ exports.updateLoggerLevel = (new_logger_level) => {
     logger.transports[2].level = new_logger_level;
 }
 
+exports.convertFlatObjectToNestedObject = (obj) => {
+    const result = {};
+    for (const key in obj) {
+      const nestedKeys = key.split('.');
+      let currentObj = result;
+      for (let i = 0; i < nestedKeys.length; i++) {
+        if (i === nestedKeys.length - 1) {
+          currentObj[nestedKeys[i]] = obj[key];
+        } else {
+          currentObj[nestedKeys[i]] = currentObj[nestedKeys[i]] || {};
+          currentObj = currentObj[nestedKeys[i]];
+        }
+      }
+    }
+    return result;
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {
