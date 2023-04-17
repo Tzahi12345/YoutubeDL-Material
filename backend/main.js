@@ -1,26 +1,40 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const { spawn } = require('child_process');
 
 let win;
 
 function createWindow() {
-  win = new BrowserWindow({ width: 800, height: 600 });
+  win = new BrowserWindow(
+    {
+      width: 800,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: true
+      }
+    });
 
   // load the dist folder from Angular
-  win.loadURL(
-    url.format({
-      pathname: path.join(__dirname, `/dist/index.html`),
-      protocol: 'file:',
-      slashes: true
-    })
-  );
+  win.loadURL('http://localhost:17442')
 
   // The following is optional and will open the DevTools:
   // win.webContents.openDevTools()
 
   win.on('closed', () => {
     win = null;
+  });
+
+  const serverProcess = spawn('node', ['app.js']); //, {cwd: 'backend'});
+
+  // Log the server output to the console
+  serverProcess.stdout.on('data', (data) => {
+    console.log(`Server output: ${data}`);
+  });
+
+  // Log any errors to the console
+  serverProcess.stderr.on('data', (data) => {
+    console.error(`Server error: ${data}`);
   });
 }
 

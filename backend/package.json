@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "backend for YoutubeDL-Material",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2-runtime --raw pm2.config.js",
@@ -58,5 +58,8 @@
     "winston": "^3.7.2",
     "xmlbuilder2": "^3.0.2",
     "youtube-dl": "^3.0.2"
+  },
+  "devDependencies": {
+    "electron": "^24.1.2"
   }
 }
