@@ -66,7 +66,7 @@
     "@typescript-eslint/parser": "^4.29.0",
     "ajv": "^7.2.4",
     "codelyzer": "^6.0.0",
-    "electron": "^19.1.9",
+    "electron": "^24.1.2",
     "eslint": "^7.32.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
