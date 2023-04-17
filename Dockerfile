@@ -52,16 +52,17 @@ RUN npm config set strict-ssl false && \
 FROM base
 RUN npm install -g pm2 && \
     apt update && \
-    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install tcd pycryptodomex
+RUN pip install tdh-tcd pycryptodomex
 WORKDIR /app
 # User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
 COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
+RUN chown $UID:$GID .
 RUN chmod +x /app/fix-scripts/*.sh
 # Add some persistence data
 #VOLUME ["/app/appdata"]
