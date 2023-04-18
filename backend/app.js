@@ -2040,7 +2040,7 @@ app.post('/api/getNotifications', optionalJwt, async (req, res) => {
 
 // set notifications to read
 app.post('/api/setNotificationsToRead', optionalJwt, async (req, res) => {
-    const uuid = req.user.uid;
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     const success = await db_api.updateRecords('notifications', {user_uid: uuid}, {read: true});
 
@@ -2048,7 +2048,7 @@ app.post('/api/setNotificationsToRead', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/deleteNotification', optionalJwt, async (req, res) => {
-    const uid = req.body.uid;
+    const uid = req.isAuthenticated() ? req.user.uid : null;
 
     const success = await db_api.removeRecord('notifications', {uid: uid});
 
@@ -2056,7 +2056,7 @@ app.post('/api/deleteNotification', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/deleteAllNotifications', optionalJwt, async (req, res) => {
-    const uuid = req.user.uid;
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     const success = await db_api.removeAllRecords('notifications', {user_uid: uuid});
 
