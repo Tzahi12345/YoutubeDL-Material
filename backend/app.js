@@ -2035,7 +2035,7 @@ app.post('/api/changeRolePermissions', optionalJwt, async (req, res) => {
 // notifications
 
 app.post('/api/getNotifications', optionalJwt, async (req, res) => {
-    const uuid = req.user.uid;
+    const uuid = req.isAuthenticated() ? req.user.uid : null;
 
     const notifications = await db_api.getRecords('notifications', {user_uid: uuid});
 
