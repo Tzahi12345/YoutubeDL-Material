@@ -19,6 +19,7 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
+      "icon": "../src/assets/images/logo_512px.png",
       "target": "dmg"
     },
     "win": {
