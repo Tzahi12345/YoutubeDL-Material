@@ -6,7 +6,39 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2-runtime --raw pm2.config.js",
-    "debug": "set YTDL_MODE=debug && node app.js"
+    "debug": "set YTDL_MODE=debug && node app.js",
+    "electron": "electron main.js",
+    "pack": "electron-builder --dir",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "youtubedl.material",
+    "productName": "YoutubeDL-Material GUI",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "../src/favicon.ico"
+    },
+    "files": [
+      "!audio/*",
+      "!video/*",
+      "!users/*",
+      "!subscriptions/*",
+      "!appdata/*",
+      "*.js",
+      "authentication/auth.js",
+      "main.js",
+      "public/**/*",
+      "ffmpeg*",
+      "ffprobe*"
+    ],
+    "asar": false
   },
   "repository": {
     "type": "git",
@@ -19,6 +51,7 @@
   },
   "homepage": "",
   "dependencies": {
+    "app-root-path": "^3.1.0",
     "archiver": "^5.3.1",
     "async": "^3.2.3",
     "async-mutex": "^0.3.1",
@@ -26,6 +59,7 @@
     "bcryptjs": "^2.4.0",
     "compression": "^1.7.4",
     "config": "^3.2.3",
+    "electron-root-path": "^1.1.0",
     "express": "^4.17.3",
     "feed": "^4.2.2",
     "fluent-ffmpeg": "^2.1.2",
@@ -60,6 +94,8 @@
     "youtube-dl": "^3.0.2"
   },
   "devDependencies": {
-    "electron": "^24.1.2"
+    "electron": "^24.1.2",
+    "electron-builder": "^23.6.0",
+    "electron-packager": "^17.1.1"
   }
 }

@@ -1,3 +1,7 @@
+// TODO: ignore this if not in electron
+const rootPath = require('electron-root-path').rootPath;
+process.chdir(rootPath);
+
 const { uuid } = require('uuidv4');
 const fs = require('fs-extra');
 const { promisify } = require('util');
