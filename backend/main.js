@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const elogger = require('electron-log');
 const { spawn } = require('child_process');
 
 let win;
@@ -44,6 +45,13 @@ function createMainWindow() {
   });
 }
 
+function loadPage() {
+    splashWindow.close()
+    // load the dist folder from Angular
+    win.loadURL('http://localhost:17442')
+    win.show()
+}
+
 function createWindow() {
   serverProcess = spawn('node', [path.join(__dirname, 'app.js')]);
 
@@ -53,10 +61,7 @@ function createWindow() {
   // Log the server output to the console
   serverProcess.stdout.on('data', (data) => {
     if (data.toString().includes('started on PORT')) {
-      splashWindow.close()
-      // load the dist folder from Angular
-      win.loadURL('http://localhost:17442')
-      win.show()
+      loadPage();
     }
     console.log(`Server output: ${data}`);
   });
@@ -64,6 +69,11 @@ function createWindow() {
   // Log any errors to the console
   serverProcess.stderr.on('data', (data) => {
     console.error(`Server error: ${data}`);
+    const error = data.toString();
+    if (error.includes('EADDRINUSE')) {
+      loadPage();
+    }
+    elogger.error(error);
   });
 
   process.on('uncaughtException', (error) => {
