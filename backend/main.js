@@ -53,8 +53,9 @@ function loadPage() {
 }
 
 function createWindow() {
+  elogger.info('Spawning server.')
   serverProcess = spawn('node', [path.join(__dirname, 'app.js')]);
-
+  elogger.info('Done spawning!')
   createMainWindow();
   createSplashWindow();
 
@@ -80,6 +81,7 @@ function createWindow() {
 
   process.on('uncaughtException', (error) => {
     console.error('Uncaught exception:', error);
+    elogger.error(error);
   });
 }
 
