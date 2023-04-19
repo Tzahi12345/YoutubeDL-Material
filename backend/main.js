@@ -4,6 +4,7 @@ const { spawn } = require('child_process');
 
 let win;
 let splashWindow;
+let serverProcess;
 
 function createSplashWindow() {
   splashWindow = new BrowserWindow({
@@ -44,7 +45,7 @@ function createMainWindow() {
 }
 
 function createWindow() {
-  const serverProcess = spawn('node', [path.join(__dirname, 'app.js')]); //, {cwd: 'backend'});
+  serverProcess = spawn('node', [path.join(__dirname, 'app.js')]);
 
   createMainWindow();
   createSplashWindow();
@@ -76,6 +77,10 @@ app.on('ready', createWindow);
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+  if (serverProcess) {
+    serverProcess.stdin.pause();
+    serverProcess.kill();
   }
 });
 
