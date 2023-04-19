@@ -60,10 +60,12 @@ function createWindow() {
 
   // Log the server output to the console
   serverProcess.stdout.on('data', (data) => {
-    if (data.toString().includes('started on PORT')) {
+    const data_str = data.toString();
+    if (data_str.includes('started on PORT')) {
       loadPage();
     }
     console.log(`Server output: ${data}`);
+    elogger.info(data_str);
   });
 
   // Log any errors to the console
