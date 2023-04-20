@@ -1,13 +1,12 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const elogger = require('electron-log');
-const { spawn } = require('child_process');
+const server = require('./app');
 
 let win;
 let splashWindow;
-let serverProcess;
 
-function createSplashWindow() {
+async function createSplashWindow() {
   splashWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -17,7 +16,7 @@ function createSplashWindow() {
       nodeIntegration: true
     }
   })
-  splashWindow.loadFile('public/assets/splash.html')
+  await splashWindow.loadFile('public/assets/splash.html')
   splashWindow.on('closed', () => {
     splashWindow = null
   })
@@ -52,37 +51,14 @@ function loadPage() {
     win.show()
 }
 
-function createWindow() {
+async function createWindow() {
+  await createSplashWindow();
   elogger.info('Spawning server.')
-  serverProcess = spawn('node', [path.join(__dirname, 'app.js')]);
+  // serverProcess = spawn('node', [path.join(__dirname, 'app.js')]);
+  await server.startServer();
   elogger.info('Done spawning!')
   createMainWindow();
-  createSplashWindow();
-
-  // Log the server output to the console
-  serverProcess.stdout.on('data', (data) => {
-    const data_str = data.toString();
-    if (data_str.includes('started on PORT')) {
-      loadPage();
-    }
-    console.log(`Server output: ${data}`);
-    elogger.info(data_str);
-  });
-
-  // Log any errors to the console
-  serverProcess.stderr.on('data', (data) => {
-    console.error(`Server error: ${data}`);
-    const error = data.toString();
-    if (error.includes('EADDRINUSE')) {
-      loadPage();
-    }
-    elogger.error(error);
-  });
-
-  process.on('uncaughtException', (error) => {
-    console.error('Uncaught exception:', error);
-    elogger.error(error);
-  });
+  loadPage();
 }
 
 app.on('ready', createWindow);
@@ -91,10 +67,6 @@ app.on('ready', createWindow);
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
-  }
-  if (serverProcess) {
-    serverProcess.stdin.pause();
-    serverProcess.kill();
   }
 });
 

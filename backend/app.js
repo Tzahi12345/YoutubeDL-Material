@@ -60,48 +60,7 @@ let debugMode = process.env.YTDL_MODE === 'debug';
 
 const admin_token = '4241b401-7236-493e-92b5-b72696b9d853';
 
-// logging setup
-
-config_api.initialize();
-db_api.initialize(db, users_db);
-auth_api.initialize(db_api);
-
-// Set some defaults
-db.defaults(
-    {
-        playlists: [],
-        files: [],
-        configWriteFlag: false,
-        downloads: {},
-        subscriptions: [],
-        files_to_db_migration_complete: false,
-        tasks_manager_role_migration_complete: false,
-        archives_migration_complete: false
-}).write();
-
-users_db.defaults(
-    {
-        users: [],
-        roles: {
-            "admin": {
-                "permissions": [
-                    'filemanager',
-                    'settings',
-                    'subscriptions',
-                    'sharing',
-                    'advanced_download',
-                    'downloads_manager'
-                ]
-            }, "user": {
-                "permissions": [
-                    'filemanager',
-                    'subscriptions',
-                    'sharing'
-                ]
-            }
-        }
-    }
-).write();
+// required initialization
 
 // config values
 let url = null;
@@ -153,19 +112,61 @@ if (fs.existsSync('version.json')) {
     version_info = {'type': 'N/A', 'tag': 'N/A', 'commit': 'N/A', 'date': 'N/A'};
 }
 
-// don't overwrite config if it already happened.. NOT
-// let alreadyWritten = db.get('configWriteFlag').value();
+exports.initialize = () => {
+    config_api.initialize();
+    db_api.initialize(db, users_db);
+    auth_api.initialize(db_api);
 
-// checks if config exists, if not, a config is auto generated
-config_api.configExistsCheck();
+    // Set some defaults
+    db.defaults(
+        {
+            playlists: [],
+            files: [],
+            configWriteFlag: false,
+            downloads: {},
+            subscriptions: [],
+            files_to_db_migration_complete: false,
+            tasks_manager_role_migration_complete: false,
+            archives_migration_complete: false
+    }).write();
 
-setAndLoadConfig();
+    users_db.defaults(
+        {
+            users: [],
+            roles: {
+                "admin": {
+                    "permissions": [
+                        'filemanager',
+                        'settings',
+                        'subscriptions',
+                        'sharing',
+                        'advanced_download',
+                        'downloads_manager'
+                    ]
+                }, "user": {
+                    "permissions": [
+                        'filemanager',
+                        'subscriptions',
+                        'sharing'
+                    ]
+                }
+            }
+        }
+    ).write();
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+    // checks if config exists, if not, a config is auto generated
+    config_api.configExistsCheck();
 
-// use passport
-app.use(auth_api.passport.initialize());
+    setAndLoadConfig();
+
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+
+    // use passport
+    app.use(auth_api.passport.initialize());
+}
+
+exports.initialize();
 
 // actual functions
 
@@ -255,7 +256,7 @@ async function simplifyDBFileStructure() {
     return true;
 }
 
-async function startServer() {
+exports.startServer = async () => {
     if (process.env.USING_HEROKU && process.env.PORT) {
         // default to heroku port if using heroku
         backendPort = process.env.PORT || backendPort;
@@ -548,7 +549,9 @@ async function loadConfig() {
     }
 
     // start the server here
-    startServer();
+    if (typeof require !== 'undefined' && require.main === module) {
+        exports.startServer();
+    }
 
     return true;
 }
@@ -1643,6 +1646,8 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
     }
     if (!fs.existsSync(file_path)) {
         logger.error(`File ${file_path} could not be found! UID: ${uid}, ID: ${file_obj.id}`);
+        res.sendStatus(404);
+        return;
     }
     const stat = fs.statSync(file_path);
     const fileSize = stat.size;
