@@ -78,5 +78,5 @@ app.on('activate', () => {
 });
 
 process.on('uncaughtException', (error) => {
-  elogger.info(error.message);
+  elogger.error(error.message);
 });
