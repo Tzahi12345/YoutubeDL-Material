@@ -76,3 +76,7 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+process.on('uncaughtException', (error) => {
+  elogger.info(error.message);
+});
