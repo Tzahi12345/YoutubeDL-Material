@@ -47,6 +47,15 @@ RUN npm config set strict-ssl false && \
     npm install --prod && \
     ls -al
 
+FROM base as python
+WORKDIR /app
+COPY docker-utils/GetTwitchDownloader.py .
+RUN apt update && \
+    apt install -y --no-install-recommends python3-minimal python-is-python3 python3-pip && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+RUN pip install PyGithub, requests
+RUN python GetTwitchDownloader.py
 
 # Final image
 FROM base
@@ -57,8 +66,6 @@ RUN npm install -g pm2 && \
     rm -rf /var/lib/apt/lists/*
 RUN pip install pycryptodomex
 WORKDIR /app
-COPY docker-utils/GetTwitchDownloader.py .
-RUN python GetTwitchDownloader.py
 # User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
