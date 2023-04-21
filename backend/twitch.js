@@ -21,7 +21,7 @@ async function getCommentsForVOD(vodId) {
     const cliPath = `TwitchDownloaderCLI${cliExt}`
 
     if (!fs.existsSync(cliPath)) {
-        logger.error(`${cliPath} does not exist. Twitch chat download failed!`);
+        logger.error(`${cliPath} does not exist. Twitch chat download failed! Get it here: https://github.com/lay295/TwitchDownloader`);
         return null;
     }
 
