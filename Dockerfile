@@ -54,7 +54,7 @@ RUN apt update && \
     apt install -y --no-install-recommends python3-minimal python-is-python3 python3-pip && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install PyGithub, requests
+RUN pip install PyGithub requests
 RUN python GetTwitchDownloader.py
 
 # Final image
