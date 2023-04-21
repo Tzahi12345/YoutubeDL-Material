@@ -506,14 +506,19 @@ describe('Downloader', function() {
         const new_args1 = ['--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
         const updated_args1 = utils.injectArgs(original_args1, new_args1);
         const expected_args1 = ['--no-resize-buffer', '--no-mtime', '--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
-        assert(JSON.stringify(updated_args1), JSON.stringify(expected_args1));
+        assert(JSON.stringify(updated_args1) === JSON.stringify(expected_args1));
 
         const original_args2 = ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3'];
         const new_args2 =  ['--add-metadata', '--embed-thumbnail', '--convert-thumbnails', 'jpg'];
         const updated_args2 = utils.injectArgs(original_args2, new_args2);
-        const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert_thumbnails', 'jpg'];
-        console.log(updated_args2);
-        assert(JSON.stringify(updated_args2), JSON.stringify(expected_args2));
+        const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert-thumbnails', 'jpg'];
+        assert(JSON.stringify(updated_args2) === JSON.stringify(expected_args2));
+
+        const original_args3 = ['-o', '%(title)s.%(ext)s'];
+        const new_args3 =  ['--min-filesize','1'];
+        const updated_args3 = utils.injectArgs(original_args3, new_args3);
+        const expected_args3 =  ['-o', '%(title)s.%(ext)s', '--min-filesize', '1'];
+        assert(JSON.stringify(updated_args3) === JSON.stringify(expected_args3));
     });
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');

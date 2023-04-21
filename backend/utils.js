@@ -414,10 +414,11 @@ exports.injectArgs = (original_args, new_args) => {
             if (CONSTS.YTDL_ARGS_WITH_VALUES.has(new_arg)) {
                 if (original_args.includes(new_arg)) {
                     const original_index = original_args.indexOf(new_arg);
-                    original_args.splice(original_index, 2);
+                    updated_args.splice(original_index, 2);
                 }
 
                 updated_args.push(new_arg, new_args[i + 1]);
+                i++; // we need to skip the arg value on the next loop
             } else {
                 if (!original_args.includes(new_arg)) {
                     updated_args.push(new_arg);
