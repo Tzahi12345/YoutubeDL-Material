@@ -92,7 +92,7 @@ exports.createZipFile = async (zip_file_path, file_paths) => {
     await archive.finalize();
 
     // wait a tiny bit for the zip to reload in fs
-    await wait(100);
+    await exports.wait(100);
     return zip_file_path;
 }
 
