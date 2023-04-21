@@ -350,7 +350,7 @@ async function downloadQueuedFile(download_uid) {
                     var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
 
                     if (type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
-                        && config_api.getConfigItem('ytdl_use_twitch_api') && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
+                        && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
                             let vodId = url.split('twitch.tv/videos/')[1];
                             vodId = vodId.split('?')[0];
                             twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, download['user_uid']);

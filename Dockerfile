@@ -2,7 +2,7 @@
 FROM ubuntu:22.04 AS ffmpeg
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
-COPY ffmpeg-fetch.sh .
+COPY docker-utils/ffmpeg-fetch.sh .
 RUN chmod +x ffmpeg-fetch.sh
 RUN sh ./ffmpeg-fetch.sh
 
@@ -55,8 +55,10 @@ RUN npm install -g pm2 && \
     apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install tdh-tcd pycryptodomex
+RUN pip install pycryptodomex
 WORKDIR /app
+COPY docker-utils/GetTwitchDownloader.py .
+RUN python GetTwitchDownloader.py
 # User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]

@@ -508,7 +508,7 @@ describe('Downloader', function() {
     });
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');
-        const example_vod = '1493770675';
+        const example_vod = '1710641401';
         it('Download VOD', async function() {
             const sample_path = path.join('test', 'sample.twitch_chat.json');
             if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
