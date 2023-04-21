@@ -175,6 +175,15 @@ describe('Database', async function() {
                     await db_api.removeRecord('test', {test_update: 'test'});
                 });
 
+                it('Update records', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_update: 'test', key: 'test1'});
+                    await db_api.insertRecordIntoTable('test', {test_update: 'test', key: 'test2'});
+                    await db_api.updateRecords('test', {test_update: 'test'}, {added_field: true});
+                    const updated_records = await db_api.getRecords('test', {added_field: true});
+                    assert(updated_records.length === 2);
+                    await db_api.removeRecord('test', {test_update: 'test'});
+                });
+
                 it('Remove property from record', async function() {
                     await db_api.insertRecordIntoTable('test', {test_keep: 'test', test_remove: 'test'});
                     await db_api.removePropertyFromRecord('test', {test_keep: 'test'}, {test_remove: true});
