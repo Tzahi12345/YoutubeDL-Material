@@ -4659,6 +4659,137 @@
         </context-group>
         <note priority="1" from="description">Delete files older than</note>
       </trans-unit>
+      <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html">
+        <source>ID</source>
+        <target state="translated">Kennung</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">ID</note>
+      </trans-unit>
+      <trans-unit id="c150a30bbbdb175b4d08820196a9acb66b167653" datatype="html">
+        <source>Archives empty</source>
+        <target state="translated">Archive leer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+        <note priority="1" from="description">Archives empty</note>
+      </trans-unit>
+      <trans-unit id="8425787787095143143" datatype="html">
+        <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
+        <target state="translated">Möchten Sie <x id="selected archives amount" equiv-text="this.selection.selected.length"/> Archiv(e) löschen?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
+          <context context-type="linenumber">153</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2525880134753073592" datatype="html">
+        <source>Successfully deleted archive items!</source>
+        <target state="translated">Archivelemente erfolgreich gelöscht!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8224301330941792118" datatype="html">
+        <source>Failed to delete archive items!</source>
+        <target state="translated">Fehler beim Löschen von Archivelementen!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
+          <context context-type="linenumber">174</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8643601595923420698" datatype="html">
+        <source>Retry download</source>
+        <target state="translated">Herunterladen erneut versuchen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8571838164752006148" datatype="html">
+        <source>View error</source>
+        <target state="translated">Fehler ansehen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1879058637439215882" datatype="html">
+        <source>Download error</source>
+        <target state="translated">Herunterladefehler</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5000203534763292992" datatype="html">
+        <source>Download restarted!</source>
+        <target state="translated">Herunterladen neu gestartet!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1f2809e6a99d511fdb6eaf041d785fe54d0680cc" datatype="html">
+        <source>File card size</source>
+        <target state="translated">Dateikartengröße</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="description">File card size</note>
+      </trans-unit>
+      <trans-unit id="c35ef0f03a863d33b04aae6807f140397a50f491" datatype="html">
+        <source>Generate RSS URL</source>
+        <target state="translated">RSS-URL generieren</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">306</context>
+        </context-group>
+        <note priority="1" from="description">Generate RSS URL</note>
+      </trans-unit>
+      <trans-unit id="1091872159779006651" datatype="html">
+        <source>You must input a time!</source>
+        <target state="translated">Sie müssen eine Zeit eingeben!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="fd467148a18f0921c10d116d4e0174fe29452be4" datatype="html">
+        <source>See documentation here.</source>
+        <target state="translated">Siehe Dokumentation hier.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">307</context>
+        </context-group>
+        <note priority="1" from="description">RSS feed documentation</note>
+      </trans-unit>
+      <trans-unit id="61d6b5fa4311b1c617b66dad72496f9dd43b07b4" datatype="html">
+        <source>Be careful enabling this with multi-user mode! User data may be exposed.</source>
+        <target state="translated">Seien Sie vorsichtig, wenn Sie diese Funktion im Mehrbenutzermodus aktivieren! Benutzerdaten können offengelegt werden.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">305</context>
+        </context-group>
+        <note priority="1" from="description">RSS Feed prefix</note>
+      </trans-unit>
+      <trans-unit id="3ffd9490f3a4c0b24021d25e1dc71fcfe5d39cd6" datatype="html">
+        <source>Download error</source>
+        <target state="translated">Herunterladefehler</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">392</context>
+        </context-group>
+        <note priority="1" from="description">Download error</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
