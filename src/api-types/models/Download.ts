@@ -19,6 +19,10 @@ export type Download = {
      * Error text, set if download fails.
      */
     error?: string | null;
+    /**
+     * Error type, may or may not be set in case of an error
+     */
+    error_type?: string | null;
     user_uid?: string;
     sub_id?: string;
     sub_name?: string;

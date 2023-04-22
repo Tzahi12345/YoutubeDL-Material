@@ -24,7 +24,7 @@ export class ManageRoleComponent implements OnInit {
   }
 
   constructor(public postsService: PostsService, private dialogRef: MatDialogRef<ManageRoleComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+              @Inject(MAT_DIALOG_DATA) public data: {role: string}) {
     if (this.data) {
       this.role = this.data.role;
       this.available_permissions = this.postsService.available_permissions;

@@ -14,5 +14,6 @@ subscriptions?: TableInfo;
 users?: TableInfo;
 roles?: TableInfo;
 download_queue?: TableInfo;
+archives?: TableInfo;
 };
 };

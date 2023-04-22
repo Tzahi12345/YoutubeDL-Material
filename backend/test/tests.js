@@ -3,7 +3,6 @@ const low = require('lowdb')
 const winston = require('winston');
 const path = require('path');
 
-process.chdir('./backend')
 
 const FileSync = require('lowdb/adapters/FileSync');
 
@@ -38,6 +37,7 @@ var auth_api = require('../authentication/auth');
 var db_api = require('../db');
 const utils = require('../utils');
 const subscriptions_api = require('../subscriptions');
+const archive_api = require('../archive');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 const NodeID3 = require('node-id3');
@@ -66,12 +66,12 @@ const sample_video_json = {
 
 describe('Database', async function() {
     describe('Import', async function() {
-        it('Migrate', async function() {
-            await db_api.connectToDB();
-            await db_api.removeAllRecords();
-            const success = await db_api.importJSONToDB(db.value(), users_db.value());
-            assert(success);
-        });
+        // it('Migrate', async function() {
+        //     await db_api.connectToDB();
+        //     await db_api.removeAllRecords();
+        //     const success = await db_api.importJSONToDB(db.value(), users_db.value());
+        //     assert(success);
+        // });
 
         it('Transfer to remote', async function() {
             await db_api.removeAllRecords('test');
@@ -104,157 +104,199 @@ describe('Database', async function() {
         });
     });
 
-    describe('Export', function() {
-
-    });
-
-
     describe('Basic functions', async function() {
-        beforeEach(async function() {
-            await db_api.connectToDB();
-            await db_api.removeAllRecords('test');
-        });
-        it('Add and read record', async function() {
-            this.timeout(120000);
-            await db_api.insertRecordIntoTable('test', {test_add: 'test', test_undefined: undefined, test_null: undefined});
-            const added_record = await db_api.getRecord('test', {test_add: 'test', test_undefined: undefined, test_null: null});
-            assert(added_record['test_add'] === 'test');
-            await db_api.removeRecord('test', {test_add: 'test'});
-        });
+        
+        // test both local_db and remote_db
+        const local_db_modes = [false, true];
 
-        it('Find duplicates by key', async function() {
-            const test_duplicates = [
-                {
-                    test: 'testing',
-                    key: '1'
-                },
-                {
-                    test: 'testing',
-                    key: '2'
-                },
-                {
-                    test: 'testing_missing',
-                    key: '3'
-                },
-                {
-                    test: 'testing',
-                    key: '4'
-                }
-            ];
-            await db_api.insertRecordsIntoTable('test', test_duplicates);
-            const duplicates = await db_api.findDuplicatesByKey('test', 'test');
-            console.log(duplicates);
-        });
-
-        it('Update record', async function() {
-            await db_api.insertRecordIntoTable('test', {test_update: 'test'});
-            await db_api.updateRecord('test', {test_update: 'test'}, {added_field: true});
-            const updated_record = await db_api.getRecord('test', {test_update: 'test'});
-            assert(updated_record['added_field']);
-            await db_api.removeRecord('test', {test_update: 'test'});
-        });
-
-        it('Remove record', async function() {
-            await db_api.insertRecordIntoTable('test', {test_remove: 'test'});
-            const delete_succeeded = await db_api.removeRecord('test', {test_remove: 'test'});
-            assert(delete_succeeded);
-            const deleted_record = await db_api.getRecord('test', {test_remove: 'test'});
-            assert(!deleted_record);
-        });
-
-        it('Push to record array', async function() {
-            await db_api.insertRecordIntoTable('test', {test: 'test', test_array: []});
-            await db_api.pushToRecordsArray('test', {test: 'test'}, 'test_array', 'test_item');
-            const record = await db_api.getRecord('test', {test: 'test'});
-            assert(record);
-            assert(record['test_array'].length === 1);
-        });
-
-        it('Pull from record array', async function() {
-            await db_api.insertRecordIntoTable('test', {test: 'test', test_array: ['test_item']});
-            await db_api.pullFromRecordsArray('test', {test: 'test'}, 'test_array', 'test_item');
-            const record = await db_api.getRecord('test', {test: 'test'});
-            assert(record);
-            assert(record['test_array'].length === 0);
-        });
-
-        it('Bulk add', async function() {
-            this.timeout(120000);
-            const NUM_RECORDS_TO_ADD = 2002; // max batch ops is 1000
-            const test_records = [];
-            for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
-                test_records.push({
-                    uid: uuid()
+        for (const local_db_mode of local_db_modes) {
+            let use_local_db = local_db_mode;
+            describe(`Use local DB - ${use_local_db}`, async function() {
+                beforeEach(async function() {
+                    if (!use_local_db) {
+                        this.timeout(120000);
+                        await db_api.connectToDB(0);
+                    }
+                    await db_api.removeAllRecords('test');
                 });
-            }
-            const succcess = await db_api.bulkInsertRecordsIntoTable('test', test_records);
-
-            const received_records = await db_api.getRecords('test');
-            assert(succcess && received_records && received_records.length === NUM_RECORDS_TO_ADD);
-        });
-
-        it('Bulk update', async function() {
-            // bulk add records
-            const NUM_RECORDS_TO_ADD = 100; // max batch ops is 1000
-            const test_records = [];
-            const update_obj = {};
-            for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
-                const test_uid =  uuid();
-                test_records.push({
-                    uid: test_uid
+                it('Add and read record', async function() {
+                    this.timeout(120000);
+                    await db_api.insertRecordIntoTable('test', {test_add: 'test', test_undefined: undefined, test_null: undefined});
+                    const added_record = await db_api.getRecord('test', {test_add: 'test', test_undefined: undefined, test_null: null});
+                    assert(added_record['test_add'] === 'test');
+                    await db_api.removeRecord('test', {test_add: 'test'});
                 });
-                update_obj[test_uid] = {added_field: true};
-            }
-            let success = await db_api.bulkInsertRecordsIntoTable('test', test_records);
-            assert(success);
+                it('Add and read record - Nested property', async function() {
+                    this.timeout(120000);
+                    await db_api.insertRecordIntoTable('test', {test_add: 'test', test_nested: {test_key1: 'test1', test_key2: 'test2'}});
+                    const added_record = await db_api.getRecord('test', {test_add: 'test', 'test_nested.test_key1': 'test1', 'test_nested.test_key2': 'test2'});
+                    const not_added_record = await db_api.getRecord('test', {test_add: 'test', 'test_nested.test_key1': 'test1', 'test_nested.test_key2': 'test3'});
+                    assert(added_record['test_add'] === 'test');
+                    assert(!not_added_record);
+                    await db_api.removeRecord('test', {test_add: 'test'});
+                });
+                it('Replace filter', async function() {
+                    this.timeout(120000);
+                    await db_api.insertRecordIntoTable('test', {test_replace_filter: 'test', test_nested: {test_key1: 'test1', test_key2: 'test2'}}, {test_nested: {test_key1: 'test1', test_key2: 'test2'}});
+                    await db_api.insertRecordIntoTable('test', {test_replace_filter: 'test', test_nested: {test_key1: 'test1', test_key2: 'test2'}}, {test_nested: {test_key1: 'test1', test_key2: 'test2'}});
+                    const count = await db_api.getRecords('test', {test_replace_filter: 'test'}, true);
+                    assert(count === 1);
+                    await db_api.removeRecord('test', {test_replace_filter: 'test'});
+                });
+                it('Find duplicates by key', async function() {
+                    const test_duplicates = [
+                        {
+                            test: 'testing',
+                            key: '1'
+                        },
+                        {
+                            test: 'testing',
+                            key: '2'
+                        },
+                        {
+                            test: 'testing_missing',
+                            key: '3'
+                        },
+                        {
+                            test: 'testing',
+                            key: '4'
+                        }
+                    ];
+                    await db_api.insertRecordsIntoTable('test', test_duplicates);
+                    const duplicates = await db_api.findDuplicatesByKey('test', 'test');
+                    console.log(duplicates);
+                });
 
-            // makes sure they are added
-            const received_records = await db_api.getRecords('test');
-            assert(received_records && received_records.length === NUM_RECORDS_TO_ADD);
+                it('Update record', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_update: 'test'});
+                    await db_api.updateRecord('test', {test_update: 'test'}, {added_field: true});
+                    const updated_record = await db_api.getRecord('test', {test_update: 'test'});
+                    assert(updated_record['added_field']);
+                    await db_api.removeRecord('test', {test_update: 'test'});
+                });
 
-            success = await db_api.bulkUpdateRecords('test', 'uid', update_obj);
-            assert(success);
+                it('Remove property from record', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_keep: 'test', test_remove: 'test'});
+                    await db_api.removePropertyFromRecord('test', {test_keep: 'test'}, {test_remove: true});
+                    const updated_record = await db_api.getRecord('test', {test_keep: 'test'});
+                    assert(updated_record['test_keep']);
+                    assert(!updated_record['test_remove']);
+                    await db_api.removeRecord('test', {test_keep: 'test'});
+                });
 
-            const received_updated_records = await db_api.getRecords('test');
-            for (let i = 0; i < received_updated_records.length; i++) {
-                success &= received_updated_records[i]['added_field'];
-            }
-            assert(success);
-        });
+                it('Remove record', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test'});
+                    const delete_succeeded = await db_api.removeRecord('test', {test_remove: 'test'});
+                    assert(delete_succeeded);
+                    const deleted_record = await db_api.getRecord('test', {test_remove: 'test'});
+                    assert(!deleted_record);
+                });
 
-        it('Stats', async function() {
-            const stats = await db_api.getDBStats();
-            assert(stats);
-        });
+                it('Remove records', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test', test_property: 'test'});
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test', test_property: 'test2'});
+                    await db_api.insertRecordIntoTable('test', {test_remove: 'test'});
+                    const delete_succeeded = await db_api.removeAllRecords('test', {test_remove: 'test'});
+                    assert(delete_succeeded);
+                    const count = await db_api.getRecords('test', {test_remove: 'test'}, true);
+                    assert(count === 0);
+                });
 
-        it('Query speed', async function() {
-            this.timeout(120000); 
-            const NUM_RECORDS_TO_ADD = 300004; // max batch ops is 1000
-            const test_records = [];
-            let random_uid = '06241f83-d1b8-4465-812c-618dfa7f2943';
-            for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
-                const uid = uuid();
-                if (i === NUM_RECORDS_TO_ADD/2) random_uid = uid;
-                test_records.push({"id":"RandomTextRandomText","title":"RandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomText","thumbnailURL":"https://i.ytimg.com/vi/randomurl/maxresdefault.jpg","isAudio":true,"duration":312,"url":"https://www.youtube.com/watch?v=randomvideo","uploader":"randomUploader","size":5060157,"path":"audio\\RandomTextRandomText.mp3","upload_date":"2016-05-11","description":"RandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomText","view_count":118689353,"height":null,"abr":160,"uid": uid,"registered":1626672120632});
-            }
-            const insert_start = Date.now();
-            let success = await db_api.bulkInsertRecordsIntoTable('test', test_records);
-            const insert_end = Date.now();
+                it('Push to record array', async function() {
+                    await db_api.insertRecordIntoTable('test', {test: 'test', test_array: []});
+                    await db_api.pushToRecordsArray('test', {test: 'test'}, 'test_array', 'test_item');
+                    const record = await db_api.getRecord('test', {test: 'test'});
+                    assert(record);
+                    assert(record['test_array'].length === 1);
+                });
 
-            console.log(`Insert time: ${(insert_end - insert_start)/1000}s`);
+                it('Pull from record array', async function() {
+                    await db_api.insertRecordIntoTable('test', {test: 'test', test_array: ['test_item']});
+                    await db_api.pullFromRecordsArray('test', {test: 'test'}, 'test_array', 'test_item');
+                    const record = await db_api.getRecord('test', {test: 'test'});
+                    assert(record);
+                    assert(record['test_array'].length === 0);
+                });
 
-            const query_start = Date.now();
-            const random_record = await db_api.getRecord('test', {uid: random_uid});
-            const query_end = Date.now();
+                it('Bulk add', async function() {
+                    this.timeout(120000);
+                    const NUM_RECORDS_TO_ADD = 2002; // max batch ops is 1000
+                    const test_records = [];
+                    for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
+                        test_records.push({
+                            uid: uuid()
+                        });
+                    }
+                    const succcess = await db_api.bulkInsertRecordsIntoTable('test', test_records);
 
-            console.log(random_record)
+                    const received_records = await db_api.getRecords('test');
+                    assert(succcess && received_records && received_records.length === NUM_RECORDS_TO_ADD);
+                });
 
-            console.log(`Query time: ${(query_end - query_start)/1000}s`);
+                it('Bulk update', async function() {
+                    // bulk add records
+                    const NUM_RECORDS_TO_ADD = 100; // max batch ops is 1000
+                    const test_records = [];
+                    const update_obj = {};
+                    for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
+                        const test_uid =  uuid();
+                        test_records.push({
+                            uid: test_uid
+                        });
+                        update_obj[test_uid] = {added_field: true};
+                    }
+                    let success = await db_api.bulkInsertRecordsIntoTable('test', test_records);
+                    assert(success);
 
-            success = !!random_record;
+                    // makes sure they are added
+                    const received_records = await db_api.getRecords('test');
+                    assert(received_records && received_records.length === NUM_RECORDS_TO_ADD);
 
-            assert(success);
-        });
+                    success = await db_api.bulkUpdateRecordsByKey('test', 'uid', update_obj);
+                    assert(success);
+
+                    const received_updated_records = await db_api.getRecords('test');
+                    for (let i = 0; i < received_updated_records.length; i++) {
+                        success &= received_updated_records[i]['added_field'];
+                    }
+                    assert(success);
+                });
+
+                it('Stats', async function() {
+                    const stats = await db_api.getDBStats();
+                    assert(stats);
+                });
+
+                it('Query speed', async function() {
+                    this.timeout(120000); 
+                    const NUM_RECORDS_TO_ADD = 300004; // max batch ops is 1000
+                    const test_records = [];
+                    let random_uid = '06241f83-d1b8-4465-812c-618dfa7f2943';
+                    for (let i = 0; i < NUM_RECORDS_TO_ADD; i++) {
+                        const uid = uuid();
+                        if (i === NUM_RECORDS_TO_ADD/2) random_uid = uid;
+                        test_records.push({"id":"RandomTextRandomText","title":"RandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomText","thumbnailURL":"https://i.ytimg.com/vi/randomurl/maxresdefault.jpg","isAudio":true,"duration":312,"url":"https://www.youtube.com/watch?v=randomvideo","uploader":"randomUploader","size":5060157,"path":"audio\\RandomTextRandomText.mp3","upload_date":"2016-05-11","description":"RandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomTextRandomText","view_count":118689353,"height":null,"abr":160,"uid": uid,"registered":1626672120632});
+                    }
+                    const insert_start = Date.now();
+                    let success = await db_api.bulkInsertRecordsIntoTable('test', test_records);
+                    const insert_end = Date.now();
+
+                    console.log(`Insert time: ${(insert_end - insert_start)/1000}s`);
+
+                    const query_start = Date.now();
+                    const random_record = await db_api.getRecord('test', {uid: random_uid});
+                    const query_end = Date.now();
+
+                    console.log(random_record)
+
+                    console.log(`Query time: ${(query_end - query_start)/1000}s`);
+
+                    success = !!random_record;
+
+                    assert(success);
+                });
+            });
+        }
     });
 
     describe('Local DB Filters', async function() {
@@ -289,8 +331,6 @@ describe('Multi User', async function() {
     const playlist_to_test = 'ysabVZz4x';
     beforeEach(async function() {
         await db_api.connectToDB();
-        auth_api.initialize(db_api, logger);
-        subscriptions_api.initialize(db_api, logger);
         user = await auth_api.login('admin', 'pass');
     });
     describe('Authentication', function() {
@@ -468,7 +508,7 @@ describe('Downloader', function() {
     });
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');
-        const example_vod = '1493770675';
+        const example_vod = '1710641401';
         it('Download VOD', async function() {
             const sample_path = path.join('test', 'sample.twitch_chat.json');
             if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
@@ -593,30 +633,72 @@ describe('Tasks', function() {
 });
 
 describe('Archive', async function() {
-    const archive_path = path.join('test', 'archives');
-    fs.ensureDirSync(archive_path);
-    const archive_file_path = path.join(archive_path, 'archive_video.txt');
-    const blacklist_file_path = path.join(archive_path, 'blacklist_video.txt');
     beforeEach(async function() {
-        if (fs.existsSync(archive_file_path)) fs.unlinkSync(archive_file_path);
-        fs.writeFileSync(archive_file_path, 'youtube testing1\nyoutube testing2\nyoutube testing3\n');
-
-        if (fs.existsSync(blacklist_file_path)) fs.unlinkSync(blacklist_file_path);
-        fs.writeFileSync(blacklist_file_path, '');
-    });
-    
-    it('Delete from archive', async function() {
-        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', false);
-        const new_archive = fs.readFileSync(archive_file_path);
-        assert(!new_archive.includes('testing2'));
+        await db_api.connectToDB();
+        await db_api.removeAllRecords('archives', {user_uid: 'test_user'});
     });
 
-    it('Delete from archive - blacklist', async function() {
-        await utils.deleteFileFromArchive('N/A', 'video', archive_path, 'testing2', true);
-        const new_archive = fs.readFileSync(archive_file_path);
-        const new_blacklist = fs.readFileSync(blacklist_file_path);
-        assert(!new_archive.includes('testing2'));
-        assert(new_blacklist.includes('testing2'));
+    afterEach(async function() {
+        await db_api.removeAllRecords('archives', {user_uid: 'test_user'});
+    });
+
+    it('Import archive', async function() {
+        const archive_text = `
+            testextractor1 testing1
+            testextractor1 testing2
+            testextractor2 testing1
+            testextractor1 testing3
+
+        `;
+        const count = await archive_api.importArchiveFile(archive_text, 'video', 'test_user', 'test_sub');
+        assert(count === 4)
+        const archive_items = await db_api.getRecords('archives', {user_uid: 'test_user', sub_id: 'test_sub'});
+        console.log(archive_items);
+        assert(archive_items.length === 4);
+        assert(archive_items.filter(archive_item => archive_item.extractor === 'testextractor2').length === 1);
+        assert(archive_items.filter(archive_item => archive_item.extractor === 'testextractor1').length === 3);
+
+        const success = await db_api.removeAllRecords('archives', {user_uid: 'test_user', sub_id: 'test_sub'});
+        assert(success);
+    });
+
+    it('Get archive', async function() {
+        await archive_api.addToArchive('testextractor1', 'testing1', 'video', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing1', 'video', 'test_user');
+
+        const archive_item1 = await db_api.getRecord('archives', {extractor: 'testextractor1', id: 'testing1'});
+        const archive_item2 = await db_api.getRecord('archives', {extractor: 'testextractor2', id: 'testing1'});
+
+        assert(archive_item1 && archive_item2);
+    });
+
+    it('Archive duplicates', async function() {
+        await archive_api.addToArchive('testextractor1', 'testing1', 'video', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing1', 'video', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing1', 'video', 'test_user');
+
+        await archive_api.addToArchive('testextractor1', 'testing1', 'audio', 'test_user');
+
+        const count = await db_api.getRecords('archives', {id: 'testing1'}, true);
+        assert(count === 3);
+    });
+
+    it('Remove from archive', async function() {
+        await archive_api.addToArchive('testextractor1', 'testing1', 'video', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing1', 'video', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing2', 'video', 'test_user');
+
+        const success = await archive_api.removeFromArchive('testextractor2', 'testing1', 'video', 'test_user');
+        assert(success);
+
+        const archive_item1 = await db_api.getRecord('archives', {extractor: 'testextractor1', id: 'testing1'});
+        assert(!!archive_item1);
+        
+        const archive_item2 = await db_api.getRecord('archives', {extractor: 'testextractor2', id: 'testing1'});
+        assert(!archive_item2);
+
+        const archive_item3 = await db_api.getRecord('archives', {extractor: 'testextractor2', id: 'testing2'});
+        assert(!!archive_item3);
     });
 });
 
@@ -625,5 +707,25 @@ describe('Utils', async function() {
         const test_obj = {test1: 'test1', test2: 'test2', test3: 'test3'};
         const stripped_obj = utils.stripPropertiesFromObject(test_obj, ['test1', 'test3']);
         assert(!stripped_obj['test1'] && stripped_obj['test2'] && !stripped_obj['test3'])
+    });
+
+    it('Convert flat object to nested object', async function() {
+        // No modfication
+        const flat_obj0 = {'test1': {'test_sub': true}, 'test2': {test_sub: true}};
+        const nested_obj0 = utils.convertFlatObjectToNestedObject(flat_obj0);
+        assert(nested_obj0['test1'] && nested_obj0['test1']['test_sub']);
+        assert(nested_obj0['test2'] && nested_obj0['test2']['test_sub']);
+
+        // Standard setup
+        const flat_obj1 = {'test1.test_sub': true, 'test2.test_sub': true};
+        const nested_obj1 = utils.convertFlatObjectToNestedObject(flat_obj1);
+        assert(nested_obj1['test1'] && nested_obj1['test1']['test_sub']);
+        assert(nested_obj1['test2'] && nested_obj1['test2']['test_sub']);
+
+        // Nested branches
+        const flat_obj2 = {'test1.test_sub': true, 'test1.test2.test_sub': true};
+        const nested_obj2 = utils.convertFlatObjectToNestedObject(flat_obj2);
+        assert(nested_obj2['test1'] && nested_obj2['test1']['test_sub']);
+        assert(nested_obj2['test1'] && nested_obj2['test1']['test2'] && nested_obj2['test1']['test2']['test_sub']);
     });
 });

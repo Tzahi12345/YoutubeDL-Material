@@ -2,11 +2,12 @@
 FROM ubuntu:22.04 AS ffmpeg
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
-COPY ffmpeg-fetch.sh .
+COPY docker-utils/ffmpeg-fetch.sh .
+RUN chmod +x ffmpeg-fetch.sh
 RUN sh ./ffmpeg-fetch.sh
 
 
-# Create our Ubuntu 22.04 with node 16
+# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
 # Go to 20.04
 FROM ubuntu:20.04 AS base
 ARG DEBIAN_FRONTEND=noninteractive
@@ -21,7 +22,8 @@ RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt install -y --no-install-recommends curl ca-certificates tzdata && \
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt install -y --no-install-recommends nodejs && \
-    npm -g install npm && \
+    npm -g install npm n && \
+    n 16.14.2 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -45,21 +47,31 @@ RUN npm config set strict-ssl false && \
     npm install --prod && \
     ls -al
 
+FROM base as python
+WORKDIR /app
+COPY docker-utils/GetTwitchDownloader.py .
+RUN apt update && \
+    apt install -y --no-install-recommends python3-minimal python-is-python3 python3-pip && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+RUN pip install PyGithub requests
+RUN python GetTwitchDownloader.py
 
 # Final image
 FROM base
 RUN npm install -g pm2 && \
     apt update && \
-    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install tcd
+RUN pip install pycryptodomex
 WORKDIR /app
 # User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
 COPY --chown=$UID:$GID --from=ffmpeg [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
 COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
+RUN chown $UID:$GID .
 RUN chmod +x /app/fix-scripts/*.sh
 # Add some persistence data
 #VOLUME ["/app/appdata"]

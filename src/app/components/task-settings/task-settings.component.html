@@ -1,0 +1,29 @@
+<h4 mat-dialog-title><ng-container i18n="Task settings">Task settings - {{task.title}}</ng-container></h4>
+
+<mat-dialog-content>
+    <div *ngIf="task_key === 'delete_old_files'">
+        <mat-form-field color="accent">
+            <mat-label i18n="Delete files older than">Delete files older than</mat-label>
+            <input [(ngModel)]="new_options['threshold_days']" matInput onlyNumber required>
+            <span matTextSuffix>days</span>
+        </mat-form-field>
+        <div>
+            <mat-checkbox [(ngModel)]="new_options['blacklist_files']" i18n="Blacklist deleted files" placeholder="Archive mode must be enabled" placeholder-i18n>Blacklist all files</mat-checkbox>
+        </div>
+        <div>
+            <mat-checkbox [disabled]="new_options['blacklist_files']" [(ngModel)]="new_options['blacklist_subscription_files']" i18n="Blacklist deleted subscription files" placeholder="Archive mode must be enabled" placeholder-i18n>Blacklist deleted subscription files</mat-checkbox>
+        </div>
+    </div>
+
+    <div>
+        <mat-checkbox [(ngModel)]="new_options['auto_confirm']" i18n="Do not ask for confirmation">Do not ask for confirmation</mat-checkbox>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>
+        <ng-container *ngIf="optionsChanged()" i18n="Task settings cancel button">Cancel</ng-container>
+        <ng-container *ngIf="!optionsChanged()" i18n="Task settings close button">Close</ng-container>
+    </button>
+    <button mat-button [disabled]="!optionsChanged()" (click)="saveSettings()"><ng-container i18n="Save button">Save</ng-container></button>
+</mat-dialog-actions>

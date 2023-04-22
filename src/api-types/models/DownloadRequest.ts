@@ -36,9 +36,17 @@ export type DownloadRequest = {
      */
     selectedHeight?: string;
     /**
+     * Max height that should be used, useful for playlists. selectedHeight will override this.
+     */
+    maxHeight?: string;
+    /**
      * Specify ffmpeg/avconv audio quality
      */
     maxBitrate?: string;
     type?: FileType;
     cropFileSettings?: CropFileSettings;
+    /**
+     * If using youtube-dl archive, download will ignore it
+     */
+    ignoreArchive?: boolean;
 };

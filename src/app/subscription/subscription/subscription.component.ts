@@ -13,36 +13,8 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
 
   id = null;
   subscription = null;
-  files: any[] = null;
-  filtered_files: any[] = null;
   use_youtubedl_archive = false;
-  search_mode = false;
-  search_text = '';
-  searchIsFocused = false;
   descendingMode = true;
-  filterProperties = {
-    'upload_date': {
-      'key': 'upload_date',
-      'label': 'Upload Date',
-      'property': 'upload_date'
-    },
-    'name': {
-      'key': 'name',
-      'label': 'Name',
-      'property': 'title'
-    },
-    'file_size': {
-      'key': 'file_size',
-      'label': 'File Size',
-      'property': 'size'
-    },
-    'duration': {
-      'key': 'duration',
-      'label': 'Duration',
-      'property': 'duration'
-    }
-  };
-  filterProperty = this.filterProperties['upload_date'];
   downloading = false;
   sub_interval = null;
 
@@ -62,12 +34,6 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
         }
       });
     });
-
-    // set filter property to cached
-    const cached_filter_property = localStorage.getItem('filter_property');
-    if (cached_filter_property && this.filterProperties[cached_filter_property]) {
-      this.filterProperty = this.filterProperties[cached_filter_property];
-    }
   }
 
   ngOnDestroy() {
@@ -88,53 +54,16 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
           this.subscription['downloading'] = res['subscription']['downloading'];
         }
         return;
+      } else if (res['subscription']['videos'].length > (this.subscription?.videos.length || 0)) {
+        // only when files are added so we don't reload files when one is deleted
+        this.postsService.files_changed.next(true);
       }
       this.subscription = res['subscription'];
-      this.files = res['files'];
-      if (this.search_mode) {
-        this.filterFiles(this.search_text);
-      } else {
-        this.filtered_files = this.files;
-      }
-      this.filterByProperty(this.filterProperty['property']);
     });
   }
 
   getConfig(): void {
     this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
-  }
-
-
-  onSearchInputChanged(newvalue: string): void {
-    if (newvalue.length > 0) {
-      this.search_mode = true;
-      this.filterFiles(newvalue);
-    } else {
-      this.search_mode = false;
-    }
-  }
-
-  private filterFiles(value: string) {
-    const filterValue = value.toLowerCase();
-    this.filtered_files = this.files.filter(option => option.id.toLowerCase().includes(filterValue));
-  }
-
-  filterByProperty(prop: string): void {
-    if (this.descendingMode) {
-      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? -1 : 1));
-    } else {
-      this.filtered_files = this.filtered_files.sort((a, b) => (a[prop] > b[prop] ? 1 : -1));
-    }
-  }
-
-  filterOptionChanged(value) {
-    this.filterByProperty(value['property']);
-    localStorage.setItem('filter_property', value['key']);
-  }
-
-  toggleModeChange(): void {
-    this.descendingMode = !this.descendingMode;
-    this.filterByProperty(this.filterProperty['property']);
   }
 
   downloadContent(): void {

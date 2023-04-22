@@ -6,7 +6,7 @@
     padding: 0;
 }
 
-.demo-basic .mat-card-content {
+.demo-basic .mat-mdc-card-content {
     padding: 16px;
 }
 
@@ -40,7 +40,7 @@ mat-toolbar.top {
     width: 80%
 }
 
-mat-form-field.mat-form-field {
+mat-form-field.mat-mdc-form-field {
     font-size: 24px;
   }
 
@@ -75,7 +75,7 @@ mat-form-field.mat-form-field {
     display: inline-block;
     position: absolute;
     top: 15px;
-    right: -40px;
+    right: -16px;
 }
 
 .margined {
@@ -132,7 +132,8 @@ mat-form-field.mat-form-field {
     margin-left: 5px;
     margin-top: -6px;
     margin-bottom: -5px;
-    top: -5px;
+    position: relative;
+    top: 6px;
 }
 
 .border-radius-both {

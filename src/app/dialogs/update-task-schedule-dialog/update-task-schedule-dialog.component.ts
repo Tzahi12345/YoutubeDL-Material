@@ -15,8 +15,9 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
   days_of_week = [];
   interval = 'daily';
   time = null;
-  date = null;
+  date: Date = null;
   today = new Date();
+  Intl = Intl;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {task: Task}, private dialogRef: MatDialogRef<UpdateTaskScheduleDialogComponent>, private postsService: PostsService) {
     this.processTask(this.data.task);
@@ -66,6 +67,8 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
 
     if (!this.time) {
       // needs time!
+      this.postsService.openSnackBar($localize`You must input a time!`);
+      return;
     }
 
     const hours = parseInt(this.time.split(':')[0]);
@@ -81,6 +84,7 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
       this.date.setHours(hours, minutes);
       schedule['data'] = {timestamp: this.date.getTime()};
     }
+    schedule['data']['tz'] = this.Intl?.DateTimeFormat().resolvedOptions().timeZone;
     this.dialogRef.close(schedule);
   }
 }

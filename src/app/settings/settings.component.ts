@@ -13,7 +13,8 @@ import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { InputDialogComponent } from 'app/input-dialog/input-dialog.component';
 import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/edit-category-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Category } from 'api-types';
+import { Category, DBInfoResponse } from 'api-types';
+import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-rss-url.component';
 
 @Component({
   selector: 'app-settings',
@@ -31,7 +32,7 @@ export class SettingsComponent implements OnInit {
   generated_bookmarklet_code = null;
   bookmarkletAudioOnly = false;
 
-  db_info = null;
+  db_info: DBInfoResponse = null;
   db_transferring = false;
   testing_connection_string = false;
 
@@ -88,6 +89,9 @@ export class SettingsComponent implements OnInit {
         this.supported_locales = ['en', 'en-GB']; // required
         this.supported_locales = this.supported_locales.concat(res['supported_locales']);
       }
+    }, err => {
+      console.error(`Failed to retrieve list of supported languages! You may need to run: 'node src/postbuild.mjs'. Error below:`);
+      console.error(err);
     });
   }
 
@@ -166,9 +170,9 @@ export class SettingsComponent implements OnInit {
   deleteCategory(category: Category): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        dialogTitle: 'Delete category',
-        dialogText: `Would you like to delete ${category['name']}?`,
-        submitText: 'Delete',
+        dialogTitle: $localize`Delete category`,
+        dialogText: $localize`Would you like to delete ${category['name']}:category name:?`,
+        submitText: $localize`Delete`,
         warnSubmitColor: true
       }
     });
@@ -176,12 +180,11 @@ export class SettingsComponent implements OnInit {
       if (confirmed) {
         this.postsService.deleteCategory(category['uid']).subscribe(res => {
           if (res['success']) {
-            // TODO: Make translatable
-            this.postsService.openSnackBar(`Successfully deleted ${category['name']}!`);
+            this.postsService.openSnackBar($localize`Successfully deleted ${category['name']}:category name:!`);
             this.postsService.reloadCategories();
           }
         }, () => {
-          this.postsService.openSnackBar(`Failed to delete ${category['name']}!`);
+          this.postsService.openSnackBar($localize`Failed to delete ${category['name']}:category name:!`);
         });
       }
     });
@@ -312,7 +315,7 @@ export class SettingsComponent implements OnInit {
 
   getDBInfo(): void {
     this.postsService.getDBInfo().subscribe(res => {
-      this.db_info = res['db_info'];
+      this.db_info = res;
     });
   }
 
@@ -361,6 +364,13 @@ export class SettingsComponent implements OnInit {
     }, () => {
       this.testing_connection_string = false;
       this.postsService.openSnackBar($localize`Connection failed! Error: Server error. See logs for more info.`);
+    });
+  }
+
+  openGenerateRSSURLDialog(): void {
+    this.dialog.open(GenerateRssUrlComponent, {
+      width: '80vw',
+      maxWidth: '880px'
     });
   }
 }

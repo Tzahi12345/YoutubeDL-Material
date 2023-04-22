@@ -5,7 +5,7 @@
         <ng-container i18n="Auto-generated label" *ngIf="file_obj.auto">Auto-generated</ng-container>
         <ng-container *ngIf="!file_obj.auto">{{file_obj.registered | date:'shortDate' : undefined : locale.ngID}}</ng-container>
     </div>
-    <div *ngIf="loading" class="download-time" style="width: 75%; margin-top: 5px;"><content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" width="250" height="30"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="30" /></content-loader></div>
+    <div *ngIf="loading" class="download-time" style="width: 75%; margin-top: 5px;"><content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" [width]="250" [height]="30"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="30" /></content-loader></div>
     <!-- The context menu trigger must be kept above the "more info" menu -->
     <div style="visibility: hidden; position: fixed"
         [style.left]="contextMenuPosition.x"
@@ -21,6 +21,11 @@
     </mat-menu>
     <mat-menu #action_menu="matMenu">
         <ng-container *ngIf="!is_playlist && !loading">
+            <button (click)="emitToggleFavorite()" mat-menu-item>
+                <mat-icon>{{file_obj.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon>
+                <ng-container *ngIf="!file_obj.favorite" i18n="Favorite button">Favorite</ng-container>
+                <ng-container *ngIf="file_obj.favorite" i18n="Unfavorite button">Unfavorite</ng-container>
+            </button>
             <button (click)="openFileInfoDialog()" mat-menu-item><mat-icon>info</mat-icon><ng-container i18n="Video info button">Info</ng-container></button>
             <button (click)="navigateToSubscription()" mat-menu-item *ngIf="file_obj.sub_id"><mat-icon>{{file_obj.isAudio ? 'library_music' : 'video_library'}}</mat-icon>&nbsp;<ng-container i18n="Go to subscription menu item">Go to subscription</ng-container></button>
             <button [disabled]="!availablePlaylists || availablePlaylists.length === 0" [matMenuTriggerFor]="addtoplaylist" mat-menu-item><mat-icon>playlist_add</mat-icon>&nbsp;<ng-container i18n="Add to playlist menu item">Add to playlist</ng-container></button>
@@ -63,11 +68,11 @@
             </div>
 
             <div *ngIf="loading" class="img-div">
-                <content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" width="100" height="55"><svg:rect x="0" y="0" rx="0" ry="0" width="100" height="55" /></content-loader>
+                <content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" [width]="100" [height]="55"><svg:rect x="0" y="0" rx="0" ry="0" width="100" height="55" /></content-loader>
             </div>
 
             <span *ngIf="!loading" [ngClass]="{'max-two-lines': card_size !== 'small', 'max-one-line': card_size === 'small' }">{{card_size === 'large' && file_obj.uploader ? file_obj.uploader + ' - ' : ''}}<strong>{{!is_playlist ? file_obj.title : file_obj.name}}</strong></span>
-            <span *ngIf="loading" class="title-loading"><content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" width="250" height="30"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="30" /></content-loader></span>
+            <span *ngIf="loading" class="title-loading"><content-loader [primaryColor]="theme.ghost_primary" [secondaryColor]="theme.ghost_secondary" [width]="250" [height]="30"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="30" /></content-loader></span>
         </div>
     </mat-card>
 </div>

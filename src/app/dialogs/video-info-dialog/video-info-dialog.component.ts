@@ -19,6 +19,8 @@ export class VideoInfoDialogComponent implements OnInit {
   category: Category;
   editing = false;
   initialized = false;
+  retrieving_file = false;
+  write_access = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public postsService: PostsService, private datePipe: DatePipe) { }
 
@@ -28,6 +30,7 @@ export class VideoInfoDialogComponent implements OnInit {
       this.initializeFile(this.data.file);
     }
     this.postsService.reloadCategories();
+    this.write_access = !this.file.user_uid || (this.file.user_uid && this.postsService.user?.uid === this.file.user_uid);
   }
 
   initializeFile(file: DatabaseFile): void {
@@ -58,9 +61,14 @@ export class VideoInfoDialogComponent implements OnInit {
   }
 
   getFile(): void {
+    this.retrieving_file = true;
     this.postsService.getFile(this.file.uid).subscribe(res => {
+      this.retrieving_file = false;
       this.file = res['file'];
       this.initializeFile(this.file);
+    }, err => {
+      this.retrieving_file = false;
+      console.error(err);
     });
   }
 
@@ -83,6 +91,14 @@ export class VideoInfoDialogComponent implements OnInit {
 
   metadataChanged(): boolean { 
     return JSON.stringify(this.file) !== JSON.stringify(this.new_file);
+  }
+
+  toggleFavorite(): void {
+    this.file.favorite = !this.file.favorite;
+    this.retrieving_file = true;
+    this.postsService.updateFile(this.file.uid, {favorite: this.file.favorite}).subscribe(res => {
+      this.getFile();
+    });
   }
 
 }

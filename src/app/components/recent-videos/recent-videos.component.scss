@@ -17,7 +17,7 @@
 }
  
 .search-bar-unfocused {
-    width: 132px;
+    width: 165px;
 }
 
 .search-input {
@@ -39,12 +39,6 @@
 .column {
     width: 33%;
     display: inline-block;
-}
-
-.sort-dir-div {
-    display: inline-block;
-    position: absolute;
-    top: 10px;
 }
 
 .paginator {
@@ -100,7 +94,7 @@
 .remove-item-button {
     right: 10px;
     position: absolute;
-    top: 4px;
+    top: 0px;
 }
 
 .playlist-item-text {
@@ -118,4 +112,18 @@
 .downloading-spinner {
     align-self: center;
     position: absolute;
+}
+
+.filter-list {
+    margin-bottom: 10px;
+}
+
+.hide {
+    display: none !important;
+}
+
+.select-file-title {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

@@ -1,37 +1,41 @@
 <div [style.background]="postsService.theme ? postsService.theme.background_color : null" style="width: 100%; height: 100%;">
     <div class="mat-elevation-z3" style="position: relative; z-index: 10;">
-        <mat-toolbar color="primary" class="sticky-toolbar top-toolbar">
-            <div class="flex-row" width="100%" height="100%">
-                <div class="flex-column" style="text-align: left; margin-top: 1px;">
-                    <button #hamburgerMenu style="outline: none" *ngIf="router.url.split(';')[0] !== '/player'" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
-                    <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
-                </div>
-                <div class="flex-column" style="text-align: center; margin-top: 5px;">
-                    <div style="font-size: 22px; text-shadow: #141414 0.25px 0.25px 1px;">
-                        {{topBarTitle}}
+        <mat-toolbar class="sticky-toolbar top-toolbar">
+            <div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
+                <div class="row" width="100%" height="100%">
+                    <div class="col-6" style="text-align: left; margin-top: 1px;">
+                        <div style="display: flex; align-items: center;">
+                            <button #hamburgerMenu style="outline: none" *ngIf="router.url.split(';')[0] !== '/player'" mat-icon-button aria-label="Toggle side navigation" (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
+                            <button (click)="goBack()" *ngIf="router.url.split(';')[0] === '/player'" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
+                            <div style="margin-left: 8px; display: inline-block;"><button mat-icon-button routerLink='/home'><img style="width: 32px;" src="assets/images/logo_128px.png"></button></div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex-column" style="text-align: right; align-items: flex-end;">
-                    <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
-                    <mat-menu #menuSettings="matMenu">
-                        <button (click)="openProfileDialog()" *ngIf="postsService.isLoggedIn" mat-menu-item>
-                            <mat-icon>person</mat-icon>
-                            <span i18n="Profile menu label">Profile</span>
-                        </button>
-                        <button (click)="themeMenuItemClicked($event)" *ngIf="allowThemeChange" mat-menu-item>
-                          <mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon>
-                          <span i18n="Dark mode toggle label">Dark</span>
-                          <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
-                        </button>
-                        <!-- <button *ngIf="postsService.config && (!postsService.config.Advanced.multi_user_mode || (postsService.isLoggedIn && postsService.permissions.includes('settings')))" (click)="openSettingsDialog()" mat-menu-item>
-                          <mat-icon>settings</mat-icon>
-                          <span i18n="Settings menu label">Settings</span>
-                        </button> -->
-                        <button (click)="openAboutDialog()" mat-menu-item>
-                            <mat-icon>info</mat-icon>
-                            <span i18n="About menu label">About</span>
-                        </button>
-                    </mat-menu>
+                    <div class="col-6" style="text-align: right; align-items: flex-end; display: inline-block">
+                        <button *ngIf="postsService.config?.Extra.enable_notifications" [matMenuTriggerFor]="notificationsMenu" (menuOpened)="notificationMenuOpened()" mat-icon-button><mat-icon [matBadge]="notification_count" matBadgeColor="warn" matBadgeSize="small" *ngIf="notification_count > 0">notifications</mat-icon><mat-icon *ngIf="notification_count === 0">notifications_none</mat-icon></button>
+                        <mat-menu [classList]="'notifications-menu'" (close)="notificationMenuClosed()" #notificationsMenu="matMenu">
+                            <app-notifications #notifications (notificationCount)="notificationCountUpdate($event)" (click)="$event.stopPropagation()"></app-notifications>
+                        </mat-menu>
+                        <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+                        <mat-menu #menuSettings="matMenu">
+                            <button class="top-menu-button" (click)="openProfileDialog()" *ngIf="postsService.isLoggedIn" mat-menu-item>
+                                <mat-icon>person</mat-icon>
+                                <span i18n="Profile menu label">Profile</span>
+                            </button>
+                            <button *ngIf="postsService.config && postsService.config.Downloader.use_youtubedl_archive" class="top-menu-button" (click)="openArchivesDialog()" mat-menu-item>
+                                <mat-icon>topic</mat-icon>
+                                <span i18n="Archives menu label">Archives</span>
+                            </button>
+                            <button class="top-menu-button" (click)="themeMenuItemClicked($event)" *ngIf="allowThemeChange" mat-menu-item>
+                            <mat-icon>{{(postsService.theme.key === 'default') ? 'brightness_5' : 'brightness_2'}}</mat-icon>
+                            <span i18n="Dark mode toggle label">Dark</span>
+                            <mat-slide-toggle class="theme-slide-toggle" [checked]="postsService.theme.key === 'dark'"></mat-slide-toggle>
+                            </button>
+                            <button class="top-menu-button" (click)="openAboutDialog()" mat-menu-item>
+                                <mat-icon>info</mat-icon>
+                                <span i18n="About menu label">About</span>
+                            </button>
+                        </mat-menu>
+                    </div>
                 </div>
             </div>
         </mat-toolbar>
@@ -51,7 +55,7 @@
                     </ng-container>
                     <ng-container *ngIf="postsService.config && allowSubscriptions && postsService.subscriptions && postsService.hasPermission('subscriptions')">
                         <mat-divider *ngIf="postsService.subscriptions.length > 0"></mat-divider>
-                        <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatars [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatars>{{subscription.name}}</a>
+                        <a *ngFor="let subscription of postsService.subscriptions" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" [routerLink]="['/subscription', { id: subscription.id }]"><ngx-avatars [style.display]="'inline-block'" [style.margin-right]="'10px'" size="32" [name]="subscription.name"></ngx-avatars>{{subscription.name}}</a>
                     </ng-container>
                 </mat-nav-list>
             </mat-sidenav>

@@ -2,6 +2,7 @@ var fs = require('fs-extra')
 var path = require('path')
 const { MongoClient } = require("mongodb");
 const { uuid } = require('uuidv4');
+const _ = require('lodash');
 
 const config_api = require('./config');
 var utils = require('./utils')
@@ -57,6 +58,13 @@ const tables = {
     tasks: {
         name: 'tasks',
         primary_key: 'key'
+    },
+    notifications: {
+        name: 'notifications',
+        primary_key: 'uid'
+    },
+    archives: {
+        name: 'archives'
     },
     test: {
         name: 'test'
@@ -148,6 +156,7 @@ exports._connectToDB = async (custom_connection_string = null) => {
                 await database.collection(table).createIndex(text_search);
             }
         });
+        using_local_db = false; // needs to happen for tests (in normal operation using_local_db is guaranteed false)
         return true;
     } catch(err) {
         logger.error(err);
@@ -252,13 +261,16 @@ exports.getFileDirectoriesAndDBs = async () => {
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'audio'),
                 user_uid: user.uid,
-                type: 'audio'
+                type: 'audio',
+                archive_path: utils.getArchiveFolder('audio', user.uid)
             });
 
             // add user's video dir to check list
             dirs_to_check.push({
                 basePath: path.join(usersFileFolder, user.uid, 'video'),
-                type: 'video'
+                user_uid: user.uid,
+                type: 'video',
+                archive_path: utils.getArchiveFolder('video', user.uid)
             });
         }
     } else {
@@ -268,13 +280,15 @@ exports.getFileDirectoriesAndDBs = async () => {
         // add audio dir to check list
         dirs_to_check.push({
             basePath: audioFolderPath,
-            type: 'audio'
+            type: 'audio',
+            archive_path: utils.getArchiveFolder('audio')
         });
 
         // add video dir to check list
         dirs_to_check.push({
             basePath: videoFolderPath,
-            type: 'video'
+            type: 'video',
+            archive_path: utils.getArchiveFolder('video')
         });
     }
 
@@ -295,7 +309,8 @@ exports.getFileDirectoriesAndDBs = async () => {
                                       : path.join(subscriptions_base_path, subscription_to_check.isPlaylist ? 'playlists/' : 'channels/', subscription_to_check.name),
             user_uid: subscription_to_check.user_uid,
             type: subscription_to_check.type,
-            sub_id: subscription_to_check['id']
+            sub_id: subscription_to_check['id'],
+            archive_path: utils.getArchiveFolder(subscription_to_check.type, subscription_to_check.user_uid, subscription_to_check)
         });
     }
 
@@ -350,7 +365,7 @@ exports.addMetadataPropertyToDB = async (property_key) => {
             }
         }
 
-        return await exports.bulkUpdateRecords('files', 'uid', update_obj);
+        return await exports.bulkUpdateRecordsByKey('files', 'uid', update_obj);
     } catch(err) {
         logger.error(err);
         return false;
@@ -447,8 +462,8 @@ exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) 
     return playlist_file_objs.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
 }
 
-exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
-    const file_obj = await exports.getVideo(uid, uuid);
+exports.deleteFile = async (uid, blacklistMode = false) => {
+    const file_obj = await exports.getVideo(uid);
     const type = file_obj.isAudio ? 'audio' : 'video';
     const folderPath = path.dirname(file_obj.path);
     const ext = type === 'audio' ? 'mp3' : 'mp4';
@@ -494,16 +509,22 @@ exports.deleteFile = async (uid, uuid = null, blacklistMode = false) => {
 
     let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
-        const archive_path = utils.getArchiveFolder(type, uuid);
+        // get id/extractor from JSON
 
-        // get ID from JSON
-
-        var jsonobj = await (type === 'audio' ? utils.getJSONMp3(name, folderPath) : utils.getJSONMp4(name, folderPath));
-        let id = null;
-        if (jsonobj) id = jsonobj.id;
+        const info_json = await (type === 'audio' ? utils.getJSONMp3(name, folderPath) : utils.getJSONMp4(name, folderPath));
+        let retrievedID = null;
+        let retrievedExtractor = null;
+        if (info_json) {
+            retrievedID = info_json['id'];
+            retrievedExtractor = info_json['extractor'];
+        }
 
         // Remove file ID from the archive file, and write it to the blacklist (if enabled)
-        await utils.deleteFileFromArchive(uid, type, archive_path, id, blacklistMode);
+        if (!blacklistMode) {
+            // workaround until a files_api is created (using archive_api would make a circular dependency)
+            await exports.removeAllRecords('archives', {extractor: retrievedExtractor, id: retrievedID, type: type, user_uid: file_obj.user_uid, sub_id: file_obj.sub_id});
+            // await archive_api.removeFromArchive(retrievedExtractor, retrievedID, type, file_obj.user_uid, file_obj.sub_id);
+        }
     }
 
     if (jsonExists) await fs.unlink(jsonPath);
@@ -534,8 +555,32 @@ exports.getVideo = async (file_uid) => {
     return await exports.getRecord('files', {uid: file_uid});
 }
 
-exports.getFiles = async (uuid = null) => {
-    return await exports.getRecords('files', {user_uid: uuid});
+exports.getAllFiles = async (sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid) => {
+    const filter_obj = {user_uid: uuid};
+    const regex = true;
+    if (text_search) {
+        if (regex) {
+            filter_obj['title'] = {$regex: `.*${text_search}.*`, $options: 'i'};
+        } else {
+            filter_obj['$text'] = { $search: utils.createEdgeNGrams(text_search) };
+        }
+    }
+
+    if (favorite_filter) {
+        filter_obj['favorite'] = true;
+    }
+
+    if (sub_id) {
+        filter_obj['sub_id'] = sub_id;
+    }
+
+    if (file_type_filter === 'audio_only') filter_obj['isAudio'] = true;
+    else if (file_type_filter === 'video_only') filter_obj['isAudio'] = false;
+    
+    const files = JSON.parse(JSON.stringify(await exports.getRecords('files', filter_obj, false, sort, range, text_search)));
+    const file_count = await exports.getRecords('files', filter_obj, true);
+
+    return {files, file_count};
 }
 
 exports.setVideoProperty = async (file_uid, assignment_obj) => {
@@ -550,7 +595,7 @@ exports.setVideoProperty = async (file_uid, assignment_obj) => {
 exports.insertRecordIntoTable = async (table, doc, replaceFilter = null) => {
     // local db override
     if (using_local_db) {
-        if (replaceFilter) local_db.get(table).remove(replaceFilter).write();
+        if (replaceFilter) local_db.get(table).remove((doc) => _.isMatch(doc, replaceFilter)).write();
         local_db.get(table).push(doc).write();
         return true;
     }
@@ -653,9 +698,15 @@ exports.getRecords = async (table, filter_obj = null, return_count = false, sort
 
 // Update
 
-exports.updateRecord = async (table, filter_obj, update_obj) => {
+exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false) => {
     // local db override
     if (using_local_db) {
+        if (nested_mode) {
+            // if object is nested we need to handle it differently
+            update_obj = utils.convertFlatObjectToNestedObject(update_obj);
+            exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').merge(update_obj).write();
+            return true;
+        }
         exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').assign(update_obj).write();
         return true;
     }
@@ -677,7 +728,19 @@ exports.updateRecords = async (table, filter_obj, update_obj) => {
     return !!(output['result']['ok']);
 }
 
-exports.bulkUpdateRecords = async (table, key_label, update_obj) => {
+exports.removePropertyFromRecord = async (table, filter_obj, remove_obj) => {
+    // local db override
+    if (using_local_db) {
+        const props_to_remove = Object.keys(remove_obj);
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').unset(props_to_remove).write();
+        return true;
+    }
+
+    const output = await database.collection(table).updateOne(filter_obj, {$unset: remove_obj});
+    return !!(output['result']['ok']);
+}
+
+exports.bulkUpdateRecordsByKey = async (table, key_label, update_obj) => {
     // local db override
     if (using_local_db) {
         local_db.get(table).each((record) => {
@@ -1091,6 +1154,14 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
                         filtered &= (record[filter_prop].search(new RegExp(filter_prop_value['$regex'], filter_prop_value['$options'])) !== -1);
                     } else if ('$ne' in filter_prop_value) {
                         filtered &= filter_prop in record && record[filter_prop] !== filter_prop_value['$ne'];
+                    } else if ('$lt' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] < filter_prop_value['$lt'];
+                    } else if ('$gt' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] > filter_prop_value['$gt'];
+                    } else if ('$lte' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] <= filter_prop_value['$lt'];
+                    } else if ('$gte' in filter_prop_value) {
+                        filtered &= filter_prop in record && record[filter_prop] >= filter_prop_value['$gt'];
                     }
                 } else {
                     // handle case of nested property check
@@ -1104,4 +1175,9 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
         return filtered;
     });
     return return_val;
+}
+
+// should only be used for tests
+exports.setLocalDBMode = (mode) => {
+    using_local_db = mode;
 }

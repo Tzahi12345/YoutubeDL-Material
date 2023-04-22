@@ -111,6 +111,37 @@ paths:
                 $ref: '#/components/schemas/GetAllFilesResponse'
       security:
         - Auth query parameter: []
+  /api/rss:
+    get:
+      tags:
+        - files
+      summary: Generates an RSS feed
+      description: Generates an RSS feed for downloaded files
+      operationId: get-rss
+      parameters:
+        - in: query
+          name: params
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/GetAllFilesRequest'
+            - type: object
+              properties:
+                uuid:
+                  type: string
+                  description: user uid
+                  default: null
+          style: form
+          explode: true
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: RSS feed
+      security:
+        - Auth query parameter: []
   /api/getFile:
     post:
       tags:
@@ -547,6 +578,69 @@ paths:
           description: If the archive dir is not found, 404 is sent as a response
       security:
         - Auth query parameter: []
+  /api/deleteArchiveItems:
+    post:
+      tags:
+        - archive
+      summary: Delete item from archive
+      description: 'Deletes an item from the archive'
+      operationId: post-api-deleteArchiveItems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteArchiveItemsRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/importArchive:
+    post:
+      tags:
+        - archive
+      summary: Imports archive
+      description: 'Imports an existing archive.txt file'
+      operationId: post-api-importArchive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportArchiveRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/uploadCookies:
+    post:
+      tags:
+        - downloader
+      summary: Upload cookies
+      description: 'Uploads cookies file to be used during downloading'
+      operationId: post-api-uploadCookies
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadCookiesRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
   /api/updaterStatus:
     get:
       tags:
@@ -811,7 +905,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessObject'
+                $ref: '#/components/schemas/RestartDownloadResponse'
       requestBody:
         content:
           application/json:
@@ -1589,6 +1683,10 @@ components:
           type: string
           description: Height of the video, if known
           example: '1080'
+        maxHeight:
+          type: string
+          description: Max height that should be used, useful for playlists. selectedHeight will override this.
+          example: '1080'
         maxBitrate:
           type: string
           description: Specify ffmpeg/avconv audio quality
@@ -1597,6 +1695,9 @@ components:
           $ref: '#/components/schemas/FileType'
         cropFileSettings:
           $ref: '#/components/schemas/CropFileSettings'
+        ignoreArchive:
+          type: boolean
+          description: If using youtube-dl archive, download will ignore it
     DownloadResponse:
       type: object
       properties:
@@ -1621,6 +1722,13 @@ components:
       properties:
         download:
           $ref: '#/components/schemas/Download'
+    RestartDownloadResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessObject'
+        - type: object
+          properties:
+            new_download_uid:
+              type: string
     GetAllDownloadsRequest:
       type: object
       properties:
@@ -1673,6 +1781,16 @@ components:
       required:
         - task_key
         - new_data
+    UpdateTaskOptionsRequest:
+      type: object
+      properties:
+        task_key:
+          type: string
+        new_options:
+          type: object
+      required:
+        - task_key
+        - new_options
     GetTaskResponse:
       type: object
       properties:
@@ -1741,29 +1859,39 @@ components:
             description: Two elements allowed, start index and end index
           minItems: 2
           maxItems: 2
+          default: null
         text_search:
           type: string
           description: Filter files by title
+          default: null
         file_type_filter:
           $ref: '#/components/schemas/FileTypeFilter'
+        favorite_filter:
+          type: boolean
+          description: If set to true, only gets favorites
+          default: false
         sub_id:
           type: string
           description: Include if you want to filter by subscription
+          default: null
     Sort:
       type: object
       properties:
         by:
           type: string
           description: Property to sort by
+          default: registered
         order:
           type: number
           description: 1 for ascending, -1 for descending
+          default: -1
     FileTypeFilter:
       type: string
       enum:
         - audio_only
         - video_only
         - both
+      default: both
     GetAllFilesResponse:
       required:
         - files
@@ -1881,16 +2009,11 @@ components:
           description: Number of files removed
     DeleteSubscriptionFileRequest:
       required:
-        - file
-        - sub
+        - file_uid
       type: object
       properties:
-        file:
-          type: string
         file_uid:
           type: string
-        sub:
-          $ref: '#/components/schemas/SubscriptionRequestData'
         deleteForever:
           type: boolean
           description: 'If true, does not remove id from archive. Only valid if youtube-dl archive is enabled in settings.'
@@ -2030,17 +2153,83 @@ components:
         type:
           $ref: '#/components/schemas/FileType'
     DownloadArchiveRequest:
-      required:
-        - sub
       type: object
       properties:
-        sub:
-          required:
-            - archive_dir
-          type: object
-          properties:
-            archive_dir:
-              type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
+    Archive:
+      required:
+        - extractor
+        - id
+        - type
+        - title
+        - timestamp
+        - uid
+      type: object
+      properties:
+        extractor:
+          type: string
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        title:
+          type: string
+        user_uid:
+          type: string
+        sub_id:
+          type: string
+        timestamp:
+          type: number
+        uid:
+          type: string
+    DeleteArchiveItemsRequest:
+      type: object
+      required:
+        - archives
+      properties:
+        archives:
+          type: array
+          items:
+            $ref: '#/components/schemas/Archive'
+    ImportArchiveRequest:
+      type: object
+      required:
+        - archive
+        - type
+      properties:
+        archive:
+          type: string
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
+    GetArchivesRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FileType'
+        sub_id:
+          type: string
+    GetArchivesResponse:
+      type: object
+      required:
+        - archives
+      properties:
+        archives:
+          type: array
+          items:
+            $ref: '#/components/schemas/Archive'
+    UploadCookiesRequest:
+      type: object
+      required:
+        - cookies
+      properties:
+        cookies:
+          type: string
+          format: binary
     UpdaterStatus:
       required:
         - details
@@ -2061,8 +2250,6 @@ components:
         tag:
           type: string
     DBInfoResponse:
-      required:
-        - db_info
       type: object
       properties:
         using_local_db:
@@ -2083,6 +2270,8 @@ components:
             roles:
               $ref: '#/components/schemas/TableInfo'
             download_queue:
+              $ref: '#/components/schemas/TableInfo'
+            archives:
               $ref: '#/components/schemas/TableInfo'
     TransferDBResponse:
       required:
@@ -2383,6 +2572,7 @@ components:
         - upload_date
         - uploader
         - url
+        - favorite
       type: object
       properties:
         id:
@@ -2412,6 +2602,8 @@ components:
           type: string
         uid:
           type: string
+        user_uid:
+          type: string
         sharingEnabled:
           type: boolean
         category:
@@ -2430,6 +2622,8 @@ components:
         abr:
           type: number
           description: In Kbps
+        favorite:
+          type: boolean
     Playlist:
       required:
         - uids
@@ -2460,6 +2654,8 @@ components:
         user_uid:
           type: string
         auto:
+          type: boolean
+        sharingEnabled:
           type: boolean
     Download:
       required:
@@ -2505,6 +2701,10 @@ components:
           type: string
           description: Error text, set if download fails.
           nullable: true
+        error_type:
+          type: string
+          description: Error type, may or may not be set in case of an error
+          nullable: true
         user_uid:
           type: string
         sub_id:
@@ -2543,6 +2743,8 @@ components:
           type: string
         schedule:
           type: object
+        options:
+          type: object
     Schedule:
       required:
         - type
@@ -2567,6 +2769,8 @@ components:
               type: number
             timestamp:
               type: number
+            tz:
+              type: string
     DBBackup:
       required:
         - name
@@ -2755,6 +2959,44 @@ components:
           type: string
         date:
           type: string
+    Notification:
+      required:
+        - uid
+        - type
+        - text
+        - read
+        - timestamp
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/NotificationType'
+        uid:
+          type: string
+        user_uid:
+          type: string
+        action:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationAction'
+        read:
+          type: boolean
+        data:
+          type: object
+        timestamp:
+          type: number
+    NotificationAction:
+      type: string
+      enum:
+      - play
+      - retry_download
+      - view_download_error
+      - view_tasks
+    NotificationType:
+      type: string
+      enum:
+      - download_complete
+      - download_error
+      - task_finished
     BaseChangePermissionsRequest:
       required:
         - permission
@@ -2886,6 +3128,29 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/UserPermission'
+    DeleteNotificationRequest:
+      required:
+        - uid
+      type: object
+      properties:
+        uid:
+          type: string
+    SetNotificationsToReadRequest:
+      required:
+        - uids
+      type: object
+      properties:
+        uids:
+          type: array
+          items:
+            type: string
+    GetNotificationsResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
   securitySchemes:
     Auth query parameter:
       name: apiKey

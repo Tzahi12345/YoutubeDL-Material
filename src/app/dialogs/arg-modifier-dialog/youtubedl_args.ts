@@ -72,7 +72,7 @@ const download = [
     {'key': '--hls-prefer-ffmpeg', 'description': 'Use ffmpeg instead of the native HLS downloader'},
     {'key': '--hls-use-mpegts', 'description': 'Use the mpegts container for HLS videos, allowing to play the video while downloading (some players may not be able to play it)'},
     {'key': '--external-downloader', 'description': 'Use the specified external downloader. Currently supports aria2c,avconv,axel,curl,ffmpeg,httpie,wget'},
-    {'key': '--external-downloader-args'}
+    {'key': '--external-downloader-args', 'description': 'Give these arguments to the external downloader'}
 ];
 
 const filesystem = [
@@ -195,7 +195,7 @@ const post_processing = [
     {'key': '--convert-subs', 'description': 'Convert the subtitles to other format (currently supported: srt|ass|vtt|lrc)'}
 ];
 
-export const args_info = {
+export const args_info: ArgsInfo = {
     'uncategorized'  : {'label': 'Main'},
     'network'        : {'label': 'Network'},
     'geo_restriction': {'label': 'Geo Restriction'},
@@ -212,7 +212,7 @@ export const args_info = {
     'post_processing': {'label': 'Post Processing'},
 };
 
-export const args = {
+export const args: ArgsByCategory = {
     'uncategorized'  : uncategorized,
     'network'        : network,
     'geo_restriction': geo_restriction,
@@ -228,3 +228,8 @@ export const args = {
     'adobe_pass'     : adobe_pass,
     'post_processing': post_processing
 }
+
+export type ArgInfo = {label: string}
+export type ArgsInfo = {[key: string]: ArgInfo}
+export type Arg = {key: string, description: string};
+export type ArgsByCategory = {[key: string]: Arg[]};

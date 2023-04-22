@@ -1,0 +1,143 @@
+<mat-form-field class="filter">
+  <mat-icon matPrefix>search</mat-icon>
+  <mat-label i18n="Filter">Filter</mat-label>
+  <input matInput [(ngModel)]="text_filter" (keyup)="applyFilter($event)" #input>
+</mat-form-field>
+
+<div [hidden]="!(archives && archives.length > 0)">
+    <div class="mat-elevation-z8">
+        <mat-table matSort [dataSource]="dataSource">
+
+          <!-- Select Column -->
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                              [checked]="selection.hasValue() && isAllSelected()"
+                              [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                              (change)="$event ? selection.toggle(row) : null"
+                              [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+                <mat-icon class="audio-video-icon">{{(row.type === 'audio') ? 'audiotrack' : 'movie'}}</mat-icon>
+              </mat-cell>
+            </ng-container>
+      
+          <!-- Date Column -->
+          <ng-container matColumnDef="timestamp">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.timestamp*1000 | date: 'short'}} </mat-cell>
+          </ng-container>
+      
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="max-two-lines" [matTooltip]="element.title ? element.title : null">
+                    {{element.title}}
+                </span>
+            </mat-cell>
+          </ng-container>
+      
+           <!-- ID Column -->
+           <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="ID">ID</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="one-line" [matTooltip]="element.title ? element.title : null">
+                    {{element.id}}
+                </span>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Extractor Column -->
+          <ng-container matColumnDef="extractor">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Extractor">Extractor</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <span class="one-line" [matTooltip]="element.extractor? element.extractor : null">
+                    {{element.extractor}}
+                </span>
+            </mat-cell>
+          </ng-container>
+      
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+      </div>
+</div>
+
+<div *ngIf="(!archives || archives.length === 0)">
+  <h4 style="text-align: center; margin-top: 10px;" i18n="Archives empty">Archives empty</h4>
+</div>
+
+<div style="margin: 10px 10px 10px 0px; display: flex;">
+  <span style="flex-grow: 1;" class="flex-items">
+    <button [disabled]="selection.selected.length === 0" color="warn" style="margin: 10px;" mat-stroked-button i18n="Delete selected" (click)="openDeleteSelectedArchivesDialog()">Delete selected</button>
+  </span>
+  <span class="flex-items">
+    <button [disabled]="!(archives && archives.length > 0)" (click)="downloadArchive()" mat-stroked-button i18n="Download archive">Download archive</button>
+    <mat-form-field style="width: 150px; margin-bottom: -1.25em; margin-left: 10px;">
+      <mat-label i18n="Subscription">Subscription</mat-label>
+      <mat-select [ngModel]="sub_id" (ngModelChange)="subFilterSelectionChanged($event)">
+        <mat-option [value]="'none'" i18n="None">None</mat-option>
+        <mat-option *ngFor="let sub of postsService.subscriptions" [value]="sub.id">{{sub.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field style="width: 100px; margin-bottom: -1.25em; margin-left: 10px;">
+      <mat-label i18n="File type">File type</mat-label>
+      <mat-select [ngModel]="type" (ngModelChange)="typeFilterSelectionChanged($event)" [disabled]="sub_id !== 'none'">
+        <mat-option [value]="'both'" i18n="Both">Both</mat-option>
+        <mat-option [value]="'video'" i18n="Video">Video</mat-option>
+        <mat-option [value]="'audio'" i18n="Audio">Audio</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </span>
+</div>
+
+<div class="file-drop-parent">
+  <ngx-file-drop [multiple]="false" accept=".txt" dropZoneLabel="Drop file here" (onFileDrop)="dropped($event)">
+      <ng-template class="file-drop" ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+          <div style="text-align: center">
+              <div>
+                  <ng-container i18n="Drag and Drop">Drag and Drop</ng-container>
+              </div>
+              <div style="margin-top: 6px;">
+                  <button mat-stroked-button (click)="openFileSelector()">Browse Files</button>
+              </div>
+          </div>
+      </ng-template>
+  </ngx-file-drop>
+</div>
+
+<div style="margin-top: 10px; color: white">
+  <table class="table">
+      <tbody class="upload-name-style">
+          <tr *ngFor="let item of files; let i=index">
+              <td style="vertical-align: middle; border-top: unset">
+                  <strong>{{ item.relativePath }}</strong>
+              </td>
+              <td style="border-top: unset">
+                <div style="float: right">
+                  <mat-form-field style="width: 150px;">
+                    <mat-label i18n="Subscription">Subscription</mat-label>
+                    <mat-select [ngModel]="upload_sub_id" (ngModelChange)="subUploadFilterSelectionChanged($event)">
+                      <mat-option [value]="'none'" i18n="None">None</mat-option>
+                      <mat-option *ngFor="let sub of postsService.subscriptions" [value]="sub.id">{{sub.name}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field style="width: 100px; margin-left: 10px">
+                    <mat-label i18n="File type">File type</mat-label>
+                    <mat-select [(ngModel)]="upload_type" [value]="upload_type" [disabled]="upload_sub_id !== 'none'">
+                      <mat-option [value]="'video'" i18n="Video">Video</mat-option>
+                      <mat-option [value]="'audio'" i18n="Audio">Audio</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button style="margin-left: 10px" [disabled]="uploading_archive || uploaded_archive" (click)="importArchive()" matTooltip="Upload" i18n-matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon><mat-spinner *ngIf="uploading_archive" class="spinner" [diameter]="38"></mat-spinner></button>
+                </div>
+              </td>
+          </tr>
+      </tbody>
+  </table>
+</div>

@@ -12,7 +12,7 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-@import '~@angular/material/theming';
+@import '@angular/material/theming';
 // Plus imports for other components in your app.
 
 /*// Typography
@@ -42,7 +42,7 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
   @include angular-material-theme($dark-theme);
 }
 
-.mat-stroked-button, .mat-raised-button, .mat-flat-button {
+.mat-mdc-outlined-button, .mat-mdc-raised-button, .mat-mdc-flat-button {
   border-radius: 24px !important
 }
 
@@ -142,4 +142,14 @@ $light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
     U+FEFF, U+FFFD;
+}
+
+.mat-mdc-icon {
+  align-items: center;
+  display: inline-flex;
+}
+
+.mdc-icon-button {
+  align-items: center !important;
+  display: inline-flex !important;
 }

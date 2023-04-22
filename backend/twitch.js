@@ -4,19 +4,28 @@ const logger = require('./logger');
 const moment = require('moment');
 const fs = require('fs-extra')
 const path = require('path');
+const { promisify } = require('util');
+const child_process = require('child_process');
 
-async function getCommentsForVOD(clientID, clientSecret, vodId) {
-    const { promisify } = require('util');
-    const child_process = require('child_process');
+async function getCommentsForVOD(vodId) {
     const exec = promisify(child_process.exec);
     
     // Reject invalid params to prevent command injection attack
-    if (!clientID.match(/^[0-9a-z]+$/) || !clientSecret.match(/^[0-9a-z]+$/) || !vodId.match(/^[0-9a-z]+$/)) {
-        logger.error('Client ID, client secret, and VOD ID must be purely alphanumeric. Twitch chat download failed!');
+    if (!vodId.match(/^[0-9a-z]+$/)) {
+        logger.error('VOD ID must be purely alphanumeric. Twitch chat download failed!');
         return null;
     }
 
-    const result = await exec(`tcd --video ${vodId} --client-id ${clientID} --client-secret ${clientSecret} --format json -o appdata`, {stdio:[0,1,2]});
+    const is_windows = process.platform === 'win32';
+    const cliExt = is_windows ? '.exe' : ''
+    const cliPath = `TwitchDownloaderCLI${cliExt}`
+
+    if (!fs.existsSync(cliPath)) {
+        logger.error(`${cliPath} does not exist. Twitch chat download failed! Get it here: https://github.com/lay295/TwitchDownloader`);
+        return null;
+    }
+
+    const result = await exec(`TwitchDownloaderCLI chatdownload -u ${vodId} -o appdata/${vodId}.json`, {stdio:[0,1,2]});
 
     if (result['stderr']) {
         logger.error(`Failed to download twitch comments for ${vodId}`);
@@ -73,9 +82,7 @@ async function getTwitchChatByFileID(id, type, user_uid, uuid, sub) {
 async function downloadTwitchChatByVODID(vodId, id, type, user_uid, sub, customFileFolderPath = null) {
     const usersFileFolder           = config_api.getConfigItem('ytdl_users_base_path');
     const subscriptionsFileFolder   = config_api.getConfigItem('ytdl_subscriptions_base_path');
-    const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
-    const twitch_client_secret      = config_api.getConfigItem('ytdl_twitch_client_secret');
-    const chat = await getCommentsForVOD(twitch_client_id, twitch_client_secret, vodId);
+    const chat = await getCommentsForVOD(vodId);
 
     // save file if needed params are included
     let file_path = null;

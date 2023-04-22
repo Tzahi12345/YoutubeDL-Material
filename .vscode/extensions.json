@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "angular.ng-template",
+        "dbaeumer.vscode-eslint",
+        "waderyan.gitblame",
+        "42crunch.vscode-openapi",
+        "redhat.vscode-yaml",
+        "christian-kohler.npm-intellisense",
+        "hbenl.vscode-mocha-test-adapter"
+    ]
+}

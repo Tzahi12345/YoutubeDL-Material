@@ -18,7 +18,7 @@ services:
             - "8998:17442"
         image: tzahi12345/youtubedl-material:latest
     ytdl-mongo-db:
-        image: mongo
+        image: mongo:4
         logging:
             driver: "none"          
         container_name: mongo-db

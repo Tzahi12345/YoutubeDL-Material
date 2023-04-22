@@ -4,6 +4,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const archiver = require('archiver');
 const fetch = require('node-fetch');
 const ProgressBar = require('progress');
+const winston = require('winston');
 
 const config_api = require('./config');
 const logger = require('./logger');
@@ -12,7 +13,7 @@ const CONSTS = require('./consts');
 const is_windows = process.platform === 'win32';
 
 // replaces .webm with appropriate extension
-function getTrueFileName(unfixed_path, type) {
+exports.getTrueFileName = (unfixed_path, type) => {
     let fixed_path = unfixed_path;
 
     const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
@@ -27,13 +28,13 @@ function getTrueFileName(unfixed_path, type) {
     return fixed_path;
 }
 
-async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
+exports.getDownloadedFilesByType = async (basePath, type, full_metadata = false) => {
     // return empty array if the path doesn't exist
     if (!(await fs.pathExists(basePath))) return [];
 
     let files = [];
     const ext = type === 'audio' ? 'mp3' : 'mp4';
-    var located_files = await recFindByExt(basePath, ext);
+    var located_files = await exports.recFindByExt(basePath, ext);
     for (let i = 0; i < located_files.length; i++) {
         let file = located_files[i];
         var file_path = file.substring(basePath.includes('\\') ? basePath.length+1 : basePath.length, file.length);
@@ -41,33 +42,33 @@ async function getDownloadedFilesByType(basePath, type, full_metadata = false) {
         var stats = await fs.stat(file);
 
         var id = file_path.substring(0, file_path.length-4);
-        var jsonobj = await getJSONByType(type, id, basePath);
+        var jsonobj = await exports.getJSONByType(type, id, basePath);
         if (!jsonobj) continue;
         if (full_metadata) {
             jsonobj['id'] = id;
             files.push(jsonobj);
             continue;
         }
-        var upload_date = formatDateString(jsonobj.upload_date);
+        var upload_date = exports.formatDateString(jsonobj.upload_date);
 
         var isaudio = type === 'audio';
-        var file_obj = new File(id, jsonobj.title, jsonobj.thumbnail, isaudio, jsonobj.duration, jsonobj.webpage_url, jsonobj.uploader,
+        var file_obj = new exports.File(id, jsonobj.title, jsonobj.thumbnail, isaudio, jsonobj.duration, jsonobj.webpage_url, jsonobj.uploader,
                                 stats.size, file, upload_date, jsonobj.description, jsonobj.view_count, jsonobj.height, jsonobj.abr);
         files.push(file_obj);
     }
     return files;
 }
 
-async function createContainerZipFile(file_name, container_file_objs) {
+exports.createContainerZipFile = async (file_name, container_file_objs) => {
     const container_files_to_download = [];
     for (let i = 0; i < container_file_objs.length; i++) {
         const container_file_obj = container_file_objs[i];
         container_files_to_download.push(container_file_obj.path);
     }
-    return await createZipFile(path.join('appdata', file_name + '.zip'), container_files_to_download);
+    return await exports.createZipFile(path.join('appdata', file_name + '.zip'), container_files_to_download);
 }
 
-async function createZipFile(zip_file_path, file_paths) {
+exports.createZipFile = async (zip_file_path, file_paths) => {
     let output = fs.createWriteStream(zip_file_path);
 
     var archive = archiver('zip', {
@@ -95,7 +96,7 @@ async function createZipFile(zip_file_path, file_paths) {
     return zip_file_path;
 }
 
-function getJSONMp4(name, customPath, openReadPerms = false) {
+exports.getJSONMp4 = (name, customPath, openReadPerms = false) => {
     var obj = null; // output
     if (!customPath) customPath = config_api.getConfigItem('ytdl_video_folder_path');
     var jsonPath = path.join(customPath, name + ".info.json");
@@ -110,7 +111,7 @@ function getJSONMp4(name, customPath, openReadPerms = false) {
     return obj;
 }
 
-function getJSONMp3(name, customPath, openReadPerms = false) {
+exports.getJSONMp3 = (name, customPath, openReadPerms = false) => {
     var obj = null;
     if (!customPath) customPath = config_api.getConfigItem('ytdl_audio_folder_path');
     var jsonPath = path.join(customPath, name + ".info.json");
@@ -127,11 +128,11 @@ function getJSONMp3(name, customPath, openReadPerms = false) {
     return obj;
 }
 
-function getJSON(file_path, type) {
+exports.getJSON = (file_path, type) => {
     const ext = type === 'audio' ? '.mp3' : '.mp4';
     let obj = null;
-    var jsonPath = removeFileExtension(file_path) + '.info.json';
-    var alternateJsonPath = removeFileExtension(file_path) + `${ext}.info.json`;
+    var jsonPath = exports.removeFileExtension(file_path) + '.info.json';
+    var alternateJsonPath = exports.removeFileExtension(file_path) + `${ext}.info.json`;
     if (fs.existsSync(jsonPath))
     {
         obj = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
@@ -142,12 +143,12 @@ function getJSON(file_path, type) {
     return obj;
 }
 
-function getJSONByType(type, name, customPath, openReadPerms = false) {
-    return type === 'audio' ? getJSONMp3(name, customPath, openReadPerms) : getJSONMp4(name, customPath, openReadPerms)
+exports.getJSONByType = (type, name, customPath, openReadPerms = false) => {
+    return type === 'audio' ? exports.getJSONMp3(name, customPath, openReadPerms) : exports.getJSONMp4(name, customPath, openReadPerms)
 }
 
-function getDownloadedThumbnail(file_path) {
-    const file_path_no_extension = removeFileExtension(file_path);
+exports.getDownloadedThumbnail = (file_path) => {
+    const file_path_no_extension = exports.removeFileExtension(file_path);
 
     let jpgPath = file_path_no_extension + '.jpg';
     let webpPath = file_path_no_extension + '.webp';
@@ -163,7 +164,7 @@ function getDownloadedThumbnail(file_path) {
         return null;
 }
 
-function getExpectedFileSize(input_info_jsons) {
+exports.getExpectedFileSize = (input_info_jsons) => {
     // treat single videos as arrays to have the file sizes checked/added to. makes the code cleaner
     const info_jsons = Array.isArray(input_info_jsons) ? input_info_jsons : [input_info_jsons];
 
@@ -186,12 +187,12 @@ function getExpectedFileSize(input_info_jsons) {
     return expected_filesize;
 }
 
-function fixVideoMetadataPerms(file_path, type) {
+exports.fixVideoMetadataPerms = (file_path, type) => {
     if (is_windows) return;
 
     const ext = type === 'audio' ? '.mp3' : '.mp4';
 
-    const file_path_no_extension = removeFileExtension(file_path);
+    const file_path_no_extension = exports.removeFileExtension(file_path);
 
     const files_to_fix = [
         // JSONs
@@ -208,10 +209,10 @@ function fixVideoMetadataPerms(file_path, type) {
     }
 }
 
-function deleteJSONFile(file_path, type) {
+exports.deleteJSONFile = (file_path, type) => {
     const ext = type === 'audio' ? '.mp3' : '.mp4';
 
-    const file_path_no_extension = removeFileExtension(file_path);
+    const file_path_no_extension = exports.removeFileExtension(file_path);
 
     let json_path = file_path_no_extension + '.info.json';
     let alternate_json_path = file_path_no_extension + ext + '.info.json';
@@ -220,58 +221,7 @@ function deleteJSONFile(file_path, type) {
     if (fs.existsSync(alternate_json_path)) fs.unlinkSync(alternate_json_path);
 }
 
-// archive helper functions
-
-async function removeIDFromArchive(archive_path, type, id) {
-    const archive_file = path.join(archive_path, `archive_${type}.txt`);
-    const data = await fs.readFile(archive_file, {encoding: 'utf-8'});
-    if (!data) {
-        logger.error('Archive could not be found.');
-        return;
-    }
-
-    let dataArray = data.split('\n'); // convert file data in an array
-    const searchKeyword = id; // we are looking for a line, contains, key word id in the file
-    let lastIndex = -1; // let say, we have not found the keyword
-
-    for (let index=0; index<dataArray.length; index++) {
-        if (dataArray[index].includes(searchKeyword)) { // check if a line contains the id keyword
-            lastIndex = index; // found a line includes a id keyword
-            break;
-        }
-    }
-
-    if (lastIndex === -1) return null;
-
-    const line = dataArray.splice(lastIndex, 1); // remove the keyword id from the data Array
-
-    // UPDATE FILE WITH NEW DATA
-    const updatedData = dataArray.join('\n');
-    await fs.writeFile(archive_file, updatedData);
-    if (line) return Array.isArray(line) && line.length === 1 ? line[0] : line;
-}
-
-async function writeToBlacklist(archive_folder, type, line) {
-    let blacklistPath = path.join(archive_folder, (type === 'audio') ? 'blacklist_audio.txt' : 'blacklist_video.txt');
-    // adds newline to the beginning of the line
-    line.replace('\n', '');
-    line.replace('\r', '');
-    line = '\n' + line;
-    await fs.appendFile(blacklistPath, line);
-}
-
-async function deleteFileFromArchive(uid, type, archive_path, id, blacklistMode) {
-    const archive_file = path.join(archive_path, `archive_${type}.txt`);
-    if (await fs.pathExists(archive_path)) {
-        const line = id ? await removeIDFromArchive(archive_path, type, id) : null;
-        if (blacklistMode && line) await writeToBlacklist(archive_path, type, line);
-    } else {
-        logger.info(`Could not find archive file for file ${uid}. Creating...`);
-        await fs.close(await fs.open(archive_file, 'w'));
-    }
-}
-
-function durationStringToNumber(dur_str) {
+exports.durationStringToNumber = (dur_str) => {
     if (typeof dur_str === 'number') return dur_str;
     let num_sum = 0;
     const dur_str_parts = dur_str.split(':');
@@ -281,23 +231,22 @@ function durationStringToNumber(dur_str) {
     return num_sum;
 }
 
-function getMatchingCategoryFiles(category, files) {
+exports.getMatchingCategoryFiles = (category, files) => {
     return files && files.filter(file => file.category && file.category.uid === category.uid);
 }
 
-function addUIDsToCategory(category, files) {
-    const files_that_match = getMatchingCategoryFiles(category, files);
+exports.addUIDsToCategory = (category, files) => {
+    const files_that_match = exports.getMatchingCategoryFiles(category, files);
     category['uids'] = files_that_match.map(file => file.uid);
     return files_that_match;
 }
 
-function getCurrentDownloader() {
+exports.getCurrentDownloader = () => {
     const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
     return details_json['downloader'];
 }
 
-async function recFindByExt(base, ext, files, result, recursive = true)
-{
+exports.recFindByExt = async (base, ext, files, result, recursive = true) => {
     files = files || (await fs.readdir(base))
     result = result || []
 
@@ -306,7 +255,7 @@ async function recFindByExt(base, ext, files, result, recursive = true)
         if ( (await fs.stat(newbase)).isDirectory() )
         {
             if (!recursive) continue;
-            result = await recFindByExt(newbase,ext,await fs.readdir(newbase),result)
+            result = await exports.recFindByExt(newbase,ext,await fs.readdir(newbase),result)
         }
         else
         {
@@ -319,17 +268,17 @@ async function recFindByExt(base, ext, files, result, recursive = true)
     return result
 }
 
-function removeFileExtension(filename) {
+exports.removeFileExtension = (filename) => {
     const filename_parts = filename.split('.');
     filename_parts.splice(filename_parts.length - 1);
     return filename_parts.join('.');
 }
 
-function formatDateString(date_string) {
+exports.formatDateString = (date_string) => {
     return date_string ? `${date_string.substring(0, 4)}-${date_string.substring(4, 6)}-${date_string.substring(6, 8)}` : 'N/A';
 }
 
-function createEdgeNGrams(str) {
+exports.createEdgeNGrams = (str) => {
     if (str && str.length > 3) {
         const minGram = 3
         const maxGram = str.length
@@ -351,7 +300,7 @@ function createEdgeNGrams(str) {
 
 // ffmpeg helper functions
 
-async function cropFile(file_path, start, end, ext) {
+exports.cropFile = async (file_path, start, end, ext) => {
     return new Promise(resolve => {
         const temp_file_path = `${file_path}.cropped${ext}`;
         let base_ffmpeg_call = ffmpeg(file_path);
@@ -380,13 +329,13 @@ async function cropFile(file_path, start, end, ext) {
  * setTimeout, but its a promise.
  * @param {number} ms
  */
- async function wait(ms) {
+exports.wait = async (ms) => {
     await new Promise(resolve => {
         setTimeout(resolve, ms);
     });
 }
 
-async function checkExistsWithTimeout(filePath, timeout) {
+exports.checkExistsWithTimeout = async (filePath, timeout) => {
     return new Promise(function (resolve, reject) {
 
         var timer = setTimeout(function () {
@@ -415,7 +364,7 @@ async function checkExistsWithTimeout(filePath, timeout) {
 }
 
 // helper function to download file using fetch
-async function fetchFile(url, path, file_label) {
+exports.fetchFile = async (url, path, file_label) => {
     var len = null;
     const res = await fetch(url);
 
@@ -442,7 +391,7 @@ async function fetchFile(url, path, file_label) {
     });
 }
 
-async function restartServer(is_update = false) {
+exports.restartServer = async (is_update = false) => {
     logger.info(`${is_update ? 'Update complete! ' : ''}Restarting server...`);
 
     // the following line restarts the server through pm2
@@ -455,7 +404,7 @@ async function restartServer(is_update = false) {
 //  - if already exists and doesn't have value, ignore
 //  - if it doesn't exist and has value, add both arg and value
 //  - if it doesn't exist and doesn't have value, add arg
-function injectArgs(original_args, new_args) {
+exports.injectArgs = (original_args, new_args) => {
     const updated_args = original_args.slice();
     try {
         for (let i = 0; i < new_args.length; i++) {
@@ -483,11 +432,11 @@ function injectArgs(original_args, new_args) {
     return updated_args;
 }
 
-function filterArgs(args, args_to_remove) {
+exports.filterArgs = (args, args_to_remove) => {
     return args.filter(x => !args_to_remove.includes(x));
 }
 
-const searchObjectByString = function(o, s) {
+exports.searchObjectByString = (o, s) => {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, '');           // strip a leading dot
     var a = s.split('.');
@@ -502,7 +451,7 @@ const searchObjectByString = function(o, s) {
     return o;
 }
 
-function stripPropertiesFromObject(obj, properties, whitelist = false) {
+exports.stripPropertiesFromObject = (obj, properties, whitelist = false) => {
     if (!whitelist) {
         const new_obj = JSON.parse(JSON.stringify(obj));
         for (let field of properties) {
@@ -518,7 +467,7 @@ function stripPropertiesFromObject(obj, properties, whitelist = false) {
     return new_obj;
 }
 
-function getArchiveFolder(type, user_uid = null, sub = null) {
+exports.getArchiveFolder = (type, user_uid = null, sub = null) => {
     const usersFolderPath = config_api.getConfigItem('ytdl_users_base_path');
     const subsFolderPath  = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
@@ -535,6 +484,38 @@ function getArchiveFolder(type, user_uid = null, sub = null) {
             return path.join('appdata', 'archives');
         }
     }
+}
+
+exports.getBaseURL = () => {
+    return `${config_api.getConfigItem('ytdl_url')}:${config_api.getConfigItem('ytdl_port')}`
+}
+
+exports.updateLoggerLevel = (new_logger_level) => {
+    const possible_levels = ['error', 'warn', 'info', 'verbose', 'debug'];
+    if (!possible_levels.includes(new_logger_level)) {
+        logger.error(`${new_logger_level} is not a valid logger level! Choose one of the following: ${possible_levels.join(', ')}.`)
+        new_logger_level = 'info';
+    }
+    logger.level = new_logger_level;
+    winston.loggers.get('console').level = new_logger_level;
+    logger.transports[2].level = new_logger_level;
+}
+
+exports.convertFlatObjectToNestedObject = (obj) => {
+    const result = {};
+    for (const key in obj) {
+      const nestedKeys = key.split('.');
+      let currentObj = result;
+      for (let i = 0; i < nestedKeys.length; i++) {
+        if (i === nestedKeys.length - 1) {
+          currentObj[nestedKeys[i]] = obj[key];
+        } else {
+          currentObj[nestedKeys[i]] = currentObj[nestedKeys[i]] || {};
+          currentObj = currentObj[nestedKeys[i]];
+        }
+      }
+    }
+    return result;
 }
 
 // objects
@@ -554,38 +535,7 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
     this.view_count = view_count;
     this.height = height;
     this.abr = abr;
-}
+    this.favorite = false;
+}   
+exports.File = File;
 
-module.exports = {
-    getJSONMp3: getJSONMp3,
-    getJSONMp4: getJSONMp4,
-    getJSON: getJSON,
-    getTrueFileName: getTrueFileName,
-    getDownloadedThumbnail: getDownloadedThumbnail,
-    getExpectedFileSize: getExpectedFileSize,
-    fixVideoMetadataPerms: fixVideoMetadataPerms,
-    deleteJSONFile: deleteJSONFile,
-    removeIDFromArchive: removeIDFromArchive,
-    writeToBlacklist: writeToBlacklist,
-    deleteFileFromArchive: deleteFileFromArchive,
-    getDownloadedFilesByType: getDownloadedFilesByType,
-    createContainerZipFile: createContainerZipFile,
-    durationStringToNumber: durationStringToNumber,
-    getMatchingCategoryFiles: getMatchingCategoryFiles,
-    getCurrentDownloader: getCurrentDownloader,
-    recFindByExt: recFindByExt,
-    removeFileExtension: removeFileExtension,
-    formatDateString: formatDateString,
-    cropFile: cropFile,
-    createEdgeNGrams: createEdgeNGrams,
-    wait: wait,
-    checkExistsWithTimeout: checkExistsWithTimeout,
-    fetchFile: fetchFile,
-    restartServer: restartServer,
-    injectArgs: injectArgs,
-    filterArgs: filterArgs,
-    searchObjectByString: searchObjectByString,
-    stripPropertiesFromObject: stripPropertiesFromObject,
-    getArchiveFolder: getArchiveFolder,
-    File: File
-}

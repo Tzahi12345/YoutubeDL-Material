@@ -1,20 +1,26 @@
-<h4 mat-dialog-title>{{file.title}}</h4>
+<h4 mat-dialog-title>
+    {{file.title}}
+    <div class="favorite-button">
+        <button [disabled]="!initialized || retrieving_file || !write_access" mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
+        <button [disabled]="!initialized || retrieving_file || !write_access" (click)="toggleFavorite()" mat-icon-button ><mat-icon>{{file.favorite ? 'favorite_filled' : 'favorite_outline'}}</mat-icon></button>
+    </div>
+</h4>
 
 <mat-dialog-content>
-    <div style="width: 100%; position: relative;">
-        <button style="position: absolute; right: 16px; top: 8px;" mat-icon-button (click)="editing = !editing"><mat-icon>edit</mat-icon></button>
-    </div>
     <mat-form-field class="info-field">
-        <input [(ngModel)]="new_file.title" matInput placeholder="Name" i18n-placeholder="Name" [disabled]="!editing">
+        <mat-label i18n="Name">Name</mat-label>
+        <input [(ngModel)]="new_file.title" matInput [disabled]="!editing">
     </mat-form-field>
     <mat-form-field class="info-field">
-        <input [(ngModel)]="new_file.url" matInput placeholder="URL" i18n-placeholder="URL" [disabled]="!editing">
+        <mat-label i18n="URL">URL</mat-label>
+        <input [(ngModel)]="new_file.url" matInput [disabled]="!editing">
         <button mat-icon-button matSuffix (click)="window.open(new_file.url, '_blank')">
             <mat-icon>link</mat-icon>
         </button>
     </mat-form-field>
     <mat-form-field class="info-field">
-        <input [(ngModel)]="new_file.uploader" matInput placeholder="Uploader" i18n-placeholder="Uploader" [disabled]="!editing">
+        <mat-label i18n="Uploader">Uploader</mat-label>
+        <input [(ngModel)]="new_file.uploader" matInput [disabled]="!editing">
     </mat-form-field>
     <mat-form-field class="info-field">
         <mat-label i18n="Upload date">Upload date</mat-label>
@@ -23,10 +29,12 @@
         <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
     <mat-form-field class="info-field">
-        <input [(ngModel)]="new_file.thumbnailPath" matInput placeholder="Thumbnail path" i18n-placeholder="Thumbnail path" [disabled]="!editing">
+        <mat-label i18n="Thumbnail path">Thumbnail path</mat-label>
+        <input [(ngModel)]="new_file.thumbnailPath" matInput [disabled]="!editing">
     </mat-form-field>
     <mat-form-field class="info-field">
-        <input [(ngModel)]="new_file.thumbnailURL" matInput placeholder="Thumbnail URL" i18n-placeholder="Thumbnail URL" [disabled]="!editing || new_file.thumbnailPath">
+        <mat-label i18n="Thumbnail URL">Thumbnail URL</mat-label>
+        <input [(ngModel)]="new_file.thumbnailURL" matInput [disabled]="!editing || new_file.thumbnailPath">
     </mat-form-field>
     <mat-form-field *ngIf="initialized && postsService.categories" class="info-field">
         <mat-select placeholder="Category" i18n-placeholder="Category" [value]="category" (selectionChange)="categoryChanged($event)" [compareWith]="categoryComparisonFunction" [disabled]="!editing">
@@ -34,15 +42,17 @@
                 N/A
             </mat-option>
             <mat-option *ngFor="let available_category of postsService.categories | keyvalue" [value]="available_category.value">
-                {{available_category.value.name}}
+                {{available_category.value['name']}}
             </mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field class="info-field">
-        <input type="number" [(ngModel)]="new_file.view_count" matInput placeholder="View count" i18n-placeholder="View count" [disabled]="!editing">
+        <mat-label i18n="View count">View count</mat-label>
+        <input type="number" [(ngModel)]="new_file.view_count" matInput [disabled]="!editing">
     </mat-form-field>
     <mat-form-field class="info-field">
-        <input type="number" [(ngModel)]="new_file.local_view_count" matInput placeholder="Local view count" i18n-placeholder="Local view count" [disabled]="!editing">
+        <mat-label i18n="Local view count">Local view count</mat-label>
+        <input type="number" [(ngModel)]="new_file.local_view_count" matInput [disabled]="!editing">
     </mat-form-field>
 
     <mat-divider style="margin-bottom: 16px;"></mat-divider>

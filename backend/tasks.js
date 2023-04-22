@@ -1,5 +1,7 @@
 const db_api = require('./db');
+const notifications_api = require('./notifications');
 const youtubedl_api = require('./youtube-dl');
+const archive_api = require('./archive');
 
 const fs = require('fs-extra');
 const logger = require('./logger');
@@ -33,6 +35,28 @@ const TASKS = {
         confirm: youtubedl_api.updateYoutubeDL,
         title: 'Update youtube-dl',
         job: null
+    },
+    delete_old_files: {
+        run: checkForAutoDeleteFiles,
+        confirm: autoDeleteFiles,
+        title: 'Delete old files',
+        job: null
+    },
+    import_legacy_archives: {
+        run: archive_api.importArchives,
+        title: 'Import legacy archives',
+        job: null
+    }
+}
+
+const defaultOptions = {
+    all: {
+        auto_confirm: false
+    },
+    delete_old_files: {
+        blacklist_files: false,
+        blacklist_subscription_files: false,
+        threshold_days: ''
     }
 }
 
@@ -45,7 +69,7 @@ function scheduleJob(task_key, schedule) {
         const dayOfWeek = schedule['data']['dayOfWeek'] != null       ? schedule['data']['dayOfWeek'] : null;
         const hour = schedule['data']['hour']           != null       ? schedule['data']['hour']      : null;
         const minute = schedule['data']['minute']       != null       ? schedule['data']['minute']    : null;
-        converted_schedule = new scheduler.RecurrenceRule(null, null, null, dayOfWeek, hour, minute);
+        converted_schedule = new scheduler.RecurrenceRule(null, null, null, dayOfWeek, hour, minute, undefined, schedule['data']['tz'] ? schedule['data']['tz'] : undefined);
     } else {
         logger.error(`Failed to schedule job '${task_key}' as the type '${schedule['type']}' is invalid.`)
         return null;
@@ -57,7 +81,7 @@ function scheduleJob(task_key, schedule) {
             logger.verbose(`Skipping running task ${task_state['key']} as it is already in progress.`);
             return;
         }
-        
+
         // remove schedule if it's a one-time task
         if (task_state['schedule']['type'] !== 'recurring') await db_api.updateRecord('tasks', {key: task_key}, {schedule: null});
         // we're just "running" the task, any confirmation should be user-initiated
@@ -77,9 +101,10 @@ exports.setupTasks = async () => {
     const tasks_keys = Object.keys(TASKS);
     for (let i = 0; i < tasks_keys.length; i++) {
         const task_key = tasks_keys[i];
+        const mergedDefaultOptions = Object.assign({}, defaultOptions['all'], defaultOptions[task_key] || {});
         const task_in_db = await db_api.getRecord('tasks', {key: task_key});
         if (!task_in_db) {
-            // insert task metadata into table if missing
+            // insert task metadata into table if missing, eventually move title to UI
             await db_api.insertRecordIntoTable('tasks', {
                 key: task_key,
                 title: TASKS[task_key]['title'],
@@ -90,9 +115,19 @@ exports.setupTasks = async () => {
                 data: null,
                 error: null,
                 schedule: null,
-                options: {}
+                options: Object.assign({}, defaultOptions['all'], defaultOptions[task_key] || {})
             });
         } else {
+            // verify all options exist in task
+            for (const key of Object.keys(mergedDefaultOptions)) {
+                const option_key = `options.${key}`;
+                // Remove any potential mangled option keys (#861)
+                await db_api.removePropertyFromRecord('tasks', {key: task_key}, {[option_key]: true});
+                if (!(task_in_db.options && task_in_db.options.hasOwnProperty(key))) {
+                    await db_api.updateRecord('tasks', {key: task_key}, {[option_key]: mergedDefaultOptions[key]}, true);
+                }
+            }
+
             // reset task if necessary
             await db_api.updateRecord('tasks', {key: task_key}, {running: false, confirming: false});
 
@@ -123,15 +158,23 @@ exports.executeTask = async (task_key) => {
 
 exports.executeRun = async (task_key) => {
     logger.verbose(`Running task ${task_key}`);
+    await db_api.updateRecord('tasks', {key: task_key}, {error: null})
     // don't set running to true when backup up DB as it will be stick "running" if restored
     if (task_key !== 'backup_local_db') await db_api.updateRecord('tasks', {key: task_key}, {running: true});
     const data = await TASKS[task_key].run();
     await db_api.updateRecord('tasks', {key: task_key}, {data: TASKS[task_key]['confirm'] ? data : null, last_ran: Date.now()/1000, running: false});
     logger.verbose(`Finished running task ${task_key}`);
+    const task_obj = await db_api.getRecord('tasks', {key: task_key});
+    await notifications_api.sendTaskNotification(task_obj, false);
+
+    if (task_obj['options'] && task_obj['options']['auto_confirm']) {
+        exports.executeConfirm(task_key);
+    }
 }
 
 exports.executeConfirm = async (task_key) => {
     logger.verbose(`Confirming task ${task_key}`);
+    await db_api.updateRecord('tasks', {key: task_key}, {error: null})
     if (!TASKS[task_key]['confirm']) {
         return null;
     }
@@ -141,6 +184,7 @@ exports.executeConfirm = async (task_key) => {
     await TASKS[task_key].confirm(data);
     await db_api.updateRecord('tasks', {key: task_key}, {confirming: false, last_confirmed: Date.now()/1000, data: null});
     logger.verbose(`Finished confirming task ${task_key}`);
+    await notifications_api.sendTaskNotification(task_obj, false);
 }
 
 exports.updateTaskSchedule = async (task_key, schedule) => {
@@ -190,6 +234,33 @@ async function checkForDuplicateFiles() {
 async function removeDuplicates(data) {
     for (let i = 0; i < data['uids'].length; i++) {
         await db_api.removeRecord('files', {uid: data['uids'][i]});
+    }
+}
+
+// auto delete files
+
+async function checkForAutoDeleteFiles() {
+    const task_obj = await db_api.getRecord('tasks', {key: 'delete_old_files'});
+    if (!task_obj['options'] || !task_obj['options']['threshold_days']) {
+        const error_message = 'Failed to do delete check because no limit was set!';
+        logger.error(error_message);
+        await db_api.updateRecord('tasks', {key: 'delete_old_files'}, {error: error_message})
+        return null;
+    }
+    const delete_older_than_timestamp = Date.now() - task_obj['options']['threshold_days']*86400*1000;
+    const files = (await db_api.getRecords('files', {registered: {$lt: delete_older_than_timestamp}}))
+    const files_to_remove = files.map(file => {return {uid: file.uid, sub_id: file.sub_id}});
+    return {files_to_remove: files_to_remove};
+}
+
+async function autoDeleteFiles(data) {
+    const task_obj = await db_api.getRecord('tasks', {key: 'delete_old_files'});
+    if (data['files_to_remove']) {
+        logger.info(`Removing ${data['files_to_remove'].length} old files!`);
+        for (let i = 0; i < data['files_to_remove'].length; i++) {
+            const file_to_remove = data['files_to_remove'][i];
+            await db_api.deleteFile(file_to_remove['uid'], task_obj['options']['blacklist_files'] || (file_to_remove['sub_id'] && file_to_remove['blacklist_subscription_files']));
+        }
     }
 }
 

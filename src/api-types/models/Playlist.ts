@@ -14,4 +14,5 @@ export type Playlist = {
     duration: number;
     user_uid?: string;
     auto?: boolean;
+    sharingEnabled?: boolean;
 };

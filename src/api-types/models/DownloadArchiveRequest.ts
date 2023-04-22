@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { FileType } from './FileType';
+
 export type DownloadArchiveRequest = {
-    sub: {
-archive_dir: string;
-};
+    type?: FileType;
+    sub_id?: string;
 };

@@ -41,6 +41,7 @@
                 <mat-form-field>
                     <mat-label>Time</mat-label>
                     <input type="time" matInput [(ngModel)]="time" [disabled]="!enabled">
+                    <mat-hint *ngIf="Intl?.DateTimeFormat().resolvedOptions().timeZone">{{Intl.DateTimeFormat().resolvedOptions().timeZone}}</mat-hint>
                 </mat-form-field>
             </div>
         </div>

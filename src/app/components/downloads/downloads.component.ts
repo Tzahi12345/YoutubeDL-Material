@@ -41,7 +41,7 @@ import { Download } from 'api-types';
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
 
-  @Input() uids = null;
+  @Input() uids: string[] = null;
 
   downloads_check_interval = 1000;
   downloads = [];
@@ -200,6 +200,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     this.postsService.restartDownload(download_uid).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar($localize`Failed to restart download! See server logs for more info.`);
+      } else {
+        if (this.uids && res['new_download_uid']) {
+          this.uids.push(res['new_download_uid']);
+        }
       }
     });
   }
