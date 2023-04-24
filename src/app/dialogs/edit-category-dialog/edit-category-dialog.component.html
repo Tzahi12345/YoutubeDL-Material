@@ -31,9 +31,11 @@
             <mat-form-field class="value-input">
                 <input matInput [(ngModel)]="rule['value']">
             </mat-form-field>
-            <button [disabled]="i === category['rules'].length-1" (click)="swapRules(i, i+1)" mat-icon-button><mat-icon>arrow_downward</mat-icon></button>
-            <button [disabled]="i === 0" (click)="swapRules(i, i-1)" mat-icon-button><mat-icon>arrow_upward</mat-icon></button>
-            <button (click)="removeRule(i)" mat-icon-button><mat-icon>cancel</mat-icon></button>
+            <span class="rule-buttons">
+                <button [disabled]="i === category['rules'].length-1" (click)="swapRules(i, i+1)" mat-icon-button><mat-icon>arrow_downward</mat-icon></button>
+                <button [disabled]="i === 0" (click)="swapRules(i, i-1)" mat-icon-button><mat-icon>arrow_upward</mat-icon></button>
+                <button (click)="removeRule(i)" mat-icon-button><mat-icon>cancel</mat-icon></button>
+            </span>
         </mat-list-item>
     </mat-list>
 
