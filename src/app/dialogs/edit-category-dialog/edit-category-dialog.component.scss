@@ -1,5 +1,5 @@
 .operator-select {
-    width: 55px;
+    width: 90px;
 }
 
 .property-select {
@@ -13,4 +13,17 @@
 
 .value-input {
     margin-left: 10px;
+}
+
+:host ::ng-deep.mdc-list-item {
+    height: 75px !important;
+}
+
+:host ::ng-deep.mdc-list-item__content {
+    pointer-events: unset;
+}
+
+.rule-buttons {
+    position: relative;
+    top: 8px;
 }
