@@ -25,7 +25,7 @@
     -webkit-line-clamp: 2;
 }
 
-::ng-deep .ngx-file-drop__content {
+:host ::ng-deep .ngx-file-drop__content {
     width: 100%;
     top: -12px;
     position: relative;

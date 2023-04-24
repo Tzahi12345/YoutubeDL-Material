@@ -31,6 +31,6 @@ mat-header-cell, mat-cell {
     border-radius: 16px 16px 16px 16px !important;
 }
 
-::ng-deep mat-row {
+:host ::ng-deep mat-row {
     height: fit-content !important;
 }

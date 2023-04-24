@@ -8,10 +8,10 @@
     top: -12px;
 }
 
-::ng-deep.mat-menu-panel {
+:host ::ng-deep.mat-menu-panel {
     max-width: none !important;
 }
 
-::ng-deep.mdc-list-item__primary-text {
+:host ::ng-deep.mdc-list-item__primary-text {
     width: 100%;
 }

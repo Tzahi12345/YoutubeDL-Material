@@ -171,6 +171,6 @@
     
 }
 
-::ng-deep.mat-mdc-menu-panel {
+:host ::ng-deep.mat-mdc-menu-panel {
   max-width: none !important;
 }
