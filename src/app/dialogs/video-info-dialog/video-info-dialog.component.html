@@ -37,7 +37,8 @@
         <input [(ngModel)]="new_file.thumbnailURL" matInput [disabled]="!editing || new_file.thumbnailPath">
     </mat-form-field>
     <mat-form-field *ngIf="initialized && postsService.categories" class="info-field">
-        <mat-select placeholder="Category" i18n-placeholder="Category" [value]="category" (selectionChange)="categoryChanged($event)" [compareWith]="categoryComparisonFunction" [disabled]="!editing">
+        <mat-label i18n="Category">Category</mat-label>
+        <mat-select [value]="category" (selectionChange)="categoryChanged($event)" [compareWith]="categoryComparisonFunction" [disabled]="!editing">
             <mat-option [value]="{}">
                 N/A
             </mat-option>
