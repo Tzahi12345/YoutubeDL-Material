@@ -365,7 +365,7 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive) {
         const archive_text = await archive_api.generateArchive(sub.type, sub.user_uid, sub.id);
-        logger.verbose(`Generating temporary archive file for ${sub.id} with ${archive_text.split('\n').length - 1} entries.`)
+        logger.verbose(`Generating temporary archive file for subscription ${sub.name} with ${archive_text.split('\n').length - 1} entries.`)
         const archive_path = path.join(appendedBasePath, 'archive.txt');
         await fs.writeFile(archive_path, archive_text);
         downloadConfig.push('--download-archive', archive_path);
