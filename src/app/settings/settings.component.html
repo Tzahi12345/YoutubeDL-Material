@@ -385,6 +385,13 @@
                             <mat-hint>Place endpoint URL here to integrate with services like Zapier and Automatisch.</mat-hint>
                         </mat-form-field>
                     </div>
+                    <div class="col-12 mb-2 mt-3">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Discord webhook URL">Discord Webhook URL</mat-label>
+                            <input placeholder="https://discord.com/api/webhooks/<webhook_id>/<webhook_token>" [(ngModel)]="new_config['API']['discord_webhook_URL']" matInput>
+                                <mat-hint><a target="_blank" href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"><ng-container i18n="Gotify API setting hint">See docs here.</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
                     <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [disabled]="!new_config['Extra']['enable_notifications']" [(ngModel)]="new_config['API']['use_ntfy_API']"><ng-container i18n="Use ntfy API setting">Use ntfy API</ng-container></mat-checkbox>
                     </div>

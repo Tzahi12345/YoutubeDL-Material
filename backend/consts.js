@@ -158,6 +158,10 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_webhook_url',
         'path': 'YoutubeDLMaterial.API.webhook_URL'
     },
+    'ytdl_discord_webhook_url': {
+        'key': 'ytdl_discord_webhook_url',
+        'path': 'YoutubeDLMaterial.API.discord_webhook_URL'
+    },
 
 
     // Themes
@@ -341,5 +345,7 @@ const YTDL_ARGS_WITH_VALUES = [
 
 // we're using a Set here for performance
 exports.YTDL_ARGS_WITH_VALUES = new Set(YTDL_ARGS_WITH_VALUES);
+
+exports.ICON_URL = 'https://i.imgur.com/IKOlr0N.png';
 
 exports.CURRENT_VERSION = 'v4.3.1';

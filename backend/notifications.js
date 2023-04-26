@@ -2,12 +2,16 @@ const db_api = require('./db');
 const config_api = require('./config');
 const logger = require('./logger');
 const utils = require('./utils');
+const consts = require('./consts');
 
 const { uuid } = require('uuidv4');
 
 const fetch = require('node-fetch');
 const { gotify } = require("gotify");
 const TelegramBot = require('node-telegram-bot-api');
+const REST = require('@discordjs/rest').REST;
+const API = require('@discordjs/core').API;
+const EmbedBuilder = require('@discordjs/builders').EmbedBuilder;
 
 const NOTIFICATION_TYPE_TO_TITLE = {
     task_finished: 'Task finished',
@@ -18,7 +22,7 @@ const NOTIFICATION_TYPE_TO_TITLE = {
 const NOTIFICATION_TYPE_TO_BODY = {
     task_finished: (notification) => notification['data']['task_title'],
     download_complete: (notification) => {return `${notification['data']['file_title']}\nOriginal URL: ${notification['data']['original_url']}`},
-    download_error: (notification) => {return `Error: ${notification['data']['download_error_type']}\nURL: ${notification['data']['download_url']}`}
+    download_error: (notification) => {return `Error: ${notification['data']['download_error_message']}\nError code: ${notification['data']['download_error_type']}\n\nOriginal URL: ${notification['data']['download_url']}`}
 }
 
 const NOTIFICATION_TYPE_TO_URL = {
@@ -57,6 +61,9 @@ exports.sendNotification = async (notification) => {
     if (config_api.getConfigItem('ytdl_webhook_url')) {
         sendGenericNotification(data);
     }
+    if (config_api.getConfigItem('ytdl_discord_webhook_url')) {
+        sendDiscordNotification(data);
+    }
 
     await db_api.insertRecordIntoTable('notifications', notification);
     return notification;
@@ -79,9 +86,9 @@ exports.sendDownloadNotification = async (file, user_uid) => {
     return await exports.sendNotification(notification);
 }
 
-exports.sendDownloadErrorNotification = async (download, user_uid, error_type = null) => {
+exports.sendDownloadErrorNotification = async (download, user_uid, error_message, error_type = null) => {
     if (!notificationEnabled('download_error')) return;
-    const data = {download_uid: download.uid, download_url: download.url, download_error_type: error_type};
+    const data = {download_uid: download.uid, download_url: download.url, download_error_message: error_message, download_error_type: error_type};
     const notification = exports.createNotification('download_error', ['view_download_error', 'retry_download'], data, user_uid);
     return await exports.sendNotification(notification);
 }
@@ -142,6 +149,29 @@ async function sendTelegramNotification({body, title, type, url, thumbnail}) {
     const bot = new TelegramBot(bot_token);
     if (thumbnail) await bot.sendPhoto(chat_id, thumbnail);
     bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
+}
+
+async function sendDiscordNotification({body, title, type, url, thumbnail}) {
+    const discord_webhook_url = config_api.getConfigItem('ytdl_discord_webhook_url');
+    const url_split = discord_webhook_url.split('webhooks/');
+    const [webhook_id, webhook_token] = url_split[1].split('/');
+    const rest = new REST({ version: '10' });
+    const api = new API(rest);
+    const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setColor(0x00FFFF)
+        .setURL(url)
+        .setDescription(`ID: ${type}`);
+    if (thumbnail) embed.setThumbnail(thumbnail);
+    if (type === 'download_error') embed.setColor(0xFC2003);
+
+    const result = await api.webhooks.execute(webhook_id, webhook_token, {
+        content: body,
+        username: 'YoutubeDL-Material',
+        avatar_url: consts.ICON_URL,
+        embeds: [embed],
+    });
+    return result;
 }
 
 function sendGenericNotification(data) {
