@@ -248,7 +248,7 @@ async function collectInfo(download_uid) {
         info = await exports.getVideoInfoByURL(url, args, download_uid);
     }
 
-    const stripped_category = {name: category['name'], uid: category['uid']};
+    const stripped_category = category ? {name: category['name'], uid: category['uid']} : null;
 
     // setup info required to calculate download progress
 
