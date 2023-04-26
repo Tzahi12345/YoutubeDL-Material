@@ -93,7 +93,7 @@ async function getSubscriptionInfo(sub) {
                         // if it's now valid, update
                         if (sub.name) {
                             let sub_name = sub.name;
-                            const sub_name_exists = await db_api.getRecord('subscriptions', {name: sub.name, isPlaylist: sub.isPlaylist})
+                            const sub_name_exists = await db_api.getRecord('subscriptions', {name: sub.name, isPlaylist: sub.isPlaylist, user_uid: sub.user_uid});
                             if (sub_name_exists) sub_name += ` - ${sub.id}`;
                             await db_api.updateRecord('subscriptions', {id: sub.id}, {name: sub_name});
                         }
