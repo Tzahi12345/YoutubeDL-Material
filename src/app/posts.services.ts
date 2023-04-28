@@ -113,7 +113,8 @@ import {
     ImportArchiveRequest,
     Archive,
     Subscription,
-    RestartDownloadResponse
+    RestartDownloadResponse,
+    PinLoginResponse
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -734,7 +735,6 @@ export class PostsService implements CanActivate {
         return this.http.post<LoginResponse>(this.path + 'auth/login', body, this.httpOptions);
     }
 
-    // user methods
     jwtAuth() {
         const call = this.http.post(this.path + 'auth/jwtAuth', {}, this.httpOptions);
         call.subscribe(res => {
@@ -750,6 +750,12 @@ export class PostsService implements CanActivate {
             console.log(err);
         });
         return call;
+    }
+
+    // pin methods
+    pinLogin(pin: string) {
+        const body: LoginRequest = {username: 'username', password: pin};
+        return this.http.post<PinLoginResponse>(this.path + 'auth/pinLogin', body, this.httpOptions);
     }
 
     logout() {
@@ -900,6 +906,11 @@ export class PostsService implements CanActivate {
     
     deleteAllNotifications(): Observable<SuccessObject> {
         return this.http.post<SuccessObject>(this.path + 'deleteAllNotifications', {},
+                                                                    this.httpOptions);
+    }
+
+    setPin(new_pin: string): Observable<SuccessObject> {
+        return this.http.post<SuccessObject>(this.path + 'setPin', {new_pin: new_pin},
                                                                     this.httpOptions);
     }
 

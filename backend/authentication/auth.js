@@ -15,7 +15,6 @@ var JwtStrategy = require('passport-jwt').Strategy,
 // other required vars
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
-let opts = null;
 let saltRounds = null;
 
 exports.initialize = function () {
@@ -50,11 +49,11 @@ exports.initialize = function () {
     db_api.users_db.set('jwt_secret', SERVER_SECRET).write();
   }
 
-  opts = {}
+  const opts = {}
   opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
   opts.secretOrKey = SERVER_SECRET;
 
-  exports.passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
+  exports.passport.use('jwt', new JwtStrategy(opts, async function(jwt_payload, done) {
     const user = await db_api.getRecord('users', {uid: jwt_payload.user});
     if (user) {
         return done(null, user);
@@ -63,6 +62,21 @@ exports.initialize = function () {
         // or you could create a new account
     }
   }));
+
+  const pin_opts = {}
+  pin_opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('pin_token');
+  pin_opts.secretOrKey = SERVER_SECRET;
+
+  exports.passport.use('pin', new JwtStrategy(pin_opts, {
+    passwordField: 'pin'},
+    async function(username, password, done) {
+      if (await bcrypt.compare(password, config_api.getConfigItem('ytdl_pin_hash'))) {
+        return done(null, { success: true });
+      } else {
+        return done(null, false, { message: 'Incorrect pin' });
+      }
+    }
+  ));
 }
 
 const setupRoles = async () => {
@@ -188,12 +202,24 @@ exports.login = async (username, password) => {
   return await bcrypt.compare(password, user.passhash) ? user : false;
 }
 
+exports.pinLogin = async (pin) => {
+  return await bcrypt.compare(pin, config_api.getConfigItem('ytdl_pin_hash'));
+}
+
 exports.passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'},
     async function(username, password, done) {
       return done(null, await exports.login(username, password));
     }
+));
+
+exports.passport.use('local_pin', new LocalStrategy({
+  usernameField: 'username',
+  passwordField: 'password'},
+  async function(username, password, done) {
+    return done(null, await exports.pinLogin(password));
+  }
 ));
 
 var getLDAPConfiguration = function(req, callback) {
@@ -237,12 +263,26 @@ exports.generateJWT = function(req, res, next) {
   next();
 }
 
+exports.generatePinJWT = function(req, res, next) {
+  var payload = {
+      exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
+  };
+  req.token = jwt.sign(payload, SERVER_SECRET);
+  next();
+}
+
 exports.returnAuthResponse = async function(req, res) {
   res.status(200).json({
     user: req.user,
     token: req.token,
     permissions: await exports.userPermissions(req.user.uid),
     available_permissions: consts['AVAILABLE_PERMISSIONS']
+  });
+}
+
+exports.returnPinAuthResponse = async function(req, res) {
+  res.status(200).json({
+    pin_token: req.token
   });
 }
 
@@ -439,6 +479,13 @@ exports.userPermissions = async function(user_uid) {
   return user_permissions;
 }
 
+// pin
+
+exports.setPin = async (new_pin) => {
+  const pin_hash = await bcrypt.hash(new_pin, saltRounds);
+  return config_api.setConfigItem('ytdl_pin_hash', pin_hash);
+}
+
 function getToken(queryParams) {
   if (queryParams && queryParams.jwt) {
     var parted = queryParams.jwt.split(' ');
@@ -450,7 +497,7 @@ function getToken(queryParams) {
   } else {
     return null;
   }
-};
+}
 
 function generateUserObject(userid, username, hash, auth_method = 'internal') {
   let new_user = {

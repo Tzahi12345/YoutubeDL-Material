@@ -1,0 +1,13 @@
+<h4 mat-dialog-title i18n="Set pin">Set pin</h4>
+
+<mat-dialog-content>
+    <mat-form-field color="accent">
+        <mat-label i18n="Pin">Pin</mat-label>
+        <input [(ngModel)]="pin" matInput onlyNumber required>
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close i18n="Cancel">Cancel</button>
+    <button mat-button [disabled]="!pin" (click)="setPin()"><ng-container i18n="Set pin button">Set pin</ng-container></button>
+</mat-dialog-actions>

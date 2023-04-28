@@ -15,6 +15,7 @@ import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/ed
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category, DBInfoResponse } from 'api-types';
 import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-rss-url.component';
+import { SetPinDialogComponent } from 'app/dialogs/set-pin-dialog/set-pin-dialog.component';
 
 @Component({
   selector: 'app-settings',
@@ -372,5 +373,9 @@ export class SettingsComponent implements OnInit {
       width: '80vw',
       maxWidth: '880px'
     });
+  }
+
+  openSetPinDialog(): void {
+    this.dialog.open(SetPinDialogComponent);
   }
 }

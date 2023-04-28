@@ -678,22 +678,6 @@ paths:
                 $ref: '#/components/schemas/SuccessObject'
       security:
         - Auth query parameter: []
-  /api/isPinSet:
-    post:
-      tags:
-        - security
-      summary: Check if pin is set
-      description: Checks if the pin is set for settings
-      operationId: post-api-isPinSet
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_15'
-      security:
-        - Auth query parameter: []
   /api/generateNewAPIKey:
     post:
       tags:
@@ -1311,6 +1295,48 @@ paths:
         - Auth query parameter: []
       tags:
         - multi-user mode
+  /api/setPin:
+    post:
+      summary: Set settings pin
+      operationId: post-api-setPin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetPinRequest'
+      description: 'Sets a pin for the settings'
+      security:
+        - Auth query parameter: []
+      tags:
+        - security
+  /api/auth/pinLogin:
+    post:
+      summary: Pin login
+      operationId: post-api-pin-login
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PinLoginResponse'
+      description: Use this endpoint to generate a JWT token for pin authentication. Put anything in the username field.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      security:
+        - Auth query parameter: []
+      tags:
+        - security
   /api/getUsers:
     post:
       summary: Get all users
@@ -3025,6 +3051,13 @@ components:
               type: string
           required:
             - role
+    SetPinRequest:
+      required:
+        - new_pin
+      type: object
+      properties:
+        new_pin:
+          type: string
     file:
       title: file
       type: object
@@ -3074,6 +3107,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserPermission'
+    PinLoginResponse:
+      required:
+        - pin_token
+      type: object
+      properties:
+        pin_token:
+          type: string
     UpdateUserRequest:
       required:
         - change_object

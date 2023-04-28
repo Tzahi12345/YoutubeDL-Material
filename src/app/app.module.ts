@@ -95,6 +95,8 @@ import { GenerateRssUrlComponent } from './dialogs/generate-rss-url/generate-rss
 import { SortPropertyComponent } from './components/sort-property/sort-property.component';
 import { OnlyNumberDirective } from './directives/only-number.directive';
 import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
+import { SetPinDialogComponent } from './dialogs/set-pin-dialog/set-pin-dialog.component';
+import { PinLoginComponent } from './dialogs/pin-login-dialog/pin-login-dialog.component';
 
 registerLocaleData(es, 'es');
 
@@ -147,7 +149,9 @@ registerLocaleData(es, 'es');
         GenerateRssUrlComponent,
         SortPropertyComponent,
         OnlyNumberDirective,
-        ArchiveViewerComponent
+        ArchiveViewerComponent,
+        SetPinDialogComponent,
+        PinLoginComponent
     ],
     imports: [
         CommonModule,

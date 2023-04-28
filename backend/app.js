@@ -742,6 +742,18 @@ const optionalJwt = async function (req, res, next) {
     return next();
 };
 
+const optionalPin = async function (req, res, next) {
+    const use_pin = config_api.getConfigItem('ytdl_use_pin');
+    if (use_pin && req.path.includes('/api/setConfig')) {
+        if (!req.query.pin_token) {
+            res.sendStatus(418); // I'm a teapot (RFC 2324)
+            return;
+        }
+        return next();
+    }
+    return next();
+};
+
 app.get('/api/config', function(req, res) {
     let config_file = config_api.getConfigFile();
     res.send({
@@ -750,7 +762,7 @@ app.get('/api/config', function(req, res) {
     });
 });
 
-app.post('/api/setConfig', optionalJwt, function(req, res) {
+app.post('/api/setConfig', optionalJwt, optionalPin, function(req, res) {
     let new_config_file = req.body.new_config_file;
     if (new_config_file && new_config_file['YoutubeDLMaterial']) {
         let success = config_api.setConfigFile(new_config_file);
@@ -1934,11 +1946,22 @@ app.post('/api/auth/login'
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
 );
+app.post('/api/auth/pinLogin'
+        , auth_api.passport.authenticate(['local_pin'], {})
+        , auth_api.generatePinJWT
+        , auth_api.returnPinAuthResponse
+);
 app.post('/api/auth/jwtAuth'
         , auth_api.passport.authenticate('jwt', { session: false })
         , auth_api.passport.authorize('jwt')
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
+);
+app.post('/api/auth/pinAuth'
+        , auth_api.passport.authenticate('pin', { session: false })
+        , auth_api.passport.authorize('pin')
+        , auth_api.generatePinJWT
+        , auth_api.returnPinAuthResponse
 );
 app.post('/api/auth/changePassword', optionalJwt, async (req, res) => {
     let user_uid = req.body.user_uid;
@@ -2027,6 +2050,13 @@ app.post('/api/changeRolePermissions', optionalJwt, async (req, res) => {
     const success = await auth_api.changeRolePermissions(role, permission, new_value);
 
     res.send({success: success});
+});
+
+app.post('/api/setPin', function(req, res) {
+    const success = auth_api.setPin(req.body.new_pin);
+    res.send({
+        success: success
+    });
 });
 
 // notifications

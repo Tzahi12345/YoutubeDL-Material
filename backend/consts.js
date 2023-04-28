@@ -92,6 +92,14 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_enable_rss_feed',
         'path': 'YoutubeDLMaterial.Extra.enable_rss_feed'
     },
+    'ytdl_use_pin': {
+        'key': 'ytdl_use_pin',
+        'path': 'YoutubeDLMaterial.Extra.use_pin'
+    },
+    'ytdl_pin_hash': {
+        'key': 'ytdl_pin_hash',
+        'path': 'YoutubeDLMaterial.Extra.pin_hash'
+    },
 
     // API
     'ytdl_use_api_key': {

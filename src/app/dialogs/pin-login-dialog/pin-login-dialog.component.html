@@ -1,0 +1,16 @@
+<h4 mat-dialog-title i18n="Pin required">Pin required</h4>
+
+<mat-dialog-content>
+    <mat-form-field color="accent">
+        <mat-label i18n="Enter pin">Enter pin</mat-label>
+        <input [(ngModel)]="pin" matInput onlyNumber required type="password">
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close i18n="Cancel">Cancel</button>
+    <button mat-button [disabled]="!pin" (click)="pinLogin()"><ng-container i18n="Enter pin button">Enter pin</ng-container></button>
+    <div class="mat-spinner" *ngIf="enterClicked">
+        <mat-spinner [diameter]="25"></mat-spinner>
+    </div>
+</mat-dialog-actions>

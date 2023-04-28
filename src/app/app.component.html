@@ -51,7 +51,7 @@
                     <a *ngIf="postsService.config && postsService.hasPermission('tasks_manager')" mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/tasks'><ng-container i18n="Navigation menu Tasks Page title">Tasks</ng-container></a>
                     <ng-container *ngIf="postsService.config && postsService.hasPermission('settings')">
                         <mat-divider></mat-divider>
-                        <a mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null" routerLink='/settings'><ng-container i18n="Settings menu label">Settings</ng-container></a>
+                        <a mat-list-item (click)="postsService.sidepanel_mode === 'over' ? sidenav.close() : null; pinConfirm('/settings')" [routerLink]="!postsService.config.Extra.use_pin ? '/settings' : null"><ng-container i18n="Settings menu label">Settings</ng-container></a>
                     </ng-container>
                     <ng-container *ngIf="postsService.config && allowSubscriptions && postsService.subscriptions && postsService.hasPermission('subscriptions')">
                         <mat-divider *ngIf="postsService.subscriptions.length > 0"></mat-divider>

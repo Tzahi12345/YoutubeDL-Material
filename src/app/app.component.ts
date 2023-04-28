@@ -22,6 +22,7 @@ import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-p
 import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
+import { PinLoginComponent } from './dialogs/pin-login-dialog/pin-login-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -211,6 +212,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   openArchivesDialog(): void {
     this.dialog.open(ArchiveViewerComponent, {
       width: '85vw'
+    });
+  }
+
+  pinConfirm(route: string): void {
+    if (!this.postsService.config.Extra.use_pin) return;
+    const dialogRef = this.dialog.open(PinLoginComponent);
+    dialogRef.afterClosed().subscribe(success => {
+      if (success) {
+        this.router.navigate([route]);
+      }
     });
   }
 

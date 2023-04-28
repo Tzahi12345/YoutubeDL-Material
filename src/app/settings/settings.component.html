@@ -260,6 +260,25 @@
             <div *ngIf="new_config" class="container-fluid">
                 <div class="row">
                     <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [(ngModel)]="new_config['Extra']['use_pin']"><ng-container i18n="Use pin to hide settings setting">Use pin to hide settings</ng-container></mat-checkbox>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="pin-set" *ngIf="new_config['Extra']['pin_hash']">
+                            <mat-icon>done</mat-icon>&nbsp;<ng-container i18n="Pin set">Pin set!</ng-container>
+                        </div>
+                        <div>
+                            <button mat-stroked-button (click)="openSetPinDialog()">
+                                <ng-container *ngIf="!new_config['Extra']['pin_hash']" i18n="Set pin">Set pin</ng-container>
+                                <ng-container *ngIf="new_config['Extra']['pin_hash']" i18n="Reset pin">Reset pin</ng-container>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="new_config" class="container-fluid">
+                <div class="row">
+                    <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [(ngModel)]="new_config['API']['use_youtube_API']"><ng-container i18n="Use YouTube API setting">Use YouTube API</ng-container></mat-checkbox>
                     </div>
                     <div class="col-12 mb-2">
