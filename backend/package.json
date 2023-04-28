@@ -46,7 +46,7 @@
     "node-id3": "^0.1.14",
     "node-schedule": "^2.1.0",
     "node-telegram-bot-api": "^0.61.0",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.1",
     "passport-ldapauth": "^3.0.1",
