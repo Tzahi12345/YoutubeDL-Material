@@ -23,7 +23,12 @@
       "download_only_mode": false,
       "allow_autoplay": true,
       "enable_downloads_manager": true,
-      "allow_playlist_categorization": true
+      "allow_playlist_categorization": true,
+      "force_autoplay": false,
+      "enable_notifications": true,
+      "enable_all_notifications": true,
+      "allowed_notification_types": [],
+      "enable_rss_feed": false
     },
     "API": {
       "use_API_key": false,
@@ -35,7 +40,17 @@
       "twitch_client_secret": "",
       "twitch_auto_download_chat": false,
       "use_sponsorblock_API": false,
-      "generate_NFO_files": false
+      "generate_NFO_files": false,
+      "use_ntfy_API": false,
+      "ntfy_topic_URL": "",
+      "use_gotify_API": false,
+      "gotify_server_URL": "",
+      "gotify_app_token": "",
+      "use_telegram_API": false,
+      "telegram_bot_token": "",
+      "telegram_chat_id": "",
+      "webhook_URL": "",
+      "discord_webhook_URL": ""
     },
     "Themes": {
       "default_theme": "default",

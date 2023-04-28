@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PostsService } from 'app/posts.services';
 import { Category, DatabaseFile } from 'api-types';

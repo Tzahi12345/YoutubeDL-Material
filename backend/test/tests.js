@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const assert = require('assert');
 const low = require('lowdb')
 const winston = require('winston');
@@ -38,6 +39,7 @@ var db_api = require('../db');
 const utils = require('../utils');
 const subscriptions_api = require('../subscriptions');
 const archive_api = require('../archive');
+const categories_api = require('../categories');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 const NodeID3 = require('node-id3');
@@ -172,6 +174,15 @@ describe('Database', async function() {
                     await db_api.updateRecord('test', {test_update: 'test'}, {added_field: true});
                     const updated_record = await db_api.getRecord('test', {test_update: 'test'});
                     assert(updated_record['added_field']);
+                    await db_api.removeRecord('test', {test_update: 'test'});
+                });
+
+                it('Update records', async function() {
+                    await db_api.insertRecordIntoTable('test', {test_update: 'test', key: 'test1'});
+                    await db_api.insertRecordIntoTable('test', {test_update: 'test', key: 'test2'});
+                    await db_api.updateRecords('test', {test_update: 'test'}, {added_field: true});
+                    const updated_records = await db_api.getRecords('test', {added_field: true});
+                    assert(updated_records.length === 2);
                     await db_api.removeRecord('test', {test_update: 'test'});
                 });
 
@@ -339,8 +350,10 @@ describe('Multi User', async function() {
         });
     });
     describe('Video player - normal', async function() {
-        await db_api.removeRecord('files', {uid: sample_video_json['uid']});
-        await db_api.insertRecordIntoTable('files', sample_video_json);
+        beforeEach(async function() {
+            await db_api.removeRecord('files', {uid: sample_video_json['uid']});
+            await db_api.insertRecordIntoTable('files', sample_video_json);
+        });
         const video_to_test = sample_video_json['uid'];
         it('Get video', async function() {
             const video_obj = await db_api.getVideo(video_to_test);
@@ -497,14 +510,19 @@ describe('Downloader', function() {
         const new_args1 = ['--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
         const updated_args1 = utils.injectArgs(original_args1, new_args1);
         const expected_args1 = ['--no-resize-buffer', '--no-mtime', '--age-limit', '25', '--yes-playlist', '--abort-on-error', '-o', '%(id)s'];
-        assert(JSON.stringify(updated_args1), JSON.stringify(expected_args1));
+        assert(JSON.stringify(updated_args1) === JSON.stringify(expected_args1));
 
         const original_args2 = ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3'];
         const new_args2 =  ['--add-metadata', '--embed-thumbnail', '--convert-thumbnails', 'jpg'];
         const updated_args2 = utils.injectArgs(original_args2, new_args2);
-        const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert_thumbnails', 'jpg'];
-        console.log(updated_args2);
-        assert(JSON.stringify(updated_args2), JSON.stringify(expected_args2));
+        const expected_args2 =  ['-o', '%(title)s.%(ext)s', '--write-info-json', '--print-json', '--audio-quality', '0', '-x', '--audio-format', 'mp3', '--add-metadata', '--embed-thumbnail', '--convert-thumbnails', 'jpg'];
+        assert(JSON.stringify(updated_args2) === JSON.stringify(expected_args2));
+
+        const original_args3 = ['-o', '%(title)s.%(ext)s'];
+        const new_args3 =  ['--min-filesize','1'];
+        const updated_args3 = utils.injectArgs(original_args3, new_args3);
+        const expected_args3 =  ['-o', '%(title)s.%(ext)s', '--min-filesize', '1'];
+        assert(JSON.stringify(updated_args3) === JSON.stringify(expected_args3));
     });
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');
@@ -590,7 +608,7 @@ describe('Tasks', function() {
         fs.copyFileSync('test/sample.mp4', 'video/sample.mp4');
         await tasks_api.executeTask('missing_db_records');
         const imported_file = await db_api.getRecord('files', {title: 'Sample File'});
-        assert(!!imported_file, true);
+        assert(!!imported_file === true);
         
         // post-test cleanup
         if (fs.existsSync('video/sample.info.json')) fs.unlinkSync('video/sample.info.json');
@@ -727,5 +745,110 @@ describe('Utils', async function() {
         const nested_obj2 = utils.convertFlatObjectToNestedObject(flat_obj2);
         assert(nested_obj2['test1'] && nested_obj2['test1']['test_sub']);
         assert(nested_obj2['test1'] && nested_obj2['test1']['test2'] && nested_obj2['test1']['test2']['test_sub']);
+    });
+});
+
+describe('Categories', async function() {
+    beforeEach(async function() {
+        await db_api.connectToDB();
+        const new_category = {
+            name: 'test_category',
+            uid: uuid(),
+            rules: [],
+            custom_output: ''
+        };
+    
+        await db_api.insertRecordIntoTable('categories', new_category);
+    });
+
+    afterEach(async function() {
+        await db_api.removeAllRecords('categories', {name: 'test_category'});
+    });
+
+    it('Categorize - includes', async function() {
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'includes',
+            property: 'title',
+            value: 'Sample'
+        });
+
+        const category = await categories_api.categorize([sample_video_json]);
+        assert(category && category.name === 'test_category');
+    });
+
+    it('Categorize - not includes', async function() {
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'not_includes',
+            property: 'title',
+            value: 'Sample'
+        });
+
+        const category = await categories_api.categorize([sample_video_json]);
+        assert(!category);
+    });
+
+    it('Categorize - equals', async function() {
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'equals',
+            property: 'uploader',
+            value: 'Sample Uploader'
+        });
+
+        const category = await categories_api.categorize([sample_video_json]);
+        console.log(category);
+        assert(category && category.name === 'test_category');
+    });
+
+    it('Categorize - not equals', async function() {
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'not_equals',
+            property: 'uploader',
+            value: 'Sample Uploader'
+        });
+
+        const category = await categories_api.categorize([sample_video_json]);
+        assert(!category);
+    });
+
+    it('Categorize - AND', async function() {
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'equals',
+            property: 'uploader',
+            value: 'Sample Uploader'
+        });
+
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: 'and',
+            comparator: 'not_includes',
+            property: 'title',
+            value: 'Sample'
+        });
+
+        const category = await categories_api.categorize([sample_video_json]);
+        assert(!category);
+    });
+
+    it('Categorize - OR', async function() {
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'equals',
+            property: 'uploader',
+            value: 'Sample Uploader'
+        });
+
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: 'or',
+            comparator: 'not_includes',
+            property: 'title',
+            value: 'Sample'
+        });
+
+        const category = await categories_api.categorize([sample_video_json]);
+        assert(category);
     });
 });

@@ -92,7 +92,10 @@ async function getSubscriptionInfo(sub) {
                         }
                         // if it's now valid, update
                         if (sub.name) {
-                            await db_api.updateRecord('subscriptions', {id: sub.id}, {name: sub.name});
+                            let sub_name = sub.name;
+                            const sub_name_exists = await db_api.getRecord('subscriptions', {name: sub.name, isPlaylist: sub.isPlaylist, user_uid: sub.user_uid});
+                            if (sub_name_exists) sub_name += ` - ${sub.id}`;
+                            await db_api.updateRecord('subscriptions', {id: sub.id}, {name: sub_name});
                         }
                     }
 
@@ -229,12 +232,19 @@ async function getVideosForSub(sub, user_uid = null) {
     const downloadConfig = await generateArgsForSubscription(sub, user_uid);
 
     // get videos
-    logger.verbose(`Subscription: getting videos for subscription ${sub.name} with args: ${downloadConfig.join(',')}`);
+    logger.verbose(`Subscription: getting list of videos to download for ${sub.name} with args: ${downloadConfig.join(',')}`);
 
     return new Promise(async resolve => {
         youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, async function(err, output) {
             // cleanup
             updateSubscriptionProperty(sub, {downloading: false}, user_uid);
+
+            // remove temporary archive file if it exists
+            const archive_path = path.join(appendedBasePath, 'archive.txt');
+            const archive_exists = await fs.pathExists(archive_path);
+            if (archive_exists) {
+                await fs.unlink(archive_path);
+            }
 
             logger.verbose('Subscription: finished check for ' + sub.name);
             if (err && !output) {
@@ -353,6 +363,16 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
     }
 
     downloadConfig.push(...qualityPath)
+
+    // if archive is being used, we want to quickly skip videos that are in the archive. otherwise sub download can be permanently slow (vs. just the first time)
+    const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
+    if (useYoutubeDLArchive) {
+        const archive_text = await archive_api.generateArchive(sub.type, sub.user_uid, sub.id);
+        logger.verbose(`Generating temporary archive file for subscription ${sub.name} with ${archive_text.split('\n').length - 1} entries.`)
+        const archive_path = path.join(appendedBasePath, 'archive.txt');
+        await fs.writeFile(archive_path, archive_text);
+        downloadConfig.push('--download-archive', archive_path);
+    }
 
     if (sub.custom_args) {
         const customArgsArray = sub.custom_args.split(',,');

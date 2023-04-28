@@ -720,7 +720,14 @@ exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false
 exports.updateRecords = async (table, filter_obj, update_obj) => {
     // local db override
     if (using_local_db) {
-        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').assign(update_obj).write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').each((record) => {
+            const props_to_update = Object.keys(update_obj);
+            for (let i = 0; i < props_to_update.length; i++) {
+                const prop_to_update = props_to_update[i];
+                const prop_value = update_obj[prop_to_update];
+                record[prop_to_update] = prop_value;
+            }
+        }).write();
         return true;
     }
 

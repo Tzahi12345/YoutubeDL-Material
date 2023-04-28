@@ -128,7 +128,7 @@ exports.clearDownload = async (download_uid) => {
 
 async function handleDownloadError(download, error_message, error_type = null) {
     if (!download || !download['uid']) return;
-    notifications_api.sendDownloadErrorNotification(download, download['user_uid'], error_type);
+    notifications_api.sendDownloadErrorNotification(download, download['user_uid'], error_message, error_type);
     await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false, error_type: error_type});
 }
 
@@ -314,7 +314,7 @@ async function downloadQueuedFile(download_uid) {
             clearInterval(download_checker);
             if (err) {
                 logger.error(err.stderr);
-                await handleDownloadError(download, err.stderr);
+                await handleDownloadError(download, err.stderr, 'unknown_error');
                 resolve(false);
                 return;
             } else if (output) {
@@ -596,7 +596,7 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
                 logger.error(error_message);
                 if (download_uid) {
                     const download = await db_api.getRecord('download_queue', {uid: download_uid});
-                    await handleDownloadError(download, error_message);
+                    await handleDownloadError(download, error_message, 'info_retrieve_failed');
                 }
                 resolve(null);
             }

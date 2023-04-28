@@ -41,7 +41,7 @@ export class SettingsComponent implements OnInit {
   latestGithubRelease = null;
   CURRENT_VERSION = CURRENT_VERSION
 
-  tabs = ['main', 'downloader', 'extra', 'database', 'advanced', 'users', 'logs'];
+  tabs = ['main', 'downloader', 'extra', 'database', 'notifications', 'advanced', 'users', 'logs'];
   tabIndex = 0;
   
   INDEX_TO_TAB = Object.assign({}, this.tabs);

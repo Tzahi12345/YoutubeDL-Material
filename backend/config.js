@@ -219,7 +219,8 @@ const DEFAULT_CONFIG = {
         "use_telegram_API": false,
         "telegram_bot_token": "",
         "telegram_chat_id": "",
-        "webhook_URL": ""
+        "webhook_URL": "",
+        "discord_webhook_URL": ""
       },
       "Themes": {
         "default_theme": "default",
