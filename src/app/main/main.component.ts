@@ -50,7 +50,6 @@ export class MainComponent implements OnInit {
   allowQualitySelect = false;
   downloadOnlyMode = false;
   forceAutoplay = false;
-  use_youtubedl_archive = false;
   globalCustomArgs = null;
   allowAdvancedDownload = false;
   useDefaultDownloadingAgent = true;
@@ -188,7 +187,6 @@ export class MainComponent implements OnInit {
                               && this.postsService.hasPermission('filemanager');
     this.downloadOnlyMode = this.postsService.config['Extra']['download_only_mode'];
     this.forceAutoplay = this.postsService.config['Extra']['force_autoplay'];
-    this.use_youtubedl_archive = this.postsService.config['Downloader']['use_youtubedl_archive'];
     this.globalCustomArgs = this.postsService.config['Downloader']['custom_args'];
     this.youtubeSearchEnabled = this.postsService.config['API'] && this.postsService.config['API']['use_youtube_API'] &&
         this.postsService.config['API']['youtube_API_key'];

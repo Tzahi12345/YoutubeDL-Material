@@ -199,8 +199,13 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
             return false;
         } else {
             // check if the user wants the video to be redownloaded (deleteForever === false)
-            const useArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-            if (useArchive && !deleteForever) {
+            if (deleteForever) {
+                // ensure video is in the archives
+                const exists_in_archive = await archive_api.existsInArchive(retrievedExtractor, retrievedID, sub.type, user_uid, sub.id);
+                if (!exists_in_archive) {
+                    await archive_api.addToArchive(retrievedExtractor, retrievedID, sub.type, file.title, user_uid, sub.id);
+                }
+            } else {
                 await archive_api.removeFromArchive(retrievedExtractor, retrievedID, sub.type, user_uid, sub.id);
             }
             return true;
@@ -364,15 +369,12 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     downloadConfig.push(...qualityPath)
 
-    // if archive is being used, we want to quickly skip videos that are in the archive. otherwise sub download can be permanently slow (vs. just the first time)
-    const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-    if (useYoutubeDLArchive) {
-        const archive_text = await archive_api.generateArchive(sub.type, sub.user_uid, sub.id);
-        logger.verbose(`Generating temporary archive file for subscription ${sub.name} with ${archive_text.split('\n').length - 1} entries.`)
-        const archive_path = path.join(appendedBasePath, 'archive.txt');
-        await fs.writeFile(archive_path, archive_text);
-        downloadConfig.push('--download-archive', archive_path);
-    }
+    // skip videos that are in the archive. otherwise sub download can be permanently slow (vs. just the first time)
+    const archive_text = await archive_api.generateArchive(sub.type, sub.user_uid, sub.id);
+    logger.verbose(`Generating temporary archive file for subscription ${sub.name} with ${archive_text.split('\n').length - 1} entries.`)
+    const archive_path = path.join(appendedBasePath, 'archive.txt');
+    await fs.writeFile(archive_path, archive_text);
+    downloadConfig.push('--download-archive', archive_path);
 
     if (sub.custom_args) {
         const customArgsArray = sub.custom_args.split(',,');
@@ -428,11 +430,8 @@ async function getFilesToDownload(sub, output_jsons) {
                 logger.info(`Skipping adding file ${output_json['_filename']} for subscription ${sub.name} as a file with that path already exists.`)
                 continue;
             }
-            const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-            if (useYoutubeDLArchive) {
-                const exists_in_archive = await archive_api.existsInArchive(output_json['extractor'], output_json['id'], sub.type, sub.user_uid, sub.id);
-                if (exists_in_archive) continue;
-            }
+            const exists_in_archive = await archive_api.existsInArchive(output_json['extractor'], output_json['id'], sub.type, sub.user_uid, sub.id);
+            if (exists_in_archive) continue;
 
             files_to_download.push(output_json);
         }
