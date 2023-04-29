@@ -13,6 +13,7 @@ const { create } = require('xmlbuilder2');
 const categories_api = require('./categories');
 const utils = require('./utils');
 const db_api = require('./db');
+const files_api = require('./files');
 const notifications_api = require('./notifications');
 const archive_api = require('./archive');
 
@@ -385,7 +386,7 @@ async function downloadQueuedFile(download_uid) {
                     }
 
                     // registers file in DB
-                    const file_obj = await db_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
+                    const file_obj = await files_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
 
                     await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, output_json['title'], download['user_uid'], download['sub_id']);
 
@@ -399,7 +400,7 @@ async function downloadQueuedFile(download_uid) {
                 if (file_objs.length > 1) {
                     // create playlist
                     const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
-                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
+                    container = await files_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {

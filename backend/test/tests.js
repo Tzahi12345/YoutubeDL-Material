@@ -40,6 +40,7 @@ const utils = require('../utils');
 const subscriptions_api = require('../subscriptions');
 const archive_api = require('../archive');
 const categories_api = require('../categories');
+const files_api = require('../files');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 const NodeID3 = require('node-id3');
@@ -356,7 +357,7 @@ describe('Multi User', async function() {
         });
         const video_to_test = sample_video_json['uid'];
         it('Get video', async function() {
-            const video_obj = await db_api.getVideo(video_to_test);
+            const video_obj = await files_api.getVideo(video_to_test);
             assert(video_obj);
         });
 
@@ -374,12 +375,12 @@ describe('Multi User', async function() {
     });
     describe('Zip generators', function() {
         it('Playlist zip generator', async function() {
-            const playlist = await db_api.getPlaylist(playlist_to_test, user_to_test);
+            const playlist = await files_api.getPlaylist(playlist_to_test, user_to_test);
             assert(playlist);
             const playlist_files_to_download = [];
             for (let i = 0; i < playlist['uids'].length; i++) {
                 const uid = playlist['uids'][i];
-                const playlist_file = await db_api.getVideo(uid, user_to_test);
+                const playlist_file = await files_api.getVideo(uid, user_to_test);
                 playlist_files_to_download.push(playlist_file);
             }
             const zip_path = await utils.createContainerZipFile(playlist, playlist_files_to_download);
@@ -407,7 +408,7 @@ describe('Multi User', async function() {
     //     const sub_to_test = '';
     //     const video_to_test = 'ebbcfffb-d6f1-4510-ad25-d1ec82e0477e';
     //     it('Get video', async function() {
-    //         const video_obj = db_api.getVideo(video_to_test, 'admin', );
+    //         const video_obj = files_api.getVideo(video_to_test, 'admin', );
     //         assert(video_obj);
     //     });
 

@@ -2,6 +2,7 @@ const db_api = require('./db');
 const notifications_api = require('./notifications');
 const youtubedl_api = require('./youtube-dl');
 const archive_api = require('./archive');
+const files_api = require('./files');
 
 const fs = require('fs-extra');
 const logger = require('./logger');
@@ -20,7 +21,7 @@ const TASKS = {
         job: null
     },
     missing_db_records: {
-        run: db_api.importUnregisteredFiles,
+        run: files_api.importUnregisteredFiles,
         title: 'Import missing DB records',
         job: null
     },
@@ -259,7 +260,7 @@ async function autoDeleteFiles(data) {
         logger.info(`Removing ${data['files_to_remove'].length} old files!`);
         for (let i = 0; i < data['files_to_remove'].length; i++) {
             const file_to_remove = data['files_to_remove'][i];
-            await db_api.deleteFile(file_to_remove['uid'], task_obj['options']['blacklist_files'] || (file_to_remove['sub_id'] && file_to_remove['blacklist_subscription_files']));
+            await files_api.deleteFile(file_to_remove['uid'], task_obj['options']['blacklist_files'] || (file_to_remove['sub_id'] && file_to_remove['blacklist_subscription_files']));
         }
     }
 }
