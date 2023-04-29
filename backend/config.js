@@ -220,7 +220,8 @@ const DEFAULT_CONFIG = {
         "telegram_bot_token": "",
         "telegram_chat_id": "",
         "webhook_URL": "",
-        "discord_webhook_URL": ""
+        "discord_webhook_URL": "",
+        "slack_webhook_URL": "",
       },
       "Themes": {
         "default_theme": "default",

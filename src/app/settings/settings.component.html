@@ -387,9 +387,16 @@
                     </div>
                     <div class="col-12 mb-2 mt-3">
                         <mat-form-field class="text-field" color="accent">
-                            <mat-label i18n="Discord webhook URL">Discord Webhook URL</mat-label>
+                            <mat-label i18n="Discord Webhook URL">Discord Webhook URL</mat-label>
                             <input placeholder="https://discord.com/api/webhooks/<webhook_id>/<webhook_token>" [(ngModel)]="new_config['API']['discord_webhook_URL']" matInput>
-                                <mat-hint><a target="_blank" href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"><ng-container i18n="Gotify API setting hint">See docs here.</ng-container></a></mat-hint>
+                                <mat-hint><a target="_blank" href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"><ng-container i18n="Discord API setting hint">See docs here.</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 mb-2 mt-3">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Slack Webhook URL">Slack Webhook URL</mat-label>
+                            <input placeholder="https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX" [(ngModel)]="new_config['API']['slack_webhook_URL']" matInput>
+                                <mat-hint><a target="_blank" href="https://api.slack.com/messaging/webhooks"><ng-container i18n="Slack API setting hint">See docs here.</ng-container></a></mat-hint>
                         </mat-form-field>
                     </div>
                     <div class="col-12 mt-3">
