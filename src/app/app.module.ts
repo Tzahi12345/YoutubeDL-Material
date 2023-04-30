@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, LOCALE_ID } from '@angular/core';
-import { registerLocaleData, CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { registerLocaleData, CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -28,13 +28,16 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatBadgeModule } from '@angular/material/badge';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
-import { FileCardComponent } from './file-card/file-card.component';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main/main.component';
@@ -44,19 +47,14 @@ import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
 import { VgCoreModule } from '@videogular/ngx-videogular/core';
 import { InputDialogComponent } from './input-dialog/input-dialog.component';
-import { LazyLoadImageModule, IsVisibleProps } from 'ng-lazyload-image';
-import { audioFilesMouseHovering, videoFilesMouseHovering, audioFilesOpened, videoFilesOpened } from './main/main.component';
 import { CreatePlaylistComponent } from './create-playlist/create-playlist.component';
-import { DownloadItemComponent } from './download-item/download-item.component';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { SubscribeDialogComponent } from './dialogs/subscribe-dialog/subscribe-dialog.component';
 import { SubscriptionComponent } from './subscription//subscription/subscription.component';
-import { SubscriptionFileCardComponent } from './subscription/subscription-file-card/subscription-file-card.component';
 import { SubscriptionInfoDialogComponent } from './dialogs/subscription-info-dialog/subscription-info-dialog.component';
 import { SettingsComponent } from './settings/settings.component';
-import { MatChipsModule } from '@angular/material/chips';
 import { NgxFileDropModule } from 'ngx-file-drop';
-import { AvatarModule } from 'ngx-avatar';
+import { AvatarModule } from 'ngx-avatars';
 import { ContentLoaderModule } from '@ngneat/content-loader';
 
 import es from '@angular/common/locales/es';
@@ -76,7 +74,6 @@ import { ManageUserComponent } from './components/manage-user/manage-user.compon
 import { ManageRoleComponent } from './components/manage-role/manage-role.component';
 import { CookiesUploaderDialogComponent } from './dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component';
 import { LogsViewerComponent } from './components/logs-viewer/logs-viewer.component';
-import { ModifyPlaylistComponent } from './dialogs/modify-playlist/modify-playlist.component';
 import { ConfirmDialogComponent } from './dialogs/confirm-dialog/confirm-dialog.component';
 import { UnifiedFileCardComponent } from './components/unified-file-card/unified-file-card.component';
 import { RecentVideosComponent } from './components/recent-videos/recent-videos.component';
@@ -86,120 +83,132 @@ import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit
 import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
 import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
 import { H401Interceptor } from './http.interceptor';
+import { ConcurrentStreamComponent } from './components/concurrent-stream/concurrent-stream.component';
+import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
+import { TasksComponent } from './components/tasks/tasks.component';
+import { UpdateTaskScheduleDialogComponent } from './dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
+import { RestoreDbDialogComponent } from './dialogs/restore-db-dialog/restore-db-dialog.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { NotificationsListComponent } from './components/notifications-list/notifications-list.component';
+import { TaskSettingsComponent } from './components/task-settings/task-settings.component';
+import { GenerateRssUrlComponent } from './dialogs/generate-rss-url/generate-rss-url.component';
+import { SortPropertyComponent } from './components/sort-property/sort-property.component';
+import { OnlyNumberDirective } from './directives/only-number.directive';
+import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
 
 registerLocaleData(es, 'es');
 
-export function isVisible({ event, element, scrollContainer, offset }: IsVisibleProps<any>) {
-  return (element.id === 'video' ? videoFilesMouseHovering || videoFilesOpened : audioFilesMouseHovering || audioFilesOpened);
-}
-
 @NgModule({
-  declarations: [
-    AppComponent,
-    FileCardComponent,
-    MainComponent,
-    PlayerComponent,
-    InputDialogComponent,
-    CreatePlaylistComponent,
-    DownloadItemComponent,
-    SubscriptionsComponent,
-    SubscribeDialogComponent,
-    SubscriptionComponent,
-    SubscriptionFileCardComponent,
-    SubscriptionInfoDialogComponent,
-    SettingsComponent,
-    AboutDialogComponent,
-    VideoInfoDialogComponent,
-    ArgModifierDialogComponent,
-    HighlightPipe,
-    LinkifyPipe,
-    UpdaterComponent,
-    UpdateProgressDialogComponent,
-    ShareMediaDialogComponent,
-    LoginComponent,
-    DownloadsComponent,
-    UserProfileDialogComponent,
-    SetDefaultAdminDialogComponent,
-    ModifyUsersComponent,
-    AddUserDialogComponent,
-    ManageUserComponent,
-    ManageRoleComponent,
-    CookiesUploaderDialogComponent,
-    LogsViewerComponent,
-    ModifyPlaylistComponent,
-    ConfirmDialogComponent,
-    UnifiedFileCardComponent,
-    RecentVideosComponent,
-    EditSubscriptionDialogComponent,
-    CustomPlaylistsComponent,
-    EditCategoryDialogComponent,
-    TwitchChatComponent,
-    SeeMoreComponent
-  ],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatNativeDateModule,
-    MatRadioModule,
-    FormsModule,
-    MatInputModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    MatToolbarModule,
-    MatCardModule,
-    MatSnackBarModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatListModule,
-    MatGridListModule,
-    MatExpansionModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatButtonToggleModule,
-    MatRippleModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatSlideToggleModule,
-    MatAutocompleteModule,
-    MatTabsModule,
-    MatTooltipModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatTableModule,
-    MatChipsModule,
-    DragDropModule,
-    ClipboardModule,
-    NgxFileDropModule,
-    AvatarModule,
-    ContentLoaderModule,
-    VgCoreModule,
-    VgControlsModule,
-    VgOverlayPlayModule,
-    VgBufferingModule,
-    LazyLoadImageModule.forRoot({ isVisible }),
-    RouterModule,
-    AppRoutingModule,
-  ],
-  entryComponents: [
-    InputDialogComponent,
-    CreatePlaylistComponent,
-    SubscribeDialogComponent,
-    SubscriptionInfoDialogComponent,
-    SettingsComponent
-  ],
-  providers: [
-    PostsService,
-    { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true }
-  ],
-  exports: [
-    HighlightPipe,
-    LinkifyPipe
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        MainComponent,
+        PlayerComponent,
+        InputDialogComponent,
+        CreatePlaylistComponent,
+        SubscriptionsComponent,
+        SubscribeDialogComponent,
+        SubscriptionComponent,
+        SubscriptionInfoDialogComponent,
+        SettingsComponent,
+        AboutDialogComponent,
+        VideoInfoDialogComponent,
+        ArgModifierDialogComponent,
+        HighlightPipe,
+        LinkifyPipe,
+        UpdaterComponent,
+        UpdateProgressDialogComponent,
+        ShareMediaDialogComponent,
+        LoginComponent,
+        DownloadsComponent,
+        UserProfileDialogComponent,
+        SetDefaultAdminDialogComponent,
+        ModifyUsersComponent,
+        AddUserDialogComponent,
+        ManageUserComponent,
+        ManageRoleComponent,
+        CookiesUploaderDialogComponent,
+        LogsViewerComponent,
+        ConfirmDialogComponent,
+        UnifiedFileCardComponent,
+        RecentVideosComponent,
+        EditSubscriptionDialogComponent,
+        CustomPlaylistsComponent,
+        EditCategoryDialogComponent,
+        TwitchChatComponent,
+        SeeMoreComponent,
+        ConcurrentStreamComponent,
+        SkipAdButtonComponent,
+        TasksComponent,
+        UpdateTaskScheduleDialogComponent,
+        RestoreDbDialogComponent,
+        NotificationsComponent,
+        NotificationsListComponent,
+        TaskSettingsComponent,
+        GenerateRssUrlComponent,
+        SortPropertyComponent,
+        OnlyNumberDirective,
+        ArchiveViewerComponent
+    ],
+    imports: [
+        CommonModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        MatNativeDateModule,
+        MatRadioModule,
+        FormsModule,
+        MatInputModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        MatToolbarModule,
+        MatCardModule,
+        MatSnackBarModule,
+        MatButtonModule,
+        MatCheckboxModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatListModule,
+        MatGridListModule,
+        MatExpansionModule,
+        MatProgressBarModule,
+        MatProgressSpinnerModule,
+        MatButtonToggleModule,
+        MatRippleModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatSlideToggleModule,
+        MatAutocompleteModule,
+        MatTabsModule,
+        MatTooltipModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatTableModule,
+        MatDatepickerModule,
+        MatChipsModule,
+        MatBadgeModule,
+        DragDropModule,
+        ClipboardModule,
+        TextFieldModule,
+        NgxFileDropModule,
+        AvatarModule,
+        ContentLoaderModule,
+        VgCoreModule,
+        VgControlsModule,
+        VgOverlayPlayModule,
+        VgBufferingModule,
+        RouterModule,
+        AppRoutingModule,
+    ],
+    providers: [
+        PostsService,
+        { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true },
+        DatePipe
+    ],
+    exports: [
+        HighlightPipe,
+        LinkifyPipe
+    ],
+    bootstrap: [AppComponent]
 })
 
 export class AppModule { }

@@ -1,0 +1,27 @@
+name: docker-pr
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: Set hash
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "version.json"
+          json: '{"type": "docker", "tag": "nightly", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          dir: 'backend/'
+      - name: Build docker images
+        run: docker build . -t tzahi12345/youtubedl-material:nightly-pr

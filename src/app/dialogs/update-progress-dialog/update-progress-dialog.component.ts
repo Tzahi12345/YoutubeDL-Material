@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { UpdaterStatus } from '../../../api-types';
 
 @Component({
   selector: 'app-update-progress-dialog',
@@ -9,11 +9,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class UpdateProgressDialogComponent implements OnInit {
 
-  updateStatus = null;
+  updateStatus: UpdaterStatus = null;
   updateInterval = 250;
   errored = false;
 
-  constructor(private postsService: PostsService, private snackBar: MatSnackBar) { }
+  constructor(private postsService: PostsService) { }
 
   ngOnInit(): void {
     this.getUpdateProgress();
@@ -27,16 +27,9 @@ export class UpdateProgressDialogComponent implements OnInit {
       if (res) {
         this.updateStatus = res;
         if (this.updateStatus && this.updateStatus['error']) {
-          this.openSnackBar('Update failed. Check logs for more details.');
+          this.postsService.openSnackBar($localize`Update failed. Check logs for more details.`);
         }
       }
     });
   }
-
-  public openSnackBar(message: string, action: string = '') {
-    this.snackBar.open(message, action, {
-      duration: 2000,
-    });
-  }
-
 }

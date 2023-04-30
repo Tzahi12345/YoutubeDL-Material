@@ -22,12 +22,24 @@
             <span *ngIf="!checking_for_updates && latestGithubRelease['tag_name'] === current_version_tag">You are up to date.</span>
         </p>
         <p>
+            <ng-container i18n="Installation type">Installation type:</ng-container>&nbsp;{{postsService.version_info.type}}
+            <br>
+            <ng-container *ngIf="postsService.version_info.type === 'docker'">
+                <ng-container i18n="Docker tag">Docker tag:</ng-container>&nbsp;{{postsService.version_info.tag}}
+                <br>
+            </ng-container>
+            <ng-container i18n="Commit hash">Commit hash:</ng-container>&nbsp;{{postsService.version_info.commit}}
+            <br>
+            <ng-container i18n="Build date">Build date:</ng-container>&nbsp;{{postsService.version_info.date}}
+        </p>
+        <p>
             <ng-container i18n="About bug prefix">Found a bug or have a suggestion?</ng-container>&nbsp;<a [href]="issuesLink" target="_blank"><ng-container i18n="About bug click here">Click here</ng-container></a>&nbsp;<ng-container i18n="About bug suffix">to create an issue!</ng-container>
         </p>
         <mat-divider></mat-divider>
         <div style="margin-top: 10px;">
             <h5>Personal settings:</h5>
-            <mat-form-field placeholder="Sidepanel mode">
+            <mat-form-field>
+                <mat-label i18n="Sidepanel mode">Sidepanel mode</mat-label>
                 <mat-select [(ngModel)]="sidepanel_mode" (selectionChange)="sidePanelModeChanged($event.value)">
                     <mat-option value="over">
                         Over
@@ -38,7 +50,8 @@
                 </mat-select>
             </mat-form-field>
             <br/>
-            <mat-form-field placeholder="Card size">
+            <mat-form-field>
+                <mat-label i18n="File card size">File card size</mat-label>
                 <mat-select [(ngModel)]="card_size" (selectionChange)="cardSizeOptionChanged($event.value)">
                     <mat-option value="large">
                         Large

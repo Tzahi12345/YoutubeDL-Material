@@ -1,14 +1,15 @@
 <div *ngIf="dataSource; else loading">
     <div style="padding: 15px">
     <div class="row">
-        <div class="table table-responsive px-5 pb-4 pt-2">
+        <div class="table table-responsive pb-4 pt-4">
         <div class="example-header">
-            <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search" i18n-placeholder="search field description">
+            <mat-form-field appearance="outline">
+                <mat-label i18n="Search">Search</mat-label>
+                <input matInput (keyup)="applyFilter($event)">
             </mat-form-field>
         </div>
         
-        <div class="example-container mat-elevation-z8">
+        <div class="mat-elevation-z8" style="margin-right: 15px;">
         
             <mat-table #table [dataSource]="dataSource" matSort>
         
@@ -94,7 +95,7 @@
     </div>
     <button color="primary" [matMenuTriggerFor]="edit_roles_menu" class="edit-role" mat-raised-button><ng-container i18n="Edit role">Edit Role</ng-container></button>
     <mat-menu #edit_roles_menu="matMenu">
-        <button (click)="openModifyRole(role)" mat-menu-item *ngFor="let role of roles">{{role.name}}</button>
+        <button (click)="openModifyRole(role)" mat-menu-item *ngFor="let role of roles">{{role.key}}</button>
     </mat-menu>
     </div>
     

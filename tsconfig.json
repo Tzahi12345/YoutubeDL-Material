@@ -10,16 +10,23 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2015",
+    "target": "ES2022",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
-      "es2016",
+      "es2019",
       "dom"
     ],
-    "module": "es2020"
+    "module": "es2020",
+    "useDefineForClassFields": false
+  },
+  "exclude": [
+    "assets/default.json"
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
   }
 }

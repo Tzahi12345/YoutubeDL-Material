@@ -8,6 +8,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddUserDialogComponent } from 'app/dialogs/add-user-dialog/add-user-dialog.component';
 import { ManageUserComponent } from '../manage-user/manage-user.component';
 import { ManageRoleComponent } from '../manage-role/manage-role.component';
+import { User } from 'api-types';
 
 @Component({
   selector: 'app-modify-users',
@@ -31,7 +32,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
 
   // MatPaginator Output
   pageEvent: PageEvent;
-  users: any;
+  users: User[];
   editObject = null;
   constructedObject = {};
   roles = null;
@@ -62,7 +63,8 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
   }
 
-  applyFilter(filterValue: string) {
+  applyFilter(event: KeyboardEvent) {
+    let filterValue = (event.target as HTMLInputElement).value; // "as HTMLInputElement" is required: https://angular.io/guide/user-input#type-the-event
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
@@ -78,16 +80,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
 
   getRoles() {
     this.postsService.getRoles().subscribe(res => {
-      this.roles = [];
-      const roles = res['roles'];
-      const role_names = Object.keys(roles);
-      for (let i = 0; i < role_names.length; i++) {
-        const role_name = role_names[i];
-        this.roles.push({
-          name: role_name,
-          permissions: roles[role_name]['permissions']
-        });
-      }
+      this.roles = res['roles'];
     });
   }
 
@@ -103,11 +96,9 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  finishEditing(user_uid) {
-    let has_finished = false;
+  finishEditing(user_uid: string) {
     if (this.constructedObject && this.constructedObject['name'] && this.constructedObject['role']) {
       if (!isEmptyOrSpaces(this.constructedObject['name']) && !isEmptyOrSpaces(this.constructedObject['role'])) {
-        has_finished = true;
         const index_of_object = this.indexOfUser(user_uid);
         this.users[index_of_object] = this.constructedObject;
         this.constructedObject = {};
@@ -118,7 +109,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  enableEditMode(user_uid) {
+  enableEditMode(user_uid: string) {
     if (this.uidInUserList(user_uid) && this.indexOfUser(user_uid) > -1) {
       const users_index = this.indexOfUser(user_uid);
       this.editObject = this.users[users_index];
@@ -133,7 +124,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
   }
 
   // checks if user is in users array by name
-  uidInUserList(user_uid) {
+  uidInUserList(user_uid: string) {
     for (let i = 0; i < this.users.length; i++) {
       if (this.users[i].uid === user_uid) {
         return true;
@@ -143,7 +134,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
   }
 
   // gets index of user in users array by name
-  indexOfUser(user_uid) {
+  indexOfUser(user_uid: string) {
     for (let i = 0; i < this.users.length; i++) {
       if (this.users[i].uid === user_uid) {
         return i;
@@ -153,12 +144,12 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
   }
 
   setUser(change_obj) {
-    this.postsService.changeUser(change_obj).subscribe(res => {
+    this.postsService.changeUser(change_obj).subscribe(() => {
       this.getArray();
     });
   }
 
-  manageUser(user_uid) {
+  manageUser(user_uid: string) {
     const index_of_object = this.indexOfUser(user_uid);
     const user_obj = this.users[index_of_object];
     this.dialog.open(ManageUserComponent, {
@@ -169,17 +160,17 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  removeUser(user_uid) {
-    this.postsService.deleteUser(user_uid).subscribe(res => {
+  removeUser(user_uid: string) {
+    this.postsService.deleteUser(user_uid).subscribe(() => {
       this.getArray();
-    }, err => {
+    }, () => {
       this.getArray();
     });
   }
 
   createAndSortData() {
     // Sorts the data by last finished
-    this.users.sort((a, b) => b.name > a.name);
+    this.users.sort((a, b) => a.name.localeCompare(b.name));
 
     const filteredData = [];
     for (let i = 0; i < this.users.length; i++) {
@@ -197,7 +188,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
       }
     });
 
-    dialogRef.afterClosed().subscribe(success => {
+    dialogRef.afterClosed().subscribe(() => {
       this.getRoles();
     });
   }
@@ -206,7 +197,7 @@ export class ModifyUsersComponent implements OnInit, AfterViewInit {
     this.dialogRef.close();
   }
 
-  public openSnackBar(message: string, action: string = '') {
+  public openSnackBar(message: string, action = '') {
     this.snackBar.open(message, action, {
       duration: 2000,
     });

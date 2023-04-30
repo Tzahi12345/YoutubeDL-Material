@@ -1,0 +1,42 @@
+.filter {
+    width: 100%;
+}
+
+.spinner {
+    bottom: 1px;
+    left: 0.5px;
+    position: absolute;
+}
+
+.mat-mdc-table {
+    width: 100%;
+    max-height: 60vh;
+    overflow: auto;
+}
+
+.max-two-lines {
+    display: -webkit-box;
+    display: -moz-box;
+    max-height: 2.4em;
+    line-height: 1.2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+:host ::ng-deep .ngx-file-drop__content {
+    width: 100%;
+    top: -12px;
+    position: relative;
+}
+
+.file-drop-parent {
+    padding: 0px 10px 0px 10px;
+}
+
+.flex-items {
+    display: flex;
+    align-items: center;
+}
+

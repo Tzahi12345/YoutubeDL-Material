@@ -14,16 +14,17 @@ export class ManageRoleComponent implements OnInit {
   permissions = null;
 
   permissionToLabel = {
-    'filemanager': 'File manager',
-    'settings': 'Settings access',
-    'subscriptions': 'Subscriptions',
-    'sharing': 'Share files',
-    'advanced_download': 'Use advanced download mode',
-    'downloads_manager': 'Use downloads manager'
+    'filemanager': $localize`File manager`,
+    'settings': $localize`Settings access`,
+    'subscriptions': $localize`Subscriptions`,
+    'sharing': $localize`Share files`,
+    'advanced_download': $localize`Use advanced download mode`,
+    'downloads_manager': $localize`Use downloads manager`,
+    'tasks_manager': $localize`Use tasks manager`,
   }
 
   constructor(public postsService: PostsService, private dialogRef: MatDialogRef<ManageRoleComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+              @Inject(MAT_DIALOG_DATA) public data: {role: string}) {
     if (this.data) {
       this.role = this.data.role;
       this.available_permissions = this.postsService.available_permissions;
@@ -47,7 +48,7 @@ export class ManageRoleComponent implements OnInit {
   }
 
   changeRolePermissions(change, permission) {
-    this.postsService.setRolePermission(this.role.name, permission, change.value).subscribe(res => {
+    this.postsService.setRolePermission(this.role.key, permission, change.value).subscribe(res => {
       if (res['success']) {
 
       } else {

@@ -1,0 +1,21 @@
+{{- if and .Values.persistence.users.enabled (not .Values.persistence.users.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "youtubedl-material.fullname" . }}-users
+  labels:
+    {{- include "youtubedl-material.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.users.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.users.size | quote }}
+  {{- if .Values.persistence.users.storageClass }}
+  {{- if (eq "-" .Values.persistence.users.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.persistence.users.storageClass }}"
+  {{- end }}
+  {{- end }}
+  {{- end -}}

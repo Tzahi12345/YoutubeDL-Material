@@ -1,0 +1,60 @@
+{
+	"version": "2.0.0",
+	"windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": [
+                    "/d", "/c"
+                ]
+            }
+        }
+    },
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "start",
+			"problemMatcher": [],
+			"label": "Dev: start frontend",
+			"detail": "ng serve",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"label": "Dev: start backend",
+			"type": "shell",
+			"command": "node app.js",
+			"options": {
+				"cwd": "./backend",
+				"env": {
+					"YTDL_MODE": "debug"
+				}
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [],
+			"dependsOn": ["Dev: post-build"]
+		},
+		{
+			"label": "Dev: post-build",
+			"type": "shell",
+			"command": "node src/postbuild.mjs"
+		},
+		{
+			"label": "Dev: run all",
+			"dependsOn": ["Dev: start backend", "Dev: start frontend"]
+		}
+	]
+}

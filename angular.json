@@ -17,7 +17,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "backend/public",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -31,9 +30,20 @@
               "src/backend"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/bootstrap.min.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true,
+            "allowedCommonJsDependencies": [
+              "rxjs",
+              "crypto-js"
+            ]
           },
           "configurations": {
             "production": {
@@ -46,7 +56,6 @@
               "optimization": true,
               "outputHashing": "all",
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -60,7 +69,8 @@
             "es": {
               "localize": ["es"]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -109,7 +119,8 @@
               "src/backend"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/bootstrap.min.css"
             ],
             "scripts": []
           },
@@ -142,7 +153,8 @@
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/bootstrap.min.css"
             ],
             "assets": [
               "src/assets",
@@ -151,16 +163,6 @@
               "src/backend/video",
               "src/backend"
             ]
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": []
           }
         }
       }
@@ -176,20 +178,10 @@
             "protractorConfig": "./protractor.conf.js",
             "devServerTarget": "youtube-dl-material:serve"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "e2e/tsconfig.e2e.json"
-            ],
-            "exclude": []
-          }
         }
       }
     }
   },
-  "defaultProject": "youtube-dl-material",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
@@ -198,5 +190,8 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div *ngFor="let playlist of playlists; let i = index" class="mb-2 mt-2" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
-                <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToPlaylist($event)" [file_obj]="playlist" [is_playlist]="true" (editPlaylist)="editPlaylistDialog($event)" (deleteFile)="deletePlaylist($event)" [loading]="false"></app-unified-file-card>
+                <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToPlaylist($event)" [file_obj]="playlist" [is_playlist]="true" (editPlaylist)="editPlaylistDialog($event)" (deleteFile)="deletePlaylist($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? this.postsService.token : ''" [loading]="false"></app-unified-file-card>
             </div>
         </div>
     </div>

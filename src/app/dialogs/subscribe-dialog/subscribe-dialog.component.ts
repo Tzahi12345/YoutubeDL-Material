@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostsService } from 'app/posts.services';
 import { ArgModifierDialogComponent } from '../arg-modifier-dialog/arg-modifier-dialog.component';
 
@@ -21,9 +20,6 @@ export class SubscribeDialogComponent implements OnInit {
 
   // state
   subscribing = false;
-
-  // no videos actually downloaded, just streamed
-  streamingOnlyMode = false;
 
   // audio only mode
   audioOnlyMode = false;
@@ -70,7 +66,6 @@ export class SubscribeDialogComponent implements OnInit {
   ];
 
   constructor(private postsService: PostsService,
-              private snackBar: MatSnackBar,
               private dialog: MatDialog,
               public dialogRef: MatDialogRef<SubscribeDialogComponent>) { }
 
@@ -81,7 +76,7 @@ export class SubscribeDialogComponent implements OnInit {
     if (this.url && this.url !== '') {
       // timerange must be specified if download_all is false
       if (!this.download_all && !this.timerange_amount) {
-        this.openSnackBar('You must specify an amount of time');
+        this.postsService.openSnackBar($localize`You must specify an amount of time`);
         return;
       }
       this.subscribing = true;
@@ -90,14 +85,14 @@ export class SubscribeDialogComponent implements OnInit {
       if (!this.download_all) {
         timerange = 'now-' + this.timerange_amount.toString() + this.timerange_unit;
       }
-      this.postsService.createSubscription(this.url, this.name, timerange, this.streamingOnlyMode, this.maxQuality,
+      this.postsService.createSubscription(this.url, this.name, timerange, this.maxQuality,
                                           this.audioOnlyMode, this.customArgs, this.customFileOutput).subscribe(res => {
         this.subscribing = false;
         if (res['new_sub']) {
           this.dialogRef.close(res['new_sub']);
         } else {
           if (res['error']) {
-            this.openSnackBar('ERROR: ' + res['error']);
+            this.postsService.openSnackBar($localize`ERROR: ` + res['error']);
           }
           this.dialogRef.close();
         }
@@ -118,11 +113,4 @@ export class SubscribeDialogComponent implements OnInit {
       }
     });
   }
-
-  public openSnackBar(message: string, action = '') {
-    this.snackBar.open(message, action, {
-      duration: 2000,
-    });
-  }
-
 }

@@ -19,7 +19,7 @@ export class AboutDialogComponent implements OnInit {
   sidepanel_mode = this.postsService.sidepanel_mode;
   card_size = this.postsService.card_size;
 
-  constructor(private postsService: PostsService) { }
+  constructor(public postsService: PostsService) { }
 
   ngOnInit(): void {
     this.getLatestGithubRelease();

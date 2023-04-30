@@ -34,7 +34,7 @@ spec:
           {{- range .paths }}
           - path: {{ .path }}
             backend:
-              serviceName: ytdl-material
+              serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
           {{- end }}
     {{- end }}

@@ -6,7 +6,7 @@
     padding: 0;
 }
 
-.demo-basic .mat-card-content {
+.demo-basic .mat-mdc-card-content {
     padding: 16px;
 }
 
@@ -40,7 +40,7 @@ mat-toolbar.top {
     width: 80%
 }
 
-mat-form-field.mat-form-field {
+mat-form-field.mat-mdc-form-field {
     font-size: 24px;
   }
 
@@ -75,7 +75,7 @@ mat-form-field.mat-form-field {
     display: inline-block;
     position: absolute;
     top: 15px;
-    right: -40px;
+    right: -16px;
 }
 
 .margined {
@@ -124,21 +124,41 @@ mat-form-field.mat-form-field {
     width: 100%;
 }
 
-.edit-button {
+.advanced-input-time {
     margin-left: 10px;
-    top: -5px;
+}
+
+.edit-button {
+    margin-left: 5px;
+    margin-top: -6px;
+    margin-bottom: -5px;
+    position: relative;
+    top: 6px;
+}
+
+.border-radius-both {
+    border-radius: 16px;
 }
 
 .no-border-radius-bottom {
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 16px 16px 0px 0px;
 }
 
 .no-border-radius-top {
-    border-radius: 0px 0px 4px 4px;
+    border-radius: 0px 0px 16px 16px;
 }
 
 @media (max-width: 576px) {
     .download-progress-bar {
         width: 125px;
     }
+}
+
+.url-input {
+    padding-right: 25px;
+    overflow-y: hidden;
+}
+
+.url-input::-webkit-scrollbar {
+    display: none;
 }

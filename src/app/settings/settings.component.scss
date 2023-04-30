@@ -2,6 +2,15 @@
     margin-bottom: 20px;
 }
 
+.settings-title {
+    text-align: center;
+    margin-top: 15px;
+}
+
+:host ::ng-deep .mat-mdc-tab-body {
+    margin-left: 15px;
+}
+
 .ext-divider {
     margin-bottom: 14px;
 }
@@ -23,13 +32,12 @@
 }
 
 .text-field {
-    min-width: 30%;
+    width: 95%;
+    max-width: 500px;
 }
 
 .checkbox-button {
     margin-left: 15px;
-    margin-bottom: 12px;
-    bottom: 4px;
 }
 
 .category-list {
@@ -77,8 +85,29 @@
 }
 
 .category-custom-placeholder {
-background: #ccc;
-border: dotted 3px #999;
-min-height: 60px;
-transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    background: #ccc;
+    border: dotted 3px #999;
+    min-height: 60px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.test-connection-div {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.transfer-db-div {
+    margin-bottom: 10px;
+}
+
+.action-buttons {
+    position: absolute;
+    bottom: 15px;
+}
+
+.test-connection-spinner {
+    display: inline-block;
+    position: relative;
+    top: 6px;
+    margin-left: 10px;
 }

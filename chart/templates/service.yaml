@@ -1,22 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file .\docker-compose.yml
-      convert -c
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
+  name: {{ include "youtubedl-material.fullname" . }}
   labels:
-    io.kompose.service: ytdl-material
-  name: ytdl-material
+    {{- include "youtubedl-material.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: 17442
+      targetPort: http
       protocol: TCP
       name: http
   selector:
-    io.kompose.service: ytdl-material
-status:
-  loadBalancer: {}
+    {{- include "youtubedl-material.selectorLabels" . | nindent 4 }}

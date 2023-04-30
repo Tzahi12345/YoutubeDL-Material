@@ -5,73 +5,79 @@
         <div class="row">
             <div class="col-12">
                 <mat-card class="mat-elevation-z6">
-                    <h6 i18n="Simulated args title">Simulated new args</h6>
-                    <mat-chip-list class="example-chip" #chipList aria-label="Args array" cdkDropList cdkDropListDisabled
-                            cdkDropListOrientation="horizontal"
-                            (cdkDropListDropped)="drop($event)">
-                            <mat-chip [matTooltip]="argsByKey[arg] ? argsByKey[arg]['description'] : null" *ngFor="let arg of args_array; let i = index;" [selectable]="selectable" [removable]="removable" (removed)="remove(i)" cdkDrag>
-                                {{arg}}
-                                <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-                            </mat-chip>
-                        </mat-chip-list>
-                    <mat-form-field style="width: 100%" color="accent">
-                        
-                        <input #chipper style="width: 100%;" [formControl]="chipCtrl" matInput [matAutocomplete]="autochip" [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                            [matChipInputAddOnBlur]="addOnBlur"
-                            (matChipInputTokenEnd)="add($event)">
-                    </mat-form-field>
-                    <mat-autocomplete #autochip="matAutocomplete">
-                        <mat-option *ngFor="let arg of filteredChipOptions | async" [value]="arg.key">
-                            <span [innerHTML]="arg.key | highlight : chipCtrl.value"></span>
-                            <button style="float: right" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
-                        </mat-option>
-                    </mat-autocomplete>
+                    <mat-card-content>
+                        <h6 i18n="Simulated args title">Simulated new args</h6>
+                        <mat-chip-grid class="example-chip" #chipList aria-label="Args array" cdkDropList cdkDropListDisabled
+                                cdkDropListOrientation="horizontal"
+                                (cdkDropListDropped)="drop($event)">
+                                <mat-chip-row [matTooltip]="argsByKey[arg] ? argsByKey[arg]['description'] : null" *ngFor="let arg of args_array; let i = index;" [removable]="removable" (removed)="remove(i)" cdkDrag>
+                                    {{arg}}
+                                    <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                                </mat-chip-row>
+                            </mat-chip-grid>
+                        <mat-form-field style="width: 100%" color="accent">
+                            
+                            <input #chipper style="width: 100%;" [formControl]="chipCtrl" matInput [matAutocomplete]="autochip" [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                [matChipInputAddOnBlur]="addOnBlur"
+                                (matChipInputTokenEnd)="add($event)">
+                        </mat-form-field>
+                        <mat-autocomplete #autochip="matAutocomplete">
+                            <mat-option *ngFor="let arg of filteredChipOptions | async" [value]="arg.key">
+                                <span [innerHTML]="arg.key | highlight : chipCtrl.value"></span>
+                                <button class="info-autocomplete-icon" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-card-content>
                 </mat-card>
             </div>
             <div class="col-12">
                 <mat-card class="mat-elevation-z6 my-2">
-                    <h6 i18n="Add arg card title">Add an arg</h6>
-                    <form >
-                        <div>
-                            <mat-form-field style="width: 75%" color="accent">
-                                <input matInput placeholder="Arg" [matAutocomplete]="auto" [formControl]="stateCtrl">
-                            </mat-form-field>
-                            <mat-autocomplete #auto="matAutocomplete">
-                                <mat-option *ngFor="let arg of filteredOptions | async" [value]="arg.key">
-                                    <span [innerHTML]="arg.key | highlight : stateCtrl.value"></span>
-                                    <button style="float: right" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
-                                </mat-option>
-                            </mat-autocomplete>
-
+                    <mat-card-content>
+                        <h6 i18n="Add arg card title">Add an arg</h6>
+                        <form >
                             <div>
-                                <mat-menu #argsByCategoryMenu="matMenu">
-                                    <ng-container *ngFor="let argsInCategory of argsByCategory | keyvalue">
-                                        <button mat-menu-item [matMenuTriggerFor]="subMenu">{{argsInfo[argsInCategory.key].label}}</button>
-                                        <mat-menu #subMenu="matMenu">
-                                            <button mat-menu-item *ngFor="let arg of argsInCategory.value" (click)="setFirstArg(arg.key)"><div style="display: inline-block;">{{arg.key}}</div>&nbsp;&nbsp;<div class="info-menu-icon"><mat-icon [matTooltip]="arg.description">info</mat-icon></div></button>
-                                        </mat-menu>
-                                    </ng-container>
+                                <mat-form-field style="width: 75%" color="accent">
+                                    <mat-label i18n="Arg">Arg</mat-label>
+                                    <input matInput [matAutocomplete]="auto" [formControl]="stateCtrl">
+                                </mat-form-field>
+                                <mat-autocomplete #auto="matAutocomplete">
+                                    <mat-option *ngFor="let arg of filteredOptions | async" [value]="arg.key">
+                                        <span [innerHTML]="arg.key | highlight : stateCtrl.value"></span>
+                                        <button class="info-autocomplete-icon" [matTooltip]="arg.description" mat-icon-button><mat-icon>info</mat-icon></button>
+                                    </mat-option>
+                                </mat-autocomplete>
+
+                                <div>
+                                    <mat-menu #argsByCategoryMenu="matMenu">
+                                        <ng-container *ngFor="let argsInCategory of argsByCategory | keyvalue">
+                                            <button mat-menu-item [matMenuTriggerFor]="subMenu">{{argsInfo[argsInCategory.key].label}}</button>
+                                            <mat-menu #subMenu="matMenu">
+                                                <button mat-menu-item *ngFor="let arg of argsInCategory.value" (click)="setFirstArg(arg.key)"><div style="display: inline-block;">{{arg.key}}</div>&nbsp;&nbsp;<div class="info-menu-icon"><mat-icon [matTooltip]="arg.description">info</mat-icon></div></button>
+                                            </mat-menu>
+                                        </ng-container>
+                                        
+                                    </mat-menu>
                                     
-                                </mat-menu>
-                                  
-                                
-                                  
-                                <button style="margin-bottom: 15px" mat-stroked-button [matMenuTriggerFor]="argsByCategoryMenu"><ng-container i18n="Search args by category button">Search by category</ng-container></button>
+                                    
+                                    
+                                    <button style="margin-bottom: 15px" mat-stroked-button [matMenuTriggerFor]="argsByCategoryMenu"><ng-container i18n="Search args by category button">Search by category</ng-container></button>
+                                </div>
                             </div>
-                        </div>
+                            <div>
+                                <mat-checkbox color="accent" [ngModelOptions]="{standalone: true}" [(ngModel)]="secondArgEnabled"><ng-container i18n="Use arg value checkbox">Use arg value</ng-container></mat-checkbox>
+                            </div>
+                            <div *ngIf="secondArgEnabled">
+                                <mat-form-field style="width: 75%" color="accent">
+                                    <mat-label i18n="Arg value">Arg value</mat-label>
+                                    <input [ngModelOptions]="{standalone: true}" matInput [disabled]="!secondArgEnabled" [(ngModel)]="secondArg">
+                                </mat-form-field>
+                            </div>
+                        </form>
                         <div>
-                            <mat-checkbox color="accent" [ngModelOptions]="{standalone: true}" [(ngModel)]="secondArgEnabled"><ng-container i18n="Use arg value checkbox">Use arg value</ng-container></mat-checkbox>
+                            <button (click)="addArg()" [disabled]="!canAddArg()" mat-stroked-button color="accent"><ng-container i18n="Search args by category button">Add arg</ng-container></button>
                         </div>
-                        <div *ngIf="secondArgEnabled">
-                            <mat-form-field style="width: 75%" color="accent">
-                                <input [ngModelOptions]="{standalone: true}" matInput [disabled]="!secondArgEnabled" placeholder="Arg value" i18n-placeholder="Arg value placeholder" [(ngModel)]="secondArg">
-                            </mat-form-field>
-                        </div>
-                    </form>
-                    <div>
-                        <button (click)="addArg()" [disabled]="!canAddArg()" mat-stroked-button color="accent"><ng-container i18n="Search args by category button">Add arg</ng-container></button>
-                    </div>
+                    </mat-card-content>
                 </mat-card>
             </div>
         </div>

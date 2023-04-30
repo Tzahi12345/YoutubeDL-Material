@@ -6,22 +6,75 @@ on:
       tags:
         description: 'Docker tags'
         required: true
+  release:
+    types: [published]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout code
         uses: actions/checkout@v2
+
+      - name: Set hash
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "version.json"
+          json: '{"type": "docker", "tag": "latest", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
+          dir: 'backend/'
+
+      - name: Set image tag
+        id: tags
+        run: |
+          if [ "${{ github.event.inputs.tags }}" != "" ]; then
+            echo "::set-output name=tags::${{ github.event.inputs.tags }}"
+          elif [ ${{ github.event.action }} == "release" ]; then
+            echo "::set-output name=tags::${{ github.event.release.tag_name }}"
+          else
+            echo "Unknown workflow trigger: ${{ github.event.action }}! Cannot determine default tag."
+            exit 1
+          fi
+
+      - name: Generate Docker image metadata
+        id: docker-meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}
+            ghcr.io/${{ github.repository_owner }}/${{ secrets.DOCKERHUB_REPO }}
+          tags: |
+            type=raw,value=${{ steps.tags.outputs.tags }}
+            type=raw,value=latest
+
       - name: setup platform emulator
         uses: docker/setup-qemu-action@v1
+
       - name: setup multi-arch docker build
         uses: docker/setup-buildx-action@v1
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: build & push images
         uses: docker/build-push-action@v2
         with:
@@ -29,4 +82,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm,linux/arm64/v8
           push: true
-          tags: ${{ github.event.inputs.tags }}
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          labels: ${{ steps.docker-meta.outputs.labels }}

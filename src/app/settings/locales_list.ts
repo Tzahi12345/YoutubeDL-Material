@@ -105,7 +105,7 @@ export const isoLangs = {
        'nativeName': 'ဗမာစာ'
    },
    'ca': {
-       'name': 'Catalan; Valencian',
+       'name': 'Catalan',
        'nativeName': 'Català'
    },
    'ch': {
@@ -159,7 +159,7 @@ export const isoLangs = {
    },
    'nl': {
        'name': 'Dutch',
-       'nativeName': 'Nederlands, Vlaams'
+       'nativeName': 'Nederlands'
    },
    'en': {
        'name': 'English',
@@ -445,7 +445,7 @@ export const isoLangs = {
        'name': 'Navajo, Navaho',
        'nativeName': 'Diné bizaad, Dinékʼehǰí'
    },
-   'nb': {
+   'nb-NO': {
        'name': 'Norwegian Bokmål',
        'nativeName': 'Norsk bokmål',
        'ngID': 'nb'

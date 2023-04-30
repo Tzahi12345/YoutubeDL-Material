@@ -1,53 +1,105 @@
 <div class="container-fluid" style="max-width: 941px;">
     <div class="row">
+        <!-- Sorting -->
         <div class="col-12 order-2 col-sm-4 order-sm-1 d-flex justify-content-center">
-            <div>
-                <div style="display: inline-block;">
-                    <mat-form-field style="width: 132px;">
-                        <mat-select [(ngModel)]="this.filterProperty" (selectionChange)="filterOptionChanged($event.value)">
-                            <mat-option *ngFor="let filterOption of filterProperties | keyvalue" [value]="filterOption.value">
-                                {{filterOption['value']['label']}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="sort-dir-div">
-                    <button (click)="toggleModeChange()" mat-icon-button><mat-icon>{{descendingMode ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
-                </div>
-            </div>
+            <app-sort-property [(sortProperty)]="sortProperty" [(descendingMode)]="descendingMode" (sortOptionChanged)="sortOptionChanged($event)"></app-sort-property>
         </div>
+        <!-- Files title -->
         <div class="col-12 order-1 col-sm-4 order-sm-2 d-flex justify-content-center">
-            <h4 class="my-videos-title" i18n="My videos title">My videos</h4>
+            <h4 *ngIf="!customHeader" class="my-videos-title" i18n="My files title">My files</h4>
+            <h4 *ngIf="customHeader" class="my-videos-title">{{customHeader}}</h4>
         </div>
+        <!-- Search -->
         <div class="col-12 order-3 col-sm-4 order-sm-3 d-flex justify-content-center">
-            <mat-form-field [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
-                <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" placeholder="Search" i18n-placeholder="Files search placeholder" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
+            <mat-form-field appearance="outline" [ngClass]="searchIsFocused ? 'search-bar-focused' : 'search-bar-unfocused'" class="search-bar" color="accent">
+                <mat-label i18n="Search">Search</mat-label>
+                <input (focus)="searchIsFocused = true" (blur)="searchIsFocused = false" class="search-input" type="text" [(ngModel)]="search_text" (ngModelChange)="onSearchInputChanged($event)" matInput>
                 <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
         </div>
     </div>
+    <!-- Filters -->
+    <div class="row justify-content-center">
+        <mat-chip-listbox class="filter-list" [value]="selectedFilters" [multiple]="true" (change)="selectedFiltersChanged($event)">
+            <mat-chip-option *ngFor="let filter of fileFilters | keyvalue: originalOrder" [value]="filter.key" [selected]="selectedFilters.includes(filter.key)" color="accent">{{filter.value.label}}</mat-chip-option>
+        </mat-chip-listbox>
+    </div>
 </div>
 <div>
-    <div class="container">
+    <!-- Files -->
+    <div *ngIf="!selectMode" class="container" style="margin-bottom: 16px">
         <div class="row justify-content-center">
+            <!-- Real cards -->
             <ng-container *ngIf="normal_files_received && paged_data">
-                <div *ngFor="let file of paged_data; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
-                    <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? '?jwt=' + this.postsService.token : ''"></app-unified-file-card>
+                <div style="display: flex; align-items: center;" *ngFor="let file of paged_data; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
+                    <app-unified-file-card [ngClass]="downloading_content[file.uid] ? 'blurred' : ''" [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" (toggleFavorite)="toggleFavorite($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [availablePlaylists]="playlists" (addFileToPlaylist)="addFileToPlaylist($event)" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? this.postsService.token : ''"></app-unified-file-card>
+                    <mat-spinner *ngIf="downloading_content[file.uid]" class="downloading-spinner" [diameter]="32"></mat-spinner>
                 </div>
-                <div *ngIf="filtered_files.length === 0">
-                    <ng-container i18n="No videos found">No videos found.</ng-container>
+                <div *ngIf="paged_data.length === 0">
+                    <ng-container i18n="No files found">No files found.</ng-container>
                 </div>
             </ng-container>
-            <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
-                <div *ngFor="let file of loading_files; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
+            <!-- Fake cards -->
+            <ng-container>
+                <div *ngFor="let file of loading_files; let i = index" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[normal_files_received ? 'hide' : '', postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
                     <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" [loading]="true" [theme]="postsService.theme"></app-unified-file-card>
                 </div>
             </ng-container>
         </div>
     </div>
 
-    <mat-paginator class="paginator" #paginator *ngIf="filtered_files && filtered_files.length > 0" (page)="pageChangeEvent($event)" [length]="filtered_files.length"
-              [pageSize]="pageSize"
-              [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
-    </mat-paginator>
+    <div *ngIf="selectMode">
+        <!-- If selected files e.g. for creating a playlist -->
+        <mat-tab-group [(selectedIndex)]="selectedIndex">
+            <mat-tab label="Order" i18n-label="Order">
+                <div *ngIf="selected_data.length">
+                    <span *ngIf="reverse_order === false" i18n="Normal order">Normal order&nbsp;</span>
+                    <span *ngIf="reverse_order === true" i18n="Reverse order">Reverse order&nbsp;</span>
+                    <button (click)="toggleSelectionOrder()" mat-icon-button><mat-icon>{{!reverse_order ? 'arrow_downward' : 'arrow_upward'}}</mat-icon></button>
+                </div>
+
+                <!-- Selection order -->
+                <mat-button-toggle-group *ngIf="selected_data.length" class="media-list" cdkDropList (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical #group="matButtonToggleGroup">
+                    <!-- The following for loop can be optimized but it requires a pipe https://stackoverflow.com/a/35703364/8088021 -->
+                    <mat-button-toggle class="media-box" cdkDrag *ngFor="let file of (reverse_order ? selected_data_objs.slice().reverse() : selected_data_objs); let i = index" [checked]="false"><div><div class="playlist-item-text">{{file.title}}</div> <button (click)="removeSelectedFile(i)" class="remove-item-button" mat-icon-button><mat-icon>cancel</mat-icon></button></div></mat-button-toggle>
+                </mat-button-toggle-group>
+                
+                <div style="margin-top: 20px;" *ngIf="!selected_data.length">
+                    <h4 style="text-align: center;">No files selected!</h4>
+                </div>
+
+            </mat-tab>
+            <mat-tab label="Select files" i18n-label="Select files">
+                <mat-selection-list *ngIf="normal_files_received" (selectionChange)="fileSelectionChanged($event)">
+                    <mat-list-option [selected]="selected_data.includes(file.uid)" *ngFor="let file of paged_data" [value]="file">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-10 select-file-title">
+                                    <mat-icon class="audio-video-icon">{{file.isAudio ? 'audiotrack' : 'movie'}}</mat-icon>
+                                    {{file.title}}
+                                </div>
+                                <div class="col-2">{{file.registered | date:'shortDate'}}</div>
+                            </div>
+                        </div>
+                        
+                    </mat-list-option>
+                </mat-selection-list>
+        
+                <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
+                    <mat-selection-list *ngIf="!normal_files_received">
+                        <mat-list-option *ngFor="let file of paged_data">
+                            <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" [width]="250" [height]="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
+                        </mat-list-option>
+                    </mat-selection-list>
+                </ng-container>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+    <div style="position: relative;" *ngIf="usePaginator && selectedIndex > 0">
+        <mat-paginator class="paginator" #paginator (page)="pageChangeEvent($event)" [length]="file_count"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[5, 10, 25, 100, this.paged_data && this.paged_data.length > 100 ? this.paged_data.length : 250]">
+        </mat-paginator>
+    </div>
 </div>

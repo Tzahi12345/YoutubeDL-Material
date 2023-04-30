@@ -1,0 +1,29 @@
+<h4 mat-dialog-title><ng-container i18n="Restore DB from backup">Restore DB from backup</ng-container></h4>
+
+<mat-dialog-content>
+    <mat-selection-list [multiple]="false" [(ngModel)]="selected_backup">
+        <mat-list-option *ngFor="let db_backup of db_backups" [value]="db_backup.name" [matTooltip]="db_backup.name">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-4">
+                        {{db_backup.timestamp*1000 | date: 'short'}}
+                    </div>
+                    <div class="col-4">
+                        {{(db_backup.size/1000).toFixed(2)}} kB
+                    </div>
+                    <div class="col-4" style="text-transform: capitalize;">
+                        {{db_backup.source}}
+                    </div>
+                </div>
+            </div>
+        </mat-list-option>
+    </mat-selection-list>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close><ng-container i18n="Restore DB cancel button">Cancel</ng-container></button>
+    <button mat-button [disabled]="restoring" (click)="restoreClicked()" [disabled]="!selected_backup || selected_backup.length !== 1"><ng-container i18n="Restore button">Restore</ng-container></button>
+    <div class="mat-spinner" *ngIf="restoring">
+      <mat-spinner [diameter]="25"></mat-spinner>
+    </div>
+</mat-dialog-actions>

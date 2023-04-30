@@ -1,0 +1,8 @@
+{
+    "mochaExplorer.files": "backend/test/**/*.js",
+    "mochaExplorer.cwd": "backend",
+    "mochaExplorer.globImplementation": "vscode",
+    "mochaExplorer.env": {
+        "YTDL_MODE": "debug"
+    }
+}

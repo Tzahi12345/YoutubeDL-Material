@@ -11,7 +11,6 @@ import { PostsService } from 'app/posts.services';
 })
 export class ShareMediaDialogComponent implements OnInit {
 
-  type = null;
   uid = null;
   uuid = null;
   share_url = null;
@@ -22,18 +21,17 @@ export class ShareMediaDialogComponent implements OnInit {
   timestamp_enabled = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public router: Router, private snackBar: MatSnackBar,
-              private postsService: PostsService) { }
+              public postsService: PostsService) { }
 
   ngOnInit(): void {
     if (this.data) {
-      this.type = this.data.type;
       this.uid = this.data.uid;
       this.uuid = this.data.uuid;
       this.sharing_enabled = this.data.sharing_enabled;
       this.is_playlist = this.data.is_playlist;
       this.current_timestamp = (this.data.current_timestamp / 1000).toFixed(2);
 
-      const arg = (this.is_playlist ? ';id=' : ';uid=');
+      const arg = (this.is_playlist ? ';playlist_id=' : ';uid=');
       this.default_share_url = window.location.href.split(';')[0] + arg + this.uid;
       if (this.uuid) {
         this.default_share_url += ';uuid=' + this.uuid;
@@ -60,31 +58,31 @@ export class ShareMediaDialogComponent implements OnInit {
   }
 
   copiedToClipboard() {
-    this.openSnackBar('Copied to clipboard!');
+    this.postsService.openSnackBar($localize`Copied to clipboard!`);
   }
 
   sharingChanged(event) {
     if (event.checked) {
-      this.postsService.enableSharing(this.uid, this.type, this.is_playlist).subscribe(res => {
+      this.postsService.enableSharing(this.uid, this.is_playlist).subscribe(res => {
         if (res['success']) {
-          this.openSnackBar('Sharing enabled.');
+          this.postsService.openSnackBar($localize`Sharing enabled.`);
           this.sharing_enabled = true;
         } else {
-          this.openSnackBar('Failed to enable sharing.');
+          this.postsService.openSnackBar($localize`Failed to enable sharing.`);
         }
       }, err => {
-        this.openSnackBar('Failed to enable sharing - server error.');
+        this.postsService.openSnackBar($localize`Failed to enable sharing - server error.`);
       });
     } else {
-      this.postsService.disableSharing(this.uid, this.type, this.is_playlist).subscribe(res => {
+      this.postsService.disableSharing(this.uid, this.is_playlist).subscribe(res => {
         if (res['success']) {
-          this.openSnackBar('Sharing disabled.');
+          this.postsService.openSnackBar($localize`Sharing disabled.`);
           this.sharing_enabled = false;
         } else {
-          this.openSnackBar('Failed to disable sharing.');
+          this.postsService.openSnackBar($localize`Failed to disable sharing.`);
         }
       }, err => {
-        this.openSnackBar('Failed to disable sharing - server error.');
+        this.postsService.openSnackBar($localize`Failed to disable sharing - server error.`);
       });
     }
   }

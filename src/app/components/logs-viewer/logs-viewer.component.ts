@@ -43,17 +43,17 @@ export class LogsViewerComponent implements OnInit {
           })
         });
       } else {
-        this.postsService.openSnackBar('Failed to retrieve logs!');
+        this.postsService.openSnackBar($localize`Failed to retrieve logs!`);
       }
     }, err => {
       this.logs_loading = false;
       console.error(err);
-      this.postsService.openSnackBar('Failed to retrieve logs!');
+      this.postsService.openSnackBar($localize`Failed to retrieve logs!`);
     });
   }
 
   copiedLogsToClipboard() {
-    this.postsService.openSnackBar('Logs copied to clipboard!');
+    this.postsService.openSnackBar($localize`Logs copied to clipboard!`);
   }
 
   clearLogs() {
@@ -72,12 +72,12 @@ export class LogsViewerComponent implements OnInit {
             this.logs = [];
             this.logs_text = '';
             this.getLogs();
-            this.postsService.openSnackBar('Logs successfully cleared!');
+            this.postsService.openSnackBar($localize`Logs successfully cleared!`);
           } else {
-            this.postsService.openSnackBar('Failed to clear logs!');
+            this.postsService.openSnackBar($localize`Failed to clear logs!`);
           }
         }, err => {
-          this.postsService.openSnackBar('Failed to clear logs!');
+          this.postsService.openSnackBar($localize`Failed to clear logs!`);
         });
       }
     });

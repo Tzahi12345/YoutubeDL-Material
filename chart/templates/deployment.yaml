@@ -1,69 +1,121 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file .\docker-compose.yml
-      convert -c
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
+  name: {{ include "youtubedl-material.fullname" . }}
   labels:
-    io.kompose.service: ytdl-material
-  name: ytdl-material
+    {{- include "youtubedl-material.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: ytdl-material
-  strategy:
-    type: Recreate
+      {{- include "youtubedl-material.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
       annotations:
-        kompose.cmd: C:\Users\tzahi\Documents\YoutubeDL-Material\kompose.exe --file
-          .\docker-compose.yml convert -c
-        kompose.version: 1.21.0 (992df58d8)
-      creationTimestamp: null
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        io.kompose.service: ytdl-material
+        {{- include "youtubedl-material.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "youtubedl-material.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-      - env:
-        - name: ALLOW_CONFIG_MUTATIONS
-          value: "true"
-        image: tzahi12345/youtubedl-material:latest
-        imagePullPolicy: ""
-        name: ytdl-material
-        ports:
-        - containerPort: 17442
-          name: http
-        resources: {}
-        volumeMounts:
-        - mountPath: /app/appdata
-          name: ytdl-material-claim-appdata
-        - mountPath: /app/audio
-          name: ytdl-material-claim-audio
-        - mountPath: /app/video
-          name: ytdl-material-claim-video
-        - mountPath: /app/subscriptions
-          name: ytdl-material-claim-subscriptions
-        - mountPath: /app/users
-          name: ytdl-material-claim-users
-      restartPolicy: Always
-      serviceAccountName: ""
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 17442
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /app/appdata
+              name: appdata
+              {{- if .Values.persistence.appdata.subPath }}
+              subPath: {{ .Values.persistence.appdata.subPath }}
+              {{- end }}
+            - mountPath: /app/audio
+              name: audio
+              {{- if .Values.persistence.audio.subPath }}
+              subPath: {{ .Values.persistence.audio.subPath }}
+              {{- end }}
+            - mountPath: /app/video
+              name: video
+              {{- if .Values.persistence.video.subPath }}
+              subPath: {{ .Values.persistence.video.subPath }}
+              {{- end }}
+            - mountPath: /app/subscriptions
+              name: subscriptions
+              {{- if .Values.persistence.subscriptions.subPath }}
+              subPath: {{ .Values.persistence.subscriptions.subPath }}
+              {{- end }}
+            - mountPath: /app/users
+              name: users
+              {{- if .Values.persistence.users.subPath }}
+              subPath: {{ .Values.persistence.users.subPath }}
+              {{- end }}
       volumes:
-      - name: ytdl-material-claim-appdata
-        persistentVolumeClaim:
-          claimName: ytdl-material-claim-appdata
-      - name: ytdl-material-claim-audio
-        persistentVolumeClaim:
-          claimName: ytdl-material-claim-audio
-      - name: ytdl-material-claim-video
-        persistentVolumeClaim:
-          claimName: ytdl-material-claim-video
-      - name: ytdl-material-claim-subscriptions
-        persistentVolumeClaim:
-          claimName: ytdl-material-claim-subscriptions
-      - name: ytdl-material-claim-users
-        persistentVolumeClaim:
-          claimName: ytdl-material-claim-users
-status: {}
+        - name: appdata
+          {{- if .Values.persistence.appdata.enabled}}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.appdata.existingClaim }}{{ .Values.persistence.appdata.existingClaim }}{{- else }}{{ template "youtubedl-material.fullname" . }}-appdata{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: audio
+          {{- if .Values.persistence.audio.enabled}}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.audio.existingClaim }}{{ .Values.persistence.audio.existingClaim }}{{- else }}{{ template "youtubedl-material.fullname" . }}-audio{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: subscriptions
+          {{- if .Values.persistence.subscriptions.enabled}}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.subscriptions.existingClaim }}{{ .Values.persistence.subscriptions.existingClaim }}{{- else }}{{ template "youtubedl-material.fullname" . }}-subscriptions{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: users
+          {{- if .Values.persistence.users.enabled}}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.users.existingClaim }}{{ .Values.persistence.users.existingClaim }}{{- else }}{{ template "youtubedl-material.fullname" . }}-users{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: video
+          {{- if .Values.persistence.video.enabled}}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.video.existingClaim }}{{ .Values.persistence.video.existingClaim }}{{- else }}{{ template "youtubedl-material.fullname" . }}-video{{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

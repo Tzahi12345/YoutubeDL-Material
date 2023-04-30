@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { DatabaseFile } from 'api-types';
 import { PostsService } from 'app/posts.services';
 
 @Component({
@@ -6,7 +7,7 @@ import { PostsService } from 'app/posts.services';
   templateUrl: './twitch-chat.component.html',
   styleUrls: ['./twitch-chat.component.scss']
 })
-export class TwitchChatComponent implements OnInit, AfterViewInit {
+export class TwitchChatComponent implements OnInit, OnDestroy {
 
   full_chat = null;
   visible_chat = null;
@@ -20,7 +21,7 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
 
   scrollContainer = null;
 
-  @Input() db_file = null;
+  @Input() db_file: DatabaseFile = null;
   @Input() sub = null;
   @Input() current_timestamp = null;
 
@@ -33,7 +34,8 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
     this.getFullChat();
   }
 
-  ngAfterViewInit() {
+  ngOnDestroy(): void {
+    if (this.chat_check_interval_obj) { clearInterval(this.chat_check_interval_obj); }
   }
 
   private isUserNearBottom(): boolean {
@@ -43,7 +45,7 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
     return position > height - threshold;
   }
 
-  scrollToBottom = (force_scroll) => {
+  scrollToBottom = (force_scroll = false) => {
     if (force_scroll || this.isUserNearBottom()) {
       this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
     }
@@ -95,18 +97,18 @@ export class TwitchChatComponent implements OnInit, AfterViewInit {
     let vodId = this.db_file.url.split('videos/').length > 1 && this.db_file.url.split('videos/')[1];
     vodId = vodId.split('?')[0];
     if (!vodId) {
-      this.postsService.openSnackBar('VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"');
+      this.postsService.openSnackBar($localize`VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"`);
     }
     this.postsService.downloadTwitchChat(this.db_file.id, this.db_file.isAudio ? 'audio' : 'video', vodId, null, this.sub).subscribe(res => {
       if (res['chat']) {
         this.initializeChatCheck(res['chat']);
       } else {
         this.downloading_chat = false;
-        this.postsService.openSnackBar('Download failed.')
+        this.postsService.openSnackBar($localize`Download failed.`)
       }
     }, err => {
       this.downloading_chat = false;
-      this.postsService.openSnackBar('Chat could not be downloaded.')
+      this.postsService.openSnackBar($localize`Chat could not be downloaded.`)
     });
   }
 

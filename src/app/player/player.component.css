@@ -9,7 +9,6 @@
 
 .audio-styles {
     height: 50px;
-    background-color: transparent;
     width: 100%;
 }
 
@@ -18,6 +17,7 @@
     height: 75vh;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version. */
 ::ng-deep .mat-button-toggle-label-content {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -90,4 +90,10 @@
     display: inline-block;
     margin-right: 12px;
     top: 8px;
+}
+
+.skip-ad-button {
+    position: absolute;
+    right: 20px;
+    bottom: 75px;
 }

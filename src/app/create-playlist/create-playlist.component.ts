@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { PostsService } from 'app/posts.services';
+import { Playlist } from 'api-types';
 
 @Component({
   selector: 'app-create-playlist',
@@ -9,105 +10,94 @@ import { PostsService } from 'app/posts.services';
   styleUrls: ['./create-playlist.component.scss']
 })
 export class CreatePlaylistComponent implements OnInit {
-  // really "createPlaylistDialogComponent"
+  // really "createAndModifyPlaylistDialogComponent"
 
   filesToSelectFrom = null;
   type = null;
-  filesSelect = new FormControl();
+  filesSelect = new UntypedFormControl();
   audiosToSelectFrom = null;
   videosToSelectFrom = null;
   name = '';
+  cached_thumbnail_url = null;
 
   create_in_progress = false;
+  create_mode = false;
+
+  // playlist modify mode
+
+  playlist: Playlist = null;
+  playlist_id: string = null;
+  preselected_files = [];
+  playlist_updated = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private postsService: PostsService,
-              public dialogRef: MatDialogRef<CreatePlaylistComponent>) { }
-
-
-  ngOnInit() {
-    if (this.data) {
-      this.filesToSelectFrom = this.data.filesToSelectFrom;
-      this.type = this.data.type;
-    }
-
-    if (!this.filesToSelectFrom) {
-      this.getMp3s();
-      this.getMp4s();
-    }
+              public dialogRef: MatDialogRef<CreatePlaylistComponent>) {
+                if (this.data?.create_mode) this.create_mode = true;
+                if (this.data?.playlist_id) {
+                  this.playlist_id = this.data.playlist_id;
+                  this.getPlaylist();
+                }
   }
 
-  getMp3s() {
-    this.postsService.getMp3s().subscribe(result => {
-      this.audiosToSelectFrom = result['mp3s'];
-    });
-  }
 
-  getMp4s() {
-    this.postsService.getMp4s().subscribe(result => {
-      this.videosToSelectFrom = result['mp4s'];
-    });
-  }
+  ngOnInit(): void {}
 
-  createPlaylist() {
+  createPlaylist(): void {
     const thumbnailURL = this.getThumbnailURL();
-    const duration = this.calculateDuration();
     this.create_in_progress = true;
-    this.postsService.createPlaylist(this.name, this.filesSelect.value, this.type, thumbnailURL, duration).subscribe(res => {
+    this.postsService.createPlaylist(this.name, this.filesSelect.value, thumbnailURL).subscribe(res => {
       this.create_in_progress = false;
       if (res['success']) {
         this.dialogRef.close(true);
       } else {
         this.dialogRef.close(false);
       }
+    }, err => {
+      this.create_in_progress = false;
+      console.error(err);
     });
   }
 
-  getThumbnailURL() {
-    let properFilesToSelectFrom = this.filesToSelectFrom;
-    if (!this.filesToSelectFrom) {
-      properFilesToSelectFrom = this.type === 'audio' ? this.audiosToSelectFrom : this.videosToSelectFrom;
-    }
-    for (let i = 0; i < properFilesToSelectFrom.length; i++) {
-      const file = properFilesToSelectFrom[i];
-      if (file.id === this.filesSelect.value[0]) {
-        // different services store the thumbnail in different places
-        if (file.thumbnailURL) { return file.thumbnailURL };
-        if (file.thumbnail) { return file.thumbnail };
+  updatePlaylist(): void {
+    this.create_in_progress = true;
+    this.playlist['name'] = this.name;
+    this.playlist['uids'] = this.filesSelect.value;
+    this.playlist_updated = true;
+    this.postsService.updatePlaylist(this.playlist).subscribe(() => {
+      this.create_in_progress = false;
+      this.postsService.openSnackBar($localize`Playlist updated successfully.`);
+      this.getPlaylist();
+      this.postsService.playlists_changed.next(true);
+    }, err => {
+      this.create_in_progress = false;
+      console.error(err)
+      this.postsService.openSnackBar($localize`Playlist updated successfully.`);
+    });
+  }
+
+  getThumbnailURL(): string {
+    return this.cached_thumbnail_url;
+  }
+
+  fileSelectionChanged({new_selection, thumbnailURL}: {new_selection: string[], thumbnailURL: string}): void {
+    this.filesSelect.setValue(new_selection);
+    if (new_selection.length) this.cached_thumbnail_url = thumbnailURL;
+    else                      this.cached_thumbnail_url = null;
+  }
+
+  playlistChanged(): boolean {
+    return JSON.stringify(this.playlist.uids) !== JSON.stringify(this.filesSelect.value) || this.name !== this.playlist.name;
+  }
+
+  getPlaylist(): void {
+    this.postsService.getPlaylist(this.playlist_id, null, true).subscribe(res => {
+      if (res['playlist']) {
+        this.filesSelect.setValue(res['file_objs'].map(file => file.uid));
+        this.preselected_files = res['file_objs'];
+        this.playlist = res['playlist'];
+        this.name = this.playlist['name']; 
       }
-    }
-    return null;
-  }
-
-  getDuration(file_id) {
-    let properFilesToSelectFrom = this.filesToSelectFrom;
-    if (!this.filesToSelectFrom) {
-      properFilesToSelectFrom = this.type === 'audio' ? this.audiosToSelectFrom : this.videosToSelectFrom;
-    }
-    for (let i = 0; i < properFilesToSelectFrom.length; i++) {
-      const file = properFilesToSelectFrom[i];
-      if (file.id === file_id) {
-        return file.duration;
-      }
-    }
-    return null;
-  }
-
-  calculateDuration() {
-    let sum = 0;
-    for (let i = 0; i < this.filesSelect.value.length; i++) {
-      const duration_val = this.getDuration(this.filesSelect.value[i]);
-      sum += typeof duration_val === 'string' ? this.durationStringToNumber(duration_val) : duration_val;
-    }
-    return sum;
-  }
-
-  durationStringToNumber(dur_str) {
-    let num_sum = 0;
-    const dur_str_parts = dur_str.split(':');
-    for (let i = dur_str_parts.length-1; i >= 0; i--) {
-      num_sum += parseInt(dur_str_parts[i])*(60**(dur_str_parts.length-1-i));
-    }
-    return num_sum;
+    });
   }
 }

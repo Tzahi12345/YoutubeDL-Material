@@ -1,12 +1,11 @@
-const path = require('path');
 const config_api = require('../config');
 const consts = require('../consts');
-var subscriptions_api = require('../subscriptions')
-const fs = require('fs-extra');
-var jwt = require('jsonwebtoken');
-const { uuid } = require('uuidv4');
-var bcrypt = require('bcryptjs');
+const logger = require('../logger');
+const db_api = require('../db');
 
+const jwt = require('jsonwebtoken');
+const { uuid } = require('uuidv4');
+const bcrypt = require('bcryptjs');
 
 var LocalStrategy = require('passport-local').Strategy;
 var LdapStrategy = require('passport-ldapauth');
@@ -14,41 +13,49 @@ var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // other required vars
-let logger = null;
-let db =  null;
-let users_db = null;
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = null;
 
-exports.initialize = function(input_db, input_users_db, input_logger) {
-  setLogger(input_logger)
-  setDB(input_db, input_users_db);
-
+exports.initialize = function () {
   /*************************
    * Authentication module
    ************************/
+
+  if (db_api.database_initialized) {
+    setupRoles();
+  } else {
+      db_api.database_initialized_bs.subscribe(init => {
+          if (init) setupRoles();
+      });
+  }
+
   saltRounds = 10;
 
+  // Sometimes this value is not properly typed: https://github.com/Tzahi12345/YoutubeDL-Material/issues/813
   JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
+  if (!(+JWT_EXPIRATION)) {
+    logger.warn(`JWT expiration value improperly set to ${JWT_EXPIRATION}, auto setting to 1 day.`);
+    JWT_EXPIRATION = 86400;
+  } else {
+    JWT_EXPIRATION = +JWT_EXPIRATION;
+  }
 
   SERVER_SECRET = null;
-  if (users_db.get('jwt_secret').value()) {
-    SERVER_SECRET = users_db.get('jwt_secret').value();
+  if (db_api.users_db.get('jwt_secret').value()) {
+    SERVER_SECRET = db_api.users_db.get('jwt_secret').value();
   } else {
     SERVER_SECRET = uuid();
-    users_db.set('jwt_secret', SERVER_SECRET).write();
+    db_api.users_db.set('jwt_secret', SERVER_SECRET).write();
   }
 
   opts = {}
   opts.jwtFromRequest = ExtractJwt.fromUrlQueryParameter('jwt');
   opts.secretOrKey = SERVER_SECRET;
-  /*opts.issuer = 'example.com';
-  opts.audience = 'example.com';*/
 
-  exports.passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    const user = users_db.get('users').find({uid: jwt_payload.user}).value();
+  exports.passport.use(new JwtStrategy(opts, async function(jwt_payload, done) {
+    const user = await db_api.getRecord('users', {uid: jwt_payload.user});
     if (user) {
         return done(null, user);
     } else {
@@ -58,13 +65,39 @@ exports.initialize = function(input_db, input_users_db, input_logger) {
   }));
 }
 
-function setLogger(input_logger) {
-  logger = input_logger;
-}
+const setupRoles = async () => {
+  const required_roles = {
+    admin: {
+        permissions: [
+            'filemanager',
+            'settings',
+            'subscriptions',
+            'sharing',
+            'advanced_download',
+            'downloads_manager'
+        ]
+    },
+    user: {
+        permissions: [
+            'filemanager',
+            'subscriptions',
+            'sharing'
+        ]
+    }
+  }
 
-function setDB(input_db, input_users_db) {
-  db = input_db;
-  users_db = input_users_db;
+  const role_keys = Object.keys(required_roles);
+  for (let i = 0; i < role_keys.length; i++) {
+    const role_key = role_keys[i];
+    const role_in_db = await db_api.getRecord('roles', {key: role_key});
+    if (!role_in_db) {
+      // insert task metadata into table if missing
+      await db_api.insertRecordIntoTable('roles', {
+          key: role_key,
+          permissions: required_roles[role_key]['permissions']
+      });
+    }
+  }
 }
 
 exports.passport = require('passport');
@@ -80,7 +113,7 @@ exports.passport.deserializeUser(function(user, done) {
 /***************************************
  * Register user with hashed password
  **************************************/
-exports.registerUser = function(req, res) {
+exports.registerUser = async function(req, res) {
   var userid = req.body.userid;
   var username = req.body.username;
   var plaintextPassword = req.body.password;
@@ -98,20 +131,20 @@ exports.registerUser = function(req, res) {
   }
 
   bcrypt.hash(plaintextPassword, saltRounds)
-    .then(function(hash) {
+    .then(async function(hash) {
       let new_user = generateUserObject(userid, username, hash);
       // check if user exists
-      if (users_db.get('users').find({uid: userid}).value()) {
+      if (await db_api.getRecord('users', {uid: userid})) {
         // user id is taken!
         logger.error('Registration failed: UID is already taken!');
         res.status(409).send('UID is already taken!');
-      } else if (users_db.get('users').find({name: username}).value()) {
+      } else if (await db_api.getRecord('users', {name: username})) {
           // user name is taken!
           logger.error('Registration failed: User name is already taken!');
           res.status(409).send('User name is already taken!');
       } else {
         // add to db
-        users_db.get('users').push(new_user).write();
+        await db_api.insertRecordIntoTable('users', new_user);
         logger.verbose(`New user created: ${new_user.name}`);
         res.send({
           user: new_user
@@ -144,16 +177,22 @@ exports.registerUser = function(req, res) {
  ************************************************/
 
 
+exports.login = async (username, password) => {
+  // even if we're using LDAP, we still want users to be able to login using internal credentials
+  const user = await db_api.getRecord('users', {name: username});
+  if (!user) {
+    if (config_api.getConfigItem('ytdl_auth_method') === 'internal') logger.error(`User ${username} not found`);
+    return false;
+  }
+  if (user.auth_method && user.auth_method !== 'internal') { return false }
+  return await bcrypt.compare(password, user.passhash) ? user : false;
+}
+
 exports.passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'},
     async function(username, password, done) {
-        const user = users_db.get('users').find({name: username}).value();
-        if (!user) { logger.error(`User ${username} not found`); return done(null, false); }
-        if (user.auth_method && user.auth_method !== 'internal') { return done(null, false); }
-        if (user) {
-            return done(null, (await bcrypt.compare(password, user.passhash)) ? user : false);
-        }
+      return done(null, await exports.login(username, password));
     }
 ));
 
@@ -164,17 +203,17 @@ var getLDAPConfiguration = function(req, callback) {
 };
 
 exports.passport.use(new LdapStrategy(getLDAPConfiguration,
-  function(user, done) {
+  async function(user, done) {
     // check if ldap auth is enabled
     const ldap_enabled = config_api.getConfigItem('ytdl_auth_method') === 'ldap';
     if (!ldap_enabled) return done(null, false);
 
     const user_uid = user.uid;
-    let db_user = users_db.get('users').find({uid: user_uid}).value();
+    let db_user = await db_api.getRecord('users', {uid: user_uid});
     if (!db_user) {
       // generate DB user
       let new_user = generateUserObject(user_uid, user_uid, null, 'ldap');
-      users_db.get('users').push(new_user).write();
+      await db_api.insertRecordIntoTable('users', new_user);
       db_user = new_user;
       logger.verbose(`Generated new user ${user_uid} using LDAP`);
     }
@@ -198,11 +237,11 @@ exports.generateJWT = function(req, res, next) {
   next();
 }
 
-exports.returnAuthResponse = function(req, res) {
+exports.returnAuthResponse = async function(req, res) {
   res.status(200).json({
     user: req.user,
     token: req.token,
-    permissions: exports.userPermissions(req.user.uid),
+    permissions: await exports.userPermissions(req.user.uid),
     available_permissions: consts['AVAILABLE_PERMISSIONS']
   });
 }
@@ -215,7 +254,7 @@ exports.returnAuthResponse = function(req, res) {
  * It also passes the user object to the next
  * middleware through res.locals
  **************************************/
-exports.ensureAuthenticatedElseError = function(req, res, next) {
+exports.ensureAuthenticatedElseError = (req, res, next) => {
   var token = getToken(req.query);
   if( token ) {
     try {
@@ -233,10 +272,10 @@ exports.ensureAuthenticatedElseError = function(req, res, next) {
 }
 
 // change password
-exports.changeUserPassword = async function(user_uid, new_pass) {
+exports.changeUserPassword = async (user_uid, new_pass) => {
   try {
     const hash = await bcrypt.hash(new_pass, saltRounds);
-    users_db.get('users').find({uid: user_uid}).assign({passhash: hash}).write();
+    await db_api.updateRecord('users', {uid: user_uid}, {passhash: hash});
     return true;
   } catch (err) {
     return false;
@@ -244,16 +283,15 @@ exports.changeUserPassword = async function(user_uid, new_pass) {
 }
 
 // change user permissions
-exports.changeUserPermissions = function(user_uid, permission, new_value) {
+exports.changeUserPermissions = async (user_uid, permission, new_value) => {
   try {
-    const user_db_obj = users_db.get('users').find({uid: user_uid});
-    user_db_obj.get('permissions').pull(permission).write();
-    user_db_obj.get('permission_overrides').pull(permission).write();
+    await db_api.pullFromRecordsArray('users', {uid: user_uid}, 'permissions', permission);
+    await db_api.pullFromRecordsArray('users', {uid: user_uid}, 'permission_overrides', permission);
     if (new_value === 'yes') {
-      user_db_obj.get('permissions').push(permission).write();
-      user_db_obj.get('permission_overrides').push(permission).write();
+      await db_api.pushToRecordsArray('users', {uid: user_uid}, 'permissions', permission);
+      await db_api.pushToRecordsArray('users', {uid: user_uid}, 'permission_overrides', permission);
     } else if (new_value === 'no') {
-      user_db_obj.get('permission_overrides').push(permission).write();
+      await db_api.pushToRecordsArray('users', {uid: user_uid}, 'permission_overrides', permission);
     }
     return true;
   } catch (err) {
@@ -263,12 +301,11 @@ exports.changeUserPermissions = function(user_uid, permission, new_value) {
 }
 
 // change role permissions
-exports.changeRolePermissions = function(role, permission, new_value) {
+exports.changeRolePermissions = async (role, permission, new_value) => {
   try {
-    const role_db_obj = users_db.get('roles').get(role);
-    role_db_obj.get('permissions').pull(permission).write();
+    await db_api.pullFromRecordsArray('roles', {key: role}, 'permissions', permission);
     if (new_value === 'yes') {
-      role_db_obj.get('permissions').push(permission).write();
+      await db_api.pushToRecordsArray('roles', {key: role}, 'permissions', permission);
     }
     return true;
   } catch (err) {
@@ -277,19 +314,19 @@ exports.changeRolePermissions = function(role, permission, new_value) {
   }
 }
 
-exports.adminExists = function() {
-  return !!users_db.get('users').find({uid: 'admin'}).value();
+exports.adminExists = async function() {
+  return !!(await db_api.getRecord('users', {uid: 'admin'}));
 }
 
 // video stuff
 
-exports.getUserVideos = function(user_uid, type) {
-    const user = users_db.get('users').find({uid: user_uid}).value();
-    return type ? user['files'].filter(file => file.isAudio = (type === 'audio')) : user['files'];
+exports.getUserVideos = async function(user_uid, type) {
+    const files = await db_api.getRecords('files', {user_uid: user_uid});
+    return type ? files.filter(file => file.isAudio === (type === 'audio')) : files;
 }
 
-exports.getUserVideo = function(user_uid, file_uid, requireSharing = false) {
-  let file = users_db.get('users').find({uid: user_uid}).get(`files`).find({uid: file_uid}).value();
+exports.getUserVideo = async function(user_uid, file_uid, requireSharing = false) {
+  let file = await db_api.getRecord('files', {file_uid: file_uid});
 
   // prevent unauthorized users from accessing the file info
   if (file && !file['sharingEnabled'] && requireSharing) file = null;
@@ -297,58 +334,17 @@ exports.getUserVideo = function(user_uid, file_uid, requireSharing = false) {
   return file;
 }
 
-exports.addPlaylist = function(user_uid, new_playlist) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists`).push(new_playlist).write();
+exports.removePlaylist = async function(user_uid, playlistID) {
+  await db_api.removeRecord('playlist', {playlistID: playlistID});
   return true;
 }
 
-exports.updatePlaylistFiles = function(user_uid, playlistID, new_filenames) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).assign({fileNames: new_filenames});
-  return true;
+exports.getUserPlaylists = async function(user_uid) {
+  return await db_api.getRecords('playlists', {user_uid: user_uid});
 }
 
-exports.removePlaylist = function(user_uid, playlistID) {
-  users_db.get('users').find({uid: user_uid}).get(`playlists`).remove({id: playlistID}).write();
-  return true;
-}
-
-exports.getUserPlaylists = function(user_uid, user_files = null) {
-  const user = users_db.get('users').find({uid: user_uid}).value();
-  const playlists = JSON.parse(JSON.stringify(user['playlists']));
-  const categories = db.get('categories').value();
-  if (categories && user_files) {
-      categories.forEach(category => {
-          const audio_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && file.isAudio);
-          const video_files = user_files && user_files.filter(file => file.category && file.category.uid === category.uid && !file.isAudio);
-          if (audio_files && audio_files.length > 0) {
-              playlists.push({
-                  name: category['name'],
-                  thumbnailURL: audio_files[0].thumbnailURL,
-                  thumbnailPath: audio_files[0].thumbnailPath,
-                  fileNames: audio_files.map(file => file.id),
-                  type: 'audio',
-                  uid: user_uid,
-                  auto: true
-              });
-          }
-          if (video_files && video_files.length > 0) {
-              playlists.push({
-                  name: category['name'],
-                  thumbnailURL: video_files[0].thumbnailURL,
-                  thumbnailPath: video_files[0].thumbnailPath,
-                  fileNames: video_files.map(file => file.id),
-                  type: 'video',
-                  uid: user_uid,
-                  auto: true
-              });
-          }
-      });
-  }
-  return playlists;
-}
-
-exports.getUserPlaylist = function(user_uid, playlistID, requireSharing = false) {
-  let playlist = users_db.get('users').find({uid: user_uid}).get(`playlists`).find({id: playlistID}).value();
+exports.getUserPlaylist = async function(user_uid, playlistID, requireSharing = false) {
+  let playlist = await db_api.getRecord('playlists', {id: playlistID});
 
   // prevent unauthorized users from accessing the file info
   if (requireSharing && !playlist['sharingEnabled']) playlist = null;
@@ -356,109 +352,22 @@ exports.getUserPlaylist = function(user_uid, playlistID, requireSharing = false)
   return playlist;
 }
 
-exports.registerUserFile = function(user_uid, file_object) {
-  users_db.get('users').find({uid: user_uid}).get(`files`)
-    .remove({
-        path: file_object['path']
-    }).write();
-
-  users_db.get('users').find({uid: user_uid}).get(`files`)
-      .push(file_object)
-      .write();
-}
-
-exports.deleteUserFile = async function(user_uid, file_uid, blacklistMode = false) {
+exports.changeSharingMode = async function(user_uid, file_uid, is_playlist, enabled) {
   let success = false;
-  const file_obj = users_db.get('users').find({uid: user_uid}).get(`files`).find({uid: file_uid}).value();
-  if (file_obj) {
-    const type = file_obj.isAudio ? 'audio' : 'video';
-    const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-    const ext = type === 'audio' ? '.mp3' : '.mp4';
-
-    // close descriptors
-    if (config_api.descriptors[file_obj.id]) {
-      try {
-          for (let i = 0; i < config_api.descriptors[file_obj.id].length; i++) {
-            config_api.descriptors[file_obj.id][i].destroy();
-          }
-      } catch(e) {
-
-      }
-    }
-
-    const full_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext);
-    users_db.get('users').find({uid: user_uid}).get(`files`)
-      .remove({
-          uid: file_uid
-      }).write();
-    if (await fs.pathExists(full_path)) {
-      // remove json and file
-      const json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + '.info.json');
-      const alternate_json_path = path.join(usersFileFolder, user_uid, type, file_obj.id + ext + '.info.json');
-      let youtube_id = null;
-      if (await fs.pathExists(json_path)) {
-        youtube_id = await fs.readJSON(json_path).id;
-        await fs.unlink(json_path);
-      } else if (await fs.pathExists(alternate_json_path)) {
-        youtube_id = await fs.readJSON(alternate_json_path).id;
-        await fs.unlink(alternate_json_path);
-      }
-
-      await fs.unlink(full_path);
-
-      // do archive stuff
-
-      let useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-      if (useYoutubeDLArchive) {
-          const archive_path = path.join(usersFileFolder, user_uid, 'archives', `archive_${type}.txt`);
-
-          // use subscriptions API to remove video from the archive file, and write it to the blacklist
-          if (await fs.pathExists(archive_path)) {
-              const line = youtube_id ? await subscriptions_api.removeIDFromArchive(archive_path, youtube_id) : null;
-              if (blacklistMode && line) {
-                let blacklistPath = path.join(usersFileFolder, user_uid, 'archives', `blacklist_${type}.txt`);
-                // adds newline to the beginning of the line
-                line = '\n' + line;
-                await fs.appendFile(blacklistPath, line);
-              }
-          } else {
-              logger.info(`Could not find archive file for ${type} files. Creating...`);
-              await fs.ensureFile(archive_path);
-          }
-      }
-    }
-    success = true;
-  } else {
-    success = false;
-    logger.warn(`User file ${file_uid} does not exist!`);
-  }
-
+  is_playlist ? await db_api.updateRecord(`playlists`, {id: file_uid}, {sharingEnabled: enabled}) : await db_api.updateRecord(`files`, {uid: file_uid}, {sharingEnabled: enabled});
+  success = true;
   return success;
 }
 
-exports.changeSharingMode = function(user_uid, file_uid, is_playlist, enabled) {
-  let success = false;
-  const user_db_obj = users_db.get('users').find({uid: user_uid});
-  if (user_db_obj.value()) {
-    const file_db_obj = is_playlist ? user_db_obj.get(`playlists`).find({id: file_uid}) : user_db_obj.get(`files`).find({uid: file_uid});
-    if (file_db_obj.value()) {
-      success = true;
-      file_db_obj.assign({sharingEnabled: enabled}).write();
-    }
-  }
+exports.userHasPermission = async function(user_uid, permission) {
 
-  return success;
-}
-
-exports.userHasPermission = function(user_uid, permission) {
-  const user_obj = users_db.get('users').find({uid: user_uid}).value();
+  const user_obj = await db_api.getRecord('users', ({uid: user_uid}));
   const role = user_obj['role'];
   if (!role) {
     // role doesn't exist
     logger.error('Invalid role ' + role);
     return false;
   }
-  const role_permissions = (users_db.get('roles').value())['permissions'];
 
   const user_has_explicit_permission = user_obj['permissions'].includes(permission);
   const permission_in_overrides = user_obj['permission_overrides'].includes(permission);
@@ -473,7 +382,8 @@ exports.userHasPermission = function(user_uid, permission) {
   }
 
   // no overrides, let's check if the role has the permission
-  if (role_permissions.includes(permission)) {
+  const role_has_permission = await exports.roleHasPermissions(role, permission);
+  if (role_has_permission) {
     return true;
   } else {
     logger.verbose(`User ${user_uid} failed to get permission ${permission}`);
@@ -481,16 +391,27 @@ exports.userHasPermission = function(user_uid, permission) {
   }
 }
 
-exports.userPermissions = function(user_uid) {
+exports.roleHasPermissions = async function(role, permission) {
+  const role_obj = await db_api.getRecord('roles', {key: role})
+  if (!role) {
+    logger.error(`Role ${role} does not exist!`);
+  }
+  const role_permissions = role_obj['permissions'];
+  if (role_permissions && role_permissions.includes(permission)) return true;
+  else return false;
+}
+
+exports.userPermissions = async function(user_uid) {
   let user_permissions = [];
-  const user_obj = users_db.get('users').find({uid: user_uid}).value();
+  const user_obj = await db_api.getRecord('users', ({uid: user_uid}));
   const role = user_obj['role'];
   if (!role) {
     // role doesn't exist
     logger.error('Invalid role ' + role);
     return null;
   }
-  const role_permissions = users_db.get('roles').get(role).get('permissions').value()
+  const role_obj = await db_api.getRecord('roles', {key: role});
+  const role_permissions = role_obj['permissions'];
 
   for (let i = 0; i < consts['AVAILABLE_PERMISSIONS'].length; i++) {
     let permission = consts['AVAILABLE_PERMISSIONS'][i];
