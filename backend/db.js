@@ -169,7 +169,7 @@ exports._connectToDB = async (custom_connection_string = null) => {
 
 exports.setVideoProperty = async (file_uid, assignment_obj) => {
     // TODO: check if video exists, throw error if not
-    await db_api.updateRecord('files', {uid: file_uid}, assignment_obj);
+    await exports.updateRecord('files', {uid: file_uid}, assignment_obj);
 }
 
 exports.getFileDirectoriesAndDBs = async () => {
