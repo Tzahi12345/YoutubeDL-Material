@@ -64,6 +64,9 @@ exports.sendNotification = async (notification) => {
     if (config_api.getConfigItem('ytdl_discord_webhook_url')) {
         sendDiscordNotification(data);
     }
+    if (config_api.getConfigItem('ytdl_slack_webhook_url')) {
+        sendSlackNotification(data);
+    }
 
     await db_api.insertRecordIntoTable('notifications', notification);
     return notification;
@@ -172,6 +175,65 @@ async function sendDiscordNotification({body, title, type, url, thumbnail}) {
         embeds: [embed],
     });
     return result;
+}
+
+function sendSlackNotification({body, title, type, url, thumbnail}) {
+    const slack_webhook_url = config_api.getConfigItem('ytdl_slack_webhook_url');
+    logger.verbose(`Sending slack notification to ${slack_webhook_url}`);
+    const data = {
+        blocks: [
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: `*${title}*`
+                }
+            },
+            {
+                type: "section",
+                text: {
+                    type: "plain_text",
+                    text: body
+                }
+            }
+        ]
+    }
+
+    // add thumbnail if exists
+    if (thumbnail) {
+        data['blocks'].push({
+            type: "image",
+            image_url: thumbnail,
+            alt_text: "notification_thumbnail"
+        });
+    }
+
+    data['blocks'].push(
+        {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: `<${url}|${url}>`
+            }
+        },
+        {
+            type: "context",
+            elements: [
+                {
+                    type: "mrkdwn",
+                    text: `*ID:* ${type}`
+                }
+            ]
+        }
+    );
+
+    fetch(slack_webhook_url, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data),
+    });
 }
 
 function sendGenericNotification(data) {
