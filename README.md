@@ -28,13 +28,29 @@ Dark mode:
 
 NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker) section for a setup guide.
 
-Debian/Ubuntu:
+Required dependencies:
+
+* Node.js 16
+* Python
+
+Optional dependencies:
+
+* AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
+* [tcd](https://github.com/PetterKraabol/Twitch-Chat-Downloader) (for downloading Twitch VOD chats)
+
+
+<details>
+  <summary>Debian/Ubuntu</summary>
 
 ```bash
+curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 sudo apt-get install nodejs youtube-dl ffmpeg unzip python npm
 ```
 
-CentOS 7:
+</details>
+
+<details>
+  <summary>CentOS 7</summary>
 
 ```bash
 sudo yum install epel-release
@@ -42,13 +58,11 @@ sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfu
 sudo yum install centos-release-scl-rh
 sudo yum install rh-nodejs12
 scl enable rh-nodejs12 bash
+curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
 sudo yum install nodejs youtube-dl ffmpeg ffmpeg-devel
 ```
 
-Optional dependencies:
-
-* AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
-* [tcd](https://github.com/PetterKraabol/Twitch-Chat-Downloader) (for downloading Twitch VOD chats)
+</details>
 
 ### Installing
 
