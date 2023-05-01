@@ -34,6 +34,7 @@ const categories_api = require('./categories');
 const twitch_api = require('./twitch');
 const youtubedl_api = require('./youtube-dl');
 const archive_api = require('./archive');
+const files_api = require('./files');
 
 var app = express();
 
@@ -173,10 +174,10 @@ async function checkMigrations() {
     if (!simplified_db_migration_complete) {
         logger.info('Beginning migration: 4.1->4.2+')
         let success = await simplifyDBFileStructure();
-        success = success && await db_api.addMetadataPropertyToDB('view_count');
-        success = success && await db_api.addMetadataPropertyToDB('description');
-        success = success && await db_api.addMetadataPropertyToDB('height');
-        success = success && await db_api.addMetadataPropertyToDB('abr');
+        success = success && await files_api.addMetadataPropertyToDB('view_count');
+        success = success && await files_api.addMetadataPropertyToDB('description');
+        success = success && await files_api.addMetadataPropertyToDB('height');
+        success = success && await files_api.addMetadataPropertyToDB('abr');
         // sets migration to complete
         db.set('simplified_db_migration_complete', true).write();
         if (success) { logger.info('4.1->4.2+ migration complete!'); }
@@ -724,7 +725,7 @@ const optionalJwt = async function (req, res, next) {
         const uuid = using_body ? req.body.uuid : req.query.uuid;
         const uid = using_body ? req.body.uid : req.query.uid;
         const playlist_id = using_body ? req.body.playlist_id : req.query.playlist_id;
-        const file = !playlist_id ? auth_api.getUserVideo(uuid, uid, true) : await db_api.getPlaylist(playlist_id, uuid, true);
+        const file = !playlist_id ? auth_api.getUserVideo(uuid, uid, true) : await files_api.getPlaylist(playlist_id, uuid, true);
         if (file) {
             req.can_watch = true;
             return next();
@@ -935,7 +936,7 @@ app.post('/api/getAllFiles', optionalJwt, async function (req, res) {
     const sub_id = req.body.sub_id;
     const uuid = req.isAuthenticated() ? req.user.uid : null;
 
-    const {files, file_count} = await db_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
+    const {files, file_count} = await files_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
 
     res.send({
         files: files,
@@ -1101,7 +1102,7 @@ app.post('/api/incrementViewCount', async (req, res) => {
         uuid = req.user.uid;
     }
 
-    const file_obj = await db_api.getVideo(file_uid, uuid, sub_id);
+    const file_obj = await files_api.getVideo(file_uid, uuid, sub_id);
 
     const current_view_count = file_obj && file_obj['local_view_count'] ? file_obj['local_view_count'] : 0;
     const new_view_count = current_view_count + 1;
@@ -1229,7 +1230,7 @@ app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
     let deleteForever = req.body.deleteForever;
     let file_uid = req.body.file_uid;
 
-    let success = await db_api.deleteFile(file_uid, deleteForever);
+    let success = await files_api.deleteFile(file_uid, deleteForever);
 
     if (success) {
         res.send({
@@ -1317,7 +1318,7 @@ app.post('/api/createPlaylist', optionalJwt, async (req, res) => {
     let playlistName = req.body.playlistName;
     let uids = req.body.uids;
 
-    const new_playlist = await db_api.createPlaylist(playlistName, uids, req.isAuthenticated() ? req.user.uid : null);
+    const new_playlist = await files_api.createPlaylist(playlistName, uids, req.isAuthenticated() ? req.user.uid : null);
 
     res.send({
         new_playlist: new_playlist,
@@ -1330,13 +1331,13 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let uuid = req.body.uuid ? req.body.uuid : (req.user && req.user.uid ? req.user.uid : null);
     let include_file_metadata = req.body.include_file_metadata;
 
-    const playlist = await db_api.getPlaylist(playlist_id, uuid);
+    const playlist = await files_api.getPlaylist(playlist_id, uuid);
     const file_objs = [];
 
     if (playlist && include_file_metadata) {
         for (let i = 0; i < playlist['uids'].length; i++) {
             const uid = playlist['uids'][i];
-            const file_obj = await db_api.getVideo(uid, uuid);
+            const file_obj = await files_api.getVideo(uid, uuid);
             if (file_obj) file_objs.push(file_obj);
             // TODO: remove file from playlist if could not be found
         }
@@ -1374,7 +1375,7 @@ app.post('/api/addFileToPlaylist', optionalJwt, async (req, res) => {
 
     playlist.uids.push(file_uid);
 
-    let success = await db_api.updatePlaylist(playlist);
+    let success = await files_api.updatePlaylist(playlist);
     res.send({
         success: success
     });
@@ -1382,7 +1383,7 @@ app.post('/api/addFileToPlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
     let playlist = req.body.playlist;
-    let success = await db_api.updatePlaylist(playlist, req.user && req.user.uid);
+    let success = await files_api.updatePlaylist(playlist, req.user && req.user.uid);
     res.send({
         success: success
     });
@@ -1412,7 +1413,7 @@ app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     const blacklistMode = req.body.blacklistMode;
 
     let wasDeleted = false;
-    wasDeleted = await db_api.deleteFile(uid, blacklistMode);
+    wasDeleted = await files_api.deleteFile(uid, blacklistMode);
     res.send(wasDeleted);
 });
 
@@ -1444,7 +1445,7 @@ app.post('/api/deleteAllFiles', optionalJwt, async (req, res) => {
 
     for (let i = 0; i < files.length; i++) {    
         let wasDeleted = false;
-        wasDeleted = await db_api.deleteFile(files[i].uid, blacklistMode);
+        wasDeleted = await files_api.deleteFile(files[i].uid, blacklistMode);
         if (wasDeleted) {
             delete_count++;
         }
@@ -1470,10 +1471,10 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
     if (playlist_id) {
         zip_file_generated = true;
         const playlist_files_to_download = [];
-        const playlist = await db_api.getPlaylist(playlist_id, uuid);
+        const playlist = await files_api.getPlaylist(playlist_id, uuid);
         for (let i = 0; i < playlist['uids'].length; i++) {
             const playlist_file_uid = playlist['uids'][i];
-            const file_obj = await db_api.getVideo(playlist_file_uid, uuid);
+            const file_obj = await files_api.getVideo(playlist_file_uid, uuid);
             playlist_files_to_download.push(file_obj);
         }
 
@@ -1487,7 +1488,7 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
         // generate zip
         file_path_to_download = await utils.createContainerZipFile(sub['name'], sub_files_to_download);
     } else {
-        const file_obj = await db_api.getVideo(uid, uuid, sub_id)
+        const file_obj = await files_api.getVideo(uid, uuid, sub_id)
         file_path_to_download = file_obj.path;
     }
     if (!path.isAbsolute(file_path_to_download)) file_path_to_download = path.join(__dirname, file_path_to_download);
@@ -1634,7 +1635,7 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
 
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     if (!multiUserMode || req.isAuthenticated() || req.can_watch) {
-        file_obj = await db_api.getVideo(uid, uuid, sub_id);
+        file_obj = await files_api.getVideo(uid, uuid, sub_id);
         if (file_obj) file_path = file_obj['path'];
         else file_path = null;
     }
@@ -2082,7 +2083,7 @@ app.get('/api/rss', async function (req, res) {
     const sub_id = req.query.sub_id ? decodeURIComponent(req.query.sub_id) : null;
     const uuid = req.query.uuid ? decodeURIComponent(req.query.uuid) : null;
 
-    const {files} = await db_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
+    const {files} = await files_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
 
     const feed = new Feed({
             title: 'Downloads',

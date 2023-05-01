@@ -13,6 +13,7 @@ const { create } = require('xmlbuilder2');
 const categories_api = require('./categories');
 const utils = require('./utils');
 const db_api = require('./db');
+const files_api = require('./files');
 const notifications_api = require('./notifications');
 const archive_api = require('./archive');
 
@@ -221,6 +222,7 @@ async function collectInfo(download_uid) {
         return;
     }
 
+    // in subscriptions we don't care if archive mode is enabled, but we already removed archived videos from subs by this point
     const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
     if (useYoutubeDLArchive && !options.ignoreArchive) {
         const exists_in_archive = await archive_api.existsInArchive(info['extractor'], info['id'], type, download['user_uid'], download['sub_id']);
@@ -384,10 +386,9 @@ async function downloadQueuedFile(download_uid) {
                     }
 
                     // registers file in DB
-                    const file_obj = await db_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
+                    const file_obj = await files_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
 
-                    const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-                    if (useYoutubeDLArchive && !options.ignoreArchive) await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, output_json['title'], download['user_uid'], download['sub_id']);
+                    await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, output_json['title'], download['user_uid'], download['sub_id']);
 
                     notifications_api.sendDownloadNotification(file_obj, download['user_uid']);
 
@@ -399,7 +400,7 @@ async function downloadQueuedFile(download_uid) {
                 if (file_objs.length > 1) {
                     // create playlist
                     const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
-                    container = await db_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
+                    container = await files_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
                 } else if (file_objs.length === 1) {
                     container = file_objs[0];
                 } else {
