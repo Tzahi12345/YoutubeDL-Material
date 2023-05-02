@@ -13,8 +13,7 @@
     "e2e": "ng e2e",
     "electron": "ng build --base-href ./ && electron .",
     "generate": "openapi --input ./\"Public API v1.yaml\" --output ./src/api-types --exportCore false --exportServices false --exportModels true",
-    "i18n-source": "ng extract-i18n --output-path=src/assets/i18n --out-file=messages.en.xlf",
-    "preinstall": "npm install -g rimraf"
+    "i18n-source": "ng extract-i18n --output-path=src/assets/i18n --out-file=messages.en.xlf"
   },
   "engines": {
     "node": "12.3.1",
