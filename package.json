@@ -14,7 +14,7 @@
     "electron": "ng build --base-href ./ && electron .",
     "generate": "openapi --input ./\"Public API v1.yaml\" --output ./src/api-types --exportCore false --exportServices false --exportModels true",
     "i18n-source": "ng extract-i18n --output-path=src/assets/i18n --out-file=messages.en.xlf",
-    "rimraf": "./node_modules/rimraf/bin.js"
+    "preinstall": "npm install -g rimraf"
   },
   "engines": {
     "node": "12.3.1",
