@@ -8,7 +8,6 @@ import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as Fingerprint2 from 'fingerprintjs2';
 import {
     ChangeRolePermissionsRequest,
     ChangeUserPermissionsRequest,
@@ -131,7 +130,6 @@ export class PostsService implements CanActivate {
 
     // auth
     auth_token = '4241b401-7236-493e-92b5-b72696b9d853';
-    session_id = null;
     httpOptions: {
         params: HttpParams
     };
@@ -186,12 +184,6 @@ export class PostsService implements CanActivate {
               fromString: this.http_params
             })
         };
-
-        Fingerprint2.get(components => {
-            // set identity as user id doesn't necessarily exist
-            this.session_id = Fingerprint2.x64hash128(components.map(function (pair) { return pair.value; }).join(), 31);
-            this.httpOptions.params = this.httpOptions.params.set('sessionID', this.session_id);
-        });
 
         const redirect_not_required = window.location.href.includes('/player') || window.location.href.includes('/login');
 
@@ -796,7 +788,7 @@ export class PostsService implements CanActivate {
 
     resetHttpParams() {
         // resets http params
-        this.http_params = `apiKey=${this.auth_token}&sessionID=${this.session_id}`
+        this.http_params = `apiKey=${this.auth_token}`
 
         this.httpOptions = {
             params: new HttpParams({
