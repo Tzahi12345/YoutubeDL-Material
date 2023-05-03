@@ -2,7 +2,6 @@ const { uuid } = require('uuidv4');
 const fs = require('fs-extra');
 const { promisify } = require('util');
 const auth_api = require('./authentication/auth');
-const winston = require('winston');
 const path = require('path');
 const compression = require('compression');
 const multer  = require('multer');
@@ -19,6 +18,7 @@ const CONSTS = require('./consts')
 const read_last_lines = require('read-last-lines');
 const ps = require('ps-node');
 const Feed = require('feed').Feed;
+const session = require('express-session');
 
 // needed if bin/details somehow gets deleted
 if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
@@ -163,6 +163,7 @@ app.use(bodyParser.json());
 
 // use passport
 app.use(auth_api.passport.initialize());
+app.use(session({ secret: uuid(), resave: true, saveUninitialized: true }))
 app.use(auth_api.passport.session());
 
 // actual functions
