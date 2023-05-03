@@ -37,6 +37,8 @@ COPY [ "src/", "/build/src/" ]
 RUN npm install && \
     npm run build && \
     ls -al /build/backend/public
+RUN npm uninstall -g @angular/cli
+RUN rm -rf node_modules
 
 
 # Install backend deps
