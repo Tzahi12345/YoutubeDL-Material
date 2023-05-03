@@ -3,13 +3,26 @@ import requests
 import shutil
 import os
 import re
+import sys
+from collections import OrderedDict
 
 from github import Github
 
 machine = platform.machine()
 
-def isARM():
-    return True if machine.startswith('arm') else False
+# https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
+MACHINES_TO_ZIP = OrderedDict([
+    ("x86_64", "Linux-x64"),
+    ("aarch64", "LinuxArm-x64"),
+    ("armv8", "LinuxArm-x64"),
+    ("arm", "LinuxArm"),
+    ("AMD64", "Windows-x64")
+])
+
+def getZipName():
+    for possibleMachine, possibleZipName in MACHINES_TO_ZIP.items():
+        if possibleMachine in machine:
+            return possibleZipName
 
 def getLatestFileInRepo(repo, search_string):
     # Create an unauthenticated instance of the Github object
@@ -46,8 +59,11 @@ def getLatestFileInRepo(repo, search_string):
         print(f'No release found with {search_string}')
 
 def getLatestCLIRelease():
-    isArm = isARM()
-    searchString = r'.*CLI.*' + "LinuxArm.zip" if isArm else "Linux-x64.zip"
+    zipName = getZipName()
+    if not zipName:
+        print(f"GetTwitchDownloader.py could not get valid path for '{machine}'. Exiting...")
+        sys.exit(1)
+    searchString = r'.*CLI.*' + zipName
     getLatestFileInRepo("lay295/TwitchDownloader", searchString)
 
 getLatestCLIRelease()
