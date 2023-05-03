@@ -13,7 +13,7 @@
 ## Setup
 Checkout the repository and navigate to the `youtubedl-material` directory.
 ```bash
-vim ./backend/appdata/default.json # Edit settings for your local environment 
+vim ./src/assets/default.json # Edit settings for your local environment. This config file is just the dev config file, if YTDL_MODE is not set to "debug", then ./backend/appdata/default.json will be used
 npm -g install pm2 # Install pm2
 npm install # Install dependencies for the frontend
 cd ./backend
