@@ -88,7 +88,7 @@
                 <ng-container *ngIf="!normal_files_received && loading_files && loading_files.length > 0">
                     <mat-selection-list *ngIf="!normal_files_received">
                         <mat-list-option *ngFor="let file of paged_data">
-                            <content-loader class="list-ghosts" [primaryColor]="postsService.theme.ghost_primary" [secondaryColor]="postsService.theme.ghost_secondary" [width]="250" [height]="8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
+                            <content-loader class="list-ghosts" [backgroundColor]="postsService.theme.ghost_primary" [foregroundColor]="postsService.theme.ghost_secondary" viewBox="0 0 250 8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
                         </mat-list-option>
                     </mat-selection-list>
                 </ng-container>

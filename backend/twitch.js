@@ -25,7 +25,7 @@ async function getCommentsForVOD(vodId) {
         return null;
     }
 
-    const result = await exec(`TwitchDownloaderCLI chatdownload -u ${vodId} -o appdata/${vodId}.json`, {stdio:[0,1,2]});
+    const result = await exec(`${cliPath} chatdownload -u ${vodId} -o appdata/${vodId}.json`, {stdio:[0,1,2]});
 
     if (result['stderr']) {
         logger.error(`Failed to download twitch comments for ${vodId}`);
