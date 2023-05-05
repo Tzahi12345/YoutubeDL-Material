@@ -13,8 +13,8 @@ machine = platform.machine()
 # https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
 MACHINES_TO_ZIP = OrderedDict([
     ("x86_64", "Linux-x64"),
-    ("aarch64", "LinuxArm-x64"),
-    ("armv8", "LinuxArm-x64"),
+    ("aarch64", "LinuxArm64"),
+    ("armv8", "LinuxArm64"),
     ("arm", "LinuxArm"),
     ("AMD64", "Windows-x64")
 ])
