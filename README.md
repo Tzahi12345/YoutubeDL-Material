@@ -36,8 +36,7 @@ Required dependencies:
 Optional dependencies:
 
 * AtomicParsley (for embedding thumbnails, package name `atomicparsley`)
-* [tcd](https://github.com/PetterKraabol/Twitch-Chat-Downloader) (for downloading Twitch VOD chats)
-
+* [Twitch Downloader CLI](https://github.com/lay295/TwitchDownloader) (for downloading Twitch VOD chats)
 
 <details>
   <summary>Debian/Ubuntu</summary>
