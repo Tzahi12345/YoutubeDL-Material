@@ -26,8 +26,7 @@ def getZipName():
 
 def getLatestFileInRepo(repo, search_string):
     # Create an unauthenticated instance of the Github object
-    gh_token = os.environ.get('GH_TOKEN')
-    g = Github(gh_token if gh_token else None) # ensure it's none if it's falsy
+    g = Github(os.environ.get('GH_TOKEN'))
 
     # Replace with the repository owner and name
     repo = g.get_repo(repo)
