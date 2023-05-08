@@ -1928,9 +1928,34 @@ app.post('/api/clearAllLogs', optionalJwt, async function(req, res) {
 
 // user authentication
 
-app.post('/api/auth/register'
-        , optionalJwt
-        , auth_api.registerUser);
+app.post('/api/auth/register', optionalJwt, async (req, res) => {
+    const userid = req.body.userid;
+    const username = req.body.username;
+    const plaintextPassword = req.body.password;
+
+    if (userid !== 'admin' && !config_api.getConfigItem('ytdl_allow_registration') && !req.isAuthenticated() && (!req.user || !exports.userHasPermission(req.user.uid, 'settings'))) {
+        logger.error(`Registration failed for user ${userid}. Registration is disabled.`);
+        res.sendStatus(409);
+        return;
+    }
+
+    if (plaintextPassword === "") {
+        logger.error(`Registration failed for user ${userid}. A password must be provided.`);
+        res.sendStatus(409);
+        return;
+    }
+  
+    const new_user = await auth_api.registerUser(userid, username, plaintextPassword);
+  
+    if (!new_user) {
+      res.sendStatus(409);
+      return;
+    }
+  
+    res.send({
+      user: new_user
+    });
+});
 app.post('/api/auth/login'
         , auth_api.passport.authenticate(['local', 'ldapauth'], {})
         , auth_api.generateJWT
@@ -1982,18 +2007,7 @@ app.post('/api/updateUser', optionalJwt, async (req, res) => {
 app.post('/api/deleteUser', optionalJwt, async (req, res) => {
     let uid = req.body.uid;
     try {
-        let success = false;
-        let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-        const user_folder = path.join(__dirname, usersFileFolder, uid);
-        const user_db_obj = await db_api.getRecord('users', {uid: uid});
-        if (user_db_obj) {
-            // user exists, let's delete
-            await fs.remove(user_folder);
-            await db_api.removeRecord('users', {uid: uid});
-            success = true;
-        } else {
-            logger.error(`Could not find user with uid ${uid}`);
-        }
+        const success = await auth_api.deleteUser(uid);
         res.send({success: success});
     } catch (err) {
         logger.error(err);

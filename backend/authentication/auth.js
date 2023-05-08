@@ -6,6 +6,8 @@ const db_api = require('../db');
 const jwt = require('jsonwebtoken');
 const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
+const fs = require('fs-extra');
+const path = require('path');
 
 var LocalStrategy = require('passport-local').Strategy;
 var LdapStrategy = require('passport-ldapauth');
@@ -16,7 +18,7 @@ var JwtStrategy = require('passport-jwt').Strategy,
 let SERVER_SECRET = null;
 let JWT_EXPIRATION = null;
 let opts = null;
-let saltRounds = null;
+let saltRounds = 10;
 
 exports.initialize = function () {
   /*************************
@@ -30,8 +32,6 @@ exports.initialize = function () {
           if (init) setupRoles();
       });
   }
-
-  saltRounds = 10;
 
   // Sometimes this value is not properly typed: https://github.com/Tzahi12345/YoutubeDL-Material/issues/813
   JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
@@ -113,55 +113,41 @@ exports.passport.deserializeUser(function(user, done) {
 /***************************************
  * Register user with hashed password
  **************************************/
-exports.registerUser = async function(req, res) {
-  var userid = req.body.userid;
-  var username = req.body.username;
-  var plaintextPassword = req.body.password;
 
-  if (userid !== 'admin' && !config_api.getConfigItem('ytdl_allow_registration') && !req.isAuthenticated() && (!req.user || !exports.userHasPermission(req.user.uid, 'settings'))) {
-    res.sendStatus(409);
-    logger.error(`Registration failed for user ${userid}. Registration is disabled.`);
-    return;
+exports.registerUser = async (userid, username, plaintextPassword) => {
+  const hash = await bcrypt.hash(plaintextPassword, saltRounds);
+  const new_user = generateUserObject(userid, username, hash);
+  // check if user exists
+  if (await db_api.getRecord('users', {uid: userid})) {
+    // user id is taken!
+    logger.error('Registration failed: UID is already taken!');
+    return null;
+  } else if (await db_api.getRecord('users', {name: username})) {
+      // user name is taken!
+      logger.error('Registration failed: User name is already taken!');
+      return null;
+  } else {
+    // add to db
+    await db_api.insertRecordIntoTable('users', new_user);
+    logger.verbose(`New user created: ${new_user.name}`);
+    return new_user;
   }
+}
 
-  if (plaintextPassword === "") {
-    res.sendStatus(400);
-    logger.error(`Registration failed for user ${userid}. A password must be provided.`);
-    return;
+exports.deleteUser = async (uid) => {
+  let success = false;
+  let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+  const user_folder = path.join(__dirname, usersFileFolder, uid);
+  const user_db_obj = await db_api.getRecord('users', {uid: uid});
+  if (user_db_obj) {
+      // user exists, let's delete
+      await fs.remove(user_folder);
+      await db_api.removeRecord('users', {uid: uid});
+      success = true;
+  } else {
+      logger.error(`Could not find user with uid ${uid}`);
   }
-
-  bcrypt.hash(plaintextPassword, saltRounds)
-    .then(async function(hash) {
-      let new_user = generateUserObject(userid, username, hash);
-      // check if user exists
-      if (await db_api.getRecord('users', {uid: userid})) {
-        // user id is taken!
-        logger.error('Registration failed: UID is already taken!');
-        res.status(409).send('UID is already taken!');
-      } else if (await db_api.getRecord('users', {name: username})) {
-          // user name is taken!
-          logger.error('Registration failed: User name is already taken!');
-          res.status(409).send('User name is already taken!');
-      } else {
-        // add to db
-        await db_api.insertRecordIntoTable('users', new_user);
-        logger.verbose(`New user created: ${new_user.name}`);
-        res.send({
-          user: new_user
-        });
-      }
-    })
-    .then(function(result) {
-
-    })
-    .catch(function(err) {
-      logger.error(err);
-      if( err.code == 'ER_DUP_ENTRY' ) {
-        res.status(409).send('UserId already taken');
-      } else {
-        res.sendStatus(409);
-      }
-    });
+  return success;
 }
 
 /***************************************
@@ -326,7 +312,7 @@ exports.getUserVideos = async function(user_uid, type) {
 }
 
 exports.getUserVideo = async function(user_uid, file_uid, requireSharing = false) {
-  let file = await db_api.getRecord('files', {file_uid: file_uid});
+  let file = await db_api.getRecord('files', {uid: file_uid});
 
   // prevent unauthorized users from accessing the file info
   if (file && !file['sharingEnabled'] && requireSharing) file = null;
