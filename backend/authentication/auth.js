@@ -74,7 +74,8 @@ const setupRoles = async () => {
             'subscriptions',
             'sharing',
             'advanced_download',
-            'downloads_manager'
+            'downloads_manager',
+            'tasks_manager'
         ]
     },
     user: {
