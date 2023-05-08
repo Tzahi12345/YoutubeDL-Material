@@ -285,8 +285,10 @@ async function rebuildDB() {
         const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
         
         const user_exists = await db_api.getRecord('users', {uid: user_to_add});
-        if (!user_exists) await auth_api.registerUser(user_to_add, user_to_add, '');
-        else logger.info(`Regenerated user ${user_to_add}`);
+        if (!user_exists) {
+            await auth_api.registerUser(user_to_add, user_to_add, '');
+            logger.info(`Regenerated user ${user_to_add}`);
+        }
         
         const user_channel_subs = await guessSubscriptions(false, path.join(usersFileFolder, user_to_add), user_to_add);
         const user_playlist_subs = await guessSubscriptions(true, path.join(usersFileFolder, user_to_add), user_to_add);
@@ -294,7 +296,7 @@ async function rebuildDB() {
     }
 
     for (const sub_to_add of subs_to_add) {
-        const sub_exists = await db_api.getRecord('subscriptions', {name: sub_to_add['name']});
+        const sub_exists = !!(await subscriptions_api.getSubscriptionByName(sub_to_add['name'], sub_to_add['user_uid']));
         // TODO: we shouldn't be creating this here
         const new_sub = {
             name: sub_to_add['name'],
@@ -305,9 +307,14 @@ async function rebuildDB() {
             type: sub_to_add['type'],
             paused: true
         };
-        if (!sub_exists) await subscriptions_api.subscribe(new_sub, sub_to_add['user_uid']);
-        else logger.info(`Regenerated subscription ${sub_to_add['name']}`);
+        if (!sub_exists) {
+            await subscriptions_api.subscribe(new_sub, sub_to_add['user_uid']);
+            logger.info(`Regenerated subscription ${sub_to_add['name']}`);
+        }
     }
+
+    logger.info(`Importing unregistered files`);
+    await files_api.importUnregisteredFiles();
 }
 
 const guessUsers = async () => {
