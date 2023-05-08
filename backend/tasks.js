@@ -3,10 +3,16 @@ const notifications_api = require('./notifications');
 const youtubedl_api = require('./youtube-dl');
 const archive_api = require('./archive');
 const files_api = require('./files');
+const subscriptions_api = require('./subscriptions');
+const config_api = require('./config');
+const auth_api = require('./authentication/auth');
+const utils = require('./utils');
+const logger = require('./logger');
 
 const fs = require('fs-extra');
-const logger = require('./logger');
+const path = require('path');
 const scheduler = require('node-schedule');
+const { uuid } = require('uuidv4');
 
 const TASKS = {
     backup_local_db: {
@@ -46,6 +52,11 @@ const TASKS = {
     import_legacy_archives: {
         run: archive_api.importArchives,
         title: 'Import legacy archives',
+        job: null
+    },
+    rebuild_database: {
+        run: rebuildDB,
+        title: 'Rebuild database',
         job: null
     }
 }
@@ -263,6 +274,75 @@ async function autoDeleteFiles(data) {
             await files_api.deleteFile(file_to_remove['uid'], task_obj['options']['blacklist_files'] || (file_to_remove['sub_id'] && file_to_remove['blacklist_subscription_files']));
         }
     }
+}
+
+async function rebuildDB() {
+    await db_api.backupDB();
+    let subs_to_add = await guessSubscriptions(false);
+    subs_to_add = subs_to_add.concat(await guessSubscriptions(true));
+    const users_to_add = await guessUsers();
+    for (const user_to_add of users_to_add) {
+        const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+        
+        const user_exists = await db_api.getRecord('users', {uid: user_to_add});
+        if (!user_exists) await auth_api.registerUser(user_to_add, user_to_add, '');
+        else logger.info(`Regenerated user ${user_to_add}`);
+        
+        const user_channel_subs = await guessSubscriptions(false, path.join(usersFileFolder, user_to_add), user_to_add);
+        const user_playlist_subs = await guessSubscriptions(true, path.join(usersFileFolder, user_to_add), user_to_add);
+        subs_to_add = subs_to_add.concat(user_channel_subs, user_playlist_subs);
+    }
+
+    for (const sub_to_add of subs_to_add) {
+        const sub_exists = await db_api.getRecord('subscriptions', {name: sub_to_add['name']});
+        // TODO: we shouldn't be creating this here
+        const new_sub = {
+            name: sub_to_add['name'],
+            url: sub_to_add['url'],
+            maxQuality: 'best',
+            id: uuid(),
+            user_uid: sub_to_add['user_uid'],
+            type: sub_to_add['type'],
+            paused: true
+        };
+        if (!sub_exists) await subscriptions_api.subscribe(new_sub, sub_to_add['user_uid']);
+        else logger.info(`Regenerated subscription ${sub_to_add['name']}`);
+    }
+}
+
+const guessUsers = async () => {
+    const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
+    const userPaths = await utils.getDirectoriesInDirectory(usersFileFolder);
+    return userPaths.map(userPath => path.basename(userPath));
+}
+
+const guessSubscriptions = async (isPlaylist, basePath = null, user_uid = null) => {
+    const guessed_subs = [];
+    const subscriptionsFileFolder = config_api.getConfigItem('ytdl_subscriptions_base_path');
+
+    const subsSubPath = basePath ? path.join(basePath, 'subscriptions') : subscriptionsFileFolder;
+    const subsPath = path.join(subsSubPath, isPlaylist ? 'playlists' : 'channels');
+
+    const subs = await utils.getDirectoriesInDirectory(subsPath);
+    for (const subPath of subs) {
+        const audio_files = await utils.getDownloadedFilesByType(subPath, 'audio', true);
+        const video_files = await utils.getDownloadedFilesByType(subPath, 'video', true);
+        const files = audio_files.concat(video_files);
+    
+        if (files.length === 0) continue;
+
+        const sample_file = files[0];
+        const url = sample_file['channel_url'];
+        guessed_subs.push({
+            url: url,
+            name: path.basename(subPath),
+            user_uid: user_uid,
+            type: video_files.length !== 0 ? 'video' : 'audio',
+            isPlaylist: isPlaylist
+        });
+    }
+
+    return guessed_subs;
 }
 
 exports.TASKS = TASKS;

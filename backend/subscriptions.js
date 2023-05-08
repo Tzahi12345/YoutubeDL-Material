@@ -19,7 +19,7 @@ async function subscribe(sub, user_uid = null) {
     };
     return new Promise(async resolve => {
         // sub should just have url and name. here we will get isPlaylist and path
-        sub.isPlaylist = sub.url.includes('playlist');
+        sub.isPlaylist = sub.isPlaylist || sub.url.includes('playlist');
         sub.videos = [];
 
         let url_exists = !!(await db_api.getRecord('subscriptions', {url: sub.url, user_uid: user_uid}));
@@ -37,7 +37,7 @@ async function subscribe(sub, user_uid = null) {
         let success = await getSubscriptionInfo(sub);
 
         if (success) {
-            getVideosForSub(sub, user_uid);
+            if (!sub.paused) getVideosForSub(sub, user_uid);
         } else {
             logger.error('Subscribe: Failed to get subscription info. Subscribe failed.')
         }
@@ -454,7 +454,7 @@ async function getSubscription(subID) {
     // stringify and parse because we may override the 'downloading' property
     const sub = JSON.parse(JSON.stringify(await db_api.getRecord('subscriptions', {id: subID})));
     // now with the download_queue, we may need to override 'downloading'
-    const current_downloads = await db_api.getRecords('download_queue', {running: true, sub_id: sub.id}, true);
+    const current_downloads = await db_api.getRecords('download_queue', {running: true, sub_id: subID}, true);
     if (!sub['downloading']) sub['downloading'] = current_downloads > 0;
     return sub;
 }
