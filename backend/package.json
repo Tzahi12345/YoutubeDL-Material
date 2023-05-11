@@ -30,6 +30,7 @@
     "async-mutex": "^0.4.0",
     "axios": "^0.21.2",
     "bcryptjs": "^2.4.0",
+    "command-exists": "^1.2.9",
     "compression": "^1.7.4",
     "config": "^3.2.3",
     "express": "^4.18.2",
