@@ -4,5 +4,5 @@
 
 export type UpdateTaskDataRequest = {
     task_key: string;
-    new_data: any;
+    new_data: Record<string, any>;
 };

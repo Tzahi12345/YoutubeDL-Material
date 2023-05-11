@@ -2877,6 +2877,7 @@ components:
         - sharing
         - advanced_download
         - downloads_manager
+        - tasks_manager
     YesNo:
       type: string
       enum:

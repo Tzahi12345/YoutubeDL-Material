@@ -9,8 +9,8 @@ export type Task = {
     last_confirmed: number;
     running: boolean;
     confirming: boolean;
-    data: any;
+    data: Record<string, any>;
     error: string;
-    schedule: any;
-    options?: any;
+    schedule: Record<string, any>;
+    options?: Record<string, any>;
 };
