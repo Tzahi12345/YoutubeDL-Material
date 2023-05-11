@@ -3916,6 +3916,24 @@
           <context context-type="linenumber">183</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="7cedb649779673568447b994463b2882c4e0436a" datatype="html">
+        <source>Slack Webhook URL</source>
+        <target state="translated">URL del webhook de Slack</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">397</context>
+        </context-group>
+        <note priority="1" from="description">Slack Webhook URL</note>
+      </trans-unit>
+      <trans-unit id="3264d82792954815be755b3da01e2625458711dc" datatype="html">
+        <source>Discord Webhook URL</source>
+        <target state="translated">URL del webhook de Discord</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">390</context>
+        </context-group>
+        <note priority="1" from="description">Discord Webhook URL</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>

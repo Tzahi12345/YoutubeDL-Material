@@ -3757,6 +3757,33 @@
         </context-group>
         <note priority="1" from="description">Select a version</note>
       </trans-unit>
+      <trans-unit id="2361a4f76caaa4574803fbcdca8b0a47c91cc7ed" datatype="html">
+        <source>Task finished</source>
+        <target state="translated">Zadanie zakończone</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">377</context>
+        </context-group>
+        <note priority="1" from="description">Task finished</note>
+      </trans-unit>
+      <trans-unit id="c5dc5fbcce45e9b1530e2a5c2baa8ebe722aef4c" datatype="html">
+        <source>Download complete</source>
+        <target state="translated">Pobieranie zakończone</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">375</context>
+        </context-group>
+        <note priority="1" from="description">Download complete</note>
+      </trans-unit>
+      <trans-unit id="3ffd9490f3a4c0b24021d25e1dc71fcfe5d39cd6" datatype="html">
+        <source>Download error</source>
+        <target state="translated">Błąd pobierania</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">376</context>
+        </context-group>
+        <note priority="1" from="description">Download error</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
