@@ -68,15 +68,7 @@ exports.initialize = function () {
 const setupRoles = async () => {
   const required_roles = {
     admin: {
-        permissions: [
-            'filemanager',
-            'settings',
-            'subscriptions',
-            'sharing',
-            'advanced_download',
-            'downloads_manager',
-            'tasks_manager'
-        ]
+        permissions: consts.AVAILABLE_PERMISSIONS
     },
     user: {
         permissions: [
