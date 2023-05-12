@@ -2,6 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { Schedule } from './Schedule';
+
 export type Task = {
     key: string;
     title?: string;
@@ -9,8 +11,8 @@ export type Task = {
     last_confirmed: number;
     running: boolean;
     confirming: boolean;
-    data: any;
+    data: Record<string, any>;
     error: string;
-    schedule: any;
-    options?: any;
+    schedule: Schedule;
+    options?: Record<string, any>;
 };

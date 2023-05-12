@@ -9,4 +9,5 @@ export enum UserPermission {
     SHARING = 'sharing',
     ADVANCED_DOWNLOAD = 'advanced_download',
     DOWNLOADS_MANAGER = 'downloads_manager',
+    TASKS_MANAGER = 'tasks_manager',
 }

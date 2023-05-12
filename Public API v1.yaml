@@ -2742,7 +2742,7 @@ components:
         error:
           type: string
         schedule:
-          type: object
+          $ref: '#/components/schemas/Schedule'
         options:
           type: object
     Schedule:
@@ -2877,6 +2877,7 @@ components:
         - sharing
         - advanced_download
         - downloads_manager
+        - tasks_manager
     YesNo:
       type: string
       enum:

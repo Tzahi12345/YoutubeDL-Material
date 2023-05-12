@@ -84,8 +84,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.postsService.open_create_default_admin_dialog.subscribe(open => {
       if (open) {
         const dialogRef = this.dialog.open(SetDefaultAdminDialogComponent);
-        dialogRef.afterClosed().subscribe(success => {
-          if (success) {
+        dialogRef.afterClosed().subscribe(res => {
+          if (!res || !res['user']) {
             if (this.router.url !== '/login') { this.router.navigate(['/login']); }
           } else {
             console.error('Failed to create default admin account. See logs for details.');
