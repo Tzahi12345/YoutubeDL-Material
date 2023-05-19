@@ -12,7 +12,7 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 const db_api = require('./db');
 const downloader_api = require('./downloader');
 
-async function subscribe(sub, user_uid = null) {
+exports.subscribe = async (sub, user_uid = null) => {
     const result_obj = {
         success: false,
         error: ''
@@ -37,7 +37,7 @@ async function subscribe(sub, user_uid = null) {
         let success = await getSubscriptionInfo(sub);
 
         if (success) {
-            if (!sub.paused) getVideosForSub(sub, user_uid);
+            if (!sub.paused) exports.getVideosForSub(sub, user_uid);
         } else {
             logger.error('Subscribe: Failed to get subscription info. Subscribe failed.')
         }
@@ -109,7 +109,7 @@ async function getSubscriptionInfo(sub) {
     });
 }
 
-async function unsubscribe(sub, deleteMode, user_uid = null) {
+exports.unsubscribe = async (sub, deleteMode, user_uid = null) => {
     let basePath = null;
     if (user_uid)
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
@@ -148,7 +148,7 @@ async function unsubscribe(sub, deleteMode, user_uid = null) {
     await db_api.removeAllRecords('archives', {sub_id: sub.id});
 }
 
-async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null, user_uid = null) {
+exports.deleteSubscriptionFile = async (sub, file, deleteForever, file_uid = null, user_uid = null) => {
     if (typeof sub === 'string') {
         // TODO: fix bad workaround where sub is a sub_id
         sub = await db_api.getRecord('subscriptions', {sub_id: sub});
@@ -216,8 +216,8 @@ async function deleteSubscriptionFile(sub, file, deleteForever, file_uid = null,
     }
 }
 
-async function getVideosForSub(sub, user_uid = null) {
-    const latest_sub_obj = await getSubscription(sub.id);
+exports.getVideosForSub = async (sub, user_uid = null) => {
+    const latest_sub_obj = await exports.getSubscription(sub.id);
     if (!latest_sub_obj || latest_sub_obj['downloading']) {
         return false;
     }
@@ -305,7 +305,7 @@ async function handleOutputJSON(output, sub, user_uid) {
     }
 
     const files_to_download = await getFilesToDownload(sub, output_jsons);
-    const base_download_options = generateOptionsForSubscriptionDownload(sub, user_uid);
+    const base_download_options = exports.generateOptionsForSubscriptionDownload(sub, user_uid);
 
     for (let j = 0; j < files_to_download.length; j++) {
         const file_to_download = files_to_download[j];
@@ -316,7 +316,7 @@ async function handleOutputJSON(output, sub, user_uid) {
     return files_to_download;
 }
 
-function generateOptionsForSubscriptionDownload(sub, user_uid) {
+exports.generateOptionsForSubscriptionDownload = (sub, user_uid) => {
     let basePath = null;
     if (user_uid)
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
@@ -440,17 +440,17 @@ async function getFilesToDownload(sub, output_jsons) {
 }
 
 
-async function getSubscriptions(user_uid = null) {
+exports.getSubscriptions = async (user_uid = null) => {
     return await db_api.getRecords('subscriptions', {user_uid: user_uid});
 }
 
-async function getAllSubscriptions() {
+exports.getAllSubscriptions = async () => {
     const all_subs = await db_api.getRecords('subscriptions');
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     return all_subs.filter(sub => !!(sub.user_uid) === !!multiUserMode);
 }
 
-async function getSubscription(subID) {
+exports.getSubscription = async (subID) => {
     // stringify and parse because we may override the 'downloading' property
     const sub = JSON.parse(JSON.stringify(await db_api.getRecord('subscriptions', {id: subID})));
     // now with the download_queue, we may need to override 'downloading'
@@ -459,16 +459,16 @@ async function getSubscription(subID) {
     return sub;
 }
 
-async function getSubscriptionByName(subName, user_uid = null) {
+exports.getSubscriptionByName = async (subName, user_uid = null) => {
     return await db_api.getRecord('subscriptions', {name: subName, user_uid: user_uid});
 }
 
-async function updateSubscription(sub) {
+exports.updateSubscription = async (sub) => {
     await db_api.updateRecord('subscriptions', {id: sub.id}, sub);
     return true;
 }
 
-async function updateSubscriptionPropertyMultiple(subs, assignment_obj) {
+exports.updateSubscriptionPropertyMultiple = async (subs, assignment_obj) => {
     subs.forEach(async sub => {
         await updateSubscriptionProperty(sub, assignment_obj);
     });
@@ -533,18 +533,4 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
 
 function getAppendedBasePath(sub, base_path) {
     return path.join(base_path, (sub.isPlaylist ? 'playlists/' : 'channels/'), sub.name);
-}
-
-module.exports = {
-    getSubscription        : getSubscription,
-    getSubscriptionByName  : getSubscriptionByName,
-    getSubscriptions       : getSubscriptions,
-    getAllSubscriptions    : getAllSubscriptions,
-    updateSubscription     : updateSubscription,
-    subscribe              : subscribe,
-    unsubscribe            : unsubscribe,
-    deleteSubscriptionFile : deleteSubscriptionFile,
-    getVideosForSub        : getVideosForSub,
-    updateSubscriptionPropertyMultiple : updateSubscriptionPropertyMultiple,
-    generateOptionsForSubscriptionDownload: generateOptionsForSubscriptionDownload
 }
