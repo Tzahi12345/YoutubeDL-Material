@@ -371,10 +371,13 @@ async function generateArgsForSubscription(sub, user_uid, redownload = false, de
 
     // skip videos that are in the archive. otherwise sub download can be permanently slow (vs. just the first time)
     const archive_text = await archive_api.generateArchive(sub.type, sub.user_uid, sub.id);
-    logger.verbose(`Generating temporary archive file for subscription ${sub.name} with ${archive_text.split('\n').length - 1} entries.`)
-    const archive_path = path.join(appendedBasePath, 'archive.txt');
-    await fs.writeFile(archive_path, archive_text);
-    downloadConfig.push('--download-archive', archive_path);
+    const archive_count = archive_text.split('\n').length - 1;
+    if (archive_count > 0) {
+        logger.verbose(`Generating temporary archive file for subscription ${sub.name} with ${archive_count} entries.`)
+        const archive_path = path.join(appendedBasePath, 'archive.txt');
+        await fs.writeFile(archive_path, archive_text);
+        downloadConfig.push('--download-archive', archive_path);
+    }
 
     if (sub.custom_args) {
         const customArgsArray = sub.custom_args.split(',,');
