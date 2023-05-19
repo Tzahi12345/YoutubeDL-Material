@@ -535,6 +535,7 @@ async function loadConfig() {
     if (allowSubscriptions) {
         // set downloading to false
         let subscriptions = await subscriptions_api.getAllSubscriptions();
+        subscriptions.forEach(async sub => subscriptions_api.writeSubscriptionMetadata(sub));
         subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
         const watchSubscriptionsInterval = function() {

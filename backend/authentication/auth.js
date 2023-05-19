@@ -1,5 +1,5 @@
 const config_api = require('../config');
-const consts = require('../consts');
+const CONSTS = require('../consts');
 const logger = require('../logger');
 const db_api = require('../db');
 
@@ -68,14 +68,7 @@ exports.initialize = function () {
 const setupRoles = async () => {
   const required_roles = {
     admin: {
-        permissions: [
-            'filemanager',
-            'settings',
-            'subscriptions',
-            'sharing',
-            'advanced_download',
-            'downloads_manager'
-        ]
+        permissions: CONSTS.AVAILABLE_PERMISSIONS
     },
     user: {
         permissions: [

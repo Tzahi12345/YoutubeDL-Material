@@ -6,13 +6,14 @@ const config_api = require('./config');
 const archive_api = require('./archive');
 const utils = require('./utils');
 const logger = require('./logger');
+const CONSTS = require('./consts');
 
 const debugMode = process.env.YTDL_MODE === 'debug';
 
 const db_api = require('./db');
 const downloader_api = require('./downloader');
 
-exports.subscribe = async (sub, user_uid = null) => {
+exports.subscribe = async (sub, user_uid = null, skip_get_info = false) => {
     const result_obj = {
         success: false,
         error: ''
@@ -34,7 +35,8 @@ exports.subscribe = async (sub, user_uid = null) => {
         sub['user_uid'] = user_uid ? user_uid : undefined;
         await db_api.insertRecordIntoTable('subscriptions', sub);
 
-        let success = await getSubscriptionInfo(sub);
+        let success = skip_get_info ? true : await getSubscriptionInfo(sub);
+        exports.writeSubscriptionMetadata(sub);
 
         if (success) {
             if (!sub.paused) exports.getVideosForSub(sub, user_uid);
@@ -465,6 +467,7 @@ exports.getSubscriptionByName = async (subName, user_uid = null) => {
 
 exports.updateSubscription = async (sub) => {
     await db_api.updateRecord('subscriptions', {id: sub.id}, sub);
+    exports.writeSubscriptionMetadata(sub);
     return true;
 }
 
@@ -478,6 +481,14 @@ async function updateSubscriptionProperty(sub, assignment_obj) {
     // TODO: combine with updateSubscription
     await db_api.updateRecord('subscriptions', {id: sub.id}, assignment_obj);
     return true;
+}
+
+exports.writeSubscriptionMetadata = (sub) => {
+    let basePath = sub.user_uid ? path.join(config_api.getConfigItem('ytdl_users_base_path'), sub.user_uid, 'subscriptions')
+                                : config_api.getConfigItem('ytdl_subscriptions_base_path');
+    const appendedBasePath = getAppendedBasePath(sub, basePath);
+    const metadata_path = path.join(appendedBasePath, CONSTS.SUBSCRIPTION_BACKUP_PATH);
+    fs.writeJSONSync(metadata_path, sub);
 }
 
 async function setFreshUploads(sub) {

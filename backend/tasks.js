@@ -8,6 +8,7 @@ const config_api = require('./config');
 const auth_api = require('./authentication/auth');
 const utils = require('./utils');
 const logger = require('./logger');
+const CONSTS = require('./consts');
 
 const fs = require('fs-extra');
 const path = require('path');
@@ -279,6 +280,7 @@ async function autoDeleteFiles(data) {
 async function rebuildDB() {
     await db_api.backupDB();
     let subs_to_add = await guessSubscriptions(false);
+    let subs_to_add = await guessSubscriptions(true);
     subs_to_add = subs_to_add.concat(await guessSubscriptions(true));
     const users_to_add = await guessUsers();
     for (const user_to_add of users_to_add) {
@@ -298,17 +300,9 @@ async function rebuildDB() {
     for (const sub_to_add of subs_to_add) {
         const sub_exists = !!(await subscriptions_api.getSubscriptionByName(sub_to_add['name'], sub_to_add['user_uid']));
         // TODO: we shouldn't be creating this here
-        const new_sub = {
-            name: sub_to_add['name'],
-            url: sub_to_add['url'],
-            maxQuality: 'best',
-            id: uuid(),
-            user_uid: sub_to_add['user_uid'],
-            type: sub_to_add['type'],
-            paused: true
-        };
+        const new_sub = Object.assign({}, sub_to_add, {paused: true});
         if (!sub_exists) {
-            await subscriptions_api.subscribe(new_sub, sub_to_add['user_uid']);
+            await subscriptions_api.subscribe(new_sub, sub_to_add['user_uid'], true);
             logger.info(`Regenerated subscription ${sub_to_add['name']}`);
         }
     }
@@ -323,7 +317,7 @@ const guessUsers = async () => {
     return userPaths.map(userPath => path.basename(userPath));
 }
 
-const guessSubscriptions = async (isPlaylist, basePath = null, user_uid = null) => {
+const guessSubscriptions = async (isPlaylist, basePath = null) => {
     const guessed_subs = [];
     const subscriptionsFileFolder = config_api.getConfigItem('ytdl_subscriptions_base_path');
 
@@ -332,21 +326,17 @@ const guessSubscriptions = async (isPlaylist, basePath = null, user_uid = null) 
 
     const subs = await utils.getDirectoriesInDirectory(subsPath);
     for (const subPath of subs) {
-        const audio_files = await utils.getDownloadedFilesByType(subPath, 'audio', true);
-        const video_files = await utils.getDownloadedFilesByType(subPath, 'video', true);
-        const files = audio_files.concat(video_files);
-    
-        if (files.length === 0) continue;
+        const sub_backup_path = path.join(subPath, CONSTS.SUBSCRIPTION_BACKUP_PATH);
+        if (!fs.existsSync(sub_backup_path)) continue;
 
-        const sample_file = files[0];
-        const url = sample_file['channel_url'];
-        guessed_subs.push({
-            url: url,
-            name: path.basename(subPath),
-            user_uid: user_uid,
-            type: video_files.length !== 0 ? 'video' : 'audio',
-            isPlaylist: isPlaylist
-        });
+        try {
+            const sub_backup = fs.readJSONSync(sub_backup_path)
+            delete sub_backup['_id'];
+            guessed_subs.push(sub_backup);
+        } catch(err) {
+            logger.warn(`Failed to reimport subscription in path ${subPath}`)
+            logger.warn(err);
+        }
     }
 
     return guessed_subs;
