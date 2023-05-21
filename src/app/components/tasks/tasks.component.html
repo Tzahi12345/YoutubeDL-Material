@@ -49,7 +49,7 @@
             <mat-header-cell *matHeaderCellDef> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <div class="container">
-                    <div class="row justify-content-center">
+                    <div class="row justify-content-start">
                         <div *ngIf="element.data?.uids?.length > 0 || (!element.data?.uids && element.data)" class="col-12 mt-2" style="display: flex; justify-content: center;">
                             <ng-container>
                                 <button (click)="confirmTask(element.key)" [disabled]="element.running || element.confirming" mat-stroked-button>
