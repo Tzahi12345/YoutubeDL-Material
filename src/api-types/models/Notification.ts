@@ -11,6 +11,6 @@ export type Notification = {
     user_uid?: string;
     action?: Array<NotificationAction>;
     read: boolean;
-    data?: Record<string, any>;
+    data?: any;
     timestamp: number;
 };

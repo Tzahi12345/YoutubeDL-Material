@@ -3,16 +3,17 @@
 /* eslint-disable */
 
 import type { Schedule } from './Schedule';
+import type { TaskType } from './TaskType';
 
 export type Task = {
-    key: string;
+    key: TaskType;
     title?: string;
     last_ran: number;
     last_confirmed: number;
     running: boolean;
     confirming: boolean;
-    data: Record<string, any>;
+    data: any;
     error: string;
     schedule: Schedule;
-    options?: Record<string, any>;
+    options?: any;
 };

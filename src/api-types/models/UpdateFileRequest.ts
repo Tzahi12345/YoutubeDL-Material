@@ -10,5 +10,5 @@ export type UpdateFileRequest = {
     /**
      * Object with fields to update as keys and their new values
      */
-    change_obj: Record<string, any>;
+    change_obj: any;
 };

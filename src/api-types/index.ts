@@ -104,6 +104,7 @@ export type { SubscriptionRequestData } from './models/SubscriptionRequestData';
 export type { SuccessObject } from './models/SuccessObject';
 export type { TableInfo } from './models/TableInfo';
 export type { Task } from './models/Task';
+export { TaskType } from './models/TaskType';
 export type { TestConnectionStringRequest } from './models/TestConnectionStringRequest';
 export type { TestConnectionStringResponse } from './models/TestConnectionStringResponse';
 export type { TransferDBRequest } from './models/TransferDBRequest';

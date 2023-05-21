@@ -2,7 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { TaskType } from './TaskType';
+
 export type UpdateTaskDataRequest = {
-    task_key: string;
-    new_data: Record<string, any>;
+    task_key: TaskType;
+    new_data: any;
 };
