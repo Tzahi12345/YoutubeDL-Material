@@ -112,7 +112,8 @@ import {
     ImportArchiveRequest,
     Archive,
     Subscription,
-    RestartDownloadResponse
+    RestartDownloadResponse,
+    TaskType
 } from '../api-types';
 import { isoLangs } from './settings/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -640,32 +641,32 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'resetTasks', {}, this.httpOptions);
     }
 
-    getTask(task_key: string) {
+    getTask(task_key: TaskType) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<GetTaskResponse>(this.path + 'getTask', body, this.httpOptions);
     }
 
-    runTask(task_key: string) {
+    runTask(task_key: TaskType) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<SuccessObject>(this.path + 'runTask', body, this.httpOptions);
     }
 
-    confirmTask(task_key: string) {
+    confirmTask(task_key: TaskType) {
         const body: GetTaskRequest = {task_key: task_key};
         return this.http.post<SuccessObject>(this.path + 'confirmTask', body, this.httpOptions);
     }
 
-    updateTaskSchedule(task_key: string, schedule: Schedule) {
+    updateTaskSchedule(task_key: TaskType, schedule: Schedule) {
         const body: UpdateTaskScheduleRequest = {task_key: task_key, new_schedule: schedule};
         return this.http.post<SuccessObject>(this.path + 'updateTaskSchedule', body, this.httpOptions);
     }
 
-    updateTaskData(task_key: string, data: any) {
+    updateTaskData(task_key: TaskType, data: any) {
         const body: UpdateTaskDataRequest = {task_key: task_key, new_data: data};
         return this.http.post<SuccessObject>(this.path + 'updateTaskData', body, this.httpOptions);
     }
 
-    updateTaskOptions(task_key: string, options: any) {
+    updateTaskOptions(task_key: TaskType, options: any) {
         const body: UpdateTaskOptionsRequest = {task_key: task_key, new_options: options};
         return this.http.post<SuccessObject>(this.path + 'updateTaskOptions', body, this.httpOptions);
     }

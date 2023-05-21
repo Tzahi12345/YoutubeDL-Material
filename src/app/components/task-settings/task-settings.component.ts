@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Task } from 'api-types';
+import { Task, TaskType } from 'api-types';
 import { PostsService } from 'app/posts.services';
 
 @Component({
@@ -9,7 +9,7 @@ import { PostsService } from 'app/posts.services';
   styleUrls: ['./task-settings.component.scss']
 })
 export class TaskSettingsComponent {
-  task_key: string;
+  task_key: TaskType;
   new_options = {};
   task: Task = null;
 

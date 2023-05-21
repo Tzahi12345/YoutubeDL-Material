@@ -7,7 +7,7 @@ import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialo
 import { RestoreDbDialogComponent } from 'app/dialogs/restore-db-dialog/restore-db-dialog.component';
 import { UpdateTaskScheduleDialogComponent } from 'app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component';
 import { PostsService } from 'app/posts.services';
-import { Task } from 'api-types';
+import { Task, TaskType } from 'api-types';
 import { TaskSettingsComponent } from '../task-settings/task-settings.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 
@@ -27,6 +27,15 @@ export class TasksComponent implements OnInit {
   dataSource = null;
 
   db_backups = [];
+
+  TASKS_TO_REQUIRE_DIALOG: { [key in TaskType]? : {dialogTitle: string, dialogText: string, submitText: string, warnSubmitColor: boolean}} = {
+    [TaskType.REBUILD_DATABASE]: {
+      dialogTitle: $localize`Rebuild database`,
+      dialogText: $localize`Are you sure you want to rebuild the database? All missing users, subscriptions, and files will be reimported. Note that if missing users are detected, they will be created with the password: 'password'. A backup of your current database will be created.`,
+      submitText: $localize`Rebuild database`,
+      warnSubmitColor: false
+    }
+  }
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -79,7 +88,29 @@ export class TasksComponent implements OnInit {
     });
   }
 
-  runTask(task_key: string): void {
+  runTask(task_key: TaskType): void {
+    const taskToRequireDialog = this.TASKS_TO_REQUIRE_DIALOG[task_key];
+    if (taskToRequireDialog) {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          dialogTitle: taskToRequireDialog['dialogTitle'],
+          dialogText: taskToRequireDialog['dialogText'],
+          submitText: taskToRequireDialog['submitText'],
+          warnSubmitColor: taskToRequireDialog['warnSubmitColor']
+        }
+      });
+      dialogRef.afterClosed().subscribe(confirmed => {
+        if (confirmed) {
+          this._runTask(task_key);
+        }
+      });
+      return;
+    }
+
+    this._runTask(task_key);
+  }
+
+  _runTask(task_key: TaskType): void {
     this.postsService.runTask(task_key).subscribe(res => {
       this.getTasks();
       this.getDBBackups();
@@ -91,7 +122,7 @@ export class TasksComponent implements OnInit {
     });
   }
 
-  confirmTask(task_key: string): void {
+  confirmTask(task_key: TaskType): void {
     this.postsService.confirmTask(task_key).subscribe(res => {
       this.getTasks();
       if (res['success']) this.postsService.openSnackBar($localize`Successfully confirmed task!`);
