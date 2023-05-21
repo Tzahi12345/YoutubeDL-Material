@@ -734,7 +734,7 @@ export class PostsService implements CanActivate {
                 this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions']);
             }
         }, err => {
-            if (err.status === 401) {
+            if (err === 'Unauthorized') {
                 this.sendToLogin();
                 this.token = null;
                 this.resetHttpParams();

@@ -3,5 +3,5 @@
 /* eslint-disable */
 
 export type Config = {
-    YoutubeDLMaterial: any;
+    YoutubeDLMaterial: Record<string, any>;
 };

@@ -6,6 +6,7 @@ const fs = require('fs-extra')
 const path = require('path');
 const { promisify } = require('util');
 const child_process = require('child_process');
+const commandExistsSync = require('command-exists').sync;
 
 async function getCommentsForVOD(vodId) {
     const exec = promisify(child_process.exec);
@@ -20,7 +21,7 @@ async function getCommentsForVOD(vodId) {
     const cliExt = is_windows ? '.exe' : ''
     const cliPath = `TwitchDownloaderCLI${cliExt}`
 
-    if (!fs.existsSync(cliPath)) {
+    if (!commandExistsSync(cliPath)) {
         logger.error(`${cliPath} does not exist. Twitch chat download failed! Get it here: https://github.com/lay295/TwitchDownloader`);
         return null;
     }
