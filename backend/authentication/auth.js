@@ -221,7 +221,7 @@ exports.returnAuthResponse = async function(req, res) {
     user: req.user,
     token: req.token,
     permissions: await exports.userPermissions(req.user.uid),
-    available_permissions: consts['AVAILABLE_PERMISSIONS']
+    available_permissions: CONSTS.AVAILABLE_PERMISSIONS
   });
 }
 
@@ -392,8 +392,8 @@ exports.userPermissions = async function(user_uid) {
   const role_obj = await db_api.getRecord('roles', {key: role});
   const role_permissions = role_obj['permissions'];
 
-  for (let i = 0; i < consts['AVAILABLE_PERMISSIONS'].length; i++) {
-    let permission = consts['AVAILABLE_PERMISSIONS'][i];
+  for (let i = 0; i < CONSTS.AVAILABLE_PERMISSIONS.length; i++) {
+    let permission = CONSTS.AVAILABLE_PERMISSIONS[i];
 
     const user_has_explicit_permission = user_obj['permissions'].includes(permission);
     const permission_in_overrides = user_obj['permission_overrides'].includes(permission);

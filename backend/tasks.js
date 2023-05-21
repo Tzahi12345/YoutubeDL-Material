@@ -280,7 +280,6 @@ async function autoDeleteFiles(data) {
 async function rebuildDB() {
     await db_api.backupDB();
     let subs_to_add = await guessSubscriptions(false);
-    let subs_to_add = await guessSubscriptions(true);
     subs_to_add = subs_to_add.concat(await guessSubscriptions(true));
     const users_to_add = await guessUsers();
     for (const user_to_add of users_to_add) {
@@ -288,7 +287,7 @@ async function rebuildDB() {
         
         const user_exists = await db_api.getRecord('users', {uid: user_to_add});
         if (!user_exists) {
-            await auth_api.registerUser(user_to_add, user_to_add, '');
+            await auth_api.registerUser(user_to_add, user_to_add, 'password');
             logger.info(`Regenerated user ${user_to_add}`);
         }
         
