@@ -205,7 +205,7 @@
 </div>
 
 <div style="display: flex; justify-content: center;" *ngIf="downloads && downloads.length > 0 && !autoplay">
-    <app-downloads style="width: 80%; margin-bottom: 10px" [uids]="download_uids"></app-downloads>
+    <app-downloads style="width: 80%; min-width: 350px; margin-bottom: 10px" [uids]="download_uids"></app-downloads>
 </div>
 
 <ng-container *ngIf="cachedFileManagerEnabled || fileManagerEnabled">
