@@ -38,6 +38,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       3: $localize`Complete`
   }
 
+  actionsFlex = 2;
   displayedColumnsBig: string[] = ['timestamp_start', 'title', 'step_index', 'sub_name', 'percent_complete', 'actions'];
   displayedColumnsSmall: string[] = ['title', 'step_index', 'percent_complete', 'actions'];
   displayedColumns: string[] = this.displayedColumnsBig;
@@ -105,7 +106,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.innerWidth = window.innerWidth;
-    this.resizeColumns();
+    this.recalculateColumns();
   }
 
   sort_downloads = (a: Download, b: Download): number => {
@@ -116,8 +117,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog, private clipboard: Clipboard) { }
 
   ngOnInit(): void {
+    // Remove sub name as it's not necessary for one-off downloads
+    if (this.uids) this.displayedColumnsBig = this.displayedColumnsBig.filter(col => col !== 'sub_name');
     this.innerWidth = window.innerWidth;
-    this.resizeColumns();
+    this.recalculateColumns();
     if (this.postsService.initialized) {
       this.getCurrentDownloadsRecurring();
     } else {
@@ -319,9 +322,11 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  resizeColumns() {
+  recalculateColumns() {
     if (this.innerWidth < 650) this.displayedColumns = this.displayedColumnsSmall;
     else                       this.displayedColumns = this.displayedColumnsBig;
+
+    this.actionsFlex = this.uids || this.innerWidth < 800 ? 1 : 2;
   }
 }
 

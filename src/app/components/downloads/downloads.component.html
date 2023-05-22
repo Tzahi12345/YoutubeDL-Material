@@ -10,8 +10,8 @@
       
           <!-- Title Column -->
           <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element">
+            <mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 2"> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element" style="flex: 2">
                 <span class="one-line" [matTooltip]="element.title ? element.title : null">
                     {{element.title}}
                 </span>
@@ -52,8 +52,8 @@
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef [ngStyle]="{flex: innerWidth < 800 ? 1 : 2}"> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element" [ngStyle]="{flex: innerWidth < 800 ? 1 : 2}">
+            <mat-header-cell *matHeaderCellDef [ngStyle]="{flex: actionsFlex}"> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element" [ngStyle]="{flex: actionsFlex}">
                 <div *ngIf="!uids && innerWidth >= 800">
                   <ng-container *ngFor="let downloadAction of downloadActions">
                     <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [matTooltip]="downloadAction.tooltip" mat-icon-button><mat-icon>{{downloadAction.icon}}</mat-icon></button>
