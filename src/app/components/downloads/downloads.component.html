@@ -34,7 +34,10 @@
           <!-- Stage Column -->
           <ng-container matColumnDef="step_index">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Stage">Stage</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{STEP_INDEX_TO_LABEL[element.step_index]}} </mat-cell>
+            <mat-cell *matCellDef="let element">
+              <ng-container *ngIf="!element.error">{{STEP_INDEX_TO_LABEL[element.step_index]}}</ng-container>
+              <ng-container *ngIf="element.error" i18n="Error">Error</ng-container>
+            </mat-cell>
           </ng-container>
       
           <!-- Progress Column -->
