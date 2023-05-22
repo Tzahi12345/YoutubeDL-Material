@@ -1,6 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { PostsService } from 'app/posts.services';
-import { isoLangs } from './locales_list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {DomSanitizer} from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,10 +21,6 @@ import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-r
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  all_locales = isoLangs;
-  supported_locales = ['en', 'es', 'de', 'fr', 'nl', 'pt', 'it', 'ca', 'cs', 'nb', 'ru', 'zh', 'ko', 'id', 'en-GB'];
-  initialLocale = localStorage.getItem('locale');
-
   initial_config = null;
   new_config = null
   loading_config = false;
@@ -83,16 +78,6 @@ export class SettingsComponent implements OnInit {
 
     const tab = this.route.snapshot.paramMap.get('tab');
     this.tabIndex = tab && this.TAB_TO_INDEX[tab] ? this.TAB_TO_INDEX[tab] : 0;
-
-    this.postsService.getSupportedLocales().subscribe(res => {
-      if (res && res['supported_locales']) {
-        this.supported_locales = ['en', 'en-GB']; // required
-        this.supported_locales = this.supported_locales.concat(res['supported_locales']);
-      }
-    }, err => {
-      console.error(`Failed to retrieve list of supported languages! You may need to run: 'node src/postbuild.mjs'. Error below:`);
-      console.error(err);
-    });
   }
 
   getConfig(): void {
@@ -205,11 +190,6 @@ export class SettingsComponent implements OnInit {
         this.new_config.API.API_key = res['new_api_key'];
       }
     });
-  }
-
-  localeSelectChanged(new_val: string): void {
-    localStorage.setItem('locale', new_val);
-    this.postsService.openSnackBar($localize`Language successfully changed! Reload to update the page.`)
   }
 
   generateBookmarklet(): void {

@@ -13,19 +13,52 @@
         </div>
         <div style="margin-top: 20px;">
         </div>
+        <mat-divider style="margin-bottom: 20px"></mat-divider>
     </div>
-
-    <div *ngIf="!postsService.isLoggedIn || !postsService.user">
-        <h5><mat-icon>warn</mat-icon><ng-container i18n="Not logged in notification">You are not logged in.</ng-container></h5>
-        <button (click)="loginClicked()" mat-raised-button color="primary"><ng-container i18n="Login">Login</ng-container></button>
-    </div>
+    <mat-form-field color="accent">
+        <mat-label><ng-container i18n="Language select label">Language</ng-container></mat-label>
+        <mat-select (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
+            <mat-option *ngFor="let locale of supported_locales" [value]="locale">
+                <ng-container *ngIf="all_locales[locale]">
+                    {{all_locales[locale]['nativeName']}}
+                </ng-container>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <br/>
+    <mat-form-field>
+        <mat-label i18n="Sidepanel mode">Sidepanel mode</mat-label>
+        <mat-select [(ngModel)]="sidepanel_mode" (selectionChange)="sidePanelModeChanged($event.value)">
+            <mat-option i18n="Over" value="over">
+                Over
+            </mat-option>
+            <mat-option i18n="Side" value="side">
+                Side
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <br/>
+    <mat-form-field>
+        <mat-label i18n="File card size">File card size</mat-label>
+        <mat-select [(ngModel)]="card_size" (selectionChange)="cardSizeOptionChanged($event.value)">
+            <mat-option i18n="Large" value="large">
+                Large
+            </mat-option>
+            <mat-option i18n="Medium" value="medium">
+                Medium
+            </mat-option>
+            <mat-option i18n="Small" value="small">
+                Small
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions>
     <div style="width: 100%">
         <div style="position: relative">
             <button mat-stroked-button mat-dialog-close color="primary"><ng-container i18n="Close">Close</ng-container></button>
-            <button style="position: absolute; right: 0px;" (click)="logoutClicked()" mat-stroked-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
+            <button *ngIf="postsService.isLoggedIn" style="position: absolute; right: 0px;" (click)="logoutClicked()" mat-stroked-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
         </div>
     </div>
 </mat-dialog-actions>

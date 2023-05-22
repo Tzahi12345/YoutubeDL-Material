@@ -114,7 +114,7 @@ import {
     Subscription,
     RestartDownloadResponse
 } from '../api-types';
-import { isoLangs } from './settings/locales_list';
+import { isoLangs } from './dialogs/user-profile-dialog/locales_list';
 import { Title } from '@angular/platform-browser';
 import { MatDrawerMode } from '@angular/material/sidenav';
 
