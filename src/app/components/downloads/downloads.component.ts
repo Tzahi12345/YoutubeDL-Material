@@ -39,6 +39,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   actionsFlex = 2;
+  minimizeButtons = false;
   displayedColumnsBig: string[] = ['timestamp_start', 'title', 'sub_name', 'percent_complete', 'actions'];
   displayedColumnsSmall: string[] = ['title', 'percent_complete', 'actions'];
   displayedColumns: string[] = this.displayedColumnsBig;
@@ -328,6 +329,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     else                       this.displayedColumns = this.displayedColumnsBig;
 
     this.actionsFlex = this.uids || this.innerWidth < 800 ? 1 : 2;
+
+    if (this.innerWidth < 800 && !this.uids || this.innerWidth < 1100 && this.uids) this.minimizeButtons = true;
+    else                                                                            this.minimizeButtons = false;
   }
 }
 

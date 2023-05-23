@@ -54,7 +54,7 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef [ngStyle]="{flex: actionsFlex}"> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element" [ngStyle]="{flex: actionsFlex}">
-                <div *ngIf="!uids && innerWidth >= 800">
+                <div *ngIf="!minimizeButtons">
                   <ng-container *ngFor="let downloadAction of downloadActions">
                     <span class="button-span">
                       <mat-spinner [diameter]="28" *ngIf="downloadAction.loading && downloadAction.loading(element)" class="icon-button-spinner"></mat-spinner>
@@ -62,7 +62,7 @@
                     </span>
                   </ng-container>
                 </div>
-                <div *ngIf="uids || innerWidth < 800">
+                <div *ngIf="minimizeButtons">
                   <button [matMenuTriggerFor]="download_actions" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                   <mat-menu #download_actions="matMenu">
                     <ng-container *ngFor="let downloadAction of downloadActions">
