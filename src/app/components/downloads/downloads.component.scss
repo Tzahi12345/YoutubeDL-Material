@@ -10,8 +10,12 @@ mat-header-cell, mat-cell {
 
 .icon-button-spinner {
     position: absolute;
-    top: 7px;
-    left: 6px;
+    top: -13px;
+    left: 10px;
+}
+
+.button-span {
+    position: relative;;
 }
 
 .downloads-action-button-div {

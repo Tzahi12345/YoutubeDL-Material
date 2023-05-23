@@ -56,14 +56,17 @@
             <mat-cell *matCellDef="let element" [ngStyle]="{flex: actionsFlex}">
                 <div *ngIf="!uids && innerWidth >= 800">
                   <ng-container *ngFor="let downloadAction of downloadActions">
-                    <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [matTooltip]="downloadAction.tooltip" mat-icon-button><mat-icon>{{downloadAction.icon}}</mat-icon></button>
+                    <span class="button-span">
+                      <mat-spinner [diameter]="28" *ngIf="downloadAction.loading && downloadAction.loading(element)" class="icon-button-spinner"></mat-spinner>
+                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" [matTooltip]="downloadAction.tooltip" mat-icon-button><mat-icon>{{downloadAction.icon}}</mat-icon></button>
+                    </span>
                   </ng-container>
                 </div>
                 <div *ngIf="uids || innerWidth < 800">
                   <button [matMenuTriggerFor]="download_actions" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                   <mat-menu #download_actions="matMenu">
                     <ng-container *ngFor="let downloadAction of downloadActions">
-                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" mat-menu-item>
+                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" mat-menu-item>
                         <mat-icon>{{downloadAction.icon}}</mat-icon>
                         <span>{{downloadAction.tooltip}}</span>
                       </button>

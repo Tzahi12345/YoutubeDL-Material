@@ -68,7 +68,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       tooltip: $localize`Pause`,
       action: (download: Download) => this.pauseDownload(download),
       show: (download: Download) => !download.finished && (!download.paused || !download.finished_step),
-      icon: 'pause'
+      icon: 'pause',
+      loading: (download: Download) => download.paused && !download.finished_step
     },
     {
       tooltip: $localize`Resume`,
@@ -334,5 +335,6 @@ interface DownloadAction {
   tooltip: string,
   action: (download: Download) => void,
   show: (download: Download) => boolean,
-  icon: string
+  icon: string,
+  loading?: (download: Download) => boolean
 }
