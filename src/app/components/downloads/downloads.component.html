@@ -31,25 +31,22 @@
             </mat-cell>
           </ng-container>
       
-          <!-- Stage Column -->
-          <ng-container matColumnDef="step_index">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Stage">Stage</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-              <ng-container *ngIf="!element.error">{{STEP_INDEX_TO_LABEL[element.step_index]}}</ng-container>
-              <ng-container *ngIf="element.error" i18n="Error">Error</ng-container>
-            </mat-cell>
-          </ng-container>
-      
           <!-- Progress Column -->
           <ng-container matColumnDef="percent_complete">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
+              <ng-container *ngIf="!element.error && element.step_index !== 2">
+                {{STEP_INDEX_TO_LABEL[element.step_index]}}
+              </ng-container>
+              <ng-container *ngIf="!element.error && element.step_index === 2">
                 <ng-container *ngIf="element.percent_complete">
-                    {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
+                  {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
                 </ng-container>
                 <ng-container *ngIf="!element.percent_complete">
-                    N/A
+                  N/A
                 </ng-container>
+              </ng-container>
+              <ng-container *ngIf="element.error" i18n="Error">Error</ng-container>
             </mat-cell>
           </ng-container>
 

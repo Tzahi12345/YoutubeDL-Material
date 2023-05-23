@@ -39,8 +39,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   actionsFlex = 2;
-  displayedColumnsBig: string[] = ['timestamp_start', 'title', 'step_index', 'sub_name', 'percent_complete', 'actions'];
-  displayedColumnsSmall: string[] = ['title', 'step_index', 'percent_complete', 'actions'];
+  displayedColumnsBig: string[] = ['timestamp_start', 'title', 'sub_name', 'percent_complete', 'actions'];
+  displayedColumnsSmall: string[] = ['title', 'percent_complete', 'actions'];
   displayedColumns: string[] = this.displayedColumnsBig;
   dataSource = null; // new MatTableDataSource<Download>();
 
