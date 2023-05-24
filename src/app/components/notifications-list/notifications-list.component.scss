@@ -13,12 +13,21 @@
     font-size: 14px;
 }
 
+.notification-card-parent {
+    margin: 5px;
+}
+
 .notification-card {
     margin-top: 5px;
 }
 
+.notification-actions {
+    margin-top: auto;
+}
+
 .card-radius {
     border-radius: 12px;
+    height: 166px;
 }
 
 .dot {
@@ -30,4 +39,8 @@
     position: absolute;
     right: 8px;
     top: 8px;
-  }
+}
+
+.viewport {
+    height: 100%;
+}

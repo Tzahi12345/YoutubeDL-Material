@@ -4,7 +4,7 @@
         <mat-chip-listbox [value]="selectedFilters" [multiple]="true" (change)="selectedFiltersChanged($event)">
             <mat-chip-option *ngFor="let filter of notificationFilters | keyvalue: originalOrder" [value]="filter.key" [selected]="selectedFilters.includes(filter.key)" color="accent">{{filter.value.label}}</mat-chip-option>
         </mat-chip-listbox>
-        <app-notifications-list (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="filtered_notifications"></app-notifications-list>
+        <app-notifications-list class="notifications-list" [style.height]="list_height" (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="filtered_notifications"></app-notifications-list>
     </div>
     <button style="margin: 10px 0px 2px 10px;" *ngIf="notifications?.length > 0" color="warn" (click)="deleteAllNotifications()" mat-stroked-button>Remove all</button>
 </div>

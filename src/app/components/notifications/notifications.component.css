@@ -4,7 +4,10 @@
 }
 
 .notifications-list-parent {
-    max-height: 70vh;
     overflow-y: auto;
     padding: 0px 10px 10px 10px;
+}
+
+.notifications-list {
+    display: block
 }

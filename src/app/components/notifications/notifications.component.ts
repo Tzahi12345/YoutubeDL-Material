@@ -14,6 +14,7 @@ export class NotificationsComponent implements OnInit {
 
   notifications: Notification[] = null;
   filtered_notifications: Notification[] = null;
+  list_height = '65vh';
 
   @Output() notificationCount = new EventEmitter<number>();
 
@@ -110,11 +111,19 @@ export class NotificationsComponent implements OnInit {
 
   filterNotifications(): void {
     this.filtered_notifications = this.notifications.filter(notification => this.selectedFilters.length === 0 || this.selectedFilters.includes(notification.type));
+    // We need to do this to get the virtual scroll component to have an appropriate height
+    this.calculateListHeight();
   }
 
   selectedFiltersChanged(event: MatChipListboxChange): void {
     this.selectedFilters = event.value;
     this.filterNotifications();
+  }
+
+  calculateListHeight() {
+    const avgHeight = 166;
+    const calcHeight = this.filtered_notifications.length * avgHeight;
+    this.list_height = calcHeight > window.innerHeight*0.65 ? '65vh' : `${calcHeight}px`;
   }
 
   originalOrder = (): number => {
