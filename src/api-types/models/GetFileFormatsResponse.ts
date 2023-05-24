@@ -5,6 +5,6 @@
 export type GetFileFormatsResponse = {
     success: boolean;
     result: {
-formats?: Array<Record<string, any>>;
+formats?: Array<any>;
 };
 };

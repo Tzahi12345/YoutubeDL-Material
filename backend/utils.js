@@ -519,6 +519,17 @@ exports.convertFlatObjectToNestedObject = (obj) => {
     return result;
 }
 
+exports.getDirectoriesInDirectory = async (basePath) => {
+    try {
+        const files = await fs.readdir(basePath, { withFileTypes: true });
+        return files
+            .filter((file) => file.isDirectory())
+            .map((file) => path.join(basePath, file.name));
+    } catch (err) {
+        return [];
+    }
+}
+
 // objects
 
 function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, path, upload_date, description, view_count, height, abr) {

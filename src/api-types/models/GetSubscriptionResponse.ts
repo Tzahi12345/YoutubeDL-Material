@@ -6,5 +6,5 @@ import type { Subscription } from './Subscription';
 
 export type GetSubscriptionResponse = {
     subscription: Subscription;
-    files: Array<Record<string, any>>;
+    files: Array<any>;
 };

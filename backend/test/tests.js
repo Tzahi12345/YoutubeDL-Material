@@ -337,16 +337,22 @@ describe('Database', async function() {
 });
 
 describe('Multi User', async function() {
-    let user = null;
-    const user_to_test = 'admin';
-    const sub_to_test = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
-    const playlist_to_test = 'ysabVZz4x';
+    const user_to_test = 'test_user';
+    const user_password = 'test_pass';
+    const sub_to_test = '';
+    const playlist_to_test = '';
     beforeEach(async function() {
         await db_api.connectToDB();
-        user = await auth_api.login('admin', 'pass');
+        await auth_api.deleteUser(user_to_test);
     });
-    describe('Authentication', function() {
-        it('login', async function() {
+    describe('Basic', function() {
+        it('Register', async function() {
+            const user = await auth_api.registerUser(user_to_test, user_to_test, user_password);
+            assert(user);
+        });
+        it('Login', async function() {
+            await auth_api.registerUser(user_to_test, user_to_test, user_password);
+            const user = await auth_api.login(user_to_test, user_password);
             assert(user);
         });
     });
@@ -362,14 +368,14 @@ describe('Multi User', async function() {
         });
 
         it('Video access - disallowed', async function() {
-            await db_api.setVideoProperty(video_to_test, {sharingEnabled: false}, user_to_test);
-            const video_obj = auth_api.getUserVideo('admin', video_to_test, true);
+            await db_api.setVideoProperty(video_to_test, {sharingEnabled: false});
+            const video_obj = auth_api.getUserVideo(user_to_test, video_to_test, true);
             assert(!video_obj);
         });
 
         it('Video access - allowed', async function() {
             await db_api.setVideoProperty(video_to_test, {sharingEnabled: true}, user_to_test);
-            const video_obj = auth_api.getUserVideo('admin', video_to_test, true);
+            const video_obj = auth_api.getUserVideo(user_to_test, video_to_test, true);
             assert(video_obj);
         });
     });

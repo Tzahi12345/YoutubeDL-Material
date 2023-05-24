@@ -15,5 +15,5 @@ export type Subscription = {
     timerange?: string;
     custom_args?: string;
     custom_output?: string;
-    videos: Array<Record<string, any>>;
+    videos: Array<any>;
 };

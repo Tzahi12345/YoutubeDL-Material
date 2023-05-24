@@ -1758,14 +1758,14 @@ components:
       type: object
       properties:
         task_key:
-          type: string
+          $ref: '#/components/schemas/TaskType'
       required:
         - task_key
     UpdateTaskScheduleRequest:
       type: object
       properties:
         task_key:
-          type: string
+          $ref: '#/components/schemas/TaskType'
         new_schedule:
           $ref: '#/components/schemas/Schedule'
       required:
@@ -1775,7 +1775,7 @@ components:
       type: object
       properties:
         task_key:
-          type: string
+          $ref: '#/components/schemas/TaskType'
         new_data:
           type: object
       required:
@@ -1785,7 +1785,7 @@ components:
       type: object
       properties:
         task_key:
-          type: string
+          $ref: '#/components/schemas/TaskType'
         new_options:
           type: object
       required:
@@ -2726,7 +2726,7 @@ components:
       type: object
       properties:
         key:
-          type: string
+          $ref: '#/components/schemas/TaskType'
         title:
           type: string
         last_ran:
@@ -2745,6 +2745,17 @@ components:
           $ref: '#/components/schemas/Schedule'
         options:
           type: object
+    TaskType:
+      type: string
+      enum:
+      - backup_local_db
+      - missing_files_check
+      - missing_db_records
+      - duplicate_files_check
+      - youtubedl_update_check
+      - delete_old_files
+      - import_legacy_archives
+      - rebuild_database
     Schedule:
       required:
         - type
