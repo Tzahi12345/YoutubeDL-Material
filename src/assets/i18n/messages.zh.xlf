@@ -1432,7 +1432,7 @@
       </trans-unit>
       <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html">
         <source>Profile</source>
-        <target state="translated">资料</target>
+        <target state="translated">个人资料</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
           <context context-type="linenumber">19</context>
@@ -5014,6 +5014,24 @@
           <context context-type="linenumber">415</context>
         </context-group>
         <note priority="1" from="description">Use gotify API setting</note>
+      </trans-unit>
+      <trans-unit id="7cedb649779673568447b994463b2882c4e0436a" datatype="html">
+        <source>Slack Webhook URL</source>
+        <target state="translated">Slack Webhook 网址</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">397</context>
+        </context-group>
+        <note priority="1" from="description">Slack Webhook URL</note>
+      </trans-unit>
+      <trans-unit id="3264d82792954815be755b3da01e2625458711dc" datatype="html">
+        <source>Discord Webhook URL</source>
+        <target state="translated">Discord Webhook 网址</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">390</context>
+        </context-group>
+        <note priority="1" from="description">Discord Webhook URL</note>
       </trans-unit>
     </body>
   </file>
