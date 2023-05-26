@@ -1945,6 +1945,10 @@ app.post('/api/auth/register', optionalJwt, async (req, res) => {
         res.sendStatus(409);
         return;
     }
+
+    if (!userid || !username) {
+        logger.error(`Registration failed for user ${userid}. Username or userid is invalid.`);
+    }
   
     const new_user = await auth_api.registerUser(userid, username, plaintextPassword);
   
