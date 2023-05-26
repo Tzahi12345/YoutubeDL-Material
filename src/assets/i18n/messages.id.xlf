@@ -4178,6 +4178,15 @@
         </context-group>
         <note priority="1" from="description">Archives empty</note>
       </trans-unit>
+      <trans-unit id="51a161ce175abcd44f6c6cbd0e996681bf553ac3" datatype="html">
+        <source>Delete selected</source>
+        <target state="translated">Hapus yang dipilih</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <note priority="1" from="description">Delete selected</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
