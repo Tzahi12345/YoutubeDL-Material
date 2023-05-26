@@ -61,8 +61,6 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   url = null;
   name = null;
 
-  innerWidth: number;
-
   downloading = false;
 
   save_volume_timer = null;
@@ -70,14 +68,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('twitchchat') twitchChat: TwitchChatComponent;
 
-  @HostListener('window:resize', ['$event'])
-  onResize(): void {
-    this.innerWidth = window.innerWidth;
-  }
-
   ngOnInit(): void {
-    this.innerWidth = window.innerWidth;
-
     this.playlist_id = this.route.snapshot.paramMap.get('playlist_id');
     this.uid = this.route.snapshot.paramMap.get('uid');
     this.sub_id = this.route.snapshot.paramMap.get('sub_id');

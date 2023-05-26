@@ -37,9 +37,13 @@
 }
 
 .spinner {
-    bottom: 1px;
-    left: 2px;
+    bottom: -2px;
+    left: 6px;
     position: absolute;
+}
+
+.buttons {
+    position: relative;
 }
 
 .save-button {
@@ -83,13 +87,6 @@
     margin-right: 30px;
     margin-top: 25px;
     margin-bottom: 15px;
-}
-
-.spinner-div {
-    position: relative;
-    display: inline-block;
-    margin-right: 12px;
-    top: 8px;
 }
 
 .skip-ad-button {

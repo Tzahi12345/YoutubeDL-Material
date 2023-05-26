@@ -17,11 +17,11 @@
                         </mat-menu>
                         <button [matMenuTriggerFor]="menuSettings" mat-icon-button><mat-icon>more_vert</mat-icon></button>
                         <mat-menu #menuSettings="matMenu">
-                            <button class="top-menu-button" (click)="openProfileDialog()" *ngIf="postsService.isLoggedIn" mat-menu-item>
+                            <button class="top-menu-button" (click)="openProfileDialog()" mat-menu-item>
                                 <mat-icon>person</mat-icon>
                                 <span i18n="Profile menu label">Profile</span>
                             </button>
-                            <button class="top-menu-button" (click)="openArchivesDialog()" mat-menu-item>
+                            <button *ngIf="!postsService.config?.Advanced.multi_user_mode || postsService.isLoggedIn" class="top-menu-button" (click)="openArchivesDialog()" mat-menu-item>
                                 <mat-icon>topic</mat-icon>
                                 <span i18n="Archives menu label">Archives</span>
                             </button>

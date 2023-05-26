@@ -78,23 +78,6 @@
                     </div>
                 </div>
             </div>
-            <mat-divider></mat-divider>
-            <div *ngIf="new_config" class="container-fluid">
-                <div class="row">
-                    <div class="col-12 mt-3">
-                        <mat-form-field color="accent">
-                            <mat-label><ng-container i18n="Language select label">Language</ng-container></mat-label>
-                            <mat-select (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
-                                <mat-option *ngFor="let locale of supported_locales" [value]="locale">
-                                    <ng-container *ngIf="all_locales[locale]">
-                                        {{all_locales[locale]['nativeName']}}
-                                    </ng-container>
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
-            </div>
         </ng-template>
     </mat-tab>
     <!-- Downloader -->

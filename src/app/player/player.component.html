@@ -22,20 +22,22 @@
                                         </p>
                                     </ng-container>
                                     <ng-container *ngIf="!db_file || !db_file['description']">
-                                        <p style="text-align: center;">
+                                        <p i18n="No description" style="text-align: center;">
                                             No description available.
                                         </p>
                                     </ng-container>
                                 </div>
                                 <div class="col-2">
-                                    <ng-container *ngIf="db_playlist">
-                                        <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
+                                    <span class="buttons" *ngIf="db_playlist">
+                                        <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon></button>
+                                        <mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner>
                                         <button *ngIf="(!postsService.isLoggedIn || postsService.permissions.includes('sharing')) && !auto" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
-                                    </ng-container>
-                                    <ng-container *ngIf="db_file">
-                                        <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner></button>
+                                    </span>
+                                    <span class="buttons" *ngIf="db_file">
+                                        <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
+                                        <mat-spinner *ngIf="downloading" class="spinner" [diameter]="35"></mat-spinner>
                                         <button *ngIf="!postsService.isLoggedIn || postsService.permissions.includes('sharing')" (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
-                                    </ng-container>
+                                    </span>
                                     <ng-container *ngIf="db_file || playlist[currentIndex]"></ng-container>
                                     <button (click)="openFileInfoDialog()" *ngIf="db_file || db_playlist" mat-icon-button><mat-icon>info</mat-icon></button>
                                     <button *ngIf="db_file && db_file.url.includes('twitch.tv')" (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
@@ -56,14 +58,6 @@
                             <app-twitch-chat #twitchchat [db_file]="db_file" [current_timestamp]="api.currentTime" [sub]="subscription"></app-twitch-chat>
                         </ng-container>
                     </mat-drawer>
-
-                    <!-- <div class="update-playlist-button-div" *ngIf="id && playlistChanged()">
-                        <div class="spinner-div">
-                            <mat-spinner *ngIf="playlist_updating" [diameter]="25"></mat-spinner>
-                        </div>
-                        <button color="primary" [disabled]="playlist_updating" (click)="updatePlaylist()" mat-raised-button><ng-container i18n="Playlist save changes button">Save changes</ng-container>&nbsp;<mat-icon>update</mat-icon></button>
-                        
-                    </div> -->
                 </mat-drawer-container>
             </div>
     </div>

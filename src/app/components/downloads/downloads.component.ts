@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, EventEmitter, HostListener } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { trigger, transition, animateChild, stagger, query, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
@@ -13,31 +13,7 @@ import { Download } from 'api-types';
 @Component({
   selector: 'app-downloads',
   templateUrl: './downloads.component.html',
-  styleUrls: ['./downloads.component.scss'],
-  animations: [
-    // nice stagger effect when showing existing elements
-    trigger('list', [
-      transition(':enter', [
-        // child animation selector + stagger
-        query('@items',
-          stagger(100, animateChild()), { optional: true }
-        )
-      ]),
-    ]),
-    trigger('items', [
-      // cubic-bezier for a tiny bouncing feel
-      transition(':enter', [
-        style({ transform: 'scale(0.5)', opacity: 0 }),
-        animate('500ms cubic-bezier(.8,-0.6,0.2,1.5)',
-          style({ transform: 'scale(1)', opacity: 1 }))
-      ]),
-      transition(':leave', [
-        style({ transform: 'scale(1)', opacity: 1, height: '*' }),
-        animate('1s cubic-bezier(.8,-0.6,0.2,1.5)',
-          style({ transform: 'scale(0.5)', opacity: 0, height: '0px', margin: '0px' }))
-      ]),
-    ])
-  ],
+  styleUrls: ['./downloads.component.scss']
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
 
@@ -62,12 +38,78 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       3: $localize`Complete`
   }
 
-  displayedColumns: string[] = ['timestamp_start', 'title', 'step_index', 'sub_name', 'percent_complete', 'actions'];
+  actionsFlex = 2;
+  minimizeButtons = false;
+  displayedColumnsBig: string[] = ['timestamp_start', 'title', 'sub_name', 'percent_complete', 'actions'];
+  displayedColumnsSmall: string[] = ['title', 'percent_complete', 'actions'];
+  displayedColumns: string[] = this.displayedColumnsBig;
   dataSource = null; // new MatTableDataSource<Download>();
+
+  // The purpose of this is to reduce code reuse for displaying these actions as icons or in a menu
+  downloadActions: DownloadAction[] = [
+    {
+      tooltip: $localize`Watch content`,
+      action: (download: Download) => this.watchContent(download),
+      show: (download: Download) => download.finished && !download.error,
+      icon: 'smart_display'
+    },
+    {
+      tooltip: $localize`Show error`,
+      action: (download: Download) => this.showError(download),
+      show: (download: Download) => download.finished && !!download.error,
+      icon: 'warning'
+    },
+    {
+      tooltip: $localize`Restart`,
+      action: (download: Download) => this.restartDownload(download),
+      show: (download: Download) => download.finished,
+      icon: 'restart_alt'
+    },
+    {
+      tooltip: $localize`Pause`,
+      action: (download: Download) => this.pauseDownload(download),
+      show: (download: Download) => !download.finished && (!download.paused || !download.finished_step),
+      icon: 'pause',
+      loading: (download: Download) => download.paused && !download.finished_step
+    },
+    {
+      tooltip: $localize`Resume`,
+      action: (download: Download) => this.resumeDownload(download),
+      show: (download: Download) => !download.finished && download.paused && download.finished_step,
+      icon: 'play_arrow'
+    },
+    {
+      tooltip: $localize`Resume`,
+      action: (download: Download) => this.resumeDownload(download),
+      show: (download: Download) => !download.finished && download.paused && download.finished_step,
+      icon: 'play_arrow'
+    },
+    {
+      tooltip: $localize`Cancel`,
+      action: (download: Download) => this.cancelDownload(download),
+      show: (download: Download) => false && !download.finished && !download.paused, // TODO: add possibility to cancel download
+      icon: 'cancel'
+    },
+    {
+      tooltip: $localize`Clear`,
+      action: (download: Download) => this.clearDownload(download),
+      show: (download: Download) => download.finished || download.paused,
+      icon: 'delete'
+    }
+  ]
+
   downloads_retrieved = false;
+
+  innerWidth: number;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.innerWidth = window.innerWidth;
+    this.recalculateColumns();
+  }
 
   sort_downloads = (a: Download, b: Download): number => {
     const result = b.timestamp_start - a.timestamp_start;
@@ -77,6 +119,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog, private clipboard: Clipboard) { }
 
   ngOnInit(): void {
+    // Remove sub name as it's not necessary for one-off downloads
+    if (this.uids) this.displayedColumnsBig = this.displayedColumnsBig.filter(col => col !== 'sub_name');
+    this.innerWidth = window.innerWidth;
+    this.recalculateColumns();
     if (this.postsService.initialized) {
       this.getCurrentDownloadsRecurring();
     } else {
@@ -164,8 +210,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  pauseDownload(download_uid: string): void {
-    this.postsService.pauseDownload(download_uid).subscribe(res => {
+  pauseDownload(download: Download): void {
+    this.postsService.pauseDownload(download['uid']).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar($localize`Failed to pause download! See server logs for more info.`);
       }
@@ -180,8 +226,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  resumeDownload(download_uid: string): void {
-    this.postsService.resumeDownload(download_uid).subscribe(res => {
+  resumeDownload(download: Download): void {
+    this.postsService.resumeDownload(download['uid']).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar($localize`Failed to resume download! See server logs for more info.`);
       }
@@ -196,8 +242,8 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  restartDownload(download_uid: string): void {
-    this.postsService.restartDownload(download_uid).subscribe(res => {
+  restartDownload(download: Download): void {
+    this.postsService.restartDownload(download['uid']).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar($localize`Failed to restart download! See server logs for more info.`);
       } else {
@@ -208,16 +254,16 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     });
   }
 
-  cancelDownload(download_uid: string): void {
-    this.postsService.cancelDownload(download_uid).subscribe(res => {
+  cancelDownload(download: Download): void {
+    this.postsService.cancelDownload(download['uid']).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar($localize`Failed to cancel download! See server logs for more info.`);
       }
     });
   }
 
-  clearDownload(download_uid: string): void {
-    this.postsService.clearDownload(download_uid).subscribe(res => {
+  clearDownload(download: Download): void {
+    this.postsService.clearDownload(download['uid']).subscribe(res => {
       if (!res['success']) {
         this.postsService.openSnackBar($localize`Failed to pause download! See server logs for more info.`);
       }
@@ -257,6 +303,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   showError(download: Download): void {
+    console.log(download)
     const copyToClipboardEmitter = new EventEmitter<boolean>();
     this.dialog.open(ConfirmDialogComponent, {
       data: {
@@ -276,4 +323,22 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  recalculateColumns() {
+    if (this.innerWidth < 650) this.displayedColumns = this.displayedColumnsSmall;
+    else                       this.displayedColumns = this.displayedColumnsBig;
+
+    this.actionsFlex = this.uids || this.innerWidth < 800 ? 1 : 2;
+
+    if (this.innerWidth < 800 && !this.uids || this.innerWidth < 1100 && this.uids) this.minimizeButtons = true;
+    else                                                                            this.minimizeButtons = false;
+  }
+}
+
+interface DownloadAction {
+  tooltip: string,
+  action: (download: Download) => void,
+  show: (download: Download) => boolean,
+  icon: string,
+  loading?: (download: Download) => boolean
 }

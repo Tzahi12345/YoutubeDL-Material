@@ -10,8 +10,8 @@
       
           <!-- Title Column -->
           <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element">
+            <mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 2"> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element" style="flex: 2">
                 <span class="one-line" [matTooltip]="element.title ? element.title : null">
                     {{element.title}}
                 </span>
@@ -31,41 +31,47 @@
             </mat-cell>
           </ng-container>
       
-          <!-- Stage Column -->
-          <ng-container matColumnDef="step_index">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Stage">Stage</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{STEP_INDEX_TO_LABEL[element.step_index]}} </mat-cell>
-          </ng-container>
-      
           <!-- Progress Column -->
           <ng-container matColumnDef="percent_complete">
             <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
             <mat-cell *matCellDef="let element">
+              <ng-container *ngIf="!element.error && element.step_index !== 2">
+                {{STEP_INDEX_TO_LABEL[element.step_index]}}
+              </ng-container>
+              <ng-container *ngIf="!element.error && element.step_index === 2">
                 <ng-container *ngIf="element.percent_complete">
-                    {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
+                  {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
                 </ng-container>
                 <ng-container *ngIf="!element.percent_complete">
-                    N/A
+                  N/A
                 </ng-container>
+              </ng-container>
+              <ng-container *ngIf="element.error" i18n="Error">Error</ng-container>
             </mat-cell>
           </ng-container>
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-                <div>
-                  <ng-container *ngIf="!element.finished">
-                    <button (click)="pauseDownload(element.uid)" *ngIf="!element.paused || !element.finished_step" [disabled]="element.paused && !element.finished_step" mat-icon-button matTooltip="Pause" i18n-matTooltip="Pause"><mat-spinner [diameter]="28" *ngIf="element.paused && !element.finished_step" class="icon-button-spinner"></mat-spinner><mat-icon>pause</mat-icon></button>
-                    <button (click)="resumeDownload(element.uid)" *ngIf="element.paused && element.finished_step" mat-icon-button matTooltip="Resume" i18n-matTooltip="Resume"><mat-icon>play_arrow</mat-icon></button>
-                    <button *ngIf="false && !element.paused" (click)="cancelDownload(element.uid)" mat-icon-button matTooltip="Cancel" i18n-matTooltip="Cancel"><mat-icon>cancel</mat-icon></button>
+            <mat-header-cell *matHeaderCellDef [ngStyle]="{flex: actionsFlex}"> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
+            <mat-cell *matCellDef="let element" [ngStyle]="{flex: actionsFlex}">
+                <div *ngIf="!minimizeButtons">
+                  <ng-container *ngFor="let downloadAction of downloadActions">
+                    <span class="button-span">
+                      <mat-spinner [diameter]="28" *ngIf="downloadAction.loading && downloadAction.loading(element)" class="icon-button-spinner"></mat-spinner>
+                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" [matTooltip]="downloadAction.tooltip" mat-icon-button><mat-icon>{{downloadAction.icon}}</mat-icon></button>
+                    </span>
                   </ng-container>
-                  <ng-container *ngIf="element.finished">
-                    <button *ngIf="!element.error" (click)="watchContent(element)" mat-icon-button matTooltip="Watch content" i18n-matTooltip="Watch content"><mat-icon>smart_display</mat-icon></button>
-                    <button *ngIf="element.error" (click)="showError(element)" mat-icon-button matTooltip="Show error" i18n-matTooltip="Show error"><mat-icon>warning</mat-icon></button>
-                    <button (click)="restartDownload(element.uid)" mat-icon-button matTooltip="Restart" i18n-matTooltip="Restart"><mat-icon>restart_alt</mat-icon></button>
-                  </ng-container>
-                  <button *ngIf="element.finished || element.paused" (click)="clearDownload(element.uid)" mat-icon-button matTooltip="Clear" i18n-matTooltip="Clear"><mat-icon>delete</mat-icon></button>
+                </div>
+                <div *ngIf="minimizeButtons">
+                  <button [matMenuTriggerFor]="download_actions" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+                  <mat-menu #download_actions="matMenu">
+                    <ng-container *ngFor="let downloadAction of downloadActions">
+                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" mat-menu-item>
+                        <mat-icon>{{downloadAction.icon}}</mat-icon>
+                        <span>{{downloadAction.tooltip}}</span>
+                      </button>
+                    </ng-container>
+                  </mat-menu>
                 </div>
             </mat-cell>
           </ng-container>
@@ -80,9 +86,9 @@
         </mat-paginator>
       </div>
       <div *ngIf="!uids" class="downloads-action-button-div">
-        <button [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
-        <button style="margin-left: 10px;" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
-        <button color="warn" style="margin-left: 10px;" mat-stroked-button (click)="clearDownloadsByType()"><ng-container i18n="Clear downloads">Clear downloads</ng-container></button>
+        <button class="downloads-action-button" [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
+        <button class="downloads-action-button" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
+        <button class="downloads-action-button" color="warn" mat-stroked-button (click)="clearDownloadsByType()"><ng-container i18n="Clear downloads">Clear downloads</ng-container></button>
       </div>
 </div>
 
