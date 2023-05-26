@@ -21,7 +21,7 @@
                                 <mat-icon>person</mat-icon>
                                 <span i18n="Profile menu label">Profile</span>
                             </button>
-                            <button *ngIf="!postsService.config.Advanced.multi_user_mode || postsService.isLoggedIn" class="top-menu-button" (click)="openArchivesDialog()" mat-menu-item>
+                            <button *ngIf="!postsService.config?.Advanced.multi_user_mode || postsService.isLoggedIn" class="top-menu-button" (click)="openArchivesDialog()" mat-menu-item>
                                 <mat-icon>topic</mat-icon>
                                 <span i18n="Archives menu label">Archives</span>
                             </button>
