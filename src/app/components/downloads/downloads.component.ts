@@ -79,12 +79,6 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       icon: 'play_arrow'
     },
     {
-      tooltip: $localize`Resume`,
-      action: (download: Download) => this.resumeDownload(download),
-      show: (download: Download) => !download.finished && download.paused && download.finished_step,
-      icon: 'play_arrow'
-    },
-    {
       tooltip: $localize`Cancel`,
       action: (download: Download) => this.cancelDownload(download),
       show: (download: Download) => false && !download.finished && !download.paused, // TODO: add possibility to cancel download
