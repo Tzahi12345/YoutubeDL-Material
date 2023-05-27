@@ -545,7 +545,10 @@ exports.parseOutputJSON = (output, err) => {
             logger.error(e);
             return null;
         }
-    }   else {
+    } else if (output.length === 0 || (output.length === 1 && output[0].length === 0)) {
+        // output is '' or ['']
+        return [];
+    } else {
         for (const output_item of output) {
             // we have to do this because sometimes there will be leading characters before the actual json
             const start_idx = output_item.indexOf('{"');

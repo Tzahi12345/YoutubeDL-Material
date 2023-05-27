@@ -254,13 +254,13 @@ exports.getVideosForSub = async (sub, user_uid = null) => {
             }
 
             logger.verbose('Subscription: finished check for ' + sub.name);
-            const processed_output = utils.parseOutputJSON(output, err);
-            if (!processed_output) {
+            const parsed_output = utils.parseOutputJSON(output, err);
+            if (!parsed_output) {
                 logger.error('Subscription check failed!');
                 resolve(null);
                 return;
             }
-            const files_to_download = await handleOutputJSON(processed_output, sub, user_uid);
+            const files_to_download = await handleOutputJSON(parsed_output, sub, user_uid);
             resolve(files_to_download);
             return;
         });
