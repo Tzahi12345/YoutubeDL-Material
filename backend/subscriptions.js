@@ -491,6 +491,8 @@ exports.writeSubscriptionMetadata = (sub) => {
                                 : config_api.getConfigItem('ytdl_subscriptions_base_path');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const metadata_path = path.join(appendedBasePath, CONSTS.SUBSCRIPTION_BACKUP_PATH);
+    
+    fs.ensureDirSync(appendedBasePath);
     fs.writeJSONSync(metadata_path, sub);
 }
 
