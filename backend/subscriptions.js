@@ -33,7 +33,7 @@ exports.subscribe = async (sub, user_uid = null, skip_get_info = false) => {
         }
 
         sub['user_uid'] = user_uid ? user_uid : undefined;
-        await db_api.insertRecordIntoTable('subscriptions', sub);
+        await db_api.insertRecordIntoTable('subscriptions', JSON.parse(JSON.stringify(sub)));
 
         let success = skip_get_info ? true : await getSubscriptionInfo(sub);
         exports.writeSubscriptionMetadata(sub);
@@ -491,6 +491,8 @@ exports.writeSubscriptionMetadata = (sub) => {
                                 : config_api.getConfigItem('ytdl_subscriptions_base_path');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
     const metadata_path = path.join(appendedBasePath, CONSTS.SUBSCRIPTION_BACKUP_PATH);
+    
+    fs.ensureDirSync(appendedBasePath);
     fs.writeJSONSync(metadata_path, sub);
 }
 
