@@ -33,7 +33,7 @@ exports.subscribe = async (sub, user_uid = null, skip_get_info = false) => {
         }
 
         sub['user_uid'] = user_uid ? user_uid : undefined;
-        await db_api.insertRecordIntoTable('subscriptions', sub);
+        await db_api.insertRecordIntoTable('subscriptions', JSON.parse(JSON.stringify(sub)));
 
         let success = skip_get_info ? true : await getSubscriptionInfo(sub);
         exports.writeSubscriptionMetadata(sub);
