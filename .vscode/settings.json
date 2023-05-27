@@ -3,6 +3,6 @@
     "mochaExplorer.cwd": "backend",
     "mochaExplorer.globImplementation": "vscode",
     "mochaExplorer.env": {
-        "YTDL_MODE": "debug"
+        // "YTDL_MODE": "debug"
     }
 }

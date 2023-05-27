@@ -1,0 +1,40 @@
+name: Tests
+'on':
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test:
+    name: 'Backend - mocha'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node:
+          - 16
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '${{ matrix.node }}'
+      - uses: actions/checkout@v2
+      - name: 'Cache node_modules'
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-v${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-v${{ matrix.node }}-
+          working-directory: ./backend
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+        id: setup-ffmpeg
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./backend
+      - name: Run All Node.js Tests
+        run: npm run test
+        working-directory: ./backend

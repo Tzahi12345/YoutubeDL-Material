@@ -13,7 +13,7 @@ const CONSTS = require('./consts');
 const is_windows = process.platform === 'win32';
 
 // replaces .webm with appropriate extension
-exports.getTrueFileName = (unfixed_path, type) => {
+exports.getTrueFileName = (unfixed_path, type, force_ext = null) => {
     let fixed_path = unfixed_path;
 
     const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
@@ -22,7 +22,7 @@ exports.getTrueFileName = (unfixed_path, type) => {
 
 
     if (old_ext !== new_ext) {
-        unfixed_parts[unfixed_parts.length-1] = new_ext;
+        unfixed_parts[unfixed_parts.length-1] = force_ext || new_ext;
         fixed_path = unfixed_parts.join('.');
     }
     return fixed_path;
@@ -347,7 +347,7 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
             if (!err) {
                 clearTimeout(timer);
                 if (watcher) watcher.close();
-                resolve();
+                resolve(true);
             }
         });
 
@@ -357,7 +357,7 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
             if (eventType === 'rename' && filename === basename) {
                 clearTimeout(timer);
                 if (watcher) watcher.close();
-                resolve();
+                resolve(true);
             }
         });
     });
@@ -527,6 +527,40 @@ exports.getDirectoriesInDirectory = async (basePath) => {
             .map((file) => path.join(basePath, file.name));
     } catch (err) {
         return [];
+    }
+}
+
+exports.parseOutputJSON = (output, err) => {
+    let split_output = [];
+    // const output_jsons = [];
+    if (err && !output) {
+        if (!err.stderr.includes('This video is unavailable') && !err.stderr.includes('Private video')) {
+            return null;
+        }
+        logger.info('An error was encountered with at least one video, backup method will be used.')
+        try {
+            split_output = err.stdout.split(/\r\n|\r|\n/);
+        } catch (e) {
+            logger.error('Backup method failed. See error below:');
+            logger.error(e);
+            return null;
+        }
+    } else if (output.length === 0 || (output.length === 1 && output[0].length === 0)) {
+        // output is '' or ['']
+        return [];
+    } else {
+        for (const output_item of output) {
+            // we have to do this because sometimes there will be leading characters before the actual json
+            const start_idx = output_item.indexOf('{"');
+            const clean_output = output_item.slice(start_idx, output_item.length);
+            split_output.push(clean_output);
+        }
+    }
+
+    try {
+        return split_output.map(split_output_str => JSON.parse(split_output_str));
+    } catch(e) {
+        return null;
     }
 }
 

@@ -5,6 +5,7 @@ const logger = require('./logger');
 const utils = require('./utils');
 const CONSTS = require('./consts');
 const config_api = require('./config.js');
+const youtubedl = require('youtube-dl');
 
 const OUTDATED_VERSION = "2020.00.00";
 
@@ -23,6 +24,15 @@ const download_sources = {
         'tags_url': 'https://api.github.com/repos/yt-dlp/yt-dlp/tags',
         'func': downloadLatestYoutubeDLPBinary
     }
+}
+
+exports.runYoutubeDL = async (url, args, downloadMethod = youtubedl.exec) => {
+    return new Promise(resolve => {
+        downloadMethod(url, args, {maxBuffer: Infinity}, async function(err, output) {
+            const parsed_output = utils.parseOutputJSON(output, err);
+            resolve({parsed_output, err});
+        });
+    });
 }
 
 exports.checkForYoutubeDLUpdate = async () => {
