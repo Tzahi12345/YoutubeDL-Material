@@ -254,26 +254,15 @@ exports.getVideosForSub = async (sub, user_uid = null) => {
             }
 
             logger.verbose('Subscription: finished check for ' + sub.name);
-            if (err && !output) {
-                logger.error(err.stderr ? err.stderr : err.message);
-                if (err.stderr.includes('This video is unavailable') || err.stderr.includes('Private video')) {
-                    logger.info('An error was encountered with at least one video, backup method will be used.')
-                    try {
-                        const outputs = err.stdout.split(/\r\n|\r|\n/);
-                        const files_to_download = await handleOutputJSON(outputs, sub, user_uid);
-                        resolve(files_to_download);
-                    } catch(e) {
-                        logger.error('Backup method failed. See error below:');
-                        logger.error(e);
-                    }
-                } else {
-                    logger.error('Subscription check failed!');
-                }
-                resolve(false);
-            } else if (output) {
-                const files_to_download = await handleOutputJSON(output, sub, user_uid);
-                resolve(files_to_download);
-           }
+            const parsed_output = utils.parseOutputJSON(output, err);
+            if (!parsed_output) {
+                logger.error('Subscription check failed!');
+                resolve(null);
+                return;
+            }
+            const files_to_download = await handleOutputJSON(parsed_output, sub, user_uid);
+            resolve(files_to_download);
+            return;
         });
     }, err => {
         logger.error(err);
@@ -281,29 +270,15 @@ exports.getVideosForSub = async (sub, user_uid = null) => {
     });
 }
 
-async function handleOutputJSON(output, sub, user_uid) {
+async function handleOutputJSON(output_jsons, sub, user_uid) {
     if (config_api.getConfigItem('ytdl_subscriptions_redownload_fresh_uploads')) {
         await setFreshUploads(sub, user_uid);
         checkVideosForFreshUploads(sub, user_uid);
     }
 
-    if (output.length === 0 || (output.length === 1 && output[0] === '')) {
+    if (output_jsons.length === 0 || (output_jsons.length === 1 && output_jsons[0] === '')) {
         logger.verbose('No additional videos to download for ' + sub.name);
         return [];
-    }
-
-    const output_jsons = [];
-    for (let i = 0; i < output.length; i++) {
-        let output_json = null;
-        try {
-            output_json = JSON.parse(output[i]);
-            output_jsons.push(output_json);
-        } catch(e) {
-            output_json = null;
-        }
-        if (!output_json) {
-            continue;
-        }
     }
 
     const files_to_download = await getFilesToDownload(sub, output_jsons);

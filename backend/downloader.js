@@ -314,13 +314,14 @@ async function downloadQueuedFile(download_uid) {
             let difference = (end_time - start_time)/1000;
             logger.debug(`${type === 'audio' ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
             clearInterval(download_checker);
-            if (err) {
+            const parsed_output = utils.parseOutputJSON(output, err);
+            if (!parsed_output) {
                 logger.error(err.stderr);
                 await handleDownloadError(download, err.stderr, 'unknown_error');
                 resolve(false);
                 return;
-            } else if (output) {
-                if (output.length === 0 || output[0].length === 0) {
+            } else if (parsed_output) {
+                if (parsed_output.length === 0 || parsed_output[0].length === 0) {
                     // ERROR!
                     const error_message = `No output received for video download, check if it exists in your archive.`;
                     await handleDownloadError(download, error_message, 'no_output');
@@ -329,17 +330,7 @@ async function downloadQueuedFile(download_uid) {
                     return;
                 }
 
-                for (let i = 0; i < output.length; i++) {
-                    let output_json = null;
-                    try {
-                        // we have to do this because sometimes there will be leading characters before the actual json
-                        const start_idx = output[i].indexOf('{"');
-                        const clean_output = output[i].slice(start_idx, output[i].length);
-                        output_json = JSON.parse(clean_output);
-                    } catch(e) {
-                        output_json = null;
-                    }
-
+                for (const output_json of parsed_output) {
                     if (!output_json) {
                         continue;
                     }
@@ -564,33 +555,9 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
         new_args.push('--dump-json');
 
         youtubedl.exec(url, new_args, {maxBuffer: Infinity}, async (err, output) => {
-            if (output) {
-                let outputs = [];
-                try {
-                    for (let i = 0; i < output.length; i++) {
-                        let output_json = null;
-                        try {
-                            output_json = JSON.parse(output[i]);
-                        } catch(e) {
-                            output_json = null;
-                        }
-    
-                        if (!output_json) {
-                            continue;
-                        }
-
-                        outputs.push(output_json);
-                    }
-                    resolve(outputs.length === 1 ? outputs[0] : outputs);
-                } catch(e) {
-                    const error = `Error while retrieving info on video with URL ${url} with the following message: output JSON could not be parsed. Output JSON: ${output}`;
-                    logger.error(error);
-                    if (download_uid) {
-                        const download = await db_api.getRecord('download_queue', {uid: download_uid});
-                        await handleDownloadError(download, error, 'parse_failed');
-                    }
-                    resolve(null);
-                }
+            const parsed_output = utils.parseOutputJSON(output, err);
+            if (parsed_output) {
+                resolve(parsed_output);
             } else {
                 let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
                 if (err.stderr) error_message += `\n\n${err.stderr}`;
