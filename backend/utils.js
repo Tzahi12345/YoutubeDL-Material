@@ -13,7 +13,7 @@ const CONSTS = require('./consts');
 const is_windows = process.platform === 'win32';
 
 // replaces .webm with appropriate extension
-exports.getTrueFileName = (unfixed_path, type) => {
+exports.getTrueFileName = (unfixed_path, type, force_ext = null) => {
     let fixed_path = unfixed_path;
 
     const new_ext = (type === 'audio' ? 'mp3' : 'mp4');
@@ -22,7 +22,7 @@ exports.getTrueFileName = (unfixed_path, type) => {
 
 
     if (old_ext !== new_ext) {
-        unfixed_parts[unfixed_parts.length-1] = new_ext;
+        unfixed_parts[unfixed_parts.length-1] = force_ext || new_ext;
         fixed_path = unfixed_parts.join('.');
     }
     return fixed_path;
@@ -347,7 +347,7 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
             if (!err) {
                 clearTimeout(timer);
                 if (watcher) watcher.close();
-                resolve();
+                resolve(true);
             }
         });
 
@@ -357,7 +357,7 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
             if (eventType === 'rename' && filename === basename) {
                 clearTimeout(timer);
                 if (watcher) watcher.close();
-                resolve();
+                resolve(true);
             }
         });
     });

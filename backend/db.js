@@ -11,9 +11,8 @@ const logger = require('./logger');
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync');
 const { BehaviorSubject } = require('rxjs');
-const local_adapter = new FileSync('./appdata/local_db.json');
-const local_db = low(local_adapter);
 
+let local_db = null;
 let database = null;
 exports.database_initialized = false;
 exports.database_initialized_bs = new BehaviorSubject(false);
@@ -73,10 +72,6 @@ const tables = {
 
 const tables_list = Object.keys(tables);
 
-const local_db_defaults = {}
-tables_list.forEach(table => {local_db_defaults[table] = []});
-local_db.defaults(local_db_defaults).write();
-
 let using_local_db = null; 
 
 function setDB(input_db, input_users_db) {
@@ -85,11 +80,18 @@ function setDB(input_db, input_users_db) {
     exports.users_db = input_users_db
 }
 
-exports.initialize = (input_db, input_users_db) => {
+exports.initialize = (input_db, input_users_db, db_name = 'local_db.json') => {
     setDB(input_db, input_users_db);
 
     // must be done here to prevent getConfigItem from being called before init
     using_local_db = config_api.getConfigItem('ytdl_use_local_db');
+
+    const local_adapter = new FileSync(`./appdata/${db_name}`);
+    local_db = low(local_adapter);
+
+    const local_db_defaults = {}
+    tables_list.forEach(table => {local_db_defaults[table] = []});
+    local_db.defaults(local_db_defaults).write();
 }
 
 exports.connectToDB = async (retries = 5, no_fallback = false, custom_connection_string = null) => {

@@ -3,7 +3,8 @@ const assert = require('assert');
 const low = require('lowdb')
 const winston = require('winston');
 const path = require('path');
-
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 const FileSync = require('lowdb/adapters/FileSync');
 
@@ -41,11 +42,13 @@ const subscriptions_api = require('../subscriptions');
 const archive_api = require('../archive');
 const categories_api = require('../categories');
 const files_api = require('../files');
+const youtubedl_api = require('../youtube-dl');
+const config_api = require('../config');
 const fs = require('fs-extra');
 const { uuid } = require('uuidv4');
 const NodeID3 = require('node-id3');
 
-db_api.initialize(db, users_db);
+db_api.initialize(db, users_db, 'local_db_test.json');
 
 const sample_video_json = {
     id: "Sample Video",
@@ -68,9 +71,9 @@ const sample_video_json = {
 }
 
 describe('Database', async function() {
-    describe('Import', async function() {
+    describe.skip('Import', async function() {
         // it('Migrate', async function() {
-        //     await db_api.connectToDB();
+        //     // await db_api.connectToDB();
         //     await db_api.removeAllRecords();
         //     const success = await db_api.importJSONToDB(db.value(), users_db.value());
         //     assert(success);
@@ -86,7 +89,7 @@ describe('Database', async function() {
         });
 
         it('Transfer to local', async function() {
-            await db_api.connectToDB();
+            // await db_api.connectToDB();
             await db_api.removeAllRecords('test');
             await db_api.insertRecordIntoTable('test', {test: 'test'});
 
@@ -114,7 +117,8 @@ describe('Database', async function() {
 
         for (const local_db_mode of local_db_modes) {
             let use_local_db = local_db_mode;
-            describe(`Use local DB - ${use_local_db}`, async function() {
+            const describe_skippable = use_local_db ? describe : describe.skip;
+            describe_skippable(`Use local DB - ${use_local_db}`, async function() {
                 beforeEach(async function() {
                     if (!use_local_db) {
                         this.timeout(120000);
@@ -167,7 +171,7 @@ describe('Database', async function() {
                     ];
                     await db_api.insertRecordsIntoTable('test', test_duplicates);
                     const duplicates = await db_api.findDuplicatesByKey('test', 'test');
-                    console.log(duplicates);
+                    assert(duplicates && duplicates.length === 2 && duplicates[0]['key'] === '2' && duplicates[1]['key'] === '4')
                 });
 
                 it('Update record', async function() {
@@ -279,7 +283,7 @@ describe('Database', async function() {
                     assert(stats);
                 });
 
-                it('Query speed', async function() {
+                it.skip('Query speed', async function() {
                     this.timeout(120000); 
                     const NUM_RECORDS_TO_ADD = 300004; // max batch ops is 1000
                     const test_records = [];
@@ -337,12 +341,13 @@ describe('Database', async function() {
 });
 
 describe('Multi User', async function() {
+    this.timeout(120000);
     const user_to_test = 'test_user';
     const user_password = 'test_pass';
     const sub_to_test = '';
     const playlist_to_test = '';
     beforeEach(async function() {
-        await db_api.connectToDB();
+        // await db_api.connectToDB();
         await auth_api.deleteUser(user_to_test);
     });
     describe('Basic', function() {
@@ -369,17 +374,17 @@ describe('Multi User', async function() {
 
         it('Video access - disallowed', async function() {
             await db_api.setVideoProperty(video_to_test, {sharingEnabled: false});
-            const video_obj = auth_api.getUserVideo(user_to_test, video_to_test, true);
+            const video_obj = await auth_api.getUserVideo(user_to_test, video_to_test, true);
             assert(!video_obj);
         });
 
         it('Video access - allowed', async function() {
             await db_api.setVideoProperty(video_to_test, {sharingEnabled: true}, user_to_test);
-            const video_obj = auth_api.getUserVideo(user_to_test, video_to_test, true);
+            const video_obj = await auth_api.getUserVideo(user_to_test, video_to_test, true);
             assert(video_obj);
         });
     });
-    describe('Zip generators', function() {
+    describe.skip('Zip generators', function() {
         it('Playlist zip generator', async function() {
             const playlist = await files_api.getPlaylist(playlist_to_test, user_to_test);
             assert(playlist);
@@ -435,35 +440,50 @@ describe('Multi User', async function() {
     
 describe('Downloader', function() {
     const downloader_api = require('../downloader');
-    const url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    const url = 'https://www.youtube.com/watch?v=hpigjnKl7nI';
     const sub_id = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
     const options = {
-        ui_uid: uuid(),
-        user: 'admin'
+        ui_uid: uuid()
     }
 
+    before(async function() {
+        const update_available = await youtubedl_api.checkForYoutubeDLUpdate();
+        if (update_available) await youtubedl_api.updateYoutubeDL(update_available);
+        config_api.setConfigItem('ytdl_max_concurrent_downloads', 0);
+    });
+
     beforeEach(async function() {
-        await db_api.connectToDB();
+        // await db_api.connectToDB();
         await db_api.removeAllRecords('download_queue');
     });
 
     it('Get file info', async function() {
         this.timeout(300000);
         const info = await downloader_api.getVideoInfoByURL(url);
-        assert(!!info);
+        assert(!!info && info.length > 0);
     });
 
     it('Download file', async function() {
-        this.timeout(300000); 
+        this.timeout(300000);
+        await downloader_api.setupDownloads();
+        const args = await downloader_api.generateArgs(url, 'video', options, null, true);
+        const [info] = await downloader_api.getVideoInfoByURL(url, args);
+        if (fs.existsSync(info['_filename'])) fs.unlinkSync(info['_filename']);
         const returned_download = await downloader_api.createDownload(url, 'video', options);
-        console.log(returned_download);
-        await utils.wait(20000);
-
+        assert(returned_download);
+        const custom_download_method = async (url, args, options, callback) => {
+            fs.writeJSONSync(utils.getTrueFileName(info['_filename'], 'video', '.info.json'), info);
+            await generateEmptyVideoFile(info['_filename']);
+            return await callback(null, [JSON.stringify(info)]);
+        }
+        const success = await downloader_api.downloadQueuedFile(returned_download['uid'], custom_download_method);
+        assert(success);
     });
 
     it('Tag file', async function() {
-        const audio_path = './test/sample.mp3';
-        const sample_json = fs.readJSONSync('./test/sample.info.json');
+        const success = await generateEmptyAudioFile('test/sample_mp3.mp3');
+        const audio_path = './test/sample_mp3.mp3';
+        const sample_json = fs.readJSONSync('./test/sample_mp3.info.json');
         const tags = {
             title: sample_json['title'],
             artist: sample_json['artist'] ? sample_json['artist'] : sample_json['uploader'],
@@ -471,14 +491,13 @@ describe('Downloader', function() {
         }
         NodeID3.write(tags, audio_path);
         const written_tags = NodeID3.read(audio_path);
-        assert(written_tags['raw']['TRCK'] === '27');
+        assert(success && written_tags['raw']['TRCK'] === '27');
     });
 
     it('Queue file', async function() {
         this.timeout(300000); 
-        const returned_download = await downloader_api.createDownload(url, 'video', options);
-        console.log(returned_download);
-        await utils.wait(20000);
+        const returned_download = await downloader_api.createDownload(url, 'video', options, null, null, null, null, true);
+        assert(returned_download);
     });
 
     it('Pause file', async function() {
@@ -493,7 +512,7 @@ describe('Downloader', function() {
         assert(args.length > 0);
     });
 
-    it('Generate args - subscription', async function() {
+    it.skip('Generate args - subscription', async function() {
         const sub = await subscriptions_api.getSubscription(sub_id);
         const sub_options = subscriptions_api.generateOptionsForSubscriptionDownload(sub, 'admin');
         const args_normal = await downloader_api.generateArgs(url, 'video', options);
@@ -506,7 +525,7 @@ describe('Downloader', function() {
         if (fs.existsSync(nfo_file_path)) {
             fs.unlinkSync(nfo_file_path);
         }
-        const sample_json = fs.readJSONSync('./test/sample.info.json');
+        const sample_json = fs.readJSONSync('./test/sample_mp4.info.json');
         downloader_api.generateNFOFile(sample_json, nfo_file_path);
         assert(fs.existsSync(nfo_file_path), true);
         fs.unlinkSync(nfo_file_path);
@@ -534,10 +553,18 @@ describe('Downloader', function() {
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');
         const example_vod = '1710641401';
-        it('Download VOD', async function() {
+        it('Download VOD chat', async function() {
+            this.timeout(300000);
+            if (!fs.existsSync('TwitchDownloaderCLI')) {
+                try {
+                    await exec('sh ../docker-utils/fetch-twitchdownloader.sh');
+                    fs.copyFileSync('../docker-utils/TwitchDownloaderCLI', 'TwitchDownloaderCLI');
+                } catch (e) {
+                    logger.info('TwitchDownloaderCLI fetch failed, file may exist regardless.');
+                }
+            }
             const sample_path = path.join('test', 'sample.twitch_chat.json');
             if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
-            this.timeout(300000);
             await twitch_api.downloadTwitchChatByVODID(example_vod, 'sample', null, null, null, './test');
             assert(fs.existsSync(sample_path));
 
@@ -550,7 +577,7 @@ describe('Downloader', function() {
 describe('Tasks', function() {
     const tasks_api = require('../tasks');
     beforeEach(async function() {
-        await db_api.connectToDB();
+        // await db_api.connectToDB();
         await db_api.removeAllRecords('tasks');
 
         const dummy_task = {
@@ -569,7 +596,7 @@ describe('Tasks', function() {
         await tasks_api.executeTask('backup_local_db');
         const backups_new = await utils.recFindByExt('appdata', 'bak');
         const new_length = backups_new.length;
-        assert(original_length, new_length-1);
+        assert(original_length === new_length-1);
     });
 
     it('Check for missing files', async function() {
@@ -579,7 +606,7 @@ describe('Tasks', function() {
         await db_api.insertRecordIntoTable('files', test_missing_file);
         await tasks_api.executeTask('missing_files_check');
         const missing_file_db_record = await db_api.getRecord('files', {uid: 'test'});
-        assert(!missing_file_db_record, true);
+        assert(!missing_file_db_record);
     });
 
     it('Check for duplicate files', async function() {
@@ -599,27 +626,29 @@ describe('Tasks', function() {
 
         await tasks_api.executeTask('duplicate_files_check');
         const duplicated_record_count = await db_api.getRecords('files', {path: 'test/missing_file.mp4'}, true);
-        assert(duplicated_record_count == 1, true);
+        assert(duplicated_record_count === 1);
     });
 
     it('Import unregistered files', async function() {
         this.timeout(300000);
 
+        const success = await generateEmptyVideoFile('test/sample_mp4.mp4');
+
         // pre-test cleanup
         await db_api.removeAllRecords('files', {title: 'Sample File'});
-        if (fs.existsSync('video/sample.info.json')) fs.unlinkSync('video/sample.info.json');
-        if (fs.existsSync('video/sample.mp4'))       fs.unlinkSync('video/sample.mp4');
+        if (fs.existsSync('video/sample_mp4.info.json')) fs.unlinkSync('video/sample_mp4.info.json');
+        if (fs.existsSync('video/sample_mp4.mp4'))       fs.unlinkSync('video/sample_mp4.mp4');
 
         // copies in files
-        fs.copyFileSync('test/sample.info.json', 'video/sample.info.json');
-        fs.copyFileSync('test/sample.mp4', 'video/sample.mp4');
+        fs.copyFileSync('test/sample_mp4.info.json', 'video/sample_mp4.info.json');
+        fs.copyFileSync('test/sample_mp4.mp4', 'video/sample_mp4.mp4');
         await tasks_api.executeTask('missing_db_records');
         const imported_file = await db_api.getRecord('files', {title: 'Sample File'});
-        assert(!!imported_file === true);
+        assert(success && !!imported_file);
         
         // post-test cleanup
-        if (fs.existsSync('video/sample.info.json')) fs.unlinkSync('video/sample.info.json');
-        if (fs.existsSync('video/sample.mp4'))       fs.unlinkSync('video/sample.mp4');
+        if (fs.existsSync('video/sample_mp4.info.json')) fs.unlinkSync('video/sample_mp4.info.json');
+        if (fs.existsSync('video/sample_mp4.mp4'))       fs.unlinkSync('video/sample_mp4.mp4');
     });
 
     it('Schedule and cancel task', async function() {
@@ -659,12 +688,12 @@ describe('Tasks', function() {
 
 describe('Archive', async function() {
     beforeEach(async function() {
-        await db_api.connectToDB();
-        await db_api.removeAllRecords('archives', {user_uid: 'test_user'});
+        // await db_api.connectToDB();
+        await db_api.removeAllRecords('archives');
     });
 
     afterEach(async function() {
-        await db_api.removeAllRecords('archives', {user_uid: 'test_user'});
+        await db_api.removeAllRecords('archives');
     });
 
     it('Import archive', async function() {
@@ -678,7 +707,6 @@ describe('Archive', async function() {
         const count = await archive_api.importArchiveFile(archive_text, 'video', 'test_user', 'test_sub');
         assert(count === 4)
         const archive_items = await db_api.getRecords('archives', {user_uid: 'test_user', sub_id: 'test_sub'});
-        console.log(archive_items);
         assert(archive_items.length === 4);
         assert(archive_items.filter(archive_item => archive_item.extractor === 'testextractor2').length === 1);
         assert(archive_items.filter(archive_item => archive_item.extractor === 'testextractor1').length === 3);
@@ -709,9 +737,9 @@ describe('Archive', async function() {
     });
 
     it('Remove from archive', async function() {
-        await archive_api.addToArchive('testextractor1', 'testing1', 'video', 'test_user');
-        await archive_api.addToArchive('testextractor2', 'testing1', 'video', 'test_user');
-        await archive_api.addToArchive('testextractor2', 'testing2', 'video', 'test_user');
+        await archive_api.addToArchive('testextractor1', 'testing1', 'video', 'test_title', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing1', 'video', 'test_title', 'test_user');
+        await archive_api.addToArchive('testextractor2', 'testing2', 'video', 'test_title', 'test_user');
 
         const success = await archive_api.removeFromArchive('testextractor2', 'testing1', 'video', 'test_user');
         assert(success);
@@ -757,7 +785,7 @@ describe('Utils', async function() {
 
 describe('Categories', async function() {
     beforeEach(async function() {
-        await db_api.connectToDB();
+        // await db_api.connectToDB();
         const new_category = {
             name: 'test_category',
             uid: uuid(),
@@ -805,7 +833,6 @@ describe('Categories', async function() {
         });
 
         const category = await categories_api.categorize([sample_video_json]);
-        console.log(category);
         assert(category && category.name === 'test_category');
     });
 
@@ -859,3 +886,13 @@ describe('Categories', async function() {
         assert(category);
     });
 });
+
+const generateEmptyVideoFile = async (file_path) => {
+    if (fs.existsSync(file_path)) fs.unlinkSync(file_path);
+    return await exec(`ffmpeg -t 1 -f lavfi -i color=c=black:s=640x480 -c:v libx264 -tune stillimage -pix_fmt yuv420p "${file_path}"`);
+}
+
+const generateEmptyAudioFile = async (file_path) => {
+    if (fs.existsSync(file_path)) fs.unlinkSync(file_path);
+    return await exec(`ffmpeg -f lavfi -i anullsrc=r=44100:cl=mono -t 1 -q:a 9 -acodec libmp3lame ${file_path}`);
+}

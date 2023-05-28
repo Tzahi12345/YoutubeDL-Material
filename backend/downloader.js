@@ -7,6 +7,7 @@ const Mutex = require('async-mutex').Mutex;
 const youtubedl = require('youtube-dl');
 
 const logger = require('./logger');
+const youtubedl_api = require('./youtube-dl');
 const config_api = require('./config');
 const twitch_api = require('./twitch');
 const { create } = require('xmlbuilder2');
@@ -21,10 +22,10 @@ const mutex = new Mutex();
 let should_check_downloads = true;
 
 if (db_api.database_initialized) {
-    setupDownloads();
+    exports.setupDownloads();
 } else {
     db_api.database_initialized_bs.subscribe(init => {
-        if (init) setupDownloads();
+        if (init) exports.setupDownloads();
     });
 }
 
@@ -47,7 +48,7 @@ We use checkDownloads() to move downloads through the steps and call their respe
 
 */
 
-exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null, prefetched_info = null) => {
+exports.createDownload = async (url, type, options, user_uid = null, sub_id = null, sub_name = null, prefetched_info = null, paused = false) => {
     return await mutex.runExclusive(async () => {
         const download = {
             url: url,
@@ -60,7 +61,7 @@ exports.createDownload = async (url, type, options, user_uid = null, sub_id = nu
             options: options,
             uid: uuid(),
             step_index: 0,
-            paused: false,
+            paused: paused,
             running: false,
             finished_step: true,
             error: null,
@@ -133,7 +134,7 @@ async function handleDownloadError(download, error_message, error_type = null) {
     await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false, error_type: error_type});
 }
 
-async function setupDownloads() {
+exports.setupDownloads = async () => {
     await fixDownloadState();
     setInterval(checkDownloads, 1000);
 }
@@ -188,7 +189,7 @@ async function checkDownloads() {
             if (waiting_download['step_index'] === 0) {
                 collectInfo(waiting_download['uid']);
             } else if (waiting_download['step_index'] === 1) {
-                downloadQueuedFile(waiting_download['uid']);
+                exports.downloadQueuedFile(waiting_download['uid']);
             }
         }
     }
@@ -240,7 +241,7 @@ async function collectInfo(download_uid) {
     let category = null;
 
     // check if it fits into a category. If so, then get info again using new args
-    if (!Array.isArray(info) || config_api.getConfigItem('ytdl_allow_playlist_categorization')) category = await categories_api.categorize(info);
+    if (info.length === 0 || config_api.getConfigItem('ytdl_allow_playlist_categorization')) category = await categories_api.categorize(info);
 
     // set custom output if the category has one and re-retrieve info so the download manager has the right file name
     if (category && category['custom_output']) {
@@ -259,13 +260,9 @@ async function collectInfo(download_uid) {
     const files_to_check_for_progress = [];
 
     // store info in download for future use
-    if (Array.isArray(info)) {
-        for (let info_obj of info) files_to_check_for_progress.push(utils.removeFileExtension(info_obj['_filename']));
-    } else {
-        files_to_check_for_progress.push(utils.removeFileExtension(info['_filename']));
-    }
+    for (let info_obj of info) files_to_check_for_progress.push(utils.removeFileExtension(info_obj['_filename']));
 
-    const playlist_title = Array.isArray(info) ? info[0]['playlist_title'] || info[0]['playlist'] : null;
+    const playlist_title = info.length > 0 ? info[0]['playlist_title'] || info[0]['playlist'] : null;
     await db_api.updateRecord('download_queue', {uid: download_uid}, {args: args,
                                                                     finished_step: true,
                                                                     running: false,
@@ -278,7 +275,7 @@ async function collectInfo(download_uid) {
                                                                 });
 }
 
-async function downloadQueuedFile(download_uid) {
+exports.downloadQueuedFile = async(download_uid, downloadMethod = youtubedl.exec) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     if (download['paused']) {
         return;
@@ -306,105 +303,102 @@ async function downloadQueuedFile(download_uid) {
         const start_time = Date.now();
 
         const download_checker = setInterval(() => checkDownloadPercent(download['uid']), 1000);
-
+        const file_objs = [];
         // download file
-        youtubedl.exec(url, args, {maxBuffer: Infinity}, async function(err, output) {
-            const file_objs = [];
-            let end_time = Date.now();
-            let difference = (end_time - start_time)/1000;
-            logger.debug(`${type === 'audio' ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
-            clearInterval(download_checker);
-            const parsed_output = utils.parseOutputJSON(output, err);
-            if (!parsed_output) {
-                logger.error(err.stderr);
-                await handleDownloadError(download, err.stderr, 'unknown_error');
+        const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, args, downloadMethod);
+        clearInterval(download_checker);
+        let end_time = Date.now();
+        let difference = (end_time - start_time)/1000;
+        logger.debug(`${type === 'audio' ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
+        if (!parsed_output) {
+            logger.error(err.stderr);
+            await handleDownloadError(download, err.stderr, 'unknown_error');
+            resolve(false);
+            return;
+        } else if (parsed_output) {
+            if (parsed_output.length === 0 || parsed_output[0].length === 0) {
+                // ERROR!
+                const error_message = `No output received for video download, check if it exists in your archive.`;
+                await handleDownloadError(download, error_message, 'no_output');
+                logger.warn(error_message);
                 resolve(false);
                 return;
-            } else if (parsed_output) {
-                if (parsed_output.length === 0 || parsed_output[0].length === 0) {
-                    // ERROR!
-                    const error_message = `No output received for video download, check if it exists in your archive.`;
-                    await handleDownloadError(download, error_message, 'no_output');
-                    logger.warn(error_message);
-                    resolve(false);
-                    return;
-                }
-
-                for (const output_json of parsed_output) {
-                    if (!output_json) {
-                        continue;
-                    }
-
-                    // get filepath with no extension
-                    const filepath_no_extension = utils.removeFileExtension(output_json['_filename']);
-
-                    const ext = type === 'audio' ? '.mp3' : '.mp4';
-                    var full_file_path = filepath_no_extension + ext;
-                    var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
-
-                    if (type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
-                        && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
-                            let vodId = url.split('twitch.tv/videos/')[1];
-                            vodId = vodId.split('?')[0];
-                            twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, download['user_uid']);
-                    }
-
-                    // renames file if necessary due to bug
-                    if (!fs.existsSync(output_json['_filename']) && fs.existsSync(output_json['_filename'] + '.webm')) {
-                        try {
-                            fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
-                            logger.info('Renamed ' + file_name + '.webm to ' + file_name);
-                        } catch(e) {
-                            logger.error(`Failed to rename file ${output_json['_filename']} to its appropriate extension.`);
-                        }
-                    }
-
-                    if (type === 'audio') {
-                        let tags = {
-                            title: output_json['title'],
-                            artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
-                        }
-                        let success = NodeID3.write(tags, utils.removeFileExtension(output_json['_filename']) + '.mp3');
-                        if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
-                    }
-
-                    if (config_api.getConfigItem('ytdl_generate_nfo_files')) {
-                        exports.generateNFOFile(output_json, `${filepath_no_extension}.nfo`);
-                    }
-
-                    if (options.cropFileSettings) {
-                        await utils.cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
-                    }
-
-                    // registers file in DB
-                    const file_obj = await files_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
-
-                    await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, output_json['title'], download['user_uid'], download['sub_id']);
-
-                    notifications_api.sendDownloadNotification(file_obj, download['user_uid']);
-
-                    file_objs.push(file_obj);
-                }
-
-                let container = null;
-
-                if (file_objs.length > 1) {
-                    // create playlist
-                    const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
-                    container = await files_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
-                } else if (file_objs.length === 1) {
-                    container = file_objs[0];
-                } else {
-                    const error_message = 'Downloaded file failed to result in metadata object.';
-                    logger.error(error_message);
-                    await handleDownloadError(download, error_message, 'no_metadata');
-                }
-
-                const file_uids = file_objs.map(file_obj => file_obj.uid);
-                await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, running: false, step_index: 3, percent_complete: 100, file_uids: file_uids, container: container});
-                resolve();
             }
-        });
+
+            for (const output_json of parsed_output) {
+                if (!output_json) {
+                    continue;
+                }
+
+                // get filepath with no extension
+                const filepath_no_extension = utils.removeFileExtension(output_json['_filename']);
+
+                const ext = type === 'audio' ? '.mp3' : '.mp4';
+                var full_file_path = filepath_no_extension + ext;
+                var file_name = filepath_no_extension.substring(fileFolderPath.length, filepath_no_extension.length);
+
+                if (type === 'video' && url.includes('twitch.tv/videos/') && url.split('twitch.tv/videos/').length > 1
+                    && config_api.getConfigItem('ytdl_twitch_auto_download_chat')) {
+                        let vodId = url.split('twitch.tv/videos/')[1];
+                        vodId = vodId.split('?')[0];
+                        twitch_api.downloadTwitchChatByVODID(vodId, file_name, type, download['user_uid']);
+                }
+
+                // renames file if necessary due to bug
+                if (!fs.existsSync(output_json['_filename']) && fs.existsSync(output_json['_filename'] + '.webm')) {
+                    try {
+                        fs.renameSync(output_json['_filename'] + '.webm', output_json['_filename']);
+                        logger.info('Renamed ' + file_name + '.webm to ' + file_name);
+                    } catch(e) {
+                        logger.error(`Failed to rename file ${output_json['_filename']} to its appropriate extension.`);
+                    }
+                }
+
+                if (type === 'audio') {
+                    let tags = {
+                        title: output_json['title'],
+                        artist: output_json['artist'] ? output_json['artist'] : output_json['uploader']
+                    }
+                    let success = NodeID3.write(tags, utils.removeFileExtension(output_json['_filename']) + '.mp3');
+                    if (!success) logger.error('Failed to apply ID3 tag to audio file ' + output_json['_filename']);
+                }
+
+                if (config_api.getConfigItem('ytdl_generate_nfo_files')) {
+                    exports.generateNFOFile(output_json, `${filepath_no_extension}.nfo`);
+                }
+
+                if (options.cropFileSettings) {
+                    await utils.cropFile(full_file_path, options.cropFileSettings.cropFileStart, options.cropFileSettings.cropFileEnd, ext);
+                }
+
+                // registers file in DB
+                const file_obj = await files_api.registerFileDB(full_file_path, type, download['user_uid'], category, download['sub_id'] ? download['sub_id'] : null, options.cropFileSettings);
+
+                await archive_api.addToArchive(output_json['extractor'], output_json['id'], type, output_json['title'], download['user_uid'], download['sub_id']);
+
+                notifications_api.sendDownloadNotification(file_obj, download['user_uid']);
+
+                file_objs.push(file_obj);
+            }
+
+            let container = null;
+
+            if (file_objs.length > 1) {
+                // create playlist
+                const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
+                container = await files_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
+            } else if (file_objs.length === 1) {
+                container = file_objs[0];
+            } else {
+                const error_message = 'Downloaded file failed to result in metadata object.';
+                logger.error(error_message);
+                await handleDownloadError(download, error_message, 'no_metadata');
+            }
+
+            const file_uids = file_objs.map(file_obj => file_obj.uid);
+            await db_api.updateRecord('download_queue', {uid: download_uid}, {finished_step: true, finished: true, running: false, step_index: 3, percent_complete: 100, file_uids: file_uids, container: container});
+            resolve(file_uids);
+        }
     });
 }
 

@@ -287,7 +287,7 @@ async function handleOutputJSON(output_jsons, sub, user_uid) {
     for (let j = 0; j < files_to_download.length; j++) {
         const file_to_download = files_to_download[j];
         file_to_download['formats'] = utils.stripPropertiesFromObject(file_to_download['formats'], ['format_id', 'filesize', 'filesize_approx']);  // prevent download object from blowing up in size
-        await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name, file_to_download);
+        await downloader_api.createDownload(file_to_download['webpage_url'], sub.type || 'video', base_download_options, user_uid, sub.id, sub.name, [file_to_download]);
     }
 
     return files_to_download;
