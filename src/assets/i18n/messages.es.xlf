@@ -3934,6 +3934,113 @@
         </context-group>
         <note priority="1" from="description">Discord Webhook URL</note>
       </trans-unit>
+      <trans-unit id="338b44701a53ce3ef2f36abfb56f89c3edfa9eab" datatype="html">
+        <source>Over</source>
+        <target state="translated">Sobre</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+        <note priority="1" from="description">Over</note>
+      </trans-unit>
+      <trans-unit id="6080b77234e92ad41bb52653b239c4c4f851317d" datatype="html">
+        <source>Error</source>
+        <target state="translated">Error</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <note priority="1" from="description">Error</note>
+      </trans-unit>
+      <trans-unit id="3640026747176198246" datatype="html">
+        <source>Watch content</source>
+        <target state="translated">Ver el contenido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8456659390937171831" datatype="html">
+        <source>Show error</source>
+        <target state="translated">Mostrar el error</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1236604279860679031" datatype="html">
+        <source>Restart</source>
+        <target state="translated">Reiniciar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9042260521669277115" datatype="html">
+        <source>Pause</source>
+        <target state="translated">Pausar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7182974689040833178" datatype="html">
+        <source>Resume</source>
+        <target state="translated">Resumen</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b6399391e706e2d7b7b7880eb5630e4e6f49728c" datatype="html">
+        <source>Side</source>
+        <target state="translated">Lado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+        <note priority="1" from="description">Side</note>
+      </trans-unit>
+      <trans-unit id="e0a11fbea353b1ce1131161774e4a3e10bcb99b1" datatype="html">
+        <source>Large</source>
+        <target state="translated">Largo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+        <note priority="1" from="description">Large</note>
+      </trans-unit>
+      <trans-unit id="378c072ce05889c9771718d05106e7685fcd3507" datatype="html">
+        <source>Medium</source>
+        <target state="translated">Medio</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+        <note priority="1" from="description">Medium</note>
+      </trans-unit>
+      <trans-unit id="9a865c2922f5c01899d06c472dba2e5bd63bcff9" datatype="html">
+        <source>Small</source>
+        <target state="translated">Pequeño</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+        <note priority="1" from="description">Small</note>
+      </trans-unit>
+      <trans-unit id="af30e51aa8b67e1133a341ec28359be05150e65c" datatype="html">
+        <source>No description available.</source>
+        <target state="translated">Sin una descripción disponible.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/player/player.component.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+        <note priority="1" from="description">No description</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
