@@ -81,7 +81,7 @@ jobs:
           draft: true
           prerelease: false
       - name: download build artifact
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: youtubedl-material
           path: ${{runner.temp}}/youtubedl-material
