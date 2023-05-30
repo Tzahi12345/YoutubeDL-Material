@@ -35,6 +35,7 @@
     "@angular/router": "^15.0.1",
     "@fontsource/material-icons": "^4.5.4",
     "@ngneat/content-loader": "^7.0.0",
+    "@tzahi12345/twitch-emoticons": "^1.0.3",
     "@videogular/ngx-videogular": "^6.0.0",
     "core-js": "^2.4.1",
     "crypto-js": "^4.1.1",
