@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
-import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, ActivatedRouteSnapshot } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -121,7 +121,7 @@ import { MatDrawerMode } from '@angular/material/sidenav';
 import type { EmoteJSON } from '@tzahi12345/twitch-emoticons';
 
 @Injectable()
-export class PostsService implements CanActivate {
+export class PostsService  {
     path = '';
 
     // local settings
