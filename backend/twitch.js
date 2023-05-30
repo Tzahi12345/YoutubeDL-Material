@@ -8,7 +8,7 @@ const { promisify } = require('util');
 const child_process = require('child_process');
 const commandExistsSync = require('command-exists').sync;
 
-async function getCommentsForVOD(vodId) {
+exports.getCommentsForVOD = async (vodId) => {
     const exec = promisify(child_process.exec);
     
     // Reject invalid params to prevent command injection attack
@@ -52,7 +52,7 @@ async function getCommentsForVOD(vodId) {
     return new_json;
 }
 
-async function getTwitchChatByFileID(id, type, user_uid, uuid, sub) {
+exports.getTwitchChatByFileID = async (id, type, user_uid, uuid, sub) => {
     const usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
     const subscriptionsFileFolder = config_api.getConfigItem('ytdl_subscriptions_base_path');
     let file_path = null;
@@ -80,10 +80,10 @@ async function getTwitchChatByFileID(id, type, user_uid, uuid, sub) {
     return chat_file;
 }
 
-async function downloadTwitchChatByVODID(vodId, id, type, user_uid, sub, customFileFolderPath = null) {
+exports.downloadTwitchChatByVODID = async (vodId, id, type, user_uid, sub, customFileFolderPath = null) => {
     const usersFileFolder           = config_api.getConfigItem('ytdl_users_base_path');
     const subscriptionsFileFolder   = config_api.getConfigItem('ytdl_subscriptions_base_path');
-    const chat = await getCommentsForVOD(vodId);
+    const chat = await exports.getCommentsForVOD(vodId);
 
     // save file if needed params are included
     let file_path = null;
@@ -115,9 +115,3 @@ const convertTimestamp = (timestamp) => moment.duration(timestamp, 'seconds')
                             const seg = v => v ? v.padStart(2, '0') : '00';
                             return `${seg(ms[0])}:${seg(ms[1])}:${seg(ms[2])}`;
 });
-
-module.exports = {
-    getCommentsForVOD: getCommentsForVOD,
-    getTwitchChatByFileID: getTwitchChatByFileID,
-    downloadTwitchChatByVODID: downloadTwitchChatByVODID
-}
