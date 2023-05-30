@@ -44,7 +44,7 @@
     "fs-extra": "^10.0.0",
     "material-icons": "^1.10.8",
     "nan": "^2.14.1",
-    "ngx-avatars": "^1.4.1",
+    "ngx-avatars": "^1.6.1",
     "ngx-file-drop": "^15.0.0",
     "rxjs": "^6.6.3",
     "rxjs-compat": "^6.6.7",
