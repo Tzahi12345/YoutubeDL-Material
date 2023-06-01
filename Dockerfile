@@ -42,7 +42,7 @@ RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
 
 # Build frontend
 ARG BUILDPLATFORM
-FROM --platform=${BUILDPLATFORM} node:16 as frontend
+FROM --platform=${BUILDPLATFORM} node:20 as frontend
 RUN npm install -g @angular/cli
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
