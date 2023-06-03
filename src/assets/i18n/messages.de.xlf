@@ -4941,6 +4941,14 @@
         </context-group>
         <note priority="1" from="description">No description</note>
       </trans-unit>
+      <trans-unit id="4665451070906079743" datatype="html">
+        <source>Favorited</source>
+        <target state="translated">Favorisiert</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
