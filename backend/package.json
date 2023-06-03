@@ -25,6 +25,7 @@
   "dependencies": {
     "@discordjs/builders": "^1.6.1",
     "@discordjs/core": "^0.5.2",
+    "@tzahi12345/twitch-emoticons": "^1.0.9",
     "archiver": "^5.3.1",
     "async": "^3.2.3",
     "async-mutex": "^0.4.0",

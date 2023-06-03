@@ -364,26 +364,29 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
 }
 
 // helper function to download file using fetch
-exports.fetchFile = async (url, path, file_label) => {
+exports.fetchFile = async (url, output_path, file_label = null) => {
     var len = null;
     const res = await fetch(url);
+    let bar = null;
+    if (file_label) {
+        len = parseInt(res.headers.get("Content-Length"), 10);
 
-    len = parseInt(res.headers.get("Content-Length"), 10);
+        bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
+            complete: '=',
+            incomplete: ' ',
+            width: 20,
+            total: len
+        });
+    }
 
-    var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
-        complete: '=',
-        incomplete: ' ',
-        width: 20,
-        total: len
-    });
-    const fileStream = fs.createWriteStream(path);
+    const fileStream = fs.createWriteStream(output_path);
     await new Promise((resolve, reject) => {
         res.body.pipe(fileStream);
         res.body.on("error", (err) => {
           reject(err);
         });
         res.body.on('data', function (chunk) {
-            bar.tick(chunk.length);
+            if (file_label) bar.tick(chunk.length);
         });
         fileStream.on("finish", function() {
           resolve();

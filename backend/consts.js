@@ -110,6 +110,18 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_youtube_api_key',
         'path': 'YoutubeDLMaterial.API.youtube_API_key'
     },
+    'ytdl_use_twitch_api': {
+        'key': 'ytdl_use_twitch_api',
+        'path': 'YoutubeDLMaterial.API.use_twitch_API'
+    },
+    'ytdl_twitch_client_id': {
+        'key': 'ytdl_twitch_client_id',
+        'path': 'YoutubeDLMaterial.API.twitch_client_ID'
+    },
+    'ytdl_twitch_client_secret': {
+        'key': 'ytdl_twitch_client_secret',
+        'path': 'YoutubeDLMaterial.API.twitch_client_secret'
+    },
     'ytdl_twitch_auto_download_chat': {
         'key': 'ytdl_twitch_auto_download_chat',
         'path': 'YoutubeDLMaterial.API.twitch_auto_download_chat'

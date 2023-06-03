@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
-import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, ActivatedRouteSnapshot } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -118,9 +118,10 @@ import {
 import { isoLangs } from './dialogs/user-profile-dialog/locales_list';
 import { Title } from '@angular/platform-browser';
 import { MatDrawerMode } from '@angular/material/sidenav';
+import type { EmoteObject } from '@tzahi12345/twitch-emoticons';
 
 @Injectable()
-export class PostsService implements CanActivate {
+export class PostsService  {
     path = '';
 
     // local settings
@@ -405,6 +406,10 @@ export class PostsService implements CanActivate {
     downloadTwitchChat(id, type, vodId, uuid = null, sub = null) {
         const body: DownloadTwitchChatByVODIDRequest = {id: id, type: type, vodId: vodId, uuid: uuid, sub: sub};
         return this.http.post<DownloadTwitchChatByVODIDResponse>(this.path + 'downloadTwitchChatByVODID', body, this.httpOptions);
+    }
+
+    getTwitchEmotes(uid: string) {
+        return this.http.post<{emotes: EmoteObject[]}>(this.path + 'getTwitchEmotes', {uid: uid}, this.httpOptions);
     }
 
     downloadPlaylistFromServer(playlist_id, uuid = null) {

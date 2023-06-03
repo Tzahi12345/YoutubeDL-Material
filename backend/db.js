@@ -815,6 +815,9 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
                 filtered &= record[filter_prop] === undefined || record[filter_prop] === null;
             } else {
                 if (typeof filter_prop_value === 'object') {
+                    if (!record[filter_prop]) {
+                        continue;
+                    }
                     if ('$regex' in filter_prop_value) {
                         filtered &= (record[filter_prop].search(new RegExp(filter_prop_value['$regex'], filter_prop_value['$options'])) !== -1);
                     } else if ('$ne' in filter_prop_value) {
@@ -830,10 +833,14 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
                     }
                 } else {
                     // handle case of nested property check
-                    if (filter_prop.includes('.'))
+                    if (filter_prop.includes('.')) {
                         filtered &= utils.searchObjectByString(record, filter_prop) === filter_prop_value;
-                    else
+                    } else {
+                        if (!record[filter_prop]) {
+                            continue;
+                        }
                         filtered &= record[filter_prop] === filter_prop_value;
+                    } 
                 }
             }
         }

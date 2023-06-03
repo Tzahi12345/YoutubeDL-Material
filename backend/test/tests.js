@@ -550,27 +550,69 @@ describe('Downloader', function() {
         const expected_args3 =  ['-o', '%(title)s.%(ext)s', '--min-filesize', '1'];
         assert(JSON.stringify(updated_args3) === JSON.stringify(expected_args3));
     });
-    describe('Twitch', async function () {
-        const twitch_api = require('../twitch');
-        const example_vod = '1710641401';
-        it('Download VOD chat', async function() {
-            this.timeout(300000);
-            if (!fs.existsSync('TwitchDownloaderCLI')) {
-                try {
-                    await exec('sh ../docker-utils/fetch-twitchdownloader.sh');
-                    fs.copyFileSync('../docker-utils/TwitchDownloaderCLI', 'TwitchDownloaderCLI');
-                } catch (e) {
-                    logger.info('TwitchDownloaderCLI fetch failed, file may exist regardless.');
-                }
-            }
-            const sample_path = path.join('test', 'sample.twitch_chat.json');
-            if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
-            await twitch_api.downloadTwitchChatByVODID(example_vod, 'sample', null, null, null, './test');
-            assert(fs.existsSync(sample_path));
+});
 
-            // cleanup
-            if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
-        });
+describe('Twitch', async function () {
+    const twitch_api = require('../twitch');
+    const example_vod = '1710641401';
+    const example_channel = 'keffals';
+
+    it('Get OAuth Token', async function() {
+        this.timeout(300000);
+        const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
+        const twitch_client_secret      = config_api.getConfigItem('ytdl_twitch_client_secret');
+        if (!twitch_client_id || !twitch_client_secret) {
+            logger.info(`Skipping test 'Get OAuth Token' as Twitch client ID or Twitch client secret is missing.`);
+            assert(true);
+            return;
+        }
+        const token = await twitch_api.getTwitchOAuthToken(twitch_client_id, twitch_client_secret);
+        assert(token);
+    });
+
+    it('Get channel ID', async function() {
+        this.timeout(300000);
+        const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
+        const twitch_client_secret      = config_api.getConfigItem('ytdl_twitch_client_secret');
+        if (!twitch_client_id || !twitch_client_secret) {
+            logger.info(`Skipping test 'Get channel ID' as Twitch client ID or Twitch client secret is missing.`);
+            assert(true);
+            return;
+        }
+        const channel_id = await twitch_api.getChannelID(example_channel);
+        assert(channel_id === '494493142');
+    });
+
+    it('Download VOD chat', async function() {
+        this.timeout(300000);
+        if (!fs.existsSync('TwitchDownloaderCLI')) {
+            try {
+                await exec('sh ../docker-utils/fetch-twitchdownloader.sh');
+                fs.copyFileSync('../docker-utils/TwitchDownloaderCLI', 'TwitchDownloaderCLI');
+            } catch (e) {
+                logger.info('TwitchDownloaderCLI fetch failed, file may exist regardless.');
+            }
+        }
+        const sample_path = path.join('test', 'sample.twitch_chat.json');
+        if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
+        await twitch_api.downloadTwitchChatByVODID(example_vod, 'sample', null, null, null, './test');
+        assert(fs.existsSync(sample_path));
+
+        // cleanup
+        if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
+    });
+
+    it('Download Twitch emotes', async function() {
+        this.timeout(300000);
+        const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
+        const twitch_client_secret      = config_api.getConfigItem('ytdl_twitch_client_secret');
+        if (!twitch_client_id || !twitch_client_secret) {
+            logger.info(`Skipping test 'Download Twitch emotes' as Twitch client ID or Twitch client secret is missing.`);
+            assert(true);
+            return;
+        }
+        const emotesJSON = await twitch_api.downloadTwitchEmotes(example_channel, 'test_uid');
+        assert(emotesJSON && emotesJSON.length > 0);
     });
 });
 

@@ -380,8 +380,8 @@ export class RecentVideosComponent implements OnInit {
 
   fileSelectionChanged(event: MatSelectionListChange): void {
     // TODO: make sure below line is possible (_selected is private)
-    const adding = event.option['_selected'];
-    const value = event.option.value;
+    const adding = event.options[0]['_selected'];
+    const value = event.options[0].value;
     if (adding) {
       this.selected_data.push(value.uid);
       this.selected_data_objs.push(value);

@@ -1,7 +1,7 @@
 <div class="chat-container" #scrollContainer *ngIf="visible_chat">
     <div style="width: 250px; text-align: center;"><strong>Twitch Chat</strong></div>
     <div #chat style="max-width: 250px" *ngFor="let chat of visible_chat; let last = last">
-        {{chat.timestamp_str}} - <strong [style.color]="chat.user_color ? chat.user_color : null">{{chat.name}}</strong>: {{chat.message}}
+        {{chat.timestamp_str}} - <strong [style.color]="chat.user_color ? chat.user_color : null">{{chat.name}}</strong>: <span [innerHTML]="chat.message"></span>
         {{last ? scrollToBottom() : ''}}
     </div>
 </div>

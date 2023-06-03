@@ -706,7 +706,7 @@ app.use(function(req, res, next) {
         next();
     } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
         next();
-    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/rss')) {
+    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/emote/') || req.path.includes('/api/rss')) {
         next();
     } else {
         logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
@@ -993,11 +993,11 @@ app.post('/api/updateConcurrentStream', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/getFullTwitchChat', optionalJwt, async (req, res) => {
-    var id = req.body.id;
-    var type = req.body.type;
-    var uuid = req.body.uuid;
-    var sub = req.body.sub;
-    var user_uid = null;
+    const id = req.body.id;
+    const type = req.body.type;
+    const uuid = req.body.uuid;
+    const sub = req.body.sub;
+    let user_uid = null;
 
     if (req.isAuthenticated()) user_uid = req.user.uid;
 
@@ -1009,12 +1009,12 @@ app.post('/api/getFullTwitchChat', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
-    var id = req.body.id;
-    var type = req.body.type;
-    var vodId = req.body.vodId;
-    var uuid = req.body.uuid;
-    var sub = req.body.sub;
-    var user_uid = null;
+    const id = req.body.id;
+    const type = req.body.type;
+    const vodId = req.body.vodId;
+    const uuid = req.body.uuid;
+    const sub = req.body.sub;
+    let user_uid = null;
 
     if (req.isAuthenticated()) user_uid = req.user.uid;
 
@@ -1025,17 +1025,47 @@ app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
         return;
     }
 
+    logger.info(`Downloading Twitch chat for ${id}`);
     const full_chat = await twitch_api.downloadTwitchChatByVODID(vodId, id, type, user_uid, sub);
+    logger.info(`Finished downloading Twitch chat for ${id}`);
 
     res.send({
         chat: full_chat
     });
 });
 
+app.post('/api/getTwitchEmotes', async (req, res) => {
+    const uid = req.body.uid;
+
+    const file = await files_api.getVideo(uid);
+    const channel_name = file['uploader'];
+
+    const emotes_path = path.join('appdata', 'emotes', uid, 'emotes.json')
+    if (!fs.existsSync(emotes_path)) {
+        logger.info(`Downloading Twitch emotes for ${channel_name}`);
+        await twitch_api.downloadTwitchEmotes(channel_name, file.uid);
+        logger.info(`Finished downloading Twitch emotes for ${channel_name}`);
+    }
+
+    const emotes = await twitch_api.getTwitchEmotes(file.uid);
+
+    res.send({
+        emotes: emotes
+    });
+});
+
+app.get('/api/emote/:uid/:id', async (req, res) => {
+    const file_uid = decodeURIComponent(req.params.uid);
+    const emote_id = decodeURIComponent(req.params.id);
+    const emote_path = path.join('appdata', 'emotes', file_uid, emote_id);
+    if (fs.existsSync(emote_path)) path.isAbsolute(emote_path) ? res.sendFile(emote_path) : res.sendFile(path.join(__dirname, emote_path));
+    else res.sendStatus(404);
+});
+
 // video sharing
 app.post('/api/enableSharing', optionalJwt, async (req, res) => {
-    var uid = req.body.uid;
-    var is_playlist = req.body.is_playlist;
+    const uid = req.body.uid;
+    const is_playlist = req.body.is_playlist;
     let success = false;
     // multi-user mode
     if (req.isAuthenticated()) {
@@ -1643,6 +1673,8 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
     }
     if (!fs.existsSync(file_path)) {
         logger.error(`File ${file_path} could not be found! UID: ${uid}, ID: ${file_obj && file_obj.id}`);
+        res.sendStatus(404);
+        return;
     }
     const stat = fs.statSync(file_path);
     const fileSize = stat.size;
