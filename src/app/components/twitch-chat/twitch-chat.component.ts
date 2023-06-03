@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { DatabaseFile } from 'api-types';
 import { PostsService } from 'app/posts.services';
-import { EmoteFetcher, EmoteJSON, EmoteParser } from '@tzahi12345/twitch-emoticons';
+import { EmoteFetcher, EmoteObject, EmoteParser } from '@tzahi12345/twitch-emoticons';
 
 @Component({
   selector: 'app-twitch-chat',
@@ -14,6 +14,7 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
   visible_chat = null;
   chat_response_received = false;
   downloading_chat = false;
+  got_emotes = false;
 
   current_chat_index = null;
 
@@ -36,6 +37,7 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getFullChat();
+    this.getEmotes();
   }
 
   ngOnDestroy(): void {
@@ -75,7 +77,7 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
     for (let i = this.current_chat_index + 1; i < this.full_chat.length; i++) {
       const new_chat = this.full_chat[i];
       if (new_chat['timestamp'] >= latest_chat_timestamp && new_chat['timestamp'] <= this.current_timestamp) {
-        new_chat['message'] = this.parseChat(new_chat['message']);
+        new_chat['message'] = this.got_emotes ? this.parseChat(new_chat['message']) : new_chat['message'];
         this.visible_chat.push(new_chat);
         this.current_chat_index = i;
       } else if (new_chat['timestamp'] > this.current_timestamp) {
@@ -125,22 +127,22 @@ export class TwitchChatComponent implements OnInit, OnDestroy {
   }
 
   getEmotes() {
-    this.postsService.getTwitchEmotes().subscribe(res => {
+    this.postsService.getTwitchEmotes(this.db_file['uid']).subscribe(res => {
       const emotes = res['emotes'];
       this.processEmotes(emotes);
     });
   }
 
-  processEmotes(emotes: EmoteJSON[]) {
+  processEmotes(emotes: EmoteObject[]) {
     this.fetcher = new EmoteFetcher();
     this.parser = new EmoteParser(this.fetcher, {
       // Custom HTML format
-      template: '<img class="emote" alt="{name}" src="{link}">',
+      template: `<img class="emote" alt="{name}" src="{link}">`,
       // Match without :colons:
       match: /(\w+)+?/g
     });
-
-    this.fetcher.fromJSON(emotes);
+    this.fetcher.fromObject(emotes);
+    this.got_emotes = true;
   }
 
   parseChat(chat_message: string) {

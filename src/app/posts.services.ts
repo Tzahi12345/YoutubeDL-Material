@@ -118,7 +118,7 @@ import {
 import { isoLangs } from './dialogs/user-profile-dialog/locales_list';
 import { Title } from '@angular/platform-browser';
 import { MatDrawerMode } from '@angular/material/sidenav';
-import type { EmoteJSON } from '@tzahi12345/twitch-emoticons';
+import type { EmoteObject } from '@tzahi12345/twitch-emoticons';
 
 @Injectable()
 export class PostsService  {
@@ -408,8 +408,8 @@ export class PostsService  {
         return this.http.post<DownloadTwitchChatByVODIDResponse>(this.path + 'downloadTwitchChatByVODID', body, this.httpOptions);
     }
 
-    getTwitchEmotes() {
-        return this.http.post<{emotes: EmoteJSON[]}>(this.path + 'getTwitchEmotes', {}, this.httpOptions);
+    getTwitchEmotes(uid: string) {
+        return this.http.post<{emotes: EmoteObject[]}>(this.path + 'getTwitchEmotes', {uid: uid}, this.httpOptions);
     }
 
     downloadPlaylistFromServer(playlist_id, uuid = null) {

@@ -11,6 +11,21 @@ const { promisify } = require('util');
 const child_process = require('child_process');
 const commandExistsSync = require('command-exists').sync;
 
+let auth_timeout = null;
+let cached_oauth = null;
+
+exports.ensureTwitchAuth = async () => {
+    const TIMEOUT_MARGIN_MS = 60*1000;
+    const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
+    const twitch_client_secret      = config_api.getConfigItem('ytdl_twitch_client_secret');
+    if (cached_oauth && auth_timeout && (Date.now() - TIMEOUT_MARGIN_MS) < auth_timeout) return cached_oauth;
+
+    const {token, expires_in} = await exports.getTwitchOAuthToken(twitch_client_id, twitch_client_secret);
+    cached_oauth = token;
+    auth_timeout = Date.now() + expires_in;
+    return token;
+}
+
 exports.getCommentsForVOD = async (vodId) => {
     const exec = promisify(child_process.exec);
     
@@ -111,47 +126,61 @@ exports.downloadTwitchChatByVODID = async (vodId, id, type, user_uid, sub, custo
     return chat;
 }
 
-exports.downloadTwitchEmotes = async (channel_id, channel_name) => {
+exports.getTwitchEmotes = async (file_uid) => {
+    const emotes_path = path.join('appdata', 'emotes', file_uid, 'emotes.json')
+    if (!fs.existsSync(emotes_path)) return null;
+    const emote_objs = fs.readJSONSync(emotes_path);
+    // inject custom url
+    for (const emote_obj of emote_objs) {
+        emote_obj.custom_url = `${utils.getBaseURL()}/api/emote/${file_uid}/${emote_obj.id}.${emote_obj.ext}`
+    }
+    return emote_objs;
+}
+
+exports.downloadTwitchEmotes = async (channel_name, file_uid) => {
     const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
     const twitch_client_secret      = config_api.getConfigItem('ytdl_twitch_client_secret');
+
+    const channel_id = await exports.getChannelID(channel_name);
 
     const fetcher = new EmoteFetcher(twitch_client_id, twitch_client_secret);
 
     try {
-        await Promise.all([
+        await Promise.allSettled([
             fetcher.fetchTwitchEmotes(),
             fetcher.fetchTwitchEmotes(channel_id),
             fetcher.fetchBTTVEmotes(),
             fetcher.fetchBTTVEmotes(channel_id),
-            // fetcher.fetchSevenTVEmotes(),
-            // fetcher.fetchSevenTVEmotes(channel_id),
+            fetcher.fetchSevenTVEmotes(),
+            fetcher.fetchSevenTVEmotes(channel_id),
             fetcher.fetchFFZEmotes(),
             fetcher.fetchFFZEmotes(channel_id)
         ]);
 
-        const channel_dir = path.join('appdata', 'emotes', channel_id);
-        fs.ensureDirSync(channel_dir);
-        
-        const emotesJSON = [];
+        const emotes_dir = path.join('appdata', 'emotes', file_uid);
+        const emote_json_path = path.join(emotes_dir, `emotes.json`);
+        fs.ensureDirSync(emotes_dir);
+
+        const emote_objs = [];
         let failed_emote_count = 0;
         for (const [, emote] of fetcher.emotes) {
-            const emoteJSON = emote.toJSON();
+            const emote_obj = emote.toObject();
 
             const ext = emote.imageType;
-            const emote_path = path.join(channel_dir, `${emote.id}.${ext}`);
-
-            if (fs.existsSync(emote_path)) continue;
+            const emote_image_path = path.join(emotes_dir, `${emote.id}.${ext}`);
             
             try {
                 const link = emote.toLink();
-                await utils.fetchFile(link, emote_path);
-                emotesJSON.push(emoteJSON);
+                if (!fs.existsSync(emote_image_path)) await utils.fetchFile(link, emote_image_path);
+                emote_obj['ext'] = ext;
+                emote_objs.push(emote_obj);
             } catch (err) {
                 failed_emote_count++;
             }
         }
         if (failed_emote_count) logger.warn(`${failed_emote_count} emotes failed to download for channel ${channel_name}`);
-        return emotesJSON;
+        await fs.writeJSON(emote_json_path, emote_objs);
+        return emote_objs;
     } catch (err) {
         logger.error(err);
         return null;
@@ -159,12 +188,14 @@ exports.downloadTwitchEmotes = async (channel_id, channel_name) => {
 }
 
 exports.getTwitchOAuthToken = async (client_id, client_secret) => {
+    logger.verbose('Generating new Twitch auth token');
     const url = `https://id.twitch.tv/oauth2/token`;
   
     try {
         const response = await axios.post(url, {client_id: client_id, client_secret: client_secret, grant_type: 'client_credentials'});
         const token = response['data']['access_token'];
-        if (token) return token;
+        const expires_in = response['data']['expires_in'];
+        if (token) return {token, expires_in};
     
         logger.error(`Failed to get token.`);
         return null;
@@ -175,12 +206,14 @@ exports.getTwitchOAuthToken = async (client_id, client_secret) => {
     }
 }
 
-exports.getChannelID = async (username, client_id, oauth_token) => {
-    const url = `https://api.twitch.tv/helix/users?login=${username}`;
+exports.getChannelID = async (channel_name) => {
+    const twitch_client_id          = config_api.getConfigItem('ytdl_twitch_client_id');
+    const token                     = await exports.ensureTwitchAuth();
+    const url = `https://api.twitch.tv/helix/users?login=${channel_name}`;
     const headers = {
-        'Client-ID': client_id,
-        'Authorization': 'Bearer ' + oauth_token,
-        Accept: 'application/vnd.twitchtv.v5+json; charset=UTF-8'
+        'Client-ID': twitch_client_id,
+        'Authorization': 'Bearer ' + token,
+        // Accept: 'application/vnd.twitchtv.v5+json; charset=UTF-8'
     };
   
     try {
@@ -192,11 +225,11 @@ exports.getChannelID = async (username, client_id, oauth_token) => {
             return channelID;
         }
     
-        logger.error(`Failed to get channel ID for user ${username}`);
+        logger.error(`Failed to get channel ID for user ${channel_name}`);
         if (data.error) logger.error(data.error);
         return null; // User not found
     } catch (err) {
-        logger.error(`Failed to get channel ID for user ${username}`);
+        logger.error(`Failed to get channel ID for user ${channel_name}`);
         logger.error(err);
     }
 }

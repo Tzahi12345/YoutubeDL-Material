@@ -579,8 +579,7 @@ describe('Twitch', async function () {
             assert(true);
             return;
         }
-        const token = await twitch_api.getTwitchOAuthToken(twitch_client_id, twitch_client_secret);
-        const channel_id = await twitch_api.getChannelID(example_channel, twitch_client_id, token);
+        const channel_id = await twitch_api.getChannelID(example_channel);
         assert(channel_id === '494493142');
     });
 
@@ -612,9 +611,7 @@ describe('Twitch', async function () {
             assert(true);
             return;
         }
-        const token = await twitch_api.getTwitchOAuthToken(twitch_client_id, twitch_client_secret);
-        const channel_id = await twitch_api.getChannelID(example_channel, twitch_client_id, token);
-        const emotesJSON = await twitch_api.downloadTwitchEmotes(channel_id, example_channel);
+        const emotesJSON = await twitch_api.downloadTwitchEmotes(example_channel, 'test_uid');
         assert(emotesJSON && emotesJSON.length > 0);
     });
 });
