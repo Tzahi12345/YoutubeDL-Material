@@ -814,6 +814,9 @@ exports.applyFilterLocalDB = (db_path, filter_obj, operation) => {
             if (filter_prop_value === undefined || filter_prop_value === null) {
                 filtered &= record[filter_prop] === undefined || record[filter_prop] === null;
             } else {
+                if (!record[filter_prop]) {
+                    continue;
+                }
                 if (typeof filter_prop_value === 'object') {
                     if ('$regex' in filter_prop_value) {
                         filtered &= (record[filter_prop].search(new RegExp(filter_prop_value['$regex'], filter_prop_value['$options'])) !== -1);
