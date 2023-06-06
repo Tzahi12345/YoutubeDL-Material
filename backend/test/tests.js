@@ -441,9 +441,32 @@ describe('Multi User', async function() {
 describe('Downloader', function() {
     const downloader_api = require('../downloader');
     const url = 'https://www.youtube.com/watch?v=hpigjnKl7nI';
+    const playlist_url = 'https://www.youtube.com/playlist?list=PLbZT16X07RLhqK-ZgSkRuUyiz9B_WLdNK';
     const sub_id = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
     const options = {
         ui_uid: uuid()
+    }
+
+    async function createCategory(url) {
+        // get info
+        const args = await downloader_api.generateArgs(url, 'video', options, null, true);
+        const [info] = await downloader_api.getVideoInfoByURL(url, args);
+
+        // create category
+        await db_api.removeAllRecords('categories');
+        const new_category = {
+            name: 'test_category',
+            uid: uuid(),
+            rules: [],
+            custom_output: ''
+        };
+        await db_api.insertRecordIntoTable('categories', new_category);
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'includes',
+            property: 'title',
+            value: info['title']
+        });
     }
 
     before(async function() {
@@ -455,6 +478,7 @@ describe('Downloader', function() {
     beforeEach(async function() {
         // await db_api.connectToDB();
         await db_api.removeAllRecords('download_queue');
+        config_api.setConfigItem('ytdl_allow_playlist_categorization', true);
     });
 
     it('Get file info', async function() {
@@ -478,6 +502,32 @@ describe('Downloader', function() {
         }
         const success = await downloader_api.downloadQueuedFile(returned_download['uid'], custom_download_method);
         assert(success);
+    });
+
+    it('Downloader - categorize', async function() {
+        this.timeout(300000);
+        await createCategory(url);
+        // collect info
+        const returned_download = await downloader_api.createDownload(url, 'video', options);
+        await downloader_api.collectInfo(returned_download['uid']);
+        assert(returned_download['category']);
+        assert(returned_download['category']['name'] === 'test_category');
+    });
+
+    it('Downloader - categorize playlist', async function() {
+        this.timeout(300000);
+        await createCategory(playlist_url);
+        // collect info
+        const returned_download_pass = await downloader_api.createDownload(playlist_url, 'video', options);
+        await downloader_api.collectInfo(returned_download_pass['uid']);
+        assert(returned_download_pass['category']);
+        assert(returned_download_pass['category']['name'] === 'test_category');
+
+        // test with playlist categorization disabled
+        config_api.setConfigItem('ytdl_allow_playlist_categorization', false);
+        const returned_download_fail = await downloader_api.createDownload(playlist_url, 'video', options);
+        await downloader_api.collectInfo(returned_download_fail['uid']);
+        assert(!returned_download_fail['category']);
     });
 
     it('Tag file', async function() {
