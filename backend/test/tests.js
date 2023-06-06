@@ -842,7 +842,7 @@ describe('Categories', async function() {
             rules: [],
             custom_output: ''
         };
-    
+        await db_api.removeAllRecords('categories', {name: 'test_category'});
         await db_api.insertRecordIntoTable('categories', new_category);
     });
 
