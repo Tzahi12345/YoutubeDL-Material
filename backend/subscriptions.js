@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const youtubedl = require('youtube-dl');
 
+const youtubedl_api = require('./youtube-dl');
 const config_api = require('./config');
 const archive_api = require('./archive');
 const utils = require('./utils');
@@ -63,52 +64,36 @@ async function getSubscriptionInfo(sub) {
         }
     }
 
-    return new Promise(async resolve => {
-        youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, async (err, output) => {
-            if (debugMode) {
-                logger.info('Subscribe: got info for subscription ' + sub.id);
-            }
-            if (err) {
-                logger.error(err.stderr);
-                resolve(false);
-            } else if (output) {
-                if (output.length === 0 || (output.length === 1 && output[0] === '')) {
-                    logger.verbose('Could not get info for ' + sub.id);
-                    resolve(false);
-                }
-                for (let i = 0; i < output.length; i++) {
-                    let output_json = null;
-                    try {
-                        output_json = JSON.parse(output[i]);
-                    } catch(e) {
-                        output_json = null;
-                    }
-                    if (!output_json) {
-                        continue;
-                    }
-                    if (!sub.name) {
-                        if (sub.isPlaylist) {
-                            sub.name = output_json.playlist_title ? output_json.playlist_title : output_json.playlist;
-                        } else {
-                            sub.name = output_json.uploader;
-                        }
-                        // if it's now valid, update
-                        if (sub.name) {
-                            let sub_name = sub.name;
-                            const sub_name_exists = await db_api.getRecord('subscriptions', {name: sub.name, isPlaylist: sub.isPlaylist, user_uid: sub.user_uid});
-                            if (sub_name_exists) sub_name += ` - ${sub.id}`;
-                            await db_api.updateRecord('subscriptions', {id: sub.id}, {name: sub_name});
-                        }
-                    }
+    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+    if (err) {
+        logger.error(err.stderr);
+        return false;
+    }
+    logger.verbose('Subscribe: got info for subscription ' + sub.id);
+    for (const output_json of parsed_output) {
+        if (!output_json) {
+            continue;
+        }
 
-                    // TODO: get even more info
-
-                    resolve(true);
-                }
-                resolve(false);
+        if (!sub.name) {
+            if (sub.isPlaylist) {
+                sub.name = output_json.playlist_title ? output_json.playlist_title : output_json.playlist;
+            } else {
+                sub.name = output_json.uploader;
             }
-        });
-    });
+            // if it's now valid, update
+            if (sub.name) {
+                let sub_name = sub.name;
+                const sub_name_exists = await db_api.getRecord('subscriptions', {name: sub.name, isPlaylist: sub.isPlaylist, user_uid: sub.user_uid});
+                if (sub_name_exists) sub_name += ` - ${sub.id}`;
+                await db_api.updateRecord('subscriptions', {id: sub.id}, {name: sub_name});
+            }
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 exports.unsubscribe = async (sub, deleteMode, user_uid = null) => {
@@ -241,33 +226,24 @@ exports.getVideosForSub = async (sub, user_uid = null) => {
     // get videos
     logger.verbose(`Subscription: getting list of videos to download for ${sub.name} with args: ${downloadConfig.join(',')}`);
 
-    return new Promise(async resolve => {
-        youtubedl.exec(sub.url, downloadConfig, {maxBuffer: Infinity}, async function(err, output) {
-            // cleanup
-            updateSubscriptionProperty(sub, {downloading: false}, user_uid);
+    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+    updateSubscriptionProperty(sub, {downloading: false}, user_uid);
+    if (!parsed_output) {
+        logger.error('Subscription check failed!');
+        if (err) logger.error(err);
+        return null;
+    }
 
-            // remove temporary archive file if it exists
-            const archive_path = path.join(appendedBasePath, 'archive.txt');
-            const archive_exists = await fs.pathExists(archive_path);
-            if (archive_exists) {
-                await fs.unlink(archive_path);
-            }
+    // remove temporary archive file if it exists
+    const archive_path = path.join(appendedBasePath, 'archive.txt');
+    const archive_exists = await fs.pathExists(archive_path);
+    if (archive_exists) {
+        await fs.unlink(archive_path);
+    }
 
-            logger.verbose('Subscription: finished check for ' + sub.name);
-            const parsed_output = utils.parseOutputJSON(output, err);
-            if (!parsed_output) {
-                logger.error('Subscription check failed!');
-                resolve(null);
-                return;
-            }
-            const files_to_download = await handleOutputJSON(parsed_output, sub, user_uid);
-            resolve(files_to_download);
-            return;
-        });
-    }, err => {
-        logger.error(err);
-        updateSubscriptionProperty(sub, {downloading: false}, user_uid);
-    });
+    logger.verbose('Subscription: finished check for ' + sub.name);
+    const files_to_download = await handleOutputJSON(parsed_output, sub, user_uid);
+    return files_to_download;
 }
 
 async function handleOutputJSON(output_jsons, sub, user_uid) {
@@ -506,14 +482,13 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
             const metric_to_compare = sub.type === 'audio' ? 'abr' : 'height';
             if (output[metric_to_compare] > file_obj[metric_to_compare]) {
                 // download new video as the simulated one is better
-                youtubedl.exec(file_obj['url'], downloadConfig, {maxBuffer: Infinity}, async (err, output) => {
-                    if (err) {
-                        logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
-                    } else if (output) {
-                        logger.verbose(`Successfully upgraded video ${file_obj['id']}'s ${metric_to_compare} from ${file_obj[metric_to_compare]} to ${output[metric_to_compare]}`);
-                        await db_api.setVideoProperty(file_obj['uid'], {[metric_to_compare]: output[metric_to_compare]});
-                    }
-                });
+                const {parsed_output, err} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+                if (err) {
+                    logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
+                } else if (parsed_output) {
+                    logger.verbose(`Successfully upgraded video ${file_obj['id']}'s ${metric_to_compare} from ${file_obj[metric_to_compare]} to ${output[metric_to_compare]}`);
+                    await db_api.setVideoProperty(file_obj['uid'], {[metric_to_compare]: output[metric_to_compare]});
+                }
             } 
         }
     });

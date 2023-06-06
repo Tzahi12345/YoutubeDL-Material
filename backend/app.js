@@ -657,27 +657,13 @@ function generateEnvVarConfigItem(key) {
 
 // currently only works for single urls
 async function getUrlInfos(url) {
-    let startDate = Date.now();
-    let result = [];
-    return new Promise(resolve => {
-        youtubedl.exec(url, ['--dump-json'], {maxBuffer: Infinity}, (err, output) => {
-            let new_date = Date.now();
-            let difference = (new_date - startDate)/1000;
-            logger.debug(`URL info retrieval delay: ${difference} seconds.`);
-            if (err) {
-                logger.error(`Error during retrieving formats for ${url}: ${err}`);
-                resolve(null);
-            }
-            let try_putput = null;
-            try {
-                try_putput = JSON.parse(output);
-                result = try_putput;
-            } catch(e) {
-                logger.error(`Failed to retrieve available formats for url: ${url}`);
-            }
-            resolve(result);
-        });
-    });
+    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, ['--dump-json']);
+    if (!parsed_output || parsed_output.length !== 1) {
+        logger.error(`Failed to retrieve available formats for url: ${url}`);
+        if (err) logger.error(err);
+        return null;
+    }
+    return parsed_output[0];
 }
 
 // youtube-dl functions

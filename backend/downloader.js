@@ -187,7 +187,7 @@ async function checkDownloads() {
             // move to next step
             running_downloads_count++;
             if (waiting_download['step_index'] === 0) {
-                collectInfo(waiting_download['uid']);
+                exports.collectInfo(waiting_download['uid']);
             } else if (waiting_download['step_index'] === 1) {
                 exports.downloadQueuedFile(waiting_download['uid']);
             }
@@ -195,7 +195,7 @@ async function checkDownloads() {
     }
 }
 
-async function collectInfo(download_uid) {
+exports.collectInfo = async (download_uid) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     if (download['paused']) {
         return;
@@ -218,17 +218,18 @@ async function collectInfo(download_uid) {
     // get video info prior to download
     let info = download['prefetched_info'] ? download['prefetched_info'] : await exports.getVideoInfoByURL(url, args, download_uid);
 
-    if (!info) {
+    if (!info || info.length === 0) {
         // info failed, error presumably already recorded
         return;
     }
 
     // in subscriptions we don't care if archive mode is enabled, but we already removed archived videos from subs by this point
     const useYoutubeDLArchive = config_api.getConfigItem('ytdl_use_youtubedl_archive');
-    if (useYoutubeDLArchive && !options.ignoreArchive) {
-        const exists_in_archive = await archive_api.existsInArchive(info['extractor'], info['id'], type, download['user_uid'], download['sub_id']);
+    if (useYoutubeDLArchive && !options.ignoreArchive && info.length === 1) {
+        const info_obj = info[0];
+        const exists_in_archive = await archive_api.existsInArchive(info['extractor'], info_obj['id'], type, download['user_uid'], download['sub_id']);
         if (exists_in_archive) {
-            const error = `File '${info['title']}' already exists in archive! Disable the archive or override to continue downloading.`;
+            const error = `File '${info_obj['title']}' already exists in archive! Disable the archive or override to continue downloading.`;
             logger.warn(error);
             if (download_uid) {
                 const download = await db_api.getRecord('download_queue', {uid: download_uid});
@@ -241,7 +242,7 @@ async function collectInfo(download_uid) {
     let category = null;
 
     // check if it fits into a category. If so, then get info again using new args
-    if (info.length === 0 || config_api.getConfigItem('ytdl_allow_playlist_categorization')) category = await categories_api.categorize(info);
+    if (info.length === 1 || config_api.getConfigItem('ytdl_allow_playlist_categorization')) category = await categories_api.categorize(info);
 
     // set custom output if the category has one and re-retrieve info so the download manager has the right file name
     if (category && category['custom_output']) {
@@ -262,14 +263,14 @@ async function collectInfo(download_uid) {
     // store info in download for future use
     for (let info_obj of info) files_to_check_for_progress.push(utils.removeFileExtension(info_obj['_filename']));
 
-    const playlist_title = info.length > 0 ? info[0]['playlist_title'] || info[0]['playlist'] : null;
+    const title = info.length > 1 ? info[0]['playlist_title'] || info[0]['playlist'] : info[0]['title'];
     await db_api.updateRecord('download_queue', {uid: download_uid}, {args: args,
                                                                     finished_step: true,
                                                                     running: false,
                                                                     options: options,
                                                                     files_to_check_for_progress: files_to_check_for_progress,
                                                                     expected_file_size: expected_file_size,
-                                                                    title: playlist_title ? playlist_title : info['title'],
+                                                                    title: title,
                                                                     category: stripped_category,
                                                                     prefetched_info: null
                                                                 });
@@ -385,8 +386,7 @@ exports.downloadQueuedFile = async(download_uid, downloadMethod = youtubedl.exec
 
             if (file_objs.length > 1) {
                 // create playlist
-                const playlist_name = file_objs.map(file_obj => file_obj.title).join(', ');
-                container = await files_api.createPlaylist(playlist_name, file_objs.map(file_obj => file_obj.uid), download['user_uid']);
+                container = await files_api.createPlaylist(download['title'], file_objs.map(file_obj => file_obj.uid), download['user_uid']);
             } else if (file_objs.length === 1) {
                 container = file_objs[0];
             } else {
@@ -536,34 +536,30 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
 }
 
 exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
-    return new Promise(resolve => {
-        // remove bad args
-        const temp_args = utils.filterArgs(args, ['--no-simulate']);
-        const new_args = [...temp_args];
+    // remove bad args
+    const temp_args = utils.filterArgs(args, ['--no-simulate']);
+    const new_args = [...temp_args];
 
-        const archiveArgIndex = new_args.indexOf('--download-archive');
-        if (archiveArgIndex !== -1) {
-            new_args.splice(archiveArgIndex, 2);
+    const archiveArgIndex = new_args.indexOf('--download-archive');
+    if (archiveArgIndex !== -1) {
+        new_args.splice(archiveArgIndex, 2);
+    }
+
+    new_args.push('--dump-json');
+
+    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, new_args);
+    if (!parsed_output || parsed_output.length === 0) {
+        let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
+        if (err.stderr) error_message += `\n\n${err.stderr}`;
+        logger.error(error_message);
+        if (download_uid) {
+            const download = await db_api.getRecord('download_queue', {uid: download_uid});
+            await handleDownloadError(download, error_message, 'info_retrieve_failed');
         }
+        return null;
+    }
 
-        new_args.push('--dump-json');
-
-        youtubedl.exec(url, new_args, {maxBuffer: Infinity}, async (err, output) => {
-            const parsed_output = utils.parseOutputJSON(output, err);
-            if (parsed_output) {
-                resolve(parsed_output);
-            } else {
-                let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
-                if (err.stderr) error_message += `\n\n${err.stderr}`;
-                logger.error(error_message);
-                if (download_uid) {
-                    const download = await db_api.getRecord('download_queue', {uid: download_uid});
-                    await handleDownloadError(download, error_message, 'info_retrieve_failed');
-                }
-                resolve(null);
-            }
-        });
-    });
+    return parsed_output;
 }
 
 function filterArgs(args, isAudio) {
