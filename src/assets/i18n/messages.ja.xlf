@@ -2358,6 +2358,7 @@
       </trans-unit>
       <trans-unit id="607de17c2a755f65775881c19e276e7c933bcf94" datatype="html">
         <source>Category</source>
+        <target state="translated">カテゴリ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">32</context>
@@ -3243,6 +3244,7 @@
       </trans-unit>
       <trans-unit id="5473e36f5102e2ae22ce4c6620cacc40cc98da95" datatype="html">
         <source>Example:</source>
+        <target state="translated">例:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">326</context>
@@ -3307,6 +3309,7 @@
       </trans-unit>
       <trans-unit id="0c43af932e6a4ee85500e28f01b3538b4eb27bc4" datatype="html">
         <source>Log Level</source>
+        <target state="translated">記録対象</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">380</context>
@@ -3331,6 +3334,7 @@
       </trans-unit>
       <trans-unit id="431e5f3a0dde88768d1074baedd65266412b3f02" datatype="html">
         <source>Use Cookies</source>
+        <target state="translated">クッキーを使用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">411</context>
@@ -3339,6 +3343,7 @@
       </trans-unit>
       <trans-unit id="80651a7ad1229ea6613557d3559f702cfa5aecf5" datatype="html">
         <source>Set Cookies</source>
+        <target state="translated">クッキーを設定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">412</context>
@@ -3347,6 +3352,7 @@
       </trans-unit>
       <trans-unit id="635285fa5624d50a408feb7eb564c0db0d3f1ce1" datatype="html">
         <source>Restart server</source>
+        <target state="translated">サイバーを再起動</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">424</context>
@@ -3355,6 +3361,7 @@
       </trans-unit>
       <trans-unit id="4d13a9cd5ed3dcee0eab22cb25198d43886942be" datatype="html">
         <source>Users</source>
+        <target state="translated">ユーザー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">433</context>
@@ -3363,6 +3370,7 @@
       </trans-unit>
       <trans-unit id="37224420db54d4bc7696f157b779a7225f03ca9d" datatype="html">
         <source>Allow user registration</source>
+        <target state="translated">ユーザー登録を許可</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">439</context>
@@ -3371,6 +3379,7 @@
       </trans-unit>
       <trans-unit id="fa548cee6ea11c160a416cac3e6bdec0363883dc" datatype="html">
         <source>Auth method</source>
+        <target state="translated">認証方法</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">443</context>
@@ -3379,6 +3388,7 @@
       </trans-unit>
       <trans-unit id="4f56ced9d6b85aeb1d4346433361d47ea72dac1a" datatype="html">
         <source>Internal</source>
+        <target state="translated">内部</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">445</context>
@@ -3387,6 +3397,7 @@
       </trans-unit>
       <trans-unit id="e3d7c5f019e79a3235a28ba24df24f11712c7627" datatype="html">
         <source>LDAP</source>
+        <target state="translated">LDAP</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">448</context>
@@ -3395,6 +3406,7 @@
       </trans-unit>
       <trans-unit id="1db9789b93069861019bd0ccaa5d4706b00afc61" datatype="html">
         <source>LDAP URL</source>
+        <target state="translated">LDAPのURL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">455</context>
@@ -3525,6 +3537,7 @@
       </trans-unit>
       <trans-unit id="6018050954136387828" datatype="html">
         <source>Connection successful!</source>
+        <target state="translated">接続に成功！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">357</context>
@@ -3532,6 +3545,7 @@
       </trans-unit>
       <trans-unit id="4021495815084152271" datatype="html">
         <source>Connection failed! Error:</source>
+        <target state="translated">接続に失敗！エラー:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">359</context>
@@ -3554,6 +3568,7 @@
       </trans-unit>
       <trans-unit id="807cf11e6ac1cde912496f764c176bdfdd6b7e19" datatype="html">
         <source>Channels</source>
+        <target state="translated">チャンネル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
           <context context-type="linenumber">8</context>
@@ -3609,6 +3624,256 @@
           <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">Select a version</note>
+      </trans-unit>
+      <trans-unit id="6080b77234e92ad41bb52653b239c4c4f851317d" datatype="html">
+        <source>Error</source>
+        <target state="translated">エラー</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <note priority="1" from="description">Error</note>
+      </trans-unit>
+      <trans-unit id="9042260521669277115" datatype="html">
+        <source>Pause</source>
+        <target state="translated">停止</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1d4fa01d25990f60abf21c3a451fa8ba262b7912" datatype="html">
+        <source>Unfavorite</source>
+        <target state="translated">お気に入り解除</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="description">Unfavorite button</note>
+      </trans-unit>
+      <trans-unit id="8456659390937171831" datatype="html">
+        <source>Show error</source>
+        <target state="translated">エラーを表示</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6437411876967154040" datatype="html">
+        <source>Audio only</source>
+        <target state="translated">音声のみ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6268070779441507380" datatype="html">
+        <source>Download Date</source>
+        <target state="translated">ダウンロード日</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3533826530554274875" datatype="html">
+        <source>Upload Date</source>
+        <target state="translated">アップロード日</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9a865c2922f5c01899d06c472dba2e5bd63bcff9" datatype="html">
+        <source>Small</source>
+        <target state="translated">小</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+        <note priority="1" from="description">Small</note>
+      </trans-unit>
+      <trans-unit id="8c6e24eab969d9f63a8a0e9d617aee3b99e28ae6" datatype="html">
+        <source>Play all</source>
+        <target state="translated">すべて再生</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="description">Play all</note>
+      </trans-unit>
+      <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html">
+        <source>ID</source>
+        <target state="translated">ID</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <note priority="1" from="description">ID</note>
+      </trans-unit>
+      <trans-unit id="019d4bd6a5690f0cfa0ecf346a4e6bf7f0d8debb" datatype="html">
+        <source>Remove</source>
+        <target state="translated">除去</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">Remove</note>
+      </trans-unit>
+      <trans-unit id="5947241266456580665" datatype="html">
+        <source>Download failed</source>
+        <target state="translated">ダウンロードに失敗</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8643601595923420698" datatype="html">
+        <source>Retry download</source>
+        <target state="translated">ダウンロード再試行</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5a105e7bd7e7db6ea211fe950fc9f317379acceb" datatype="html">
+        <source>No notifications available</source>
+        <target state="translated">通知なし</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications/notifications.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">No notifications available</note>
+      </trans-unit>
+      <trans-unit id="6876310993601590130" datatype="html">
+        <source>Download completed</source>
+        <target state="translated">ダウンロード完了</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1879058637439215882" datatype="html">
+        <source>Download error</source>
+        <target state="translated">ダウンロードエラー</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7410432243549869948" datatype="html">
+        <source>Duration</source>
+        <target state="translated">長さ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7182974689040833178" datatype="html">
+        <source>Resume</source>
+        <target state="translated">再開</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8571838164752006148" datatype="html">
+        <source>View error</source>
+        <target state="translated">エラーを表示</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7911845622864460134" datatype="html">
+        <source>Video only</source>
+        <target state="translated">動画のみ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8953033926734869941" datatype="html">
+        <source>Name</source>
+        <target state="translated">名前</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2492098975665776610" datatype="html">
+        <source>File Size</source>
+        <target state="translated">ファイルサイズ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c65dd978b3c7566551c0ebefb234c2d41942b847" datatype="html">
+        <source>Delete files older than</source>
+        <target state="translated">これより古いファイルを削除</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <note priority="1" from="description">Delete files older than</note>
+      </trans-unit>
+      <trans-unit id="11a0771f88158a540a54e0e4ec5d25733d65fc0e" datatype="html">
+        <source>Favorite</source>
+        <target state="translated">お気に入り</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">Favorite button</note>
+      </trans-unit>
+      <trans-unit id="e0a11fbea353b1ce1131161774e4a3e10bcb99b1" datatype="html">
+        <source>Large</source>
+        <target state="translated">大</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+        <note priority="1" from="description">Large</note>
+      </trans-unit>
+      <trans-unit id="378c072ce05889c9771718d05106e7685fcd3507" datatype="html">
+        <source>Medium</source>
+        <target state="translated">中</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+        <note priority="1" from="description">Medium</note>
+      </trans-unit>
+      <trans-unit id="c5dc5fbcce45e9b1530e2a5c2baa8ebe722aef4c" datatype="html">
+        <source>Download complete</source>
+        <target state="translated">ダウンロード完了</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">358</context>
+        </context-group>
+        <note priority="1" from="description">Download complete</note>
+      </trans-unit>
+      <trans-unit id="3ffd9490f3a4c0b24021d25e1dc71fcfe5d39cd6" datatype="html">
+        <source>Download error</source>
+        <target state="translated">ダウンロードエラー</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">359</context>
+        </context-group>
+        <note priority="1" from="description">Download error</note>
+      </trans-unit>
+      <trans-unit id="674a999dd48d7da565ffdd105602261b8a4761ea" datatype="html">
+        <source>Download zip</source>
+        <target state="translated">ZIPをダウウンロード</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">Download zip</note>
       </trans-unit>
     </body>
   </file>
