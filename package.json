@@ -59,7 +59,7 @@
     "@angular/language-service": "^15.0.1",
     "@types/core-js": "^2.5.2",
     "@types/file-saver": "^2.0.1",
-    "@types/jasmine": "^4.3.1",
+    "@types/jasmine": "^4.3.5",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
