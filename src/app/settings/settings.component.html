@@ -412,6 +412,9 @@
                     <div class="col-12 mt-3">
                         <mat-checkbox color="accent" [disabled]="!new_config['Extra']['enable_notifications']" [(ngModel)]="new_config['API']['use_telegram_API']"><ng-container i18n="Use Telegram API setting">Use Telegram API</ng-container></mat-checkbox>
                     </div>
+                    <div class="col-12 mt-3">
+                        <mat-checkbox color="accent" [disabled]="!new_config['API']['use_telegram_requests']" [(ngModel)]="new_config['API']['use_telegram_requests']"><ng-container i18n="Check Telegram for requests">Check Telegram for Messages</ng-container></mat-checkbox>
+                    </div>
                     <div class="col-12 mb-2">
                         <mat-form-field class="text-field" color="accent">
                             <mat-label i18n="Telegram bot token">Telegram bot token</mat-label>

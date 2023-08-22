@@ -146,6 +146,14 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_use_telegram_API',
         'path': 'YoutubeDLMaterial.API.use_telegram_API'
     },
+    'ytdl_use_telegram_requests': {
+        'key': 'ytdl_use_telegram_API',
+        'path': 'YoutubeDLMaterial.API.use_telegram_requests'
+    },
+    'ytdl_telegram_last_message_id': {
+        'key': 'ytdl_telegram_last_message_id',
+        'path': 'YoutubeDLMaterial.API.telegram_last_message_id'
+    },
     'ytdl_telegram_bot_token': {
         'key': 'ytdl_telegram_bot_token',
         'path': 'YoutubeDLMaterial.API.telegram_bot_token'

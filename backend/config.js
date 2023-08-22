@@ -219,6 +219,8 @@ const DEFAULT_CONFIG = {
         "use_telegram_API": false,
         "telegram_bot_token": "",
         "telegram_chat_id": "",
+        "use_telegram_requests": false,
+        "telegram_last_message_id": 0,
         "webhook_URL": "",
         "discord_webhook_URL": "",
         "slack_webhook_URL": "",
