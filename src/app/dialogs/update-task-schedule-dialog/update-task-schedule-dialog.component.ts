@@ -15,6 +15,7 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
   days_of_week = [];
   interval = 'daily';
   time = null;
+  minute = null;
   date: Date = null;
   today = new Date();
   Intl = Intl;
@@ -43,13 +44,13 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
       const hour = schedule['data']['hour'];
       const minute = schedule['data']['minute'];
 
-      // add padding 0s if necessary to hours and minutes
       this.time = (hour < 10 ? '0' : '') + hour + ':' + (minute < 10 ? '0' : '') + minute;
 
       if (schedule['data']['dayOfWeek']) {
         this.days_of_week = schedule['data']['dayOfWeek'];
-        this.interval = 'weekly';
-      } else {
+        this.interval = (hour != null) ? 'weekly' : 'hourly';
+      }
+      else {
         this.interval = 'daily';
       }
     } else {
@@ -65,19 +66,19 @@ export class UpdateTaskScheduleDialogComponent implements OnInit {
       return;
     }
 
-    if (!this.time) {
+    if (!this.time && this.interval !== 'hourly') {
       // needs time!
       this.postsService.openSnackBar($localize`You must input a time!`);
       return;
     }
 
-    const hours = parseInt(this.time.split(':')[0]);
-    const minutes = parseInt(this.time.split(':')[1]);
+    const hours = (this.interval !== 'hourly') ? parseInt(this.time.split(':')[0]) : null;
+    const minutes = (this.interval !== 'hourly') ? parseInt(this.time.split(':')[1]) : parseInt(this.minute);
 
     const schedule: Schedule = {type: this.recurring ? Schedule.type.RECURRING : Schedule.type.TIMESTAMP, data: null};
     if (this.recurring) {
       schedule['data'] = {hour: hours, minute: minutes};
-      if (this.interval === 'weekly') {
+      if (this.interval === 'weekly' || this.interval === 'hourly') {
         schedule['data']['dayOfWeek'] = this.days_of_week;
       }
     } else {

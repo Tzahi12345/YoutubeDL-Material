@@ -6,13 +6,6 @@ const TelegramBot = require('node-telegram-bot-api');
 
  // checks if url is a valid URL
 function isValidURL(str) {
-    // mark multiple urls as valid but don't get additional info
-    const urls = this.getURLArray(str);
-    if (urls.length > 1) {
-      this.autoplay = false;
-      return true;
-    }
-    
     // tslint:disable-next-line: max-line-length
     const strRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     const re = new RegExp(strRegex);

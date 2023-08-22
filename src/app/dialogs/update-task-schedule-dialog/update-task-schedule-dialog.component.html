@@ -12,6 +12,7 @@
             <div class="col-12 mt-2" *ngIf="recurring">
                 <mat-form-field>
                     <mat-select placeholder="Interval" [(ngModel)]="interval" [disabled]="!enabled">
+                        <mat-option value="hourly">Hourly</mat-option>
                       <mat-option value="weekly">Weekly</mat-option>
                       <mat-option value="daily">Daily</mat-option>
                     </mat-select>
@@ -25,7 +26,7 @@
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
             </div>
-            <div *ngIf="recurring && interval === 'weekly'" class="col-12 mt-2">
+            <div *ngIf="recurring && (interval === 'weekly' || interval === 'hourly')" class="col-12 mt-2">
                 <mat-button-toggle-group [(ngModel)]="days_of_week" [multiple]="true" [disabled]="!enabled" aria-label="Week day">
                     <!-- TODO: support translation -->
                     <mat-button-toggle [value]="0">M</mat-button-toggle>
@@ -37,11 +38,17 @@
                     <mat-button-toggle [value]="6">S</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
-            <div class="col-12 mt-2">
+            <div class="col-12 mt-2" *ngIf="interval != 'hourly'">
                 <mat-form-field>
                     <mat-label>Time</mat-label>
                     <input type="time" matInput [(ngModel)]="time" [disabled]="!enabled">
                     <mat-hint *ngIf="Intl?.DateTimeFormat().resolvedOptions().timeZone">{{Intl.DateTimeFormat().resolvedOptions().timeZone}}</mat-hint>
+                </mat-form-field>
+            </div>
+            <div class="col-12 mt-2" *ngIf="interval === 'hourly'">
+                <mat-form-field>
+                    <mat-label>Minute</mat-label>
+                    <input type="number" matInput [(ngModel)]="minute" [disabled]="!enabled">
                 </mat-form-field>
             </div>
         </div>
