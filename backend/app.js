@@ -670,7 +670,7 @@ async function getUrlInfos(url) {
 
 async function startYoutubeDL() {
     // auto update youtube-dl
-    youtubedl_api.verifyBinaryExistsLinux();
+    youtubedl_api.verifyBinaryExists();
     const update_available = await youtubedl_api.checkForYoutubeDLUpdate();
     if (update_available) await youtubedl_api.updateYoutubeDL(update_available);
 }

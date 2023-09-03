@@ -4,6 +4,9 @@ const low = require('lowdb')
 const winston = require('winston');
 const path = require('path');
 const util = require('util');
+const fs = require('fs-extra');
+const { uuid } = require('uuidv4');
+const NodeID3 = require('node-id3');
 const exec = util.promisify(require('child_process').exec);
 
 const FileSync = require('lowdb/adapters/FileSync');
@@ -44,9 +47,7 @@ const categories_api = require('../categories');
 const files_api = require('../files');
 const youtubedl_api = require('../youtube-dl');
 const config_api = require('../config');
-const fs = require('fs-extra');
-const { uuid } = require('uuidv4');
-const NodeID3 = require('node-id3');
+const CONSTS = require('../consts');
 
 db_api.initialize(db, users_db, 'local_db_test.json');
 
@@ -621,6 +622,33 @@ describe('Downloader', function() {
             // cleanup
             if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
         });
+    });
+});
+
+describe('youtube-dl', async function() {
+    beforeEach(async function () {
+        if (fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.unlinkSync(CONSTS.DETAILS_BIN_PATH);
+        await youtubedl_api.checkForYoutubeDLUpdate();
+    });
+    it('Check latest version', async function() {
+        const latest_version = await youtubedl_api.checkForYoutubeDLUpdate();
+        const default_details_bin = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
+        assert(default_details_bin['version'] === CONSTS.OUTDATED_YOUTUBEDL_VERSION);
+        assert(latest_version > default_details_bin['version']);
+    });
+
+    it('Update youtube-dl', async function() {
+        this.timeout(300000);
+        const original_fork = config_api.getConfigItem('ytdl_default_downloader');
+        const binary_path = path.join('test', 'test_binary');
+        for (const youtubedl_fork in youtubedl_api.youtubedl_forks) {
+            config_api.setConfigItem('ytdl_default_downloader', youtubedl_fork);
+            const latest_version = await youtubedl_api.checkForYoutubeDLUpdate();
+            await youtubedl_api.updateYoutubeDL(latest_version, binary_path);
+            assert(fs.existsSync(binary_path));
+            if (fs.existsSync(binary_path)) fs.unlinkSync(binary_path);
+        }
+        config_api.setConfigItem('ytdl_default_downloader', original_fork);
     });
 });
 
