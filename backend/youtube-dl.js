@@ -1,5 +1,7 @@
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
+const execa = require('execa');
+const kill = require('tree-kill');
 
 const logger = require('./logger');
 const utils = require('./utils');
@@ -24,13 +26,50 @@ exports.youtubedl_forks = {
     }
 }
 
-exports.runYoutubeDL = async (url, args, downloadMethod = youtubedl.exec) => {
+exports.runYoutubeDL = async (url, args, downloadMethod = null) => {
+    let callback = null;
+    let child_process = null;
+    if (downloadMethod) {
+        callback = exports.runYoutubeDLMain(url, args, downloadMethod);
+    } else {
+        ({callback, child_process} = await runYoutubeDLProcess(url, args));
+    }
+
+    return {child_process, callback};
+}
+
+// Run youtube-dl in a main thread (with possible downloadMethod)
+exports.runYoutubeDLMain = async (url, args, downloadMethod = youtubedl.exec) => {
     return new Promise(resolve => {
         downloadMethod(url, args, {maxBuffer: Infinity}, async function(err, output) {
             const parsed_output = utils.parseOutputJSON(output, err);
             resolve({parsed_output, err});
         });
     });
+}
+
+// Run youtube-dl in a subprocess
+const runYoutubeDLProcess = async (url, args) => {
+    const child_process = execa(await getYoutubeDLPath(), [url, ...args], {maxBuffer: Infinity});
+    const callback = new Promise(async resolve => {
+        try {
+            const {stdout, stderr} = await child_process;
+            const parsed_output = utils.parseOutputJSON(stdout.trim().split(/\r?\n/), stderr);
+            resolve({parsed_output, err: stderr});
+        } catch (e) {
+            resolve({parsed_output: null, err: e})
+        }
+    });
+    return {child_process, callback}
+}
+
+async function getYoutubeDLPath() {
+    const guessed_base_path = 'node_modules/youtube-dl/bin/';
+    return guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
+}
+
+exports.killYoutubeDLProcess = async (child_process) => {
+    kill(child_process.pid, 'SIGKILL');
 }
 
 exports.checkForYoutubeDLUpdate = async () => {

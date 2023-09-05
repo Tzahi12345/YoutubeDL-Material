@@ -8,6 +8,7 @@ export type Download = {
     running: boolean;
     finished: boolean;
     paused: boolean;
+    cancelled?: boolean;
     finished_step: boolean;
     url: string;
     type: string;

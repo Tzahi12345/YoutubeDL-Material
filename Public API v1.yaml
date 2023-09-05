@@ -2683,6 +2683,8 @@ components:
           type: boolean
         paused:
           type: boolean
+        cancelled:
+          type: boolean
         finished_step:
           type: boolean
         url:

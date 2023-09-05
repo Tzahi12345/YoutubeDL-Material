@@ -4,8 +4,6 @@ const path = require('path');
 const NodeID3 = require('node-id3')
 const Mutex = require('async-mutex').Mutex;
 
-const youtubedl = require('youtube-dl');
-
 const logger = require('./logger');
 const youtubedl_api = require('./youtube-dl');
 const config_api = require('./config');
@@ -20,6 +18,8 @@ const archive_api = require('./archive');
 
 const mutex = new Mutex();
 let should_check_downloads = true;
+
+const download_to_child_process = {};
 
 if (db_api.database_initialized) {
     exports.setupDownloads();
@@ -84,8 +84,11 @@ exports.pauseDownload = async (download_uid) => {
     } else if (download['finished']) {
         logger.info(`Download ${download_uid} could not be paused before completing.`);
         return false;
+    } else {
+        logger.info(`Pausing download ${download_uid}`);
     }
 
+    killActiveDownload(download);
     return await db_api.updateRecord('download_queue', {uid: download_uid}, {paused: true, running: false});
 }
 
@@ -120,16 +123,23 @@ exports.cancelDownload = async (download_uid) => {
     } else if (download['finished']) {
         logger.info(`Download ${download_uid} could not be cancelled before completing.`);
         return false;
+    } else {
+        logger.info(`Cancelling download ${download_uid}`);
     }
-    return await db_api.updateRecord('download_queue', {uid: download_uid}, {cancelled: true, running: false});
+
+    killActiveDownload(download);
+    await handleDownloadError(download_uid, 'Cancelled', 'cancelled');
+    return await db_api.updateRecord('download_queue', {uid: download_uid}, {cancelled: true});
 }
 
 exports.clearDownload = async (download_uid) => {
     return await db_api.removeRecord('download_queue', {uid: download_uid});
 }
 
-async function handleDownloadError(download, error_message, error_type = null) {
-    if (!download || !download['uid']) return;
+async function handleDownloadError(download_uid, error_message, error_type = null) {
+    if (!download_uid) return;
+    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (download['error']) return;
     notifications_api.sendDownloadErrorNotification(download, download['user_uid'], error_message, error_type);
     await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false, error_type: error_type});
 }
@@ -180,7 +190,7 @@ async function checkDownloads() {
             if (waiting_download['sub_id']) {
                 const sub_missing = !(await db_api.getRecord('subscriptions', {id: waiting_download['sub_id']}));
                 if (sub_missing) {
-                    handleDownloadError(waiting_download, `Download failed as subscription with id '${waiting_download['sub_id']}' is missing!`, 'sub_id_missing');
+                    handleDownloadError(waiting_download['uid'], `Download failed as subscription with id '${waiting_download['sub_id']}' is missing!`, 'sub_id_missing');
                     continue;
                 }
             }
@@ -192,6 +202,14 @@ async function checkDownloads() {
                 exports.downloadQueuedFile(waiting_download['uid']);
             }
         }
+    }
+}
+
+function killActiveDownload(download) {
+    const child_process = download_to_child_process[download['uid']];
+    if (download['step_index'] === 2 && child_process) {
+        youtubedl_api.killYoutubeDLProcess(child_process);
+        delete download_to_child_process[download['uid']];
     }
 }
 
@@ -232,8 +250,7 @@ exports.collectInfo = async (download_uid) => {
             const error = `File '${info_obj['title']}' already exists in archive! Disable the archive or override to continue downloading.`;
             logger.warn(error);
             if (download_uid) {
-                const download = await db_api.getRecord('download_queue', {uid: download_uid});
-                await handleDownloadError(download, error, 'exists_in_archive');
+                await handleDownloadError(download_uid, error, 'exists_in_archive');
                 return;
             }
         }
@@ -276,7 +293,7 @@ exports.collectInfo = async (download_uid) => {
                                                                 });
 }
 
-exports.downloadQueuedFile = async(download_uid, downloadMethod = youtubedl.exec) => {
+exports.downloadQueuedFile = async(download_uid, downloadMethod = null) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     if (download['paused']) {
         return;
@@ -306,21 +323,25 @@ exports.downloadQueuedFile = async(download_uid, downloadMethod = youtubedl.exec
         const download_checker = setInterval(() => checkDownloadPercent(download['uid']), 1000);
         const file_objs = [];
         // download file
-        const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, args, downloadMethod);
+        let {child_process, callback} = await youtubedl_api.runYoutubeDL(url, args, downloadMethod);
+        if (child_process) download_to_child_process[download['uid']] = child_process;
+        const {parsed_output, err} = await callback;
         clearInterval(download_checker);
         let end_time = Date.now();
         let difference = (end_time - start_time)/1000;
         logger.debug(`${type === 'audio' ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
         if (!parsed_output) {
-            logger.error(err.stderr);
-            await handleDownloadError(download, err.stderr, 'unknown_error');
+            const errored_download = await db_api.getRecord('download_queue', {uid: download_uid});
+            if (errored_download['paused']) return;
+            logger.error(err.toString());
+            await handleDownloadError(download_uid, err.toString(), 'unknown_error');
             resolve(false);
             return;
         } else if (parsed_output) {
             if (parsed_output.length === 0 || parsed_output[0].length === 0) {
                 // ERROR!
                 const error_message = `No output received for video download, check if it exists in your archive.`;
-                await handleDownloadError(download, error_message, 'no_output');
+                await handleDownloadError(download_uid, error_message, 'no_output');
                 logger.warn(error_message);
                 resolve(false);
                 return;
@@ -392,7 +413,7 @@ exports.downloadQueuedFile = async(download_uid, downloadMethod = youtubedl.exec
             } else {
                 const error_message = 'Downloaded file failed to result in metadata object.';
                 logger.error(error_message);
-                await handleDownloadError(download, error_message, 'no_metadata');
+                await handleDownloadError(download_uid, error_message, 'no_metadata');
             }
 
             const file_uids = file_objs.map(file_obj => file_obj.uid);
@@ -547,14 +568,13 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
 
     new_args.push('--dump-json');
 
-    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, new_args);
+    const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(url, new_args);
     if (!parsed_output || parsed_output.length === 0) {
         let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
         if (err.stderr) error_message += `\n\n${err.stderr}`;
         logger.error(error_message);
         if (download_uid) {
-            const download = await db_api.getRecord('download_queue', {uid: download_uid});
-            await handleDownloadError(download, error_message, 'info_retrieve_failed');
+            await handleDownloadError(download_uid, error_message, 'info_retrieve_failed');
         }
         return null;
     }

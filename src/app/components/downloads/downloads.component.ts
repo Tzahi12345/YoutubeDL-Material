@@ -69,8 +69,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
       tooltip: $localize`Pause`,
       action: (download: Download) => this.pauseDownload(download),
       show: (download: Download) => !download.finished && (!download.paused || !download.finished_step),
-      icon: 'pause',
-      loading: (download: Download) => download.paused && !download.finished_step
+      icon: 'pause'
     },
     {
       tooltip: $localize`Resume`,
@@ -81,7 +80,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     {
       tooltip: $localize`Cancel`,
       action: (download: Download) => this.cancelDownload(download),
-      show: (download: Download) => false && !download.finished && !download.paused, // TODO: add possibility to cancel download
+      show: (download: Download) => !download.finished && !download.paused && !download.cancelled,
       icon: 'cancel'
     },
     {

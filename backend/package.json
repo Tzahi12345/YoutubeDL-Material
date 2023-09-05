@@ -61,6 +61,7 @@
     "read-last-lines": "^1.7.2",
     "rxjs": "^7.3.0",
     "shortid": "^2.2.15",
+    "tree-kill": "^1.2.2",
     "unzipper": "^0.10.10",
     "uuidv4": "^6.2.13",
     "winston": "^3.7.2",

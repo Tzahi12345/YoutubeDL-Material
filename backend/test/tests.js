@@ -650,6 +650,16 @@ describe('youtube-dl', async function() {
         }
         config_api.setConfigItem('ytdl_default_downloader', original_fork);
     });
+
+    it('Run process', async function() {
+        this.timeout(300000);
+        const downloader_api = require('../downloader');
+        const url = 'https://www.youtube.com/watch?v=hpigjnKl7nI';
+        const args = await downloader_api.generateArgs(url, 'video', {}, null, true);
+        const {child_process, callback} = await youtubedl_api.runYoutubeDL(url, args);
+        assert(child_process);
+        console.log(await callback);
+    });
 });
 
 describe('Tasks', function() {
