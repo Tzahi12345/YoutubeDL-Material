@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const youtubedl = require('youtube-dl');
 
 const youtubedl_api = require('./youtube-dl');
 const config_api = require('./config');
@@ -475,23 +474,21 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
     const downloadConfig = await generateArgsForSubscription(sub, user_uid, true, new_path);
     logger.verbose(`Checking if a better version of the fresh upload ${file_obj['id']} exists.`);
     // simulate a download to verify that a better version exists
-    youtubedl.getInfo(file_obj['url'], downloadConfig, async (err, output) => {
-        if (err) {
-            // video is not available anymore for whatever reason
-        } else if (output) {
-            const metric_to_compare = sub.type === 'audio' ? 'abr' : 'height';
-            if (output[metric_to_compare] > file_obj[metric_to_compare]) {
-                // download new video as the simulated one is better
-                const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(sub.url, downloadConfig);
-                if (err) {
-                    logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
-                } else if (parsed_output) {
-                    logger.verbose(`Successfully upgraded video ${file_obj['id']}'s ${metric_to_compare} from ${file_obj[metric_to_compare]} to ${output[metric_to_compare]}`);
-                    await db_api.setVideoProperty(file_obj['uid'], {[metric_to_compare]: output[metric_to_compare]});
-                }
-            } 
-        }
-    });
+    
+    const info = await downloader_api.getVideoInfoByURL(file_obj['url'], downloadConfig);
+    if (info && info.length === 1) {
+        const metric_to_compare = sub.type === 'audio' ? 'abr' : 'height';
+        if (info[metric_to_compare] > file_obj[metric_to_compare]) {
+            // download new video as the simulated one is better
+            const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(sub.url, downloadConfig);
+            if (err) {
+                logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
+            } else if (parsed_output) {
+                logger.verbose(`Successfully upgraded video ${file_obj['id']}'s ${metric_to_compare} from ${file_obj[metric_to_compare]} to ${info[metric_to_compare]}`);
+                await db_api.setVideoProperty(file_obj['uid'], {[metric_to_compare]: info[metric_to_compare]});
+            }
+        } 
+    }
     await db_api.setVideoProperty(file_obj['uid'], {'fresh_upload': false});
 }
 

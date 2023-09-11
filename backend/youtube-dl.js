@@ -7,7 +7,6 @@ const logger = require('./logger');
 const utils = require('./utils');
 const CONSTS = require('./consts');
 const config_api = require('./config.js');
-const youtubedl = require('youtube-dl');
 
 const is_windows = process.platform === 'win32';
 
@@ -39,7 +38,7 @@ exports.runYoutubeDL = async (url, args, downloadMethod = null) => {
 }
 
 // Run youtube-dl in a main thread (with possible downloadMethod)
-exports.runYoutubeDLMain = async (url, args, downloadMethod = youtubedl.exec) => {
+exports.runYoutubeDLMain = async (url, args, downloadMethod = defaultDownloadMethod) => {
     return new Promise(resolve => {
         downloadMethod(url, args, {maxBuffer: Infinity}, async function(err, output) {
             const parsed_output = utils.parseOutputJSON(output, err);
@@ -66,6 +65,12 @@ const runYoutubeDLProcess = async (url, args) => {
 async function getYoutubeDLPath() {
     const guessed_base_path = 'node_modules/youtube-dl/bin/';
     return guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
+}
+
+async function defaultDownloadMethod(url, args, options, callback) {
+    const {child_process, _} = await runYoutubeDLProcess(url, args);
+    const {stdout, stderr} = await child_process;
+    return await callback(stderr, stdout.trim().split(/\r?\n/));
 }
 
 exports.killYoutubeDLProcess = async (child_process) => {

@@ -23,8 +23,6 @@ const session = require('express-session');
 // needed if bin/details somehow gets deleted
 if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
 
-const youtubedl = require('youtube-dl');
-
 const logger = require('./logger');
 const config_api = require('./config.js');
 const downloader_api = require('./downloader');
