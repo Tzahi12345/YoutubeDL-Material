@@ -63,7 +63,8 @@ async function getSubscriptionInfo(sub) {
         }
     }
 
-    const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(sub.url, downloadConfig);
+    let {callback} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+    const {parsed_output, err} = await callback;
     if (err) {
         logger.error(err.stderr);
         return false;
@@ -225,8 +226,9 @@ exports.getVideosForSub = async (sub, user_uid = null) => {
     // get videos
     logger.verbose(`Subscription: getting list of videos to download for ${sub.name} with args: ${downloadConfig.join(',')}`);
 
-    const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(sub.url, downloadConfig);
-    updateSubscriptionProperty(sub, {downloading: false}, user_uid);
+    let {callback} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+    const {parsed_output, err} = await callback;
+    updateSubscriptionProperty(sub, {downloading: false, child_process: null}, user_uid);
     if (!parsed_output) {
         logger.error('Subscription check failed!');
         if (err) logger.error(err);
@@ -480,7 +482,8 @@ async function checkVideoIfBetterExists(file_obj, sub, user_uid) {
         const metric_to_compare = sub.type === 'audio' ? 'abr' : 'height';
         if (info[metric_to_compare] > file_obj[metric_to_compare]) {
             // download new video as the simulated one is better
-            const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(sub.url, downloadConfig);
+            let {callback} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+            const {parsed_output, err} = await callback;
             if (err) {
                 logger.verbose(`Failed to download better version of video ${file_obj['id']}`);
             } else if (parsed_output) {

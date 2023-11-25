@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const fetch = require('node-fetch');
+const path = require('path');
 const execa = require('execa');
 const kill = require('tree-kill');
 
@@ -25,11 +26,11 @@ exports.youtubedl_forks = {
     }
 }
 
-exports.runYoutubeDL = async (url, args, downloadMethod = null) => {
+exports.runYoutubeDL = async (url, args, customDownloadHandler = null) => {
     let callback = null;
     let child_process = null;
-    if (downloadMethod) {
-        callback = exports.runYoutubeDLMain(url, args, downloadMethod);
+    if (customDownloadHandler) {
+        callback = runYoutubeDLCustom(url, args, customDownloadHandler);
     } else {
         ({callback, child_process} = await runYoutubeDLProcess(url, args));
     }
@@ -37,19 +38,27 @@ exports.runYoutubeDL = async (url, args, downloadMethod = null) => {
     return {child_process, callback};
 }
 
-// Run youtube-dl in a main thread (with possible downloadMethod)
-exports.runYoutubeDLMain = async (url, args, downloadMethod = defaultDownloadMethod) => {
+// Run youtube-dl directly (not cancellable)
+const runYoutubeDLCustom = async (url, args, customDownloadHandler) => {
+    const downloadHandler = customDownloadHandler;
     return new Promise(resolve => {
-        downloadMethod(url, args, {maxBuffer: Infinity}, async function(err, output) {
+        downloadHandler(url, args, {maxBuffer: Infinity}, async function(err, output) {
             const parsed_output = utils.parseOutputJSON(output, err);
             resolve({parsed_output, err});
         });
     });
 }
 
-// Run youtube-dl in a subprocess
-const runYoutubeDLProcess = async (url, args) => {
-    const child_process = execa(await getYoutubeDLPath(), [url, ...args], {maxBuffer: Infinity});
+// Run youtube-dl in a subprocess (cancellable)
+const runYoutubeDLProcess = async (url, args, youtubedl_fork = config_api.getConfigItem('ytdl_default_downloader')) => {
+    const youtubedl_path = getYoutubeDLPath(youtubedl_fork);
+    const binary_exists = fs.existsSync(youtubedl_path);
+    if (!binary_exists) {
+        const err = `Could not find path for ${youtubedl_fork} at ${youtubedl_path}`;
+        logger.error(err);
+        return;
+    }
+    const child_process = execa(getYoutubeDLPath(youtubedl_fork), [url, ...args], {maxBuffer: Infinity});
     const callback = new Promise(async resolve => {
         try {
             const {stdout, stderr} = await child_process;
@@ -62,15 +71,10 @@ const runYoutubeDLProcess = async (url, args) => {
     return {child_process, callback}
 }
 
-async function getYoutubeDLPath() {
-    const guessed_base_path = 'node_modules/youtube-dl/bin/';
-    return guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
-}
-
-async function defaultDownloadMethod(url, args, options, callback) {
-    const {child_process, _} = await runYoutubeDLProcess(url, args);
-    const {stdout, stderr} = await child_process;
-    return await callback(stderr, stdout.trim().split(/\r?\n/));
+function getYoutubeDLPath(youtubedl_fork = config_api.getConfigItem('ytdl_default_downloader')) {
+    const binary_file_name = youtubedl_fork + (is_windows ? '.exe' : '');
+    const binary_path = path.join('appdata', 'bin', binary_file_name);
+    return binary_path;
 }
 
 exports.killYoutubeDLProcess = async (child_process) => {
@@ -91,14 +95,13 @@ exports.checkForYoutubeDLUpdate = async () => {
     let stored_binary_path = current_app_details['path'];
     if (!stored_binary_path || typeof stored_binary_path !== 'string') {
         // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${CONSTS.DETAILS_BIN_PATH}, attempting to guess actual path...`);
-        const guessed_base_path = 'node_modules/youtube-dl/bin/';
-        const guessed_file_path = guessed_base_path + 'youtube-dl' + (is_windows ? '.exe' : '');
+        const guessed_file_path = getYoutubeDLPath();
         if (fs.existsSync(guessed_file_path)) {
             stored_binary_path = guessed_file_path;
             // logger.info('INFO: Guess successful! Update process continuing...')
         } else {
-            logger.error(`Guess '${guessed_file_path}' is not correct. Cancelling update check. Verify that your youtube-dl binaries exist by running npm install.`);
-            return null;
+            logger.warn(`youtuble-dl binary not found at '${guessed_file_path}', downloading...`);
+            return true;
         }
     }
 
@@ -107,6 +110,7 @@ exports.checkForYoutubeDLUpdate = async () => {
 }
 
 exports.updateYoutubeDL = async (latest_update_version, custom_output_path = null) => {
+    await fs.ensureDir(path.join('appdata', 'bin'));
     const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
     await downloadLatestYoutubeDLBinaryGeneric(default_downloader, latest_update_version, custom_output_path);
 }
@@ -114,7 +118,7 @@ exports.updateYoutubeDL = async (latest_update_version, custom_output_path = nul
 exports.verifyBinaryExists = () => {
     const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
     if (!is_windows && details_json && (!details_json['path'] || details_json['path'].includes('.exe'))) {
-        details_json['path'] = 'node_modules/youtube-dl/bin/youtube-dl';
+        details_json['path'] = getYoutubeDLPath();
         details_json['exec'] = 'youtube-dl';
         details_json['version'] = CONSTS.OUTDATED_YOUTUBEDL_VERSION;
         fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
@@ -128,7 +132,7 @@ async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version,
 
     // build the URL
     const download_url = `${exports.youtubedl_forks[youtubedl_fork]['download_url']}${file_ext}`;
-    const output_path = custom_output_path || `node_modules/youtube-dl/bin/youtube-dl${file_ext}`;
+    const output_path = custom_output_path || getYoutubeDLPath(youtubedl_fork);
 
     await utils.fetchFile(download_url, output_path, `youtube-dl ${new_version}`);
 

@@ -293,7 +293,7 @@ exports.collectInfo = async (download_uid) => {
                                                                 });
 }
 
-exports.downloadQueuedFile = async(download_uid, downloadMethod = null) => {
+exports.downloadQueuedFile = async(download_uid, customDownloadHandler = null) => {
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
     if (download['paused']) {
         return;
@@ -323,7 +323,7 @@ exports.downloadQueuedFile = async(download_uid, downloadMethod = null) => {
         const download_checker = setInterval(() => checkDownloadPercent(download['uid']), 1000);
         const file_objs = [];
         // download file
-        let {child_process, callback} = await youtubedl_api.runYoutubeDL(url, args, downloadMethod);
+        let {child_process, callback} = await youtubedl_api.runYoutubeDL(url, args, customDownloadHandler);
         if (child_process) download_to_child_process[download['uid']] = child_process;
         const {parsed_output, err} = await callback;
         clearInterval(download_checker);
@@ -568,7 +568,8 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
 
     new_args.push('--dump-json');
 
-    const {parsed_output, err} = await youtubedl_api.runYoutubeDLMain(url, new_args);
+    let {callback} = await youtubedl_api.runYoutubeDL(url, new_args);
+    const {parsed_output, err} = await callback;
     if (!parsed_output || parsed_output.length === 0) {
         let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
         if (err.stderr) error_message += `\n\n${err.stderr}`;
