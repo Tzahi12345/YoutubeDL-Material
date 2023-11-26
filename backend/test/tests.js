@@ -603,7 +603,7 @@ describe('Downloader', function() {
     });
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');
-        const example_vod = '1710641401';
+        const example_vod = '1790315420';
         it('Download VOD chat', async function() {
             this.timeout(300000);
             if (!fs.existsSync('TwitchDownloaderCLI')) {
@@ -786,7 +786,7 @@ describe('Tasks', function() {
         const success = await generateEmptyVideoFile('test/sample_mp4.mp4');
 
         // pre-test cleanup
-        await db_api.removeAllRecords('files', {title: 'Sample File'});
+        await db_api.removeAllRecords('files', {path: 'test/missing_file.mp4'});
         if (fs.existsSync('video/sample_mp4.info.json')) fs.unlinkSync('video/sample_mp4.info.json');
         if (fs.existsSync('video/sample_mp4.mp4'))       fs.unlinkSync('video/sample_mp4.mp4');
 
