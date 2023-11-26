@@ -136,7 +136,7 @@ async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version,
 
     await utils.fetchFile(download_url, output_path, `youtube-dl ${new_version}`);
 
-    updateDetailsJSON(new_version, youtubedl_fork);
+    updateDetailsJSON(new_version, youtubedl_fork, output_path);
 }
 
 const getLatestUpdateVersion = async (youtubedl_fork, current_downloader, current_version) => {
@@ -170,9 +170,12 @@ const getLatestUpdateVersion = async (youtubedl_fork, current_downloader, curren
     });
 }
 
-function updateDetailsJSON(new_version, downloader) {
+function updateDetailsJSON(new_version, fork, output_path) {
+    const file_ext = is_windows ? '.exe' : '';
     const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
     if (new_version) details_json['version'] = new_version;
-    details_json['downloader'] = downloader;
+    details_json['downloader'] = fork;
+    details_json['path'] = output_path; // unused
+    details_json['exec'] = fork + file_ext; // unused
     fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
 }
