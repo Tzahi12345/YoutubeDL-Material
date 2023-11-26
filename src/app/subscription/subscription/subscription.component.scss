@@ -58,10 +58,16 @@
     bottom: 25px;
 }
 
-.edit-button {
+.check-button {
     left: 25px;
     position: fixed;
     bottom: 25px;
+    z-index: 99999;
+}
+
+.edit-button {
+    right: 35px;
+    position: fixed;
     z-index: 99999;
 }
 

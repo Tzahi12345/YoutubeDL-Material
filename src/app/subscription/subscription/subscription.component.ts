@@ -3,6 +3,7 @@ import { PostsService } from 'app/posts.services';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
+import { Subscription } from 'api-types';
 
 @Component({
   selector: 'app-subscription',
@@ -12,11 +13,13 @@ import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-d
 export class SubscriptionComponent implements OnInit, OnDestroy {
 
   id = null;
-  subscription = null;
+  subscription: Subscription = null;
   use_youtubedl_archive = false;
   descendingMode = true;
   downloading = false;
   sub_interval = null;
+  check_clicked = false;
+  cancel_clicked = false;
 
   constructor(private postsService: PostsService, private route: ActivatedRoute, private router: Router, private dialog: MatDialog) { }
 
@@ -88,6 +91,36 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
 
   watchSubscription(): void {
     this.router.navigate(['/player', {sub_id: this.subscription.id}])
+  }
+
+  checkSubscription(): void {
+    this.check_clicked = true;
+    this.postsService.checkSubscription(this.subscription.id).subscribe(res => {
+      this.check_clicked = false;
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to check subscription!');
+        return;
+      }
+    }, err => {
+      console.error(err);
+      this.check_clicked = false;
+      this.postsService.openSnackBar('Failed to check subscription!');
+    });
+  }
+
+  cancelCheckSubscription(): void {
+    this.cancel_clicked = true;
+    this.postsService.cancelCheckSubscription(this.subscription.id).subscribe(res => {
+      this.cancel_clicked = false;
+      if (!res['success']) {
+        this.postsService.openSnackBar('Failed to cancel check subscription!');
+        return;
+      }
+    }, err => {
+      console.error(err);
+      this.cancel_clicked = false;
+      this.postsService.openSnackBar('Failed to cancel check subscription!');
+    });
   }
 
 }

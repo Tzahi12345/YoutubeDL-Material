@@ -139,7 +139,7 @@ exports.clearDownload = async (download_uid) => {
 async function handleDownloadError(download_uid, error_message, error_type = null) {
     if (!download_uid) return;
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
-    if (download['error']) return;
+    if (!download || download['error']) return;
     notifications_api.sendDownloadErrorNotification(download, download['user_uid'], error_message, error_type);
     await db_api.updateRecord('download_queue', {uid: download['uid']}, {error: error_message, finished: true, running: false, error_type: error_type});
 }
@@ -332,7 +332,7 @@ exports.downloadQueuedFile = async(download_uid, customDownloadHandler = null) =
         logger.debug(`${type === 'audio' ? 'Audio' : 'Video'} download delay: ${difference} seconds.`);
         if (!parsed_output) {
             const errored_download = await db_api.getRecord('download_queue', {uid: download_uid});
-            if (errored_download['paused']) return;
+            if (errored_download && errored_download['paused']) return;
             logger.error(err.toString());
             await handleDownloadError(download_uid, err.toString(), 'unknown_error');
             resolve(false);
@@ -599,6 +599,7 @@ async function checkDownloadPercent(download_uid) {
     */
 
     const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    if (!download) return;
     const files_to_check_for_progress = download['files_to_check_for_progress'];
     const resulting_file_size = download['expected_file_size'];
 

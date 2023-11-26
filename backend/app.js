@@ -534,7 +534,7 @@ async function loadConfig() {
         // set downloading to false
         let subscriptions = await subscriptions_api.getAllSubscriptions();
         subscriptions.forEach(async sub => subscriptions_api.writeSubscriptionMetadata(sub));
-        subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false});
+        subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false, child_process: null});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
         const watchSubscriptionsInterval = function() {
             watchSubscriptions();
@@ -1196,10 +1196,10 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
 
 app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
     let deleteMode = req.body.deleteMode
-    let sub = req.body.sub;
+    let sub_id = req.body.sub_id;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode, user_uid);
+    let result_obj = subscriptions_api.unsubscribe(sub_id, deleteMode, user_uid);
     if (result_obj.success) {
         res.send({
             success: result_obj.success
@@ -1284,6 +1284,36 @@ app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     let success = subscriptions_api.updateSubscription(updated_sub, user_uid);
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/checkSubscription', optionalJwt, async (req, res) => {
+    let sub_id = req.body.sub_id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    const success = subscriptions_api.getVideosForSub(sub_id, user_uid);
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/cancelCheckSubscription', optionalJwt, async (req, res) => {
+    let sub_id = req.body.sub_id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    const success = subscriptions_api.cancelCheckSubscription(sub_id, user_uid);
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/cancelSubscriptionCheck', optionalJwt, async (req, res) => {
+    let sub_id = req.body.sub_id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    const success = subscriptions_api.getVideosForSub(sub_id, user_uid);
     res.send({
         success: success
     });

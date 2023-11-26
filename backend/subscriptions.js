@@ -39,7 +39,7 @@ exports.subscribe = async (sub, user_uid = null, skip_get_info = false) => {
         exports.writeSubscriptionMetadata(sub);
 
         if (success) {
-            if (!sub.paused) exports.getVideosForSub(sub, user_uid);
+            if (!sub.paused) exports.getVideosForSub(sub.id);
         } else {
             logger.error('Subscribe: Failed to get subscription info. Subscribe failed.')
         }
@@ -96,7 +96,8 @@ async function getSubscriptionInfo(sub) {
     return false;
 }
 
-exports.unsubscribe = async (sub, deleteMode, user_uid = null) => {
+exports.unsubscribe = async (sub_id, deleteMode, user_uid = null) => {
+    const sub = await exports.getSubscription(sub_id);
     let basePath = null;
     if (user_uid)
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
@@ -119,6 +120,7 @@ exports.unsubscribe = async (sub, deleteMode, user_uid = null) => {
         }
     }
 
+    await killSubDownloads(sub_id, true);
     await db_api.removeRecord('subscriptions', {id: id});
     await db_api.removeAllRecords('files', {sub_id: id});
 
@@ -203,12 +205,18 @@ exports.deleteSubscriptionFile = async (sub, file, deleteForever, file_uid = nul
     }
 }
 
-exports.getVideosForSub = async (sub, user_uid = null) => {
-    const latest_sub_obj = await exports.getSubscription(sub.id);
-    if (!latest_sub_obj || latest_sub_obj['downloading']) {
+exports.getVideosForSub = async (sub_id) => {
+    const sub = await exports.getSubscription(sub_id);
+    if (!sub || sub['downloading']) {
         return false;
     }
 
+    _getVideosForSub(sub);
+    return true;
+}
+
+async function _getVideosForSub(sub) {
+    const user_uid = sub['user_uid'];
     updateSubscriptionProperty(sub, {downloading: true}, user_uid);
 
     // get basePath
@@ -226,7 +234,8 @@ exports.getVideosForSub = async (sub, user_uid = null) => {
     // get videos
     logger.verbose(`Subscription: getting list of videos to download for ${sub.name} with args: ${downloadConfig.join(',')}`);
 
-    let {callback} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+    let {child_process, callback} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
+    updateSubscriptionProperty(sub, {child_process: child_process}, user_uid);
     const {parsed_output, err} = await callback;
     updateSubscriptionProperty(sub, {downloading: false, child_process: null}, user_uid);
     if (!parsed_output) {
@@ -396,8 +405,37 @@ async function getFilesToDownload(sub, output_jsons) {
     return files_to_download;
 }
 
+exports.cancelCheckSubscription = async (sub_id) => {
+    const sub = await exports.getSubscription(sub_id);
+    if (!sub['downloading'] && !sub['child_process']) {
+        logger.error('Failed to cancel subscription check, verify that it is still running!');
+        return false;
+    }
+
+    // if check is ongoing
+    if (sub['child_process']) {
+        const child_process = sub['child_process'];
+        youtubedl_api.killYoutubeDLProcess(child_process);
+    }
+
+    // cancel activate video downloads
+    await killSubDownloads(sub_id);
+
+    return true;
+}
+
+async function killSubDownloads(sub_id, remove_downloads = false) {
+    const sub_downloads = await db_api.getRecords('download_queue', {sub_id: sub_id});
+    for (const sub_download of sub_downloads) {
+        if (sub_download['running'])
+            await downloader_api.cancelDownload(sub_download['uid']);
+        if (remove_downloads)
+            await db_api.removeRecord('download_queue', {uid: sub_download['uid']});
+    }
+}
 
 exports.getSubscriptions = async (user_uid = null) => {
+    // TODO: fix issue where the downloading property may not match getSubscription()
     return await db_api.getRecords('subscriptions', {user_uid: user_uid});
 }
 

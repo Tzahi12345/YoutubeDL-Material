@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PostsService } from 'app/posts.services';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { Subscription } from 'api-types';
 
 @Component({
   selector: 'app-subscription-info-dialog',
@@ -10,7 +11,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 })
 export class SubscriptionInfoDialogComponent implements OnInit {
 
-  sub = null;
+  sub: Subscription = null;
   unsubbedEmitter = null;
 
   constructor(public dialogRef: MatDialogRef<SubscriptionInfoDialogComponent>,
@@ -41,7 +42,7 @@ export class SubscriptionInfoDialogComponent implements OnInit {
   }
 
   unsubscribe() {
-    this.postsService.unsubscribe(this.sub, true).subscribe(res => {
+    this.postsService.unsubscribe(this.sub.id, true).subscribe(res => {
       this.unsubbedEmitter.emit(true);
       this.dialogRef.close();
     });

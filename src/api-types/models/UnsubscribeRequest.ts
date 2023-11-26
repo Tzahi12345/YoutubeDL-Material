@@ -2,10 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { SubscriptionRequestData } from './SubscriptionRequestData';
-
 export type UnsubscribeRequest = {
-    sub: SubscriptionRequestData;
+    sub_id: string;
     /**
      * Defaults to false
      */
