@@ -27,6 +27,8 @@ exports.youtubedl_forks = {
 }
 
 exports.runYoutubeDL = async (url, args, customDownloadHandler = null) => {
+    const output_file_path = getYoutubeDLPath();
+    if (!fs.existsSync(output_file_path)) await exports.checkForYoutubeDLUpdate();
     let callback = null;
     let child_process = null;
     if (customDownloadHandler) {
@@ -82,49 +84,31 @@ exports.killYoutubeDLProcess = async (child_process) => {
 }
 
 exports.checkForYoutubeDLUpdate = async () => {
-    const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
+    const selected_fork = config_api.getConfigItem('ytdl_default_downloader');
+    const output_file_path = getYoutubeDLPath();
     // get current version
     let current_app_details_exists = fs.existsSync(CONSTS.DETAILS_BIN_PATH);
     if (!current_app_details_exists) {
         logger.warn(`Failed to get youtube-dl binary details at location '${CONSTS.DETAILS_BIN_PATH}'. Generating file...`);
-        fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version": CONSTS.OUTDATED_YOUTUBEDL_VERSION, "downloader": default_downloader});
+        updateDetailsJSON(CONSTS.OUTDATED_YOUTUBEDL_VERSION, selected_fork, output_file_path);
     }
-    let current_app_details = JSON.parse(fs.readFileSync(CONSTS.DETAILS_BIN_PATH));
-    let current_version = current_app_details['version'];
-    let current_downloader = current_app_details['downloader'];
-    let stored_binary_path = current_app_details['path'];
-    if (!stored_binary_path || typeof stored_binary_path !== 'string') {
-        // logger.info(`INFO: Failed to get youtube-dl binary path at location: ${CONSTS.DETAILS_BIN_PATH}, attempting to guess actual path...`);
-        const guessed_file_path = getYoutubeDLPath();
-        if (fs.existsSync(guessed_file_path)) {
-            stored_binary_path = guessed_file_path;
-            // logger.info('INFO: Guess successful! Update process continuing...')
-        } else {
-            logger.warn(`youtuble-dl binary not found at '${guessed_file_path}', downloading...`);
-            return true;
-        }
-    }
+    const current_app_details = JSON.parse(fs.readFileSync(CONSTS.DETAILS_BIN_PATH));
+    const current_version = current_app_details['version'];
+    const current_fork = current_app_details['downloader'];
 
-    // got version, now let's check the latest version from the youtube-dl API
-    return await getLatestUpdateVersion(default_downloader, current_downloader, current_version)
+    const latest_version = await getLatestUpdateVersion(selected_fork);
+    // if the binary does not exist, or default_downloader doesn't match existing fork, or if the fork has been updated, redownload
+    // TODO: don't redownload if fork already exists
+    if (!fs.existsSync(output_file_path) || current_fork !== selected_fork || !current_version || current_version !== latest_version) {
+        logger.warn(`Updating ${selected_fork} binary to '${output_file_path}', downloading...`);
+        exports.updateYoutubeDL(latest_version);
+    }
 }
 
 exports.updateYoutubeDL = async (latest_update_version, custom_output_path = null) => {
     await fs.ensureDir(path.join('appdata', 'bin'));
     const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
     await downloadLatestYoutubeDLBinaryGeneric(default_downloader, latest_update_version, custom_output_path);
-}
-
-exports.verifyBinaryExists = () => {
-    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
-    if (!is_windows && details_json && (!details_json['path'] || details_json['path'].includes('.exe'))) {
-        details_json['path'] = getYoutubeDLPath();
-        details_json['exec'] = 'youtube-dl';
-        details_json['version'] = CONSTS.OUTDATED_YOUTUBEDL_VERSION;
-        fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
-
-        utils.restartServer();
-    }
 }
 
 async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version, custom_output_path = null) {
@@ -134,48 +118,42 @@ async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version,
     const download_url = `${exports.youtubedl_forks[youtubedl_fork]['download_url']}${file_ext}`;
     const output_path = custom_output_path || getYoutubeDLPath(youtubedl_fork);
 
-    await utils.fetchFile(download_url, output_path, `youtube-dl ${new_version}`);
+    await utils.fetchFile(download_url, output_path, `${youtubedl_fork} ${new_version}`);
+    fs.chmod(output_path, 0o777);
 
     updateDetailsJSON(new_version, youtubedl_fork, output_path);
-}
+} 
 
-const getLatestUpdateVersion = async (youtubedl_fork, current_downloader, current_version) => {
+const getLatestUpdateVersion = async (youtubedl_fork) => {
     const tags_url = exports.youtubedl_forks[youtubedl_fork]['tags_url'];
     return new Promise(resolve => {
         fetch(tags_url, {method: 'Get'})
         .then(async res => res.json())
         .then(async (json) => {
-            // check if the versions are different
             if (!json || !json[0]) {
                 logger.error(`Failed to check ${youtubedl_fork} version for an update.`)
                 resolve(null);
                 return;
             }
             const latest_update_version = json[0]['name'];
-            if (current_version !== latest_update_version ||
-                youtubedl_fork !== current_downloader) {
-                // versions different or different downloader is being used, download new update
-                resolve(latest_update_version);
-            } else {
-                resolve(null);
-            }
-            return;
+            resolve(latest_update_version);
         })
         .catch(err => {
             logger.error(`Failed to check ${youtubedl_fork} version for an update.`)
             logger.error(err);
             resolve(null);
-            return;
         });
     });
 }
 
 function updateDetailsJSON(new_version, fork, output_path) {
     const file_ext = is_windows ? '.exe' : '';
-    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
-    if (new_version) details_json['version'] = new_version;
-    details_json['downloader'] = fork;
-    details_json['path'] = output_path; // unused
-    details_json['exec'] = fork + file_ext; // unused
+    const details_json = fs.existsSync(CONSTS.DETAILS_BIN_PATH) ? fs.readJSONSync(CONSTS.DETAILS_BIN_PATH) : {};
+    if (!details_json[fork]) details_json[fork] = {};
+    const fork_json = details_json[fork];
+    fork_json['version'] = new_version;
+    fork_json['downloader'] = fork;
+    fork_json['path'] = output_path; // unused
+    fork_json['exec'] = fork + file_ext; // unused
     fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, details_json);
 }

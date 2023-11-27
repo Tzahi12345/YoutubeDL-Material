@@ -426,7 +426,7 @@ exports.downloadQueuedFile = async(download_uid, customDownloadHandler = null) =
 // helper functions
 
 exports.generateArgs = async (url, type, options, user_uid = null, simulated = false) => {
-    const default_downloader = utils.getCurrentDownloader() || config_api.getConfigItem('ytdl_default_downloader');
+    const default_downloader = config_api.getConfigItem('ytdl_default_downloader');
 
     if (!simulated && (default_downloader === 'youtube-dl' || default_downloader === 'youtube-dlc')) {
         logger.warn('It is recommended you use yt-dlp! To prevent failed downloads, change the downloader in your settings menu to yt-dlp and restart your instance.')
