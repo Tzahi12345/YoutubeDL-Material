@@ -96,7 +96,7 @@ exports.checkForYoutubeDLUpdate = async () => {
     const current_version = current_app_details['version'];
     const current_fork = current_app_details['downloader'];
 
-    const latest_version = await getLatestUpdateVersion(selected_fork);
+    const latest_version = await exports.getLatestUpdateVersion(selected_fork);
     // if the binary does not exist, or default_downloader doesn't match existing fork, or if the fork has been updated, redownload
     // TODO: don't redownload if fork already exists
     if (!fs.existsSync(output_file_path) || current_fork !== selected_fork || !current_version || current_version !== latest_version) {
@@ -124,7 +124,7 @@ async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version,
     updateDetailsJSON(new_version, youtubedl_fork, output_path);
 } 
 
-const getLatestUpdateVersion = async (youtubedl_fork) => {
+exports.getLatestUpdateVersion = async (youtubedl_fork) => {
     const tags_url = exports.youtubedl_forks[youtubedl_fork]['tags_url'];
     return new Promise(resolve => {
         fetch(tags_url, {method: 'Get'})

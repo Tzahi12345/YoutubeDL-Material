@@ -631,10 +631,11 @@ describe('youtube-dl', async function() {
         await youtubedl_api.checkForYoutubeDLUpdate();
     });
     it('Check latest version', async function() {
-        const latest_version = await youtubedl_api.checkForYoutubeDLUpdate();
+        const original_fork = config_api.getConfigItem('ytdl_default_downloader');
+        const latest_version = await youtubedl_api.getLatestUpdateVersion(original_fork);
         const default_details_bin = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
-        assert(default_details_bin['version'] === CONSTS.OUTDATED_YOUTUBEDL_VERSION);
-        assert(latest_version > default_details_bin['version']);
+        assert(default_details_bin[original_fork]['version'] === CONSTS.OUTDATED_YOUTUBEDL_VERSION);
+        assert(latest_version > default_details_bin[original_fork]['version']);
     });
 
     it('Update youtube-dl', async function() {
