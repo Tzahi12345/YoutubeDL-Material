@@ -24,7 +24,7 @@ ENV ALLOW_CONFIG_MUTATIONS=true
 ENV NODE_VERSION=16.14.2
 RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
-    apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 && \
+    apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 libatomic1 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -73,7 +73,7 @@ RUN npm config set strict-ssl false && \
 FROM base
 RUN npm install -g pm2 && \
     apt update && \
-    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley libatomic1 build-essential && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
     pip install pycryptodomex && \
     apt remove -y --purge build-essential && \
     apt autoremove -y --purge && \
