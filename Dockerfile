@@ -31,8 +31,8 @@ RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
          "linux/arm")    NODE_ARCH=armhf  ;; \
          "linux/arm/v7")    NODE_ARCH=armhf  ;; \
          "linux/arm64")  NODE_ARCH=arm64  ;; \
-    esac \ 
-    && curl -L https://deb.nodesource.com/node_16.x/pool/main/n/nodejs/nodejs_16.14.2-deb-1nodesource1_$NODE_ARCH.deb -o ./nodejs.deb && \
+    esac
+RUN curl -L https://deb.nodesource.com/node_16.x/pool/main/n/nodejs/nodejs_16.14.2-deb-1nodesource1_$NODE_ARCH.deb -o ./nodejs.deb && \
     apt update && \
     apt install -y ./nodejs.deb && \
     apt clean && \
