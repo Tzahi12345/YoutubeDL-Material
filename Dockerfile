@@ -19,26 +19,21 @@ ENV USER=youtube
 ENV NO_UPDATE_NOTIFIER=true
 ENV PM2_HOME=/app/pm2
 ENV ALLOW_CONFIG_MUTATIONS=true
-# Directy fetch specific version
-## https://deb.nodesource.com/node_16.x/pool/main/n/nodejs/nodejs_16.14.2-deb-1nodesource1_amd64.deb
+
+# Use NVM to get specific node version
+ENV NODE_VERSION=16.14.2
 RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
     apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-    RUN case ${TARGETPLATFORM} in \
-         "linux/amd64")  NODE_ARCH=amd64   ;; \
-         "linux/arm")    NODE_ARCH=armhf  ;; \
-         "linux/arm/v7")    NODE_ARCH=armhf  ;; \
-         "linux/arm64")  NODE_ARCH=arm64  ;; \
-    esac \ 
-    && curl -L https://deb.nodesource.com/node_16.x/pool/main/n/nodejs/nodejs_16.14.2-deb-1nodesource1_$NODE_ARCH.deb -o ./nodejs.deb && \
-    apt update && \
-    apt install -y ./nodejs.deb && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/* &&\
-    rm nodejs.deb;
 
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 
 # Build frontend
 ARG BUILDPLATFORM
