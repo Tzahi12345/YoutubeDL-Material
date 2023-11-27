@@ -28,6 +28,7 @@ RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /usr/local/nvm
 ENV PATH="/usr/local/nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 ENV NVM_DIR=/usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
