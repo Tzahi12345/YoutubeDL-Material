@@ -20,11 +20,6 @@ const ps = require('ps-node');
 const Feed = require('feed').Feed;
 const session = require('express-session');
 
-// needed if bin/details somehow gets deleted
-if (!fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.writeJSONSync(CONSTS.DETAILS_BIN_PATH, {"version":"2000.06.06","path":"node_modules\\youtube-dl\\bin\\youtube-dl.exe","exec":"youtube-dl.exe","downloader":"youtube-dl"})
-
-const youtubedl = require('youtube-dl');
-
 const logger = require('./logger');
 const config_api = require('./config.js');
 const downloader_api = require('./downloader');
@@ -536,7 +531,7 @@ async function loadConfig() {
         // set downloading to false
         let subscriptions = await subscriptions_api.getAllSubscriptions();
         subscriptions.forEach(async sub => subscriptions_api.writeSubscriptionMetadata(sub));
-        subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false});
+        subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false, child_process: null});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
         const watchSubscriptionsInterval = function() {
             watchSubscriptions();
@@ -657,36 +652,20 @@ function generateEnvVarConfigItem(key) {
 
 // currently only works for single urls
 async function getUrlInfos(url) {
-    let startDate = Date.now();
-    let result = [];
-    return new Promise(resolve => {
-        youtubedl.exec(url, ['--dump-json'], {maxBuffer: Infinity}, (err, output) => {
-            let new_date = Date.now();
-            let difference = (new_date - startDate)/1000;
-            logger.debug(`URL info retrieval delay: ${difference} seconds.`);
-            if (err) {
-                logger.error(`Error during retrieving formats for ${url}: ${err}`);
-                resolve(null);
-            }
-            let try_putput = null;
-            try {
-                try_putput = JSON.parse(output);
-                result = try_putput;
-            } catch(e) {
-                logger.error(`Failed to retrieve available formats for url: ${url}`);
-            }
-            resolve(result);
-        });
-    });
+    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, ['--dump-json']);
+    if (!parsed_output || parsed_output.length !== 1) {
+        logger.error(`Failed to retrieve available formats for url: ${url}`);
+        if (err) logger.error(err);
+        return null;
+    }
+    return parsed_output[0];
 }
 
 // youtube-dl functions
 
 async function startYoutubeDL() {
     // auto update youtube-dl
-    youtubedl_api.verifyBinaryExistsLinux();
-    const update_available = await youtubedl_api.checkForYoutubeDLUpdate();
-    if (update_available) await youtubedl_api.updateYoutubeDL(update_available);
+    await youtubedl_api.checkForYoutubeDLUpdate();
 }
 
 app.use(function(req, res, next) {
@@ -1212,10 +1191,10 @@ app.post('/api/subscribe', optionalJwt, async (req, res) => {
 
 app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
     let deleteMode = req.body.deleteMode
-    let sub = req.body.sub;
+    let sub_id = req.body.sub_id;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let result_obj = subscriptions_api.unsubscribe(sub, deleteMode, user_uid);
+    let result_obj = subscriptions_api.unsubscribe(sub_id, deleteMode, user_uid);
     if (result_obj.success) {
         res.send({
             success: result_obj.success
@@ -1300,6 +1279,36 @@ app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     let success = subscriptions_api.updateSubscription(updated_sub, user_uid);
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/checkSubscription', optionalJwt, async (req, res) => {
+    let sub_id = req.body.sub_id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    const success = subscriptions_api.getVideosForSub(sub_id, user_uid);
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/cancelCheckSubscription', optionalJwt, async (req, res) => {
+    let sub_id = req.body.sub_id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    const success = subscriptions_api.cancelCheckSubscription(sub_id, user_uid);
+    res.send({
+        success: success
+    });
+});
+
+app.post('/api/cancelSubscriptionCheck', optionalJwt, async (req, res) => {
+    let sub_id = req.body.sub_id;
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+
+    const success = subscriptions_api.getVideosForSub(sub_id, user_uid);
     res.send({
         success: success
     });

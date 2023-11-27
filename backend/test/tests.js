@@ -4,6 +4,9 @@ const low = require('lowdb')
 const winston = require('winston');
 const path = require('path');
 const util = require('util');
+const fs = require('fs-extra');
+const { uuid } = require('uuidv4');
+const NodeID3 = require('node-id3');
 const exec = util.promisify(require('child_process').exec);
 
 const FileSync = require('lowdb/adapters/FileSync');
@@ -44,9 +47,7 @@ const categories_api = require('../categories');
 const files_api = require('../files');
 const youtubedl_api = require('../youtube-dl');
 const config_api = require('../config');
-const fs = require('fs-extra');
-const { uuid } = require('uuidv4');
-const NodeID3 = require('node-id3');
+const CONSTS = require('../consts');
 
 db_api.initialize(db, users_db, 'local_db_test.json');
 
@@ -441,9 +442,32 @@ describe('Multi User', async function() {
 describe('Downloader', function() {
     const downloader_api = require('../downloader');
     const url = 'https://www.youtube.com/watch?v=hpigjnKl7nI';
+    const playlist_url = 'https://www.youtube.com/playlist?list=PLbZT16X07RLhqK-ZgSkRuUyiz9B_WLdNK';
     const sub_id = 'dc834388-3454-41bf-a618-e11cb8c7de1c';
     const options = {
         ui_uid: uuid()
+    }
+
+    async function createCategory(url) {
+        // get info
+        const args = await downloader_api.generateArgs(url, 'video', options, null, true);
+        const [info] = await downloader_api.getVideoInfoByURL(url, args);
+
+        // create category
+        await db_api.removeAllRecords('categories');
+        const new_category = {
+            name: 'test_category',
+            uid: uuid(),
+            rules: [],
+            custom_output: ''
+        };
+        await db_api.insertRecordIntoTable('categories', new_category);
+        await db_api.pushToRecordsArray('categories', {name: 'test_category'}, 'rules', {
+            preceding_operator: null,
+            comparator: 'includes',
+            property: 'title',
+            value: info['title']
+        });
     }
 
     before(async function() {
@@ -455,6 +479,7 @@ describe('Downloader', function() {
     beforeEach(async function() {
         // await db_api.connectToDB();
         await db_api.removeAllRecords('download_queue');
+        config_api.setConfigItem('ytdl_allow_playlist_categorization', true);
     });
 
     it('Get file info', async function() {
@@ -478,6 +503,32 @@ describe('Downloader', function() {
         }
         const success = await downloader_api.downloadQueuedFile(returned_download['uid'], custom_download_method);
         assert(success);
+    });
+
+    it('Downloader - categorize', async function() {
+        this.timeout(300000);
+        await createCategory(url);
+        // collect info
+        const returned_download = await downloader_api.createDownload(url, 'video', options);
+        await downloader_api.collectInfo(returned_download['uid']);
+        assert(returned_download['category']);
+        assert(returned_download['category']['name'] === 'test_category');
+    });
+
+    it('Downloader - categorize playlist', async function() {
+        this.timeout(300000);
+        await createCategory(playlist_url);
+        // collect info
+        const returned_download_pass = await downloader_api.createDownload(playlist_url, 'video', options);
+        await downloader_api.collectInfo(returned_download_pass['uid']);
+        assert(returned_download_pass['category']);
+        assert(returned_download_pass['category']['name'] === 'test_category');
+
+        // test with playlist categorization disabled
+        config_api.setConfigItem('ytdl_allow_playlist_categorization', false);
+        const returned_download_fail = await downloader_api.createDownload(playlist_url, 'video', options);
+        await downloader_api.collectInfo(returned_download_fail['uid']);
+        assert(!returned_download_fail['category']);
     });
 
     it('Tag file', async function() {
@@ -552,7 +603,7 @@ describe('Downloader', function() {
     });
     describe('Twitch', async function () {
         const twitch_api = require('../twitch');
-        const example_vod = '1710641401';
+        const example_vod = '1790315420';
         it('Download VOD chat', async function() {
             this.timeout(300000);
             if (!fs.existsSync('TwitchDownloaderCLI')) {
@@ -571,6 +622,105 @@ describe('Downloader', function() {
             // cleanup
             if (fs.existsSync(sample_path)) fs.unlinkSync(sample_path);
         });
+    });
+});
+
+describe('youtube-dl', async function() {
+    beforeEach(async function () {
+        if (fs.existsSync(CONSTS.DETAILS_BIN_PATH)) fs.unlinkSync(CONSTS.DETAILS_BIN_PATH);
+        await youtubedl_api.checkForYoutubeDLUpdate();
+    });
+    it('Check latest version', async function() {
+        this.timeout(300000);
+        const original_fork = config_api.getConfigItem('ytdl_default_downloader');
+        const latest_version = await youtubedl_api.getLatestUpdateVersion(original_fork);
+        assert(latest_version > CONSTS.OUTDATED_YOUTUBEDL_VERSION);
+    });
+
+    it('Update youtube-dl', async function() {
+        this.timeout(300000);
+        const original_fork = config_api.getConfigItem('ytdl_default_downloader');
+        const binary_path = path.join('test', 'test_binary');
+        for (const youtubedl_fork in youtubedl_api.youtubedl_forks) {
+            config_api.setConfigItem('ytdl_default_downloader', youtubedl_fork);
+            const latest_version = await youtubedl_api.checkForYoutubeDLUpdate();
+            await youtubedl_api.updateYoutubeDL(latest_version, binary_path);
+            assert(fs.existsSync(binary_path));
+            if (fs.existsSync(binary_path)) fs.unlinkSync(binary_path);
+        }
+        config_api.setConfigItem('ytdl_default_downloader', original_fork);
+    });
+
+    it('Run process', async function() {
+        this.timeout(300000);
+        const downloader_api = require('../downloader');
+        const url = 'https://www.youtube.com/watch?v=hpigjnKl7nI';
+        const args = await downloader_api.generateArgs(url, 'video', {}, null, true);
+        const {child_process} = await youtubedl_api.runYoutubeDL(url, args);
+        assert(child_process);
+    });
+});
+
+describe('Subscriptions', function() {
+    const new_sub = {
+        name: 'test_sub',
+        url: 'https://www.youtube.com/channel/UCzofo-P8yMMCOv8rsPfIR-g',
+        maxQuality: null,
+        id: uuid(),
+        user_uid: null,
+        type: 'video',
+        paused: true
+    };
+    beforeEach(async function() {
+        await db_api.removeAllRecords('subscriptions');
+    });
+    it('Subscribe', async function () {
+        const success = await subscriptions_api.subscribe(new_sub, null, true);
+        assert(success);
+        const sub_exists = await db_api.getRecord('subscriptions', {id: new_sub['id']});
+        assert(sub_exists);
+    });
+    it('Unsubscribe', async function () {
+        await subscriptions_api.subscribe(new_sub, null, true);
+        await subscriptions_api.unsubscribe(new_sub);
+        const sub_exists = await db_api.getRecord('subscriptions', {id: new_sub['id']});
+        assert(!sub_exists);
+    });
+    it('Delete subscription file', async function () {
+        
+    });
+    it('Get subscription by name', async function () {
+        await subscriptions_api.subscribe(new_sub, null, true);
+        const sub_by_name = await subscriptions_api.getSubscriptionByName('test_sub');
+        assert(sub_by_name);
+    });
+    it('Get subscriptions', async function() {
+        await subscriptions_api.subscribe(new_sub, null, true);
+        const subs = await subscriptions_api.getSubscriptions(null);
+        assert(subs && subs.length === 1);
+    });
+    it('Update subscription', async function () {
+        await subscriptions_api.subscribe(new_sub, null, true);
+        const sub_update = Object.assign({}, new_sub, {name: 'updated_name'});
+        await subscriptions_api.updateSubscription(sub_update);
+        const updated_sub = await db_api.getRecord('subscriptions', {id: new_sub['id']});
+        assert(updated_sub['name'] === 'updated_name');
+    });
+    it('Update subscription property', async function () {
+        await subscriptions_api.subscribe(new_sub, null, true);
+        const sub_update = Object.assign({}, new_sub, {name: 'updated_name'});
+        await subscriptions_api.updateSubscriptionPropertyMultiple([sub_update], {name: 'updated_name'});
+        const updated_sub = await db_api.getRecord('subscriptions', {id: new_sub['id']});
+        assert(updated_sub['name'] === 'updated_name');
+    });
+    it('Write subscription metadata', async function() {
+        const metadata_path = path.join('subscriptions', 'channels', 'test_sub', 'subscription_backup.json');
+        if (fs.existsSync(metadata_path)) fs.unlinkSync(metadata_path);
+        await subscriptions_api.subscribe(new_sub, null, true);
+        assert(fs.existsSync(metadata_path));
+    });
+    it('Fresh uploads', async function() {
+
     });
 });
 
@@ -635,7 +785,7 @@ describe('Tasks', function() {
         const success = await generateEmptyVideoFile('test/sample_mp4.mp4');
 
         // pre-test cleanup
-        await db_api.removeAllRecords('files', {title: 'Sample File'});
+        await db_api.removeAllRecords('files', {path: 'test/missing_file.mp4'});
         if (fs.existsSync('video/sample_mp4.info.json')) fs.unlinkSync('video/sample_mp4.info.json');
         if (fs.existsSync('video/sample_mp4.mp4'))       fs.unlinkSync('video/sample_mp4.mp4');
 
@@ -792,7 +942,7 @@ describe('Categories', async function() {
             rules: [],
             custom_output: ''
         };
-    
+        await db_api.removeAllRecords('categories', {name: 'test_category'});
         await db_api.insertRecordIntoTable('categories', new_category);
     });
 

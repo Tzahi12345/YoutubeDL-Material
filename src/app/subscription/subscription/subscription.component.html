@@ -3,6 +3,7 @@
     <div style="margin-bottom: 15px;">
         <h2 style="text-align: center;" *ngIf="subscription">
             {{subscription.name}}&nbsp;<ng-container *ngIf="subscription.paused" i18n="Paused suffix">(Paused)</ng-container>
+            <button class="edit-button" (click)="editSubscription()" [disabled]="downloading" matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button><mat-icon class="save-icon">edit</mat-icon></button>
         </h2>
         <mat-progress-bar style="width: 80%; margin: 0 auto; margin-top: 15px;" *ngIf="subscription && subscription.downloading" mode="indeterminate"></mat-progress-bar>
     </div>
@@ -13,7 +14,14 @@
     <div style="margin-bottom: 100px;" *ngIf="subscription">
         <app-recent-videos #recentVideos [sub_id]="subscription.id"></app-recent-videos>
     </div>
-    <button class="edit-button" color="primary" (click)="editSubscription()" [disabled]="downloading" matTooltip="Edit" i18n-matTooltip="Edit" mat-fab><mat-icon class="save-icon">edit</mat-icon></button>
+    <div class="check-button">
+        <ng-container *ngIf="subscription.downloading">
+            <button color="primary" (click)="cancelCheckSubscription()" [disabled]="cancel_clicked" matTooltip="Cancel subscription check" i18n-matTooltip="Cancel subscription check" mat-fab><mat-icon class="save-icon">cancel</mat-icon></button>
+        </ng-container>
+        <ng-container *ngIf="!subscription.downloading">
+            <button color="primary" (click)="checkSubscription()" [disabled]="check_clicked" matTooltip="Check subscription" i18n-matTooltip="Check subscription" mat-fab><mat-icon class="save-icon">youtube_searched_for</mat-icon></button>
+        </ng-container>
+    </div>
     <button class="watch-button" color="primary" (click)="watchSubscription()" matTooltip="Play all" i18n-matTooltip="Play all" mat-fab><mat-icon class="save-icon">video_library</mat-icon></button>
     <button class="save-button" color="primary" (click)="downloadContent()" [disabled]="downloading" matTooltip="Download zip" i18n-matTooltip="Download zip" mat-fab><mat-icon class="save-icon">save</mat-icon><mat-spinner *ngIf="downloading" class="spinner" [diameter]="50"></mat-spinner></button>
 </div>

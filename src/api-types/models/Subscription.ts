@@ -11,9 +11,12 @@ export type Subscription = {
     type: FileType;
     user_uid: string | null;
     isPlaylist: boolean;
+    child_process?: any;
     archive?: string;
     timerange?: string;
     custom_args?: string;
     custom_output?: string;
+    downloading?: boolean;
+    paused?: boolean;
     videos: Array<any>;
 };

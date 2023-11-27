@@ -169,6 +169,8 @@ export class MainComponent implements OnInit {
   argsChangedSubject: Subject<boolean> = new Subject<boolean>();
   simulatedOutput = '';
 
+  interval_id = null;
+
   constructor(public postsService: PostsService, private youtubeSearch: YoutubeSearchService, public snackBar: MatSnackBar,
     private router: Router, public dialog: MatDialog, private platform: Platform, private route: ActivatedRoute) {
     this.audioOnly = false;
@@ -232,11 +234,12 @@ export class MainComponent implements OnInit {
     }
 
     // get downloads routine
-    setInterval(() => {
+    if (this.interval_id) { clearInterval(this.interval_id) }
+    this.interval_id = setInterval(() => {
       if (this.current_download) {
         this.getCurrentDownload();
       }
-    }, 500);
+    }, 1000);
 
     return true;
   }
@@ -292,6 +295,10 @@ export class MainComponent implements OnInit {
       this.youtubeSearch.initializeAPI(this.youtubeAPIKey);
       this.attachToInput();
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.interval_id) { clearInterval(this.interval_id) }
   }
 
   // download helpers

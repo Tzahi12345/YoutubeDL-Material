@@ -113,7 +113,8 @@ import {
     Archive,
     Subscription,
     RestartDownloadResponse,
-    TaskType
+    TaskType,
+    CheckSubscriptionRequest
 } from '../api-types';
 import { isoLangs } from './dialogs/user-profile-dialog/locales_list';
 import { Title } from '@angular/platform-browser';
@@ -566,8 +567,18 @@ export class PostsService implements CanActivate {
         return this.http.post<SuccessObject>(this.path + 'updateSubscription', {subscription: subscription}, this.httpOptions);
     }
 
-    unsubscribe(sub: SubscriptionRequestData, deleteMode = false) {
-        const body: UnsubscribeRequest = {sub: sub, deleteMode: deleteMode};
+    checkSubscription(sub_id: string) {
+        const body: CheckSubscriptionRequest = {sub_id: sub_id};
+        return this.http.post<SuccessObject>(this.path + 'checkSubscription', body, this.httpOptions);
+    }
+
+    cancelCheckSubscription(sub_id: string) {
+        const body: CheckSubscriptionRequest = {sub_id: sub_id};
+        return this.http.post<SuccessObject>(this.path + 'cancelCheckSubscription', body, this.httpOptions);
+    }
+
+    unsubscribe(sub_id: string, deleteMode = false) {
+        const body: UnsubscribeRequest = {sub_id: sub_id, deleteMode: deleteMode};
         return this.http.post<UnsubscribeResponse>(this.path + 'unsubscribe', body, this.httpOptions)
     }
 

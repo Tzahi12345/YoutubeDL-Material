@@ -269,7 +269,8 @@ exports.AVAILABLE_PERMISSIONS = [
     'tasks_manager'
 ];
 
-exports.DETAILS_BIN_PATH = 'node_modules/youtube-dl/bin/details'
+exports.DETAILS_BIN_PATH = 'appdata/youtube-dl.json'
+exports.OUTDATED_YOUTUBEDL_VERSION = "2020.00.00";
 
 // args that have a value after it (e.g. -o <output> or -f <format>)
 const YTDL_ARGS_WITH_VALUES = [

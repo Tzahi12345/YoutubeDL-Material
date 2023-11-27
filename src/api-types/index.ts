@@ -14,6 +14,7 @@ export type { ChangeRolePermissionsRequest } from './models/ChangeRolePermission
 export type { ChangeUserPermissionsRequest } from './models/ChangeUserPermissionsRequest';
 export type { CheckConcurrentStreamRequest } from './models/CheckConcurrentStreamRequest';
 export type { CheckConcurrentStreamResponse } from './models/CheckConcurrentStreamResponse';
+export type { CheckSubscriptionRequest } from './models/CheckSubscriptionRequest';
 export type { ClearDownloadsRequest } from './models/ClearDownloadsRequest';
 export type { ConcurrentStream } from './models/ConcurrentStream';
 export type { Config } from './models/Config';

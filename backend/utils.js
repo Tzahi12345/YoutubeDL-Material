@@ -241,11 +241,6 @@ exports.addUIDsToCategory = (category, files) => {
     return files_that_match;
 }
 
-exports.getCurrentDownloader = () => {
-    const details_json = fs.readJSONSync(CONSTS.DETAILS_BIN_PATH);
-    return details_json['downloader'];
-}
-
 exports.recFindByExt = async (base, ext, files, result, recursive = true) => {
     files = files || (await fs.readdir(base))
     result = result || []

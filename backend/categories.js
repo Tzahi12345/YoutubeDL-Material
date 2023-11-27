@@ -32,10 +32,8 @@ async function categorize(file_jsons) {
         return null;
     }
 
-    for (let i = 0; i < file_jsons.length; i++) {
-        const file_json = file_jsons[i];
-        for (let j = 0; j < categories.length; j++) {
-            const category = categories[j];
+    for (const file_json of file_jsons) {
+        for (const category of categories) {
             const rules = category['rules'];
     
             // if rules for current category apply, then that is the selected category

@@ -293,6 +293,48 @@ paths:
                 $ref: '#/components/schemas/UnsubscribeResponse'
       security:
         - Auth query parameter: []
+  /api/checkSubscription:
+    post:
+      tags:
+        - subscriptions
+      summary: Run a check for videos for a subscription
+      description: Runs a subscription check
+      operationId: post-api-checksubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckSubscriptionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
+  /api/cancelCheckSubscription:
+    post:
+      tags:
+        - subscriptions
+      summary: Cancels check for videos for a subscription
+      description: Cancels subscription check
+      operationId: post-api-checksubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckSubscriptionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessObject'
+      security:
+        - Auth query parameter: []
   /api/deleteSubscriptionFile:
     post:
       tags:
@@ -1981,11 +2023,11 @@ components:
           type: string
     UnsubscribeRequest:
       required:
-        - sub
+        - sub_id
       type: object
       properties:
-        sub:
-          $ref: '#/components/schemas/SubscriptionRequestData'
+        sub_id:
+          type: string
         deleteMode:
           type: boolean
           description: Defaults to false
@@ -1997,6 +2039,13 @@ components:
         success:
           type: boolean
         error:
+          type: string
+    CheckSubscriptionRequest:
+      required:
+        - sub_id
+      type: object
+      properties:
+        sub_id:
           type: string
     DeleteAllFilesResponse:
       type: object
@@ -2683,6 +2732,8 @@ components:
           type: boolean
         paused:
           type: boolean
+        cancelled:
+          type: boolean
         finished_step:
           type: boolean
         url:
@@ -2841,6 +2892,8 @@ components:
           nullable: true
         isPlaylist:
           type: boolean
+        child_process:
+          type: object
         archive:
           type: string
         timerange:
@@ -2849,6 +2902,10 @@ components:
           type: string
         custom_output:
           type: string
+        downloading:
+          type: boolean
+        paused:
+          type: boolean
         videos:
           type: array
           items:
