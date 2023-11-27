@@ -657,9 +657,8 @@ describe('youtube-dl', async function() {
         const downloader_api = require('../downloader');
         const url = 'https://www.youtube.com/watch?v=hpigjnKl7nI';
         const args = await downloader_api.generateArgs(url, 'video', {}, null, true);
-        const {child_process, callback} = await youtubedl_api.runYoutubeDL(url, args);
+        const {child_process} = await youtubedl_api.runYoutubeDL(url, args);
         assert(child_process);
-        console.log(await callback);
     });
 });
 
