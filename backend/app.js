@@ -2161,6 +2161,8 @@ app.use(function(req, res, next) {
 
     let index_path = path.join(__dirname, 'public', 'index.html');
 
+    res.setHeader('Content-Type', 'text/html');
+
     fs.createReadStream(index_path).pipe(res);
 
 });
