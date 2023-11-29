@@ -402,7 +402,7 @@ describe('Multi User', async function() {
         });
 
         it('Subscription zip generator', async function() {
-            const sub = await subscriptions_api.getSubscription(sub_to_test, user_to_test);
+            const sub = await subscriptions_api.getSubscription(sub_to_test.id, user_to_test);
             const sub_videos = await db_api.getRecords('files', {sub_id: sub.id});
             assert(sub);
             const sub_files_to_download = [];

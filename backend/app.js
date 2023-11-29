@@ -615,7 +615,7 @@ async function watchSubscriptions() {
                 logger.verbose(`Skipping subscription ${sub.name} due to multi-user mode change.`);
                 return;
             }
-            await subscriptions_api.getVideosForSub(sub, sub.user_uid);
+            await subscriptions_api.getVideosForSub(sub.id);
             subscription_timeouts[sub.id] = false;
         }, current_delay);
         subscription_timeouts[sub.id] = true;
@@ -1264,21 +1264,19 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
 });
 
 app.post('/api/downloadVideosForSubscription', optionalJwt, async (req, res) => {
-    let subID = req.body.subID;
-    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const subID = req.body.subID;
 
-    let sub = subscriptions_api.getSubscription(subID, user_uid);
-    subscriptions_api.getVideosForSub(sub, user_uid);
+    const sub = subscriptions_api.getSubscription(subID);
+    subscriptions_api.getVideosForSub(sub.id);
     res.send({
         success: true
     });
 });
 
 app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
-    let updated_sub = req.body.subscription;
-    let user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const updated_sub = req.body.subscription;
 
-    let success = subscriptions_api.updateSubscription(updated_sub, user_uid);
+    const success = subscriptions_api.updateSubscription(updated_sub);
     res.send({
         success: success
     });
