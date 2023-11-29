@@ -167,23 +167,30 @@ exports.globalArgsRequiresSafeDownload = () => {
     return failedArgs && failedArgs.length > 0;
 }
 
-exports.findChangedConfigItems = (old_config, new_config, key = '', changedConfigItems = [], depth = 0) => {
+exports.findChangedConfigItems = (old_config, new_config, path = '', changedConfigItems = [], depth = 0) => {
     if (typeof old_config === 'object' && typeof new_config === 'object' && depth < 3) {
         for (const key in old_config) {
             if (Object.prototype.hasOwnProperty.call(new_config, key)) {
-                exports.findChangedConfigItems(old_config[key], new_config[key], key, changedConfigItems, depth + 1);
+                exports.findChangedConfigItems(old_config[key], new_config[key], `${path}${path ? '.' : ''}${key}`, changedConfigItems, depth + 1);
             }
         }
     } else {
         if (JSON.stringify(old_config) !== JSON.stringify(new_config)) {
+            const key = getConfigItemKeyByPath(path);
             changedConfigItems.push({
-                key: key,
+                key: key ? key : path.split('.')[path.split('.').length - 1], // return key in CONFIG_ITEMS or the object key
                 old_value: JSON.parse(JSON.stringify(old_config)),
                 new_value: JSON.parse(JSON.stringify(new_config))
             });
         }
     }
     return changedConfigItems;
+}
+
+function getConfigItemKeyByPath(path) {
+    const found_item = Object.values(exports.CONFIG_ITEMS).find(item => item.path === path);
+    if (found_item) return found_item['key'];
+    else return null;
 }
 
 const DEFAULT_CONFIG = {
