@@ -30,6 +30,7 @@ const twitch_api = require('./twitch');
 const youtubedl_api = require('./youtube-dl');
 const archive_api = require('./archive');
 const files_api = require('./files');
+const notifications_api = require('./notifications');
 
 var app = express();
 
@@ -685,7 +686,7 @@ app.use(function(req, res, next) {
         next();
     } else if (req.query.apiKey && config_api.getConfigItem('ytdl_use_api_key') && req.query.apiKey === config_api.getConfigItem('ytdl_api_key')) {
         next();
-    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/rss')) {
+    } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/rss') || req.path.includes('/api/telegramRequest')) {
         next();
     } else {
         logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
@@ -1785,6 +1786,10 @@ app.post('/api/cancelDownload', optionalJwt, async (req, res) => {
 app.post('/api/getTasks', optionalJwt, async (req, res) => {
     const tasks = await db_api.getRecords('tasks');
     for (let task of tasks) {
+        if (!tasks_api.TASKS[task['key']]) {
+            logger.verbose(`Task ${task['key']} does not exist!`);
+            continue;
+        }
         if (task['schedule']) task['next_invocation'] = tasks_api.TASKS[task['key']]['job'].nextInvocation().getTime();
     }
     res.send({tasks: tasks});
@@ -2091,6 +2096,25 @@ app.post('/api/deleteAllNotifications', optionalJwt, async (req, res) => {
     const success = await db_api.removeAllRecords('notifications', {user_uid: uuid});
 
     res.send({success: success});
+});
+
+app.post('/api/telegramRequest', async (req, res) => {
+    if (!req.body.message  && !req.body.message.text) {
+        logger.error('Invalid Telegram request received!');
+        res.sendStatus(400);
+        return;
+    }
+    const text = req.body.message.text;
+    const regex_exp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+    const url_regex = new RegExp(regex_exp);
+    if (text.match(url_regex)) {
+        downloader_api.createDownload(text, 'video', {}, req.query.user_uid ? req.query.user_uid : null);
+        res.sendStatus(200);
+    } else {
+        logger.error('Invalid Telegram request received! Make sure you only send a valid URL.');
+        notifications_api.sendTelegramNotification({title: 'Invalid Telegram Request', body: 'Make sure you only send a valid URL.', url: text});
+        res.sendStatus(400);
+    }
 });
 
 // rss feed
