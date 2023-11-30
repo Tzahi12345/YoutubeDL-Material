@@ -59,7 +59,7 @@ exports.sendNotification = async (notification) => {
         sendGotifyNotification(data);
     }
     if (config_api.getConfigItem('ytdl_use_telegram_API') && config_api.getConfigItem('ytdl_telegram_bot_token') && config_api.getConfigItem('ytdl_telegram_chat_id')) {
-        sendTelegramNotification(data);
+        exports.sendTelegramNotification(data);
     }
     if (config_api.getConfigItem('ytdl_webhook_url')) {
         sendGenericNotification(data);
@@ -176,7 +176,7 @@ async function setupTelegramBot() {
     telegram_bot.setWebHook(webhook_url);
 }
 
-async function sendTelegramNotification({body, title, type, url, thumbnail}) {
+exports.sendTelegramNotification = async ({body, title, type, url, thumbnail}) => {
     if (!telegram_bot){
         logger.error('Telegram bot not found!');
         return;

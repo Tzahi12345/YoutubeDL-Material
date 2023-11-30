@@ -30,6 +30,7 @@ const twitch_api = require('./twitch');
 const youtubedl_api = require('./youtube-dl');
 const archive_api = require('./archive');
 const files_api = require('./files');
+const notifications_api = require('./notifications');
 
 var app = express();
 
@@ -2110,6 +2111,7 @@ app.post('/api/telegramRequest', async (req, res) => {
         res.sendStatus(200);
     } else {
         logger.error('Invalid Telegram request received! Make sure you only send a valid URL.');
+        notifications_api.sendTelegramNotification({title: 'Invalid Telegram Request', body: 'Make sure you only send a valid URL.', url: text});
         res.sendStatus(400);
     }
 });
