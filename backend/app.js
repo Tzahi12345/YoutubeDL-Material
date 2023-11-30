@@ -1650,6 +1650,7 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
     }
     if (!fs.existsSync(file_path)) {
         logger.error(`File ${file_path} could not be found! UID: ${uid}, ID: ${file_obj && file_obj.id}`);
+        return;
     }
     const stat = fs.statSync(file_path);
     const fileSize = stat.size;
