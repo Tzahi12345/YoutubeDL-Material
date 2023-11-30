@@ -4,7 +4,7 @@ const logger = require('../logger');
 const db_api = require('../db');
 
 const jwt = require('jsonwebtoken');
-const { uuid } = require('uuidv4');
+const { v4: uuid } = require('uuid');
 const bcrypt = require('bcryptjs');
 const fs = require('fs-extra');
 const path = require('path');

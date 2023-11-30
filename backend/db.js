@@ -1,7 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
 const { MongoClient } = require("mongodb");
-const { uuid } = require('uuidv4');
 const _ = require('lodash');
 
 const config_api = require('./config');

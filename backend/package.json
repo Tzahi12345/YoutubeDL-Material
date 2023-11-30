@@ -64,7 +64,7 @@
     "shortid": "^2.2.15",
     "tree-kill": "^1.2.2",
     "unzipper": "^0.10.10",
-    "uuidv4": "^6.2.13",
+    "uuid": "^9.0.1",
     "winston": "^3.7.2",
     "xmlbuilder2": "^3.0.2"
   }

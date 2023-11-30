@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const { uuid } = require('uuidv4');
+const { v4: uuid } = require('uuid');
 const path = require('path');
 const NodeID3 = require('node-id3')
 const Mutex = require('async-mutex').Mutex;

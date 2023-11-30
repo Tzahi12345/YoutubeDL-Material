@@ -1,4 +1,4 @@
-const { uuid } = require('uuidv4');
+const { v4: uuid } = require('uuid');
 const fs = require('fs-extra');
 const { promisify } = require('util');
 const auth_api = require('./authentication/auth');

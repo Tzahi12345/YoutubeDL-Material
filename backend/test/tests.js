@@ -5,7 +5,7 @@ const winston = require('winston');
 const path = require('path');
 const util = require('util');
 const fs = require('fs-extra');
-const { uuid } = require('uuidv4');
+const { v4: uuid } = require('uuid');
 const NodeID3 = require('node-id3');
 const exec = util.promisify(require('child_process').exec);
 

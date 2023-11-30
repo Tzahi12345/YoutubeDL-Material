@@ -4,7 +4,7 @@ const logger = require('./logger');
 const utils = require('./utils');
 const consts = require('./consts');
 
-const { uuid } = require('uuidv4');
+const { v4: uuid } = require('uuid');
 
 const fetch = require('node-fetch');
 const { gotify } = require("gotify");
