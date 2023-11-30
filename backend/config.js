@@ -85,11 +85,11 @@ exports.getConfigFile = () => {
 exports.setConfigFile = (config) => {
     try {
         const old_config = exports.getConfigFile();
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
         const changes = exports.findChangedConfigItems(old_config, config);
         if (changes.length > 0) {
             for (const change of changes) exports.config_updated.next(change);
         }
-        fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
         return true;
     } catch(e) {
         return false;
@@ -239,6 +239,7 @@ const DEFAULT_CONFIG = {
         "use_telegram_API": false,
         "telegram_bot_token": "",
         "telegram_chat_id": "",
+        "telegram_webhook_proxy": "",
         "webhook_URL": "",
         "discord_webhook_URL": "",
         "slack_webhook_URL": "",

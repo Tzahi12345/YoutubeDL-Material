@@ -14,8 +14,6 @@ const REST = require('@discordjs/rest').REST;
 const API = require('@discordjs/core').API;
 const EmbedBuilder = require('@discordjs/builders').EmbedBuilder;
 
-const debugMode = process.env.YTDL_MODE === 'debug';
-
 const NOTIFICATION_TYPE_TO_TITLE = {
     task_finished: 'Task finished',
     download_complete: 'Download complete',
@@ -160,7 +158,7 @@ config_api.config_updated.subscribe(change => {
     const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
     if (!use_telegram_api || !bot_token) return;
     if (!change) return;
-    if (change['key'] === 'ytdl_use_telegram_API' || change['key'] === 'ytdl_telegram_bot_token') {
+    if (change['key'] === 'ytdl_use_telegram_API' || change['key'] === 'ytdl_telegram_bot_token' || change['key'] === 'ytdl_telegram_webhook_proxy') {
         logger.debug('Telegram bot setting up');
         setupTelegramBot();
     }
@@ -170,9 +168,10 @@ async function setupTelegramBot() {
     const use_telegram_api = config_api.getConfigItem('ytdl_use_telegram_API');
     const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
     if (!use_telegram_api || !bot_token) return;
-
+    
     telegram_bot = new TelegramBotAPI(bot_token);
-    const webhook_url = `${utils.getBaseURL()}/api/telegramRequest`;
+    const webhook_proxy = config_api.getConfigItem('ytdl_telegram_webhook_proxy');
+    const webhook_url = webhook_proxy ? webhook_proxy : `${utils.getBaseURL()}/api/telegramRequest`;
     telegram_bot.setWebHook(webhook_url);
 }
 
