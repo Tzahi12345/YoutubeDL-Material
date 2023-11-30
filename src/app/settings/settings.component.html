@@ -426,6 +426,13 @@
                             <mat-hint><a target="_blank" href="https://stackoverflow.com/a/37396871/8088021"><ng-container i18n="Telegram chat ID help">How do I get the chat ID?</ng-container></a></mat-hint>
                         </mat-form-field>
                     </div>
+                    <div class="col-12 mb-2">
+                        <mat-form-field class="text-field" color="accent">
+                            <mat-label i18n="Telegram webhook proxy">Telegram webhook proxy</mat-label>
+                            <input placeholder="https://smee.io/XXXXX" [disabled]="!new_config['Extra']['enable_notifications'] || !new_config['API']['use_telegram_API']" [(ngModel)]="new_config['API']['telegram_webhook_proxy']" matInput>
+                            <mat-hint><a target="_blank" href="https://smee.io/"><ng-container i18n="Telegram webhook proxy help">Example service</ng-container></a></mat-hint>
+                        </mat-form-field>
+                    </div>
                 </div>
             </div>
         </ng-template>

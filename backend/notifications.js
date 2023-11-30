@@ -8,7 +8,8 @@ const { uuid } = require('uuidv4');
 
 const fetch = require('node-fetch');
 const { gotify } = require("gotify");
-const TelegramBot = require('node-telegram-bot-api');
+const TelegramBotAPI = require('node-telegram-bot-api');
+let telegram_bot = null;
 const REST = require('@discordjs/rest').REST;
 const API = require('@discordjs/core').API;
 const EmbedBuilder = require('@discordjs/builders').EmbedBuilder;
@@ -56,7 +57,7 @@ exports.sendNotification = async (notification) => {
         sendGotifyNotification(data);
     }
     if (config_api.getConfigItem('ytdl_use_telegram_API') && config_api.getConfigItem('ytdl_telegram_bot_token') && config_api.getConfigItem('ytdl_telegram_chat_id')) {
-        sendTelegramNotification(data);
+        exports.sendTelegramNotification(data);
     }
     if (config_api.getConfigItem('ytdl_webhook_url')) {
         sendGenericNotification(data);
@@ -113,6 +114,8 @@ function notificationEnabled(type) {
     return config_api.getConfigItem('ytdl_enable_notifications') && (config_api.getConfigItem('ytdl_enable_all_notifications') || config_api.getConfigItem('ytdl_allowed_notification_types').includes(type));
 }
 
+// ntfy
+
 function sendNtfyNotification({body, title, type, url, thumbnail}) {
     logger.verbose('Sending notification to ntfy');
     fetch(config_api.getConfigItem('ytdl_ntfy_topic_url'), {
@@ -126,6 +129,8 @@ function sendNtfyNotification({body, title, type, url, thumbnail}) {
         }
     });
 }
+
+// Gotify
 
 async function sendGotifyNotification({body, title, type, url, thumbnail}) {
     logger.verbose('Sending notification to gotify');
@@ -145,14 +150,49 @@ async function sendGotifyNotification({body, title, type, url, thumbnail}) {
       });
 }
 
-async function sendTelegramNotification({body, title, type, url, thumbnail}) {
-    logger.verbose('Sending notification to Telegram');
+// Telegram
+
+setupTelegramBot();
+config_api.config_updated.subscribe(change => {
+    const use_telegram_api = config_api.getConfigItem('ytdl_use_telegram_API');
     const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
-    const chat_id = config_api.getConfigItem('ytdl_telegram_chat_id');
-    const bot = new TelegramBot(bot_token);
-    if (thumbnail) await bot.sendPhoto(chat_id, thumbnail);
-    bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
+    if (!use_telegram_api || !bot_token) return;
+    if (!change) return;
+    if (change['key'] === 'ytdl_use_telegram_API' || change['key'] === 'ytdl_telegram_bot_token' || change['key'] === 'ytdl_telegram_webhook_proxy') {
+        logger.debug('Telegram bot setting up');
+        setupTelegramBot();
+    }
+});
+
+async function setupTelegramBot() {
+    const use_telegram_api = config_api.getConfigItem('ytdl_use_telegram_API');
+    const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
+    if (!use_telegram_api || !bot_token) return;
+    
+    telegram_bot = new TelegramBotAPI(bot_token);
+    const webhook_proxy = config_api.getConfigItem('ytdl_telegram_webhook_proxy');
+    const webhook_url = webhook_proxy ? webhook_proxy : `${utils.getBaseURL()}/api/telegramRequest`;
+    telegram_bot.setWebHook(webhook_url);
 }
+
+exports.sendTelegramNotification = async ({body, title, type, url, thumbnail}) => {
+    if (!telegram_bot){
+        logger.error('Telegram bot not found!');
+        return;
+    }
+
+    const chat_id = config_api.getConfigItem('ytdl_telegram_chat_id');
+    if (!chat_id){
+        logger.error('Telegram chat ID required!');
+        return;
+    }
+    
+    logger.verbose('Sending notification to Telegram');
+    if (thumbnail) await telegram_bot.sendPhoto(chat_id, thumbnail);
+    telegram_bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
+}
+
+// Discord
 
 async function sendDiscordNotification({body, title, type, url, thumbnail}) {
     const discord_webhook_url = config_api.getConfigItem('ytdl_discord_webhook_url');
@@ -176,6 +216,8 @@ async function sendDiscordNotification({body, title, type, url, thumbnail}) {
     });
     return result;
 }
+
+// Slack
 
 function sendSlackNotification({body, title, type, url, thumbnail}) {
     const slack_webhook_url = config_api.getConfigItem('ytdl_slack_webhook_url');
@@ -235,6 +277,8 @@ function sendSlackNotification({body, title, type, url, thumbnail}) {
         body: JSON.stringify(data),
     });
 }
+
+// Generic
 
 function sendGenericNotification(data) {
     const webhook_url = config_api.getConfigItem('ytdl_webhook_url');
