@@ -534,13 +534,7 @@ async function loadConfig() {
         subscriptions.forEach(async sub => subscriptions_api.writeSubscriptionMetadata(sub));
         subscriptions_api.updateSubscriptionPropertyMultiple(subscriptions, {downloading: false, child_process: null});
         // runs initially, then runs every ${subscriptionCheckInterval} seconds
-        const watchSubscriptionsInterval = function() {
-            watchSubscriptions();
-            const subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
-            setTimeout(watchSubscriptionsInterval, subscriptionsCheckInterval*1000);
-        }
-
-        watchSubscriptionsInterval();
+        subscriptions_api.watchSubscriptionsInterval();
     }
 
     // start the server here
@@ -568,62 +562,6 @@ function loadConfigValues() {
 
     let logger_level = config_api.getConfigItem('ytdl_logger_level');
     utils.updateLoggerLevel(logger_level);
-}
-
-function calculateSubcriptionRetrievalDelay(subscriptions_amount) {
-    // frequency is once every 5 mins by default
-    const subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
-    let interval_in_ms = subscriptionsCheckInterval * 1000;
-    const subinterval_in_ms = interval_in_ms/subscriptions_amount;
-    return subinterval_in_ms;
-}
-
-async function watchSubscriptions() {
-    let subscriptions = await subscriptions_api.getAllSubscriptions();
-
-    if (!subscriptions) return;
-
-    // auto pause deprecated streamingOnly mode
-    const streaming_only_subs = subscriptions.filter(sub => sub.streamingOnly);
-    subscriptions_api.updateSubscriptionPropertyMultiple(streaming_only_subs, {paused: true});
-
-    const valid_subscriptions = subscriptions.filter(sub => !sub.paused && !sub.streamingOnly);
-
-    let subscriptions_amount = valid_subscriptions.length;
-    let delay_interval = calculateSubcriptionRetrievalDelay(subscriptions_amount);
-
-    let current_delay = 0;
-
-    const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-    for (let i = 0; i < valid_subscriptions.length; i++) {
-        let sub = valid_subscriptions[i];
-
-        // don't check the sub if the last check for the same subscription has not completed
-        if (subscription_timeouts[sub.id]) {
-            logger.verbose(`Subscription: skipped checking ${sub.name} as the last check for ${sub.name} has not completed.`);
-            continue;
-        }
-
-        if (!sub.name) {
-            logger.verbose(`Subscription: skipped check for subscription with uid ${sub.id} as name has not been retrieved yet.`);
-            continue;
-        }
-
-        logger.verbose('Watching ' + sub.name + ' with delay interval of ' + delay_interval);
-        setTimeout(async () => {
-            const multiUserModeChanged = config_api.getConfigItem('ytdl_multi_user_mode') !== multiUserMode;
-            if (multiUserModeChanged) {
-                logger.verbose(`Skipping subscription ${sub.name} due to multi-user mode change.`);
-                return;
-            }
-            await subscriptions_api.getVideosForSub(sub.id);
-            subscription_timeouts[sub.id] = false;
-        }, current_delay);
-        subscription_timeouts[sub.id] = true;
-        current_delay += delay_interval;
-        const subscriptionsCheckInterval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
-        if (current_delay >= subscriptionsCheckInterval * 1000) current_delay = 0;
-    }
 }
 
 function getOrigin() {
