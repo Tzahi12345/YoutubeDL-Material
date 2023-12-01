@@ -19,6 +19,7 @@ ENV USER=youtube
 ENV NO_UPDATE_NOTIFIER=true
 ENV PM2_HOME=/app/pm2
 ENV ALLOW_CONFIG_MUTATIONS=true
+ENV npm_config_cache=/app/.npm
 
 # Use NVM to get specific node version
 ENV NODE_VERSION=16.14.2
