@@ -40,7 +40,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^9.0.0",
     "gotify": "^1.1.0",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
