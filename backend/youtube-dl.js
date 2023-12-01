@@ -88,13 +88,13 @@ exports.checkForYoutubeDLUpdate = async () => {
     const output_file_path = getYoutubeDLPath();
     // get current version
     let current_app_details_exists = fs.existsSync(CONSTS.DETAILS_BIN_PATH);
-    if (!current_app_details_exists) {
+    if (!current_app_details_exists[selected_fork]) {
         logger.warn(`Failed to get youtube-dl binary details at location '${CONSTS.DETAILS_BIN_PATH}'. Generating file...`);
         updateDetailsJSON(CONSTS.OUTDATED_YOUTUBEDL_VERSION, selected_fork, output_file_path);
     }
     const current_app_details = JSON.parse(fs.readFileSync(CONSTS.DETAILS_BIN_PATH));
-    const current_version = current_app_details['version'];
-    const current_fork = current_app_details['downloader'];
+    const current_version = current_app_details[selected_fork]['version'];
+    const current_fork = current_app_details[selected_fork]['downloader'];
 
     const latest_version = await exports.getLatestUpdateVersion(selected_fork);
     // if the binary does not exist, or default_downloader doesn't match existing fork, or if the fork has been updated, redownload

@@ -205,6 +205,64 @@ exports.deleteSubscriptionFile = async (sub, file, deleteForever, file_uid = nul
     }
 }
 
+let current_sub_index = 0; // To keep track of the current subscription
+exports.watchSubscriptionsInterval = async () => {
+    const subscriptions_check_interval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
+    let parent_interval = setInterval(() => watchSubscriptions(), subscriptions_check_interval*1000);
+    watchSubscriptions();
+    config_api.config_updated.subscribe(change => {
+        if (!change) return;
+        if (change['key'] === 'ytdl_subscriptions_check_interval' || change['key'] === 'ytdl_multi_user_mode') {
+            current_sub_index = 0; // TODO: start after the last sub check
+            logger.verbose('Resetting sub check schedule due to config change');
+            clearInterval(parent_interval);
+            const new_interval = config_api.getConfigItem('ytdl_subscriptions_check_interval');
+            parent_interval = setInterval(() => watchSubscriptions(), new_interval*1000);
+            watchSubscriptions();
+        }
+    });
+}
+
+async function watchSubscriptions() {
+    const subscription_ids = await getValidSubscriptionsToCheck();
+    if (subscription_ids.length === 0) {
+        logger.info('Skipping subscription check as no valid subscriptions exist.');
+        return;
+    }
+    checkSubscription(subscription_ids[current_sub_index]);
+    current_sub_index = (current_sub_index + 1) % subscription_ids.length;
+}
+
+async function checkSubscription(sub_id) {
+    let sub = await exports.getSubscription(sub_id);
+
+    // don't check the sub if the last check for the same subscription has not completed
+    if (sub.downloading) {
+        logger.verbose(`Subscription: skipped checking ${sub.name} as it's downloading videos.`);
+        return;
+    }
+
+    if (!sub.name) {
+        logger.verbose(`Subscription: skipped check for subscription with uid ${sub.id} as name has not been retrieved yet.`);
+        return;
+    }
+
+    await exports.getVideosForSub(sub.id);
+}
+
+async function getValidSubscriptionsToCheck() {
+    const subscriptions = await exports.getAllSubscriptions();
+
+    if (!subscriptions) return;
+
+    // auto pause deprecated streamingOnly mode
+    const streaming_only_subs = subscriptions.filter(sub => sub.streamingOnly);
+    exports.updateSubscriptionPropertyMultiple(streaming_only_subs, {paused: true});
+
+    const valid_subscription_ids = subscriptions.filter(sub => !sub.paused && !sub.streamingOnly).map(sub => sub.id);
+    return valid_subscription_ids;
+}
+
 exports.getVideosForSub = async (sub_id) => {
     const sub = await exports.getSubscription(sub_id);
     if (!sub || sub['downloading']) {

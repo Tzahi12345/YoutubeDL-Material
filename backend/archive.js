@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { uuid } = require('uuidv4');
+const { v4: uuid } = require('uuid');
 
 const db_api = require('./db');
 

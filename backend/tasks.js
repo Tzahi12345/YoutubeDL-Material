@@ -13,7 +13,6 @@ const CONSTS = require('./consts');
 const fs = require('fs-extra');
 const path = require('path');
 const scheduler = require('node-schedule');
-const { uuid } = require('uuidv4');
 
 const TASKS = {
     backup_local_db: {
