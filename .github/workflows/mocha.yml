@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         node:
-          - 16
+          - 18
     steps:
       - uses: actions/setup-node@v3
         with:
