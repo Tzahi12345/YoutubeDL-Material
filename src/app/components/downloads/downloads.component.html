@@ -1,97 +1,102 @@
 <div [hidden]="!(downloads && downloads.length > 0)">
-    <div style="overflow: hidden;" [ngClass]="uids ? 'rounded mat-elevation-z2' : 'mat-elevation-z8'">
-        <mat-table style="overflow: hidden" [ngClass]="uids ? 'rounded-top' : null" matSort [dataSource]="dataSource">
-      
-          <!-- Date Column -->
-          <ng-container matColumnDef="timestamp_start">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.timestamp_start | date: 'short'}} </mat-cell>
-          </ng-container>
-      
-          <!-- Title Column -->
-          <ng-container matColumnDef="title">
-            <mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 2"> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element" style="flex: 2">
-                <span class="one-line" [matTooltip]="element.title ? element.title : null">
-                    {{element.title}}
+  <div style="overflow: hidden;" [ngClass]="uids ? 'rounded mat-elevation-z2' : 'mat-elevation-z8'">
+    <mat-table style="overflow: hidden" [ngClass]="uids ? 'rounded-top' : null" matSort [dataSource]="dataSource">
+      <!-- Date Column -->
+      <ng-container matColumnDef="timestamp_start">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Date">Date</ng-container> </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.timestamp_start | date: 'short'}} </mat-cell>
+      </ng-container>
+      <!-- Title Column -->
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef mat-sort-header style="flex: 2"> <ng-container i18n="Title">Title</ng-container> </mat-header-cell>
+        <mat-cell *matCellDef="let element" style="flex: 2">
+          <span class="one-line" [matTooltip]="element.title ? element.title : null">
+            {{element.title}}
+          </span>
+        </mat-cell>
+      </ng-container>
+      <!-- Subscription Column -->
+      <ng-container matColumnDef="sub_name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Subscription">Subscription</ng-container> </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          @if (element.sub_name) {
+            {{element.sub_name}}
+          } @else {
+            <ng-container i18n="N/A">N/A</ng-container>
+          }
+        </mat-cell>
+      </ng-container>
+      <!-- Progress Column -->
+      <ng-container matColumnDef="percent_complete">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          @if (!element.error) {
+            @if (element.step_index !== 2) {
+              {{STEP_INDEX_TO_LABEL[element.step_index]}}
+            } @else {
+              @if (element.percent_complete) {
+                {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
+              } @else {
+                <ng-container i18n="N/A">N/A</ng-container>
+              }
+            }
+          } @else {
+            <ng-container i18n="Error">Error</ng-container>
+          }
+        </mat-cell>
+      </ng-container>
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef [ngStyle]="{flex: actionsFlex}"> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
+        <mat-cell *matCellDef="let element" [ngStyle]="{flex: actionsFlex}">
+          @if (!minimizeButtons) {
+            <div>
+              @for (downloadAction of downloadActions; track downloadAction) {
+                <span class="button-span">
+                  @if (downloadAction.loading && downloadAction.loading(element)) {
+                    <mat-spinner [diameter]="28" class="icon-button-spinner"></mat-spinner>
+                  }
+                  @if (downloadAction.show(element)) {
+                    <button (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" [matTooltip]="downloadAction.tooltip" mat-icon-button><mat-icon>{{downloadAction.icon}}</mat-icon></button>
+                  }
                 </span>
-            </mat-cell>
-          </ng-container>
-
-          <!-- Subscription Column -->
-          <ng-container matColumnDef="sub_name">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Subscription">Subscription</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-              <ng-container *ngIf="element.sub_name">
-                {{element.sub_name}}
-              </ng-container>
-              <ng-container *ngIf="!element.sub_name">
-                  N/A
-              </ng-container>
-            </mat-cell>
-          </ng-container>
-      
-          <!-- Progress Column -->
-          <ng-container matColumnDef="percent_complete">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> <ng-container i18n="Progress">Progress</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element">
-              <ng-container *ngIf="!element.error && element.step_index !== 2">
-                {{STEP_INDEX_TO_LABEL[element.step_index]}}
-              </ng-container>
-              <ng-container *ngIf="!element.error && element.step_index === 2">
-                <ng-container *ngIf="element.percent_complete">
-                  {{+(element.percent_complete) > 100 ? '100' : element.percent_complete}}%
-                </ng-container>
-                <ng-container *ngIf="!element.percent_complete">
-                  N/A
-                </ng-container>
-              </ng-container>
-              <ng-container *ngIf="element.error" i18n="Error">Error</ng-container>
-            </mat-cell>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef [ngStyle]="{flex: actionsFlex}"> <ng-container i18n="Actions">Actions</ng-container> </mat-header-cell>
-            <mat-cell *matCellDef="let element" [ngStyle]="{flex: actionsFlex}">
-                <div *ngIf="!minimizeButtons">
-                  <ng-container *ngFor="let downloadAction of downloadActions">
-                    <span class="button-span">
-                      <mat-spinner [diameter]="28" *ngIf="downloadAction.loading && downloadAction.loading(element)" class="icon-button-spinner"></mat-spinner>
-                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" [matTooltip]="downloadAction.tooltip" mat-icon-button><mat-icon>{{downloadAction.icon}}</mat-icon></button>
-                    </span>
-                  </ng-container>
-                </div>
-                <div *ngIf="minimizeButtons">
-                  <button [matMenuTriggerFor]="download_actions" mat-icon-button><mat-icon>more_vert</mat-icon></button>
-                  <mat-menu #download_actions="matMenu">
-                    <ng-container *ngFor="let downloadAction of downloadActions">
-                      <button *ngIf="downloadAction.show(element)" (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" mat-menu-item>
-                        <mat-icon>{{downloadAction.icon}}</mat-icon>
-                        <span>{{downloadAction.tooltip}}</span>
-                      </button>
-                    </ng-container>
-                  </mat-menu>
-                </div>
-            </mat-cell>
-          </ng-container>
-      
-            <mat-header-row [ngClass]="uids ? 'rounded-top' : null" *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
-      
-        <mat-paginator [ngClass]="uids ? 'rounded-bottom' : null" [pageSizeOptions]="[5, 10, 20]"
-                       showFirstLastButtons 
-                       aria-label="Select page of downloads">
-        </mat-paginator>
-      </div>
-      <div *ngIf="!uids" class="downloads-action-button-div">
-        <button class="downloads-action-button" [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
-        <button class="downloads-action-button" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
-        <button class="downloads-action-button" color="warn" mat-stroked-button (click)="clearDownloadsByType()"><ng-container i18n="Clear downloads">Clear downloads</ng-container></button>
-      </div>
+              }
+            </div>
+          } @else {
+            <div>
+              <button [matMenuTriggerFor]="download_actions" mat-icon-button><mat-icon>more_vert</mat-icon></button>
+              <mat-menu #download_actions="matMenu">
+                @for (downloadAction of downloadActions; track downloadAction) {
+                  @if (downloadAction.show(element)) {
+                    <button (click)="downloadAction.action(element)" [disabled]="downloadAction.loading && downloadAction.loading(element)" mat-menu-item>
+                      <mat-icon>{{downloadAction.icon}}</mat-icon>
+                      <span>{{downloadAction.tooltip}}</span>
+                    </button>
+                  }
+                }
+              </mat-menu>
+            </div>
+          }
+        </mat-cell>
+      </ng-container>
+      <mat-header-row [ngClass]="uids ? 'rounded-top' : null" *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    <mat-paginator [ngClass]="uids ? 'rounded-bottom' : null" [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+      aria-label="Select page of downloads">
+    </mat-paginator>
+  </div>
+  @if (!uids) {
+    <div class="downloads-action-button-div">
+      <button class="downloads-action-button" [disabled]="!running_download_exists" mat-stroked-button (click)="pauseAllDownloads()"><ng-container i18n="Pause all downloads">Pause all downloads</ng-container></button>
+      <button class="downloads-action-button" [disabled]="!paused_download_exists" mat-stroked-button (click)="resumeAllDownloads()"><ng-container i18n="Resume all downloads">Resume all downloads</ng-container></button>
+      <button class="downloads-action-button" color="warn" mat-stroked-button (click)="clearDownloadsByType()"><ng-container i18n="Clear downloads">Clear downloads</ng-container></button>
+    </div>
+  }
 </div>
-
-<div *ngIf="(!downloads || downloads.length === 0) && downloads_retrieved && !uids">
-  <h4 style="text-align: center; margin-top: 10px;" i18n="No downloads label">No downloads available!</h4>
-</div>
+@if ((!downloads || downloads.length === 0) && downloads_retrieved && !uids) {
+  <div>
+    <h4 style="text-align: center; margin-top: 10px;" i18n="No downloads label">No downloads available!</h4>
+  </div>
+}

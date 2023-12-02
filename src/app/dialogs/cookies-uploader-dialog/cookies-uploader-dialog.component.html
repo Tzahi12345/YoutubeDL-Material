@@ -1,40 +1,44 @@
 <h4 mat-dialog-title i18n="Cookies uploader dialog title">Upload new cookies</h4>
-
 <mat-dialog-content>
-    <div>
-        <div class="center">
-            <ngx-file-drop [multiple]="false" accept=".txt" dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" 
-            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
-                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-                    <div>
-                        <div>
-                            <ng-container i18n="Drag and Drop">Drag and Drop</ng-container>
-                        </div>
-                        <div style="margin-top: 6px;">
-                            <button mat-stroked-button (click)="openFileSelector()">Browse Files</button>
-                        </div>
-                    </div>
-                </ng-template>
-            </ngx-file-drop>
-            <div style="margin-top: 15px;">
-                <p style="font-size: 14px;" i18n="Cookies upload warning">NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</p>
+  <div>
+    <div class="center">
+      <ngx-file-drop [multiple]="false" accept=".txt" dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)"
+        (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+          <div>
+            <div>
+              <ng-container i18n="Drag and Drop">Drag and Drop</ng-container>
             </div>
-            <div style="margin-top: 10px;">
-                <table class="table">
-                    <tbody class="upload-name-style">
-                        <tr *ngFor="let item of files; let i=index">
-                            <td style="vertical-align: middle;">
-                                <strong>{{ item.relativePath }}</strong>
-                            </td>
-                            <td>
-                                <button [disabled]="uploading || uploaded" (click)="uploadFile()" style="float: right" matTooltip="Upload" i18n-matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon><mat-spinner *ngIf="uploading" class="spinner" [diameter]="38"></mat-spinner></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div style="margin-top: 6px;">
+              <button mat-stroked-button (click)="openFileSelector()">Browse Files</button>
             </div>
-        </div>
+          </div>
+        </ng-template>
+      </ngx-file-drop>
+      <div style="margin-top: 15px;">
+        <p style="font-size: 14px;" i18n="Cookies upload warning">NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</p>
+      </div>
+      <div style="margin-top: 10px;">
+        <table class="table">
+          <tbody class="upload-name-style">
+            @for (item of files; track item; let i = $index) {
+              <tr>
+                <td style="vertical-align: middle;">
+                  <strong>{{ item.relativePath }}</strong>
+                </td>
+                <td>
+                  <button [disabled]="uploading || uploaded" (click)="uploadFile()" style="float: right" matTooltip="Upload" i18n-matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon>
+                    @if (uploading) {
+                      <mat-spinner class="spinner" [diameter]="38"></mat-spinner>
+                    }
+                  </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
+  </div>
+</div>
 </mat-dialog-content>
-
 <mat-dialog-actions><button style="margin-bottom: 5px;" mat-dialog-close mat-stroked-button><ng-container i18n="Close">Close</ng-container></button></mat-dialog-actions>

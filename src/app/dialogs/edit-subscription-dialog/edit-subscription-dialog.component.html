@@ -1,70 +1,80 @@
-<h4 mat-dialog-title><ng-container i18n="Edit subscription dialog title prefix">Editing</ng-container>&nbsp;{{sub.name}}&nbsp;<ng-container *ngIf="sub.paused" i18n="Paused suffix">(Paused)</ng-container></h4>
-
+<h4 mat-dialog-title><ng-container i18n="Edit subscription dialog title prefix">Editing</ng-container>&nbsp;{{sub.name}}
+@if (sub.paused) {
+  &nbsp;<ng-container i18n="Paused suffix">(Paused)</ng-container>
+}
+</h4>
 <mat-dialog-content>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 mt-3">
-                <mat-checkbox [(ngModel)]="new_sub.paused"><ng-container i18n="Paused subscription setting">Paused</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12 mt-3">
-                <mat-checkbox (change)="downloadAllToggled()" [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
-            </div>
-            <div class="col-12" *ngIf="editor_initialized">
-                <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
-                <mat-form-field color="accent" class="amount-select">
-                    <input type="number" matInput [(ngModel)]="timerange_amount" (ngModelChange)="timerangeChanged($event, false)" [disabled]="download_all">
-                </mat-form-field>
-                <mat-form-field class="unit-select">
-                    <mat-select color="accent" [(ngModel)]="timerange_unit" (ngModelChange)="timerangeChanged($event, true)" [disabled]="download_all">
-                        <mat-option *ngFor="let time_unit of time_units" [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
-                            {{time_unit + (timerange_amount === 1 ? '' : 's')}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12">
-                <div>
-                    <mat-checkbox [disabled]="true" [(ngModel)]="audioOnlyMode"><ng-container i18n="Streaming-only mode">Audio-only mode</ng-container></mat-checkbox>
-                </div>
-            </div>
-            <div class="col-12 mt-2">
-                <mat-form-field>
-                    <mat-label i18n="Max quality">Max quality</mat-label>
-                    <mat-select [disabled]="new_sub.type === 'audio'" [(ngModel)]="new_sub.maxQuality">
-                        <mat-option *ngFor="let available_quality of available_qualities" [value]="available_quality['value']">{{available_quality['label']}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-12 mb-3">
-                <mat-form-field color="accent">
-                    <mat-label i18n="Custom args">Custom args</mat-label>
-                    <input [(ngModel)]="new_sub.custom_args" matInput>
-                    <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
-                    <mat-hint>
-                        <ng-container i18n="Custom args hint">These are added after the standard args.</ng-container>
-                    </mat-hint>
-                </mat-form-field>
-            </div>
-            <div class="col-12 mt-2">
-                <mat-form-field color="accent">
-                    <mat-label i18n="Custom file output">Custom file output</mat-label>
-                    <input [(ngModel)]="new_sub.custom_output" matInput>
-                    <mat-hint>
-                        <a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
-                        <ng-container i18n="Custom output template documentation link">Documentation</ng-container></a>.
-                        <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
-                    </mat-hint>
-                </mat-form-field>
-            </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 mt-3">
+        <mat-checkbox [(ngModel)]="new_sub.paused"><ng-container i18n="Paused subscription setting">Paused</ng-container></mat-checkbox>
+      </div>
+      <div class="col-12 mt-3">
+        <mat-checkbox (change)="downloadAllToggled()" [(ngModel)]="download_all"><ng-container i18n="Download all uploads subscription setting">Download all uploads</ng-container></mat-checkbox>
+      </div>
+      @if (editor_initialized) {
+        <div class="col-12">
+          <ng-container i18n="Download time range prefix">Download videos uploaded in the last</ng-container>
+          <mat-form-field color="accent" class="amount-select">
+            <input type="number" matInput [(ngModel)]="timerange_amount" (ngModelChange)="timerangeChanged($event, false)" [disabled]="download_all">
+          </mat-form-field>
+          <mat-form-field class="unit-select">
+            <mat-select color="accent" [(ngModel)]="timerange_unit" (ngModelChange)="timerangeChanged($event, true)" [disabled]="download_all">
+              @for (time_unit of time_units; track time_unit) {
+                <mat-option [value]="time_unit + (timerange_amount === 1 ? '' : 's')">
+                  {{time_unit + (timerange_amount === 1 ? '' : 's')}}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
+      }
+      <div class="col-12">
+        <div>
+          <mat-checkbox [disabled]="true" [(ngModel)]="audioOnlyMode"><ng-container i18n="Streaming-only mode">Audio-only mode</ng-container></mat-checkbox>
+        </div>
+      </div>
+      <div class="col-12 mt-2">
+        <mat-form-field>
+          <mat-label i18n="Max quality">Max quality</mat-label>
+          <mat-select [disabled]="new_sub.type === 'audio'" [(ngModel)]="new_sub.maxQuality">
+            @for (available_quality of available_qualities; track available_quality) {
+              <mat-option [value]="available_quality['value']">{{available_quality['label']}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-12 mb-3">
+        <mat-form-field color="accent">
+          <mat-label i18n="Custom args">Custom args</mat-label>
+          <input [(ngModel)]="new_sub.custom_args" matInput>
+          <button class="args-edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
+          <mat-hint>
+            <ng-container i18n="Custom args hint">These are added after the standard args.</ng-container>
+          </mat-hint>
+        </mat-form-field>
+      </div>
+      <div class="col-12 mt-2">
+        <mat-form-field color="accent">
+          <mat-label i18n="Custom file output">Custom file output</mat-label>
+          <input [(ngModel)]="new_sub.custom_output" matInput>
+          <mat-hint>
+            <a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+              <ng-container i18n="Custom output template documentation link">Documentation</ng-container></a>.
+              <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
+            </mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
-</mat-dialog-content>
-
-<mat-dialog-actions>
+  </mat-dialog-content>
+  <mat-dialog-actions>
     <button mat-button mat-dialog-close><ng-container i18n="Subscribe cancel button">Cancel</ng-container></button>
     <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
     <button mat-button [disabled]="updating || !subChanged()" type="submit" (click)="saveClicked()"><ng-container i18n="Save button">Save</ng-container></button>
-    <div class="mat-spinner" *ngIf="updating">
-      <mat-spinner [diameter]="25"></mat-spinner>
-    </div>
-</mat-dialog-actions>
+    @if (updating) {
+      <div class="mat-spinner">
+        <mat-spinner [diameter]="25"></mat-spinner>
+      </div>
+    }
+  </mat-dialog-actions>
