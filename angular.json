@@ -75,21 +75,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "youtube-dl-material:build"
+            "buildTarget": "youtube-dl-material:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "youtube-dl-material:build:production"
+              "buildTarget": "youtube-dl-material:build:production"
             },
             "es": {
-              "browserTarget": "youtube-dl-material:build:es"
+              "buildTarget": "youtube-dl-material:build:es"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "youtube-dl-material:build"
+            "buildTarget": "youtube-dl-material:build"
           }
         },
         "serve-electron": {

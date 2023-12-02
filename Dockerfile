@@ -22,7 +22,7 @@ ENV ALLOW_CONFIG_MUTATIONS=true
 ENV npm_config_cache=/app/.npm
 
 # Use NVM to get specific node version
-ENV NODE_VERSION=16.14.2
+ENV NODE_VERSION=18.19.0
 RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
     apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 libatomic1 && \
