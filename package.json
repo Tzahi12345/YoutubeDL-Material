@@ -16,8 +16,8 @@
     "i18n-source": "ng extract-i18n --output-path=src/assets/i18n --out-file=messages.en.xlf"
   },
   "engines": {
-    "node": "12.3.1",
-    "npm": "6.10.3"
+    "node": "18.19.0",
+    "npm": "10.2.3"
   },
   "private": true,
   "dependencies": {
@@ -43,11 +43,11 @@
     "fs-extra": "^10.0.0",
     "material-icons": "^1.10.8",
     "nan": "^2.14.1",
+    "ngx-avatars": "^1.6.1",
     "ngx-file-drop": "^15.0.0",
     "rxjs": "^6.6.3",
     "rxjs-compat": "^6.6.7",
     "tslib": "^2.0.0",
-    "typescript": "~5.2.2",
     "xliff-to-json": "^1.0.4",
     "zone.js": "~0.14.2"
   },
@@ -65,7 +65,7 @@
     "ajv": "^7.2.4",
     "codelyzer": "^6.0.0",
     "eslint": "^7.32.0",
-    "jasmine-core": "~3.6.0",
+    "jasmine-core": "~3.8.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.1.0",
@@ -76,6 +76,13 @@
     "openapi-typescript-codegen": "^0.23.0",
     "protractor": "~7.0.0",
     "ts-node": "~3.0.4",
-    "tslint": "~6.1.0"
+    "tslint": "~6.1.0",
+    "typescript": "~5.2.0"
+  },
+  "overrides": {
+    "ngx-avatars": {
+      "@angular/common": "^17.0.0",
+      "@angular/core": "^17.0.0"
+    }
   }
 }
