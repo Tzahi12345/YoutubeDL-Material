@@ -565,6 +565,7 @@ function loadConfigValues() {
 }
 
 function getOrigin() {
+    if (process.env.CODESPACES) return `https://${process.env.CODESPACE_NAME}-4200.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`;
     return url_domain.origin;
 }
 
