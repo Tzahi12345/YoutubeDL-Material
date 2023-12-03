@@ -8,8 +8,7 @@ RUN sh ./ffmpeg-fetch.sh
 RUN sh ./fetch-twitchdownloader.sh
 
 
-# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
-# Go to 20.04
+# Create our Ubuntu 22.04 with node 18.19.0
 FROM ubuntu:22.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
@@ -39,7 +38,7 @@ RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 
 # Build frontend
 ARG BUILDPLATFORM
-FROM --platform=${BUILDPLATFORM} node:16 as frontend
+FROM --platform=${BUILDPLATFORM} node:18 as frontend
 RUN npm install -g @angular/cli
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
