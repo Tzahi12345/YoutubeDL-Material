@@ -548,7 +548,7 @@ export class MainComponent implements OnInit {
     }
     if (!(this.cachedAvailableFormats[url] && this.cachedAvailableFormats[url]['formats'])) {
       this.cachedAvailableFormats[url]['formats_loading'] = true;
-      this.postsService.getFileFormats([url]).subscribe(res => {
+      this.postsService.getFileFormats(url).subscribe(res => {
         this.cachedAvailableFormats[url]['formats_loading'] = false;
         const infos = res['result'];
         if (!infos || !infos.formats) {
