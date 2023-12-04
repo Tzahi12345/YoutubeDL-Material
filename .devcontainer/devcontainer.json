@@ -1,0 +1,39 @@
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+    "name": "Node.js",
+    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18-bullseye",
+    "features": {
+	"ghcr.io/devcontainers-contrib/features/jshint:2": {},
+	"ghcr.io/devcontainers-contrib/features/angular-cli:2": {},
+	"ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+  
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [4200, 17442],
+  
+    // Use 'postCreateCommand' to run commands after the container is created.
+    "postCreateCommand": "npm install && cd backend && npm install",
+  
+    // Configure tool-specific properties.
+    "customizations": {
+      // Configure properties specific to VS Code.
+      "vscode": {
+        // Add the IDs of extensions you want installed when the container is created.
+        "extensions": [
+			"ms-python.python",
+			"Angular.ng-template",
+			"dbaeumer.vscode-eslint",
+			"waderyan.gitblame",
+			"42Crunch.vscode-openapi",
+			"christian-kohler.npm-intellisense",
+			"redhat.vscode-yaml",
+			"hbenl.vscode-mocha-test-adapter",
+			"DavidAnson.vscode-markdownlint"
+		]
+      }
+    }
+  
+    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    // "remoteUser": "root"
+  }

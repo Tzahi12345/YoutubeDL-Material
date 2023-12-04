@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "codespaces": "ng serve --configuration=codespaces",
     "build": "ng build --configuration production",
     "prebuild": "node src/postbuild.mjs",
     "heroku-postbuild": "npm install --prefix backend",
