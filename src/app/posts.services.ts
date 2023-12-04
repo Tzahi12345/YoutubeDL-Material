@@ -119,6 +119,7 @@ import {
 import { isoLangs } from './dialogs/user-profile-dialog/locales_list';
 import { Title } from '@angular/platform-browser';
 import { MatDrawerMode } from '@angular/material/sidenav';
+import { environment } from '../environments/environment';
 
 @Injectable()
 export class PostsService  {
@@ -176,7 +177,7 @@ export class PostsService  {
 
         if (isDevMode()) {
             this.debugMode = true;
-            this.path = 'http://localhost:17442/api/';
+            this.path = !environment.codespaces ? 'http://localhost:17442/api/' : `${window.location.origin.replace('4200', '17442')}/api/`;
         }
 
         this.http_params = `apiKey=${this.auth_token}`

@@ -66,6 +66,14 @@
                 }
               ]
             },
+            "codespaces": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.codespaces.ts"
+                }
+              ]
+            },
             "es": {
               "localize": ["es"]
             }
@@ -83,6 +91,9 @@
             },
             "es": {
               "buildTarget": "youtube-dl-material:build:es"
+            },
+            "codespaces": {
+              "buildTarget": "youtube-dl-material:build:codespaces"
             }
           }
         },

@@ -5,5 +5,5 @@
 
 export const environment = {
   production: false,
-  codespaces: false
+  codespaces: true
 };
