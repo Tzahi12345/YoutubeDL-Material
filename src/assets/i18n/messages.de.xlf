@@ -1107,7 +1107,7 @@
       </trans-unit>
       <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html">
         <source>Allow advanced download</source>
-        <target xml:lang="de-DE">Erweiterte Download-Optionen aktivieren</target>
+        <target xml:lang="de-DE" state="translated">Erweiterte Downloads erlauben</target>
         <note from="description" priority="1">Allow advanced downloading setting</note>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
@@ -1525,7 +1525,7 @@
       </trans-unit>
       <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html">
         <source>Download all uploads</source>
-        <target xml:lang="de-DE">Alle hochgeladene Videos herunterladen</target>
+        <target xml:lang="de-DE" state="translated">Alle hochgeladenen Videos herunterladen</target>
         <note from="description" priority="1">Download all uploads subscription setting</note>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
@@ -1642,7 +1642,7 @@
       </trans-unit>
       <trans-unit id="587b57ced54965d8874c3fd0e9dfedb987e5df04" datatype="html">
         <source>You have no playlist subscriptions.</source>
-        <target xml:lang="de-DE">Sie haben keine Wiedergabeliste abonniert.</target>
+        <target xml:lang="de-DE" state="translated">Du hast keine Wiedergabeliste abonniert.</target>
         <note from="description" priority="1">No playlist subscriptions text</note>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscriptions/subscriptions.component.html</context>
@@ -2059,7 +2059,7 @@
       </trans-unit>
       <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html">
         <source>Kill all downloads</source>
-        <target>Alle Herunterladen-Ereignisse abbrechen</target>
+        <target state="translated">Alle Downloads abbrechen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">139</context>
@@ -2221,7 +2221,7 @@
       </trans-unit>
       <trans-unit id="3697f8583ea42868aa269489ad366103d94aece7" datatype="html">
         <source>Editing</source>
-        <target>Bearbeiten</target>
+        <target state="translated">In Bearbeitung</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -2592,7 +2592,7 @@
       </trans-unit>
       <trans-unit id="d54142de169844b014ae913a4056c31495f4a305" datatype="html">
         <source>Test connection string</source>
-        <target>Verbindungstest-String</target>
+        <target state="translated">Verbindungsstring testen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">304</context>
@@ -2717,7 +2717,7 @@
       </trans-unit>
       <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html">
         <source>Autoplay</source>
-        <target>Automatisches abspielen</target>
+        <target state="translated">Automatisches Abspielen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">70,71</context>
@@ -4309,7 +4309,7 @@
       </trans-unit>
       <trans-unit id="6219551536751479443" datatype="html">
         <source>Finished downloading</source>
-        <target state="translated">Herunterladen abgeschlossen</target>
+        <target state="translated">Download abgeschlossen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">17</context>
@@ -4317,7 +4317,7 @@
       </trans-unit>
       <trans-unit id="5947241266456580665" datatype="html">
         <source>Download failed</source>
-        <target state="translated">Herunterladen fehlgeschlagen</target>
+        <target state="translated">Download fehlgeschlagen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">18</context>
@@ -4358,7 +4358,7 @@
       </trans-unit>
       <trans-unit id="6876310993601590130" datatype="html">
         <source>Download completed</source>
-        <target state="translated">Herunterladen abgeschlossen</target>
+        <target state="translated">Download abgeschlossen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -4523,7 +4523,7 @@
       </trans-unit>
       <trans-unit id="c5dc5fbcce45e9b1530e2a5c2baa8ebe722aef4c" datatype="html">
         <source>Download complete</source>
-        <target state="translated">Herunterladen abgeschlossen</target>
+        <target state="translated">Download abgeschlossen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">391</context>
@@ -4703,7 +4703,7 @@
       </trans-unit>
       <trans-unit id="8643601595923420698" datatype="html">
         <source>Retry download</source>
-        <target state="translated">Herunterladen erneut versuchen</target>
+        <target state="translated">Download erneut versuchen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -4727,7 +4727,7 @@
       </trans-unit>
       <trans-unit id="5000203534763292992" datatype="html">
         <source>Download restarted!</source>
-        <target state="translated">Herunterladen neu gestartet!</target>
+        <target state="translated">Download neu gestartet!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -4783,7 +4783,7 @@
       </trans-unit>
       <trans-unit id="3ffd9490f3a4c0b24021d25e1dc71fcfe5d39cd6" datatype="html">
         <source>Download error</source>
-        <target state="translated">Herunterladefehler</target>
+        <target state="translated">Downloadfehler</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">392</context>
@@ -4940,6 +4940,206 @@
           <context context-type="linenumber">25,27</context>
         </context-group>
         <note priority="1" from="description">No description</note>
+      </trans-unit>
+      <trans-unit id="4665451070906079743" datatype="html">
+        <source>Favorited</source>
+        <target state="translated">Favorisiert</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="56b1a3c93fb95fed1805005c561a5e431d57ffae" datatype="html">
+        <source>Blacklist all files</source>
+        <target state="translated">Alle Dateien blacklisten</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note priority="1" from="description">Blacklist deleted files</note>
+      </trans-unit>
+      <trans-unit id="9aa1b4779a515170b297d2c0507e6ff9d2e3e0e0" datatype="html">
+        <source>Blacklist deleted subscription files</source>
+        <target state="translated">Gelöschte Abo-Dateien blacklisten</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+        <note priority="1" from="description">Blacklist deleted subscription files</note>
+      </trans-unit>
+      <trans-unit id="c2faa86201eab08b5b39b5437f96ab9432e125e7" datatype="html">
+        <source>Item limit</source>
+        <target state="translated">Elementlimit</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">Item limit</note>
+      </trans-unit>
+      <trans-unit id="784837056777689544" datatype="html">
+        <source>Would you like to unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/>?</source>
+        <target state="translated">Möchtest Du dich von <x id="subscription name" equiv-text="this.sub['name']"/> abmelden?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html">
+        <source>Arg</source>
+        <target state="translated">Argument</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">Arg</note>
+      </trans-unit>
+      <trans-unit id="0cfc9cfe7cd8ea14bc053693b28872da739af02c" datatype="html">
+        <source>See docs here.</source>
+        <target state="translated">Doku ansehen.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">375</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">382</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">392</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">402</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">409</context>
+        </context-group>
+        <note priority="1" from="description">Discord API setting hint</note>
+      </trans-unit>
+      <trans-unit id="9e766e11a9de375907aaf566897ecc6dac393ebc" datatype="html">
+        <source>Webhook URL</source>
+        <target state="translated">Webhook URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">366</context>
+        </context-group>
+        <note priority="1" from="description">webhook URL</note>
+      </trans-unit>
+      <trans-unit id="b770c48628d98cb4633d6a17e3f0ba0265376af5" datatype="html">
+        <source>Gotify app token</source>
+        <target state="translated">Gotify app token</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">407</context>
+        </context-group>
+        <note priority="1" from="description">Gotify app token</note>
+      </trans-unit>
+      <trans-unit id="3e420c675b8f3f3702576d52e8bb6e8e1d3feda0" datatype="html">
+        <source>How do I get the chat ID?</source>
+        <target state="translated">Wie bekomme ich die Chat ID?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">426</context>
+        </context-group>
+        <note priority="1" from="description">Telegram chat ID help</note>
+      </trans-unit>
+      <trans-unit id="06f503e492d6dbcf59e7b9c412ca86913d718689" datatype="html">
+        <source>ntfy topic URL</source>
+        <target state="translated">ntfy Themen URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">390</context>
+        </context-group>
+        <note priority="1" from="description">ntfy topic URL</note>
+      </trans-unit>
+      <trans-unit id="5827fde8fcafdd55ae80921ad3ad4aa01012e203" datatype="html">
+        <source>Use gotify API</source>
+        <target state="translated">gotify API verwenden</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">396</context>
+        </context-group>
+        <note priority="1" from="description">Use gotify API setting</note>
+      </trans-unit>
+      <trans-unit id="55f559d6f666b945479f534b0c182f70cd0a8a69" datatype="html">
+        <source>Gotify server URL</source>
+        <target state="translated">Gotify Server URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">400</context>
+        </context-group>
+        <note priority="1" from="description">Gotify server URL</note>
+      </trans-unit>
+      <trans-unit id="144e1a21ebe8fa238f88d2ac27515ed711cfc9a0" datatype="html">
+        <source>Telegram chat ID</source>
+        <target state="translated">Telegram chat ID</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">424</context>
+        </context-group>
+        <note priority="1" from="description">Telegram chat ID</note>
+      </trans-unit>
+      <trans-unit id="2481374649045841364" datatype="html">
+        <source>Would you like to delete <x id="category name" equiv-text="category['name']"/>?</source>
+        <target state="translated">Möchtest du <x id="category name" equiv-text="category['name']"/> löschen?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">159</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3371159074051387771" datatype="html">
+        <source>Failed to delete <x id="category name" equiv-text="category['name']"/>!</source>
+        <target state="translated">Löschen von <x id="category name" equiv-text="category['name']"/> fehlgeschlagen!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8336047719608684263" datatype="html">
+        <source>Unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/></source>
+        <target state="translated">Von <x id="subscription name" equiv-text="this.sub['name']"/> abmelden</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="37469c9f3e31d95087fa22b6c9c3bc64adf1692d" datatype="html">
+        <source>Enable RSS Feed</source>
+        <target state="translated">RSS Feed aktivieren</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">271</context>
+        </context-group>
+        <note priority="1" from="description">Enable RSS Feed setting</note>
+      </trans-unit>
+      <trans-unit id="3264d82792954815be755b3da01e2625458711dc" datatype="html">
+        <source>Discord Webhook URL</source>
+        <target state="translated">Discord Webhook URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">373</context>
+        </context-group>
+        <note priority="1" from="description">Discord Webhook URL</note>
+      </trans-unit>
+      <trans-unit id="7cedb649779673568447b994463b2882c4e0436a" datatype="html">
+        <source>Slack Webhook URL</source>
+        <target state="translated">Slack Webhook URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">380</context>
+        </context-group>
+        <note priority="1" from="description">Slack Webhook URL</note>
+      </trans-unit>
+      <trans-unit id="8c1bf02206fbc371ff69ab1b7e35a17ba29d169d" datatype="html">
+        <source>Use ntfy API</source>
+        <target state="translated">ntfy API verwenden</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">386</context>
+        </context-group>
+        <note priority="1" from="description">Use ntfy API setting</note>
       </trans-unit>
     </body>
   </file>
