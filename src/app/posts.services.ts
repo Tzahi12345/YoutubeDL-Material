@@ -460,7 +460,7 @@ export class PostsService  {
         return this.http.post<SuccessObject>(this.path + 'deleteArchiveItems', body, this.httpOptions);
     }
 
-    getFileFormats(url) {
+    getFileFormats(url: string) {
         const body: GetFileFormatsRequest = {url: url};
         return this.http.post<GetFileFormatsResponse>(this.path + 'getFileFormats', body, this.httpOptions);
     }

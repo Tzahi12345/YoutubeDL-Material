@@ -590,17 +590,6 @@ function generateEnvVarConfigItem(key) {
     return {key: key, value: process['env'][key]};
 }
 
-// currently only works for single urls
-async function getUrlInfos(url) {
-    const {parsed_output, err} = await youtubedl_api.runYoutubeDL(url, ['--dump-json']);
-    if (!parsed_output || parsed_output.length !== 1) {
-        logger.error(`Failed to retrieve available formats for url: ${url}`);
-        if (err) logger.error(err);
-        return null;
-    }
-    return parsed_output[0];
-}
-
 // youtube-dl functions
 
 async function startYoutubeDL() {
@@ -1871,11 +1860,11 @@ app.post('/api/clearAllLogs', optionalJwt, async function(req, res) {
 });
 
   app.post('/api/getFileFormats', optionalJwt, async (req, res) => {
-    let url = req.body.url;
-    let result = await getUrlInfos(url);
+    const url = req.body.url;
+    const result = await downloader_api.getVideoInfoByURL(url);
     res.send({
-        result: result,
-        success: !!result
+        result: result && result.length === 1 ? result[0] : null,
+        success: result && result.length === 0
     })
 });
 
