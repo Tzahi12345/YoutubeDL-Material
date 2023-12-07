@@ -57,7 +57,7 @@ jobs:
             type=raw,value=latest
 
       - name: setup platform emulator
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: setup multi-arch docker build
         uses: docker/setup-buildx-action@v2
