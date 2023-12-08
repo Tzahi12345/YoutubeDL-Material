@@ -24,7 +24,7 @@ jobs:
           json: '{"type": "docker", "tag": "nightly", "commit": "${{ steps.vars.outputs.sha_short }}", "date": "${{ steps.date.outputs.date }}"}'
           dir: 'backend/'
       - name: setup platform emulator
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: setup multi-arch docker build
         uses: docker/setup-buildx-action@v3
       - name: build & push images
