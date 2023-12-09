@@ -71,8 +71,8 @@ RUN npm config set strict-ssl false && \
 
 # Final image
 FROM base
-RUN npm install -g pm2 && \
-    apt update && \
+RUN apt update && \
+    apt install sudo curl && curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash - && \
     apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
     pip install pycryptodomex && \
     apt remove -y --purge build-essential && \
