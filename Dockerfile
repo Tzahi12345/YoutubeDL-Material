@@ -75,7 +75,7 @@ RUN npm config set strict-ssl false && \
 FROM base
 RUN apt update && \
     curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | bash && \
-    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
+    apt install -y --no-install-recommends gosu atomicparsley build-essential && \
     pip install pycryptodomex && \
     apt remove -y --purge build-essential && \
     apt autoremove -y --purge && \
