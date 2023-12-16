@@ -36,7 +36,7 @@ RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 
-RUN npm install -g npm@10.2.5
+RUN npm install -g npm
 
 # Build frontend
 ARG BUILDPLATFORM
