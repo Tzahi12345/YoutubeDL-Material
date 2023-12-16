@@ -1,5 +1,5 @@
 # Fetching our utils
-FROM ubuntu:24.04 AS utils
+FROM ubuntu:23.04 AS utils
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
 COPY docker-utils/*.sh .
@@ -9,7 +9,7 @@ RUN sh ./fetch-twitchdownloader.sh
 
 
 # Create our Ubuntu 22.04 with node 18.19.0
-FROM ubuntu:24.04 AS base
+FROM ubuntu:23.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 ENV UID=1001
