@@ -22,7 +22,7 @@ esac
 
 echo "(INFO) Architecture detected: $ARCH"
 echo "(1/5) READY - Install unzip"
-apt-get update && apt-get -y install unzip curl jq libicu70
+apt-get update && apt-get -y install unzip curl jq
 VERSION=$(curl --silent "https://api.github.com/repos/lay295/TwitchDownloader/releases" | jq -r --arg arch "$ARCH" '[.[] | select(.assets | length > 0) | select(.assets[].name | contains("CLI") and contains($arch))] | max_by(.published_at) | .tag_name')
 echo "(2/5) DOWNLOAD - Acquire twitchdownloader"
 curl -o twitchdownloader.zip \
