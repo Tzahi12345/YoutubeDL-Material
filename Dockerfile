@@ -57,6 +57,7 @@ FROM base as backend
 WORKDIR /app
 COPY [ "backend/","/app/" ]
 RUN npm config set strict-ssl false && \
+    npm config set registry https://registry.npm.taobao.org && \
     npm config set fetch-retry-maxtimeout 60000 && \
     npm install --prod && \
     ls -al
