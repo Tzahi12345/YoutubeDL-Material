@@ -17,23 +17,23 @@
     "i18n-source": "ng extract-i18n --output-path=src/assets/i18n --out-file=messages.en.xlf"
   },
   "engines": {
-    "node": "12.3.1",
-    "npm": "6.10.3"
+    "node": "18.19.0",
+    "npm": "10.2.3"
   },
   "private": true,
   "dependencies": {
-    "@angular-devkit/core": "^15.0.1",
-    "@angular/animations": "^15.0.1",
-    "@angular/cdk": "^15.0.0",
-    "@angular/common": "^15.0.1",
-    "@angular/compiler": "^15.0.1",
-    "@angular/core": "^15.0.1",
-    "@angular/forms": "^15.0.1",
-    "@angular/localize": "^15.0.1",
-    "@angular/material": "^15.0.0",
-    "@angular/platform-browser": "^15.0.1",
-    "@angular/platform-browser-dynamic": "^15.0.1",
-    "@angular/router": "^15.0.1",
+    "@angular-devkit/core": "^17.0.5",
+    "@angular/animations": "^17.0.5",
+    "@angular/cdk": "^17.0.2",
+    "@angular/common": "^17.0.5",
+    "@angular/compiler": "^17.0.5",
+    "@angular/core": "^17.0.5",
+    "@angular/forms": "^17.0.5",
+    "@angular/localize": "^17.0.5",
+    "@angular/material": "^17.0.2",
+    "@angular/platform-browser": "^17.0.5",
+    "@angular/platform-browser-dynamic": "^17.0.5",
+    "@angular/router": "^17.0.5",
     "@fontsource/material-icons": "^4.5.4",
     "@ngneat/content-loader": "^7.0.0",
     "@videogular/ngx-videogular": "^6.0.0",
@@ -44,20 +44,19 @@
     "fs-extra": "^10.0.0",
     "material-icons": "^1.10.8",
     "nan": "^2.14.1",
-    "ngx-avatars": "^1.4.1",
+    "ngx-avatars": "^1.6.1",
     "ngx-file-drop": "^15.0.0",
     "rxjs": "^6.6.3",
     "rxjs-compat": "^6.6.7",
     "tslib": "^2.0.0",
-    "typescript": "~4.8.4",
     "xliff-to-json": "^1.0.4",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.14.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^15.0.1",
-    "@angular/cli": "^15.0.1",
-    "@angular/compiler-cli": "^15.0.1",
-    "@angular/language-service": "^15.0.1",
+    "@angular-devkit/build-angular": "^17.0.5",
+    "@angular/cli": "^17.0.5",
+    "@angular/compiler-cli": "^17.0.5",
+    "@angular/language-service": "^17.0.5",
     "@types/core-js": "^2.5.2",
     "@types/file-saver": "^2.0.1",
     "@types/jasmine": "^4.3.1",
@@ -67,7 +66,7 @@
     "ajv": "^7.2.4",
     "codelyzer": "^6.0.0",
     "eslint": "^7.32.0",
-    "jasmine-core": "~3.6.0",
+    "jasmine-core": "~3.8.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.1.0",
@@ -78,12 +77,13 @@
     "openapi-typescript-codegen": "^0.23.0",
     "protractor": "~7.0.0",
     "ts-node": "~3.0.4",
-    "tslint": "~6.1.0"
+    "tslint": "~6.1.0",
+    "typescript": "~5.2.0"
   },
   "overrides": {
     "ngx-avatars": {
-      "@angular/common": "15.0.1",
-      "@angular/core": "15.0.1"
+      "@angular/common": "^17.0.0",
+      "@angular/core": "^17.0.0"
     }
-}
+  }
 }

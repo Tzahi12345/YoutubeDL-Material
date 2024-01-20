@@ -6,7 +6,7 @@
 [![GitHub issues badge](https://img.shields.io/github/issues/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/issues)
 [![License badge](https://img.shields.io/github/license/Tzahi12345/YoutubeDL-Material)](https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/LICENSE.md)
 
-YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 15](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
+YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/). It's coded using [Angular 17](https://angular.io/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
 
 Now with [Docker](#Docker) support!
 
@@ -30,7 +30,7 @@ NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker
 
 Required dependencies:
 
-* Node.js 16
+* Node.js 18
 * Python
 
 Optional dependencies:
@@ -42,7 +42,7 @@ Optional dependencies:
   <summary>Debian/Ubuntu</summary>
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install nodejs youtube-dl ffmpeg unzip python npm
 ```
 
@@ -57,7 +57,7 @@ sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfu
 sudo yum install centos-release-scl-rh
 sudo yum install rh-nodejs12
 scl enable rh-nodejs12 bash
-curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
+curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
 sudo yum install nodejs youtube-dl ffmpeg ffmpeg-devel
 ```
 
