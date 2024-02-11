@@ -223,6 +223,7 @@ exports.deleteJSONFile = (file_path, type) => {
 
 exports.durationStringToNumber = (dur_str) => {
     if (typeof dur_str === 'number') return dur_str;
+    if (typeof dur_str === 'undefined') return 0;
     let num_sum = 0;
     const dur_str_parts = dur_str.split(':');
     for (let i = dur_str_parts.length-1; i >= 0; i--) {
