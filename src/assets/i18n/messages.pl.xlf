@@ -4554,6 +4554,140 @@
           <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="56b1a3c93fb95fed1805005c561a5e431d57ffae" datatype="html" xml:space="preserve">
+        <source>Blacklist all files</source>
+        <target state="translated">Dodaj do listy blokowanie wszystkie pliki</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note priority="1" from="description">Blacklist deleted files</note>
+      </trans-unit>
+      <trans-unit id="5ac5a0e5ffe8e5623b40696f4c2403c17349271f" datatype="html" xml:space="preserve">
+        <source>Sidepanel mode</source>
+        <target state="translated">Tryb panelu bocznego</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <note priority="1" from="description">Sidepanel mode</note>
+      </trans-unit>
+      <trans-unit id="c2faa86201eab08b5b39b5437f96ab9432e125e7" datatype="html" xml:space="preserve">
+        <source>Item limit</source>
+        <target state="translated">Lista elementów</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="description">Item limit</note>
+      </trans-unit>
+      <trans-unit id="8336047719608684263" datatype="html" xml:space="preserve">
+        <source>Unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/></source>
+        <target state="translated">Anuluj subskrypcję <x id="subscription name" equiv-text="this.sub['name']"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="784837056777689544" datatype="html" xml:space="preserve">
+        <source>Would you like to unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/>?</source>
+        <target state="translated">Czy na pewno chcesz cofnąć subskrypcję dla <x id="subscription name" equiv-text="this.sub['name']"/>?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c40370dc182b5e4333828b70f7478bde58bb5cfe" datatype="html" xml:space="preserve">
+        <source>Enable notifications</source>
+        <target state="translated">Włącz powiadomienia</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">349</context>
+        </context-group>
+        <note priority="1" from="description">Enable notifications setting</note>
+      </trans-unit>
+      <trans-unit id="3371159074051387771" datatype="html" xml:space="preserve">
+        <source>Failed to delete <x id="category name" equiv-text="category['name']"/>!</source>
+        <target state="translated">Nie udało się usunąć <x id="category name" equiv-text="category['name']"/>!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7332320960988475089" datatype="html" xml:space="preserve">
+        <source>Successfully deleted <x id="category name" equiv-text="category['name']"/>!</source>
+        <target state="translated">Usunięto subskrypcję <x id="category name" equiv-text="category['name']"/>!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">168</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="a4ed8eba1e057e67d5c2d87b52230f182b3dae4e" datatype="html" xml:space="preserve">
+        <source>Restart required.</source>
+        <target state="translated">Wymagane jest ponowne uruchomienie.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">446</context>
+        </context-group>
+        <note priority="1" from="description">Restart required hint</note>
+      </trans-unit>
+      <trans-unit id="674a999dd48d7da565ffdd105602261b8a4761ea" datatype="html" xml:space="preserve">
+        <source>Download zip</source>
+        <target state="translated">Pobierz zip</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">Download zip</note>
+      </trans-unit>
+      <trans-unit id="c35ef0f03a863d33b04aae6807f140397a50f491" datatype="html" xml:space="preserve">
+        <source>Generate RSS URL</source>
+        <target state="translated">Generuj adres URL kanału RSS</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">273</context>
+        </context-group>
+        <note priority="1" from="description">Generate RSS URL</note>
+      </trans-unit>
+      <trans-unit id="b6399391e706e2d7b7b7880eb5630e4e6f49728c" datatype="html" xml:space="preserve">
+        <source>Side</source>
+        <target state="translated">Strona</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+        <note priority="1" from="description">Side</note>
+      </trans-unit>
+      <trans-unit id="8c1bf02206fbc371ff69ab1b7e35a17ba29d169d" datatype="html" xml:space="preserve">
+        <source>Use ntfy API</source>
+        <target state="translated">Użyj API ntfy</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">386</context>
+        </context-group>
+        <note priority="1" from="description">Use ntfy API setting</note>
+      </trans-unit>
+      <trans-unit id="eeb0ba2e4743901d8f5eebd9a3529aa1f236c608" datatype="html" xml:space="preserve">
+        <source>Create bot here.</source>
+        <target state="translated">Stwórz bota.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">419</context>
+        </context-group>
+        <note priority="1" from="description">Telegram bot create link</note>
+      </trans-unit>
+      <trans-unit id="6785427850041119037" datatype="html" xml:space="preserve">
+        <source>Delete category</source>
+        <target state="translated">Usuń kategorię</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">158</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
