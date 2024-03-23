@@ -81,9 +81,9 @@
         </context-group>
         <note priority="1" from="description">Navigation menu Subscriptions Page title</note>
       </trans-unit>
-      <trans-unit id="822fab38216f64e8166d368b59fe756ca39d301b" datatype="html">
+      <trans-unit id="822fab38216f64e8166d368b59fe756ca39d301b" datatype="html" xml:space="preserve">
         <source>Downloads</source>
-        <target>Baixados</target>
+        <target state="translated">Descarregados</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">46</context>
@@ -99,9 +99,9 @@
         </context-group>
         <note priority="1" from="description">Only Audio checkbox</note>
       </trans-unit>
-      <trans-unit id="6a21ba5fb0ac804a525bf9ab168038c3ee88e661" datatype="html">
+      <trans-unit id="6a21ba5fb0ac804a525bf9ab168038c3ee88e661" datatype="html" xml:space="preserve">
         <source>Download</source>
-        <target>Baixar</target>
+        <target state="translated">Descarregar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">74,75</context>
@@ -240,9 +240,9 @@
         </context-group>
         <note priority="1" from="description">Youtube-dl output template documentation link</note>
       </trans-unit>
-      <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
+      <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html" xml:space="preserve">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target>Caminho é relativo a configuração do caminho de download. Não inclua a extensão.</target>
+        <target state="translated">Caminho é relativo à configuração do caminho de descargas. Não inclui a extensão.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">128</context>
@@ -420,9 +420,9 @@
         </context-group>
         <note priority="1" from="description">Subscription custom name placeholder</note>
       </trans-unit>
-      <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html">
+      <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html" xml:space="preserve">
         <source>Download all uploads</source>
-        <target>Baixar todos uploads</target>
+        <target state="translated">Descarregar todos envios</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">23</context>
@@ -536,9 +536,9 @@
         </context-group>
         <note priority="1" from="description">Subscribe button</note>
       </trans-unit>
-      <trans-unit id="28a678e9cabf86e44c32594c43fa0e890135c20f" datatype="html">
+      <trans-unit id="28a678e9cabf86e44c32594c43fa0e890135c20f" datatype="html" xml:space="preserve">
         <source>Download videos uploaded in the last</source>
-        <target>Baixe vídeos enviados no último</target>
+        <target state="translated">Descarregar vídeos enviados no último</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -1023,9 +1023,9 @@
         </context-group>
         <note priority="1" from="description">Add new rule tooltip</note>
       </trans-unit>
-      <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html">
+      <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html" xml:space="preserve">
         <source>Download Twitch Chat</source>
-        <target>Baixar Twitch Chat</target>
+        <target state="translated">Descarregar Twitch Chat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1266,9 +1266,9 @@
         </context-group>
         <note priority="1" from="description">Main settings label</note>
       </trans-unit>
-      <trans-unit id="0ba25ad86a240576c4f20a2fada4722ebba77b1e" datatype="html">
+      <trans-unit id="0ba25ad86a240576c4f20a2fada4722ebba77b1e" datatype="html" xml:space="preserve">
         <source>Downloader</source>
-        <target>Downloader</target>
+        <target state="translated">Descarregador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">102</context>
@@ -1373,9 +1373,9 @@
         </context-group>
         <note priority="1" from="description">Users base path placeholder</note>
       </trans-unit>
-      <trans-unit id="a64505c41150663968e277ec9b3ddaa5f4838798" datatype="html">
+      <trans-unit id="a64505c41150663968e277ec9b3ddaa5f4838798" datatype="html" xml:space="preserve">
         <source>Base path for users and their downloaded videos.</source>
-        <target>Diretório base para usuários e seus vídeos baixados.</target>
+        <target state="translated">Diretório base para utilizadores e os seus vídeos descarregados.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1427,18 +1427,18 @@
         </context-group>
         <note priority="1" from="description">Check interval setting input hint</note>
       </trans-unit>
-      <trans-unit id="13759b09a7f4074ceee8fa2f968f9815fdf63295" datatype="html">
+      <trans-unit id="13759b09a7f4074ceee8fa2f968f9815fdf63295" datatype="html" xml:space="preserve">
         <source>Sometimes new videos are downloaded before being fully processed. This setting will mean new videos will be checked for a higher quality version the following day.</source>
-        <target>Algumas vezes vídeos são baixados antes de serem totalmente processados. Esta configuração faz com que vídeos novos sejam verificados por uma qualidade mais alta no dia seguinte.</target>
+        <target state="translated">Algumas vezes vídeos são descarregados antes de serem totalmente processados. Esta configuração faz com que vídeos novos sejam verificados por uma qualidade mais alta no dia seguinte.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
         <note priority="1" from="description">Redownload fresh uploads tooltip</note>
       </trans-unit>
-      <trans-unit id="3d1a47dc18b7bd8b5d9e1eb44b235ed9c4a2b513" datatype="html">
+      <trans-unit id="3d1a47dc18b7bd8b5d9e1eb44b235ed9c4a2b513" datatype="html" xml:space="preserve">
         <source>Redownload fresh uploads</source>
-        <target>Baixar novamente uploads recentes</target>
+        <target state="translated">Descarregar envios recentes novamente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">63</context>
@@ -1490,9 +1490,9 @@
         </context-group>
         <note priority="1" from="description">Audio folder path input placeholder</note>
       </trans-unit>
-      <trans-unit id="c2c89cdf45d46ea64d2ed2f9ac15dfa4d77e26ca" datatype="html">
+      <trans-unit id="c2c89cdf45d46ea64d2ed2f9ac15dfa4d77e26ca" datatype="html" xml:space="preserve">
         <source>Path for audio only downloads. It is relative to YTDL-Material's root folder.</source>
-        <target>Diretório para downloads de 'áudio apenas'. Relativo ao diretório raiz do YTDL-Material.</target>
+        <target state="translated">Diretório para descargas de 'apenas áudio'. Relativo ao diretório raiz do YTDL-Material.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">110</context>
@@ -1508,9 +1508,9 @@
         </context-group>
         <note priority="1" from="description">Video folder path input placeholder</note>
       </trans-unit>
-      <trans-unit id="17c92e6d47a213fa95b5aa344b3f258147123f93" datatype="html">
+      <trans-unit id="17c92e6d47a213fa95b5aa344b3f258147123f93" datatype="html" xml:space="preserve">
         <source>Path for video downloads. It is relative to YTDL-Material's root folder.</source>
-        <target>Diretório para download de vídeos. Relativo ao diretório raiz do YTDL-Material.</target>
+        <target state="translated">Diretório para descargas de vídeos. Relativo ao diretório raiz do YTDL-Material.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">117</context>
@@ -1526,9 +1526,9 @@
         </context-group>
         <note priority="1" from="description">Default file output placeholder</note>
       </trans-unit>
-      <trans-unit id="1148fd45287ff09955b938756bc302042bcb29c7" datatype="html">
+      <trans-unit id="1148fd45287ff09955b938756bc302042bcb29c7" datatype="html" xml:space="preserve">
         <source>Path is relative to the above download paths. Don't include extension.</source>
-        <target>O caminho é relativo ao diretório de download acima. Não inclua extensão.</target>
+        <target state="translated">O caminho é relativo ao diretório de descargas acima. Não inclua extensão.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">126</context>
@@ -1589,9 +1589,9 @@
         </context-group>
         <note priority="1" from="description">Include metadata setting</note>
       </trans-unit>
-      <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html">
+      <trans-unit id="fb35145bfb84521e21b6385363d59221f436a573" datatype="html" xml:space="preserve">
         <source>Kill all downloads</source>
-        <target>Parar todos os downloads</target>
+        <target state="translated">Parar todas as descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">175</context>
@@ -1616,9 +1616,9 @@
         </context-group>
         <note priority="1" from="description">File manager enabled setting</note>
       </trans-unit>
-      <trans-unit id="a5a1be0a5df07de9eec57f5d2a86ed0204b2e75a" datatype="html">
+      <trans-unit id="a5a1be0a5df07de9eec57f5d2a86ed0204b2e75a" datatype="html" xml:space="preserve">
         <source>Downloads manager enabled</source>
-        <target>Habilitar gerenciador de downloads</target>
+        <target state="translated">Ativar gestor de descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">196</context>
@@ -1634,9 +1634,9 @@
         </context-group>
         <note priority="1" from="description">Allow quality seelct setting</note>
       </trans-unit>
-      <trans-unit id="bda5508e24e0d77debb28bcd9194d8fefb1cfb92" datatype="html">
+      <trans-unit id="bda5508e24e0d77debb28bcd9194d8fefb1cfb92" datatype="html" xml:space="preserve">
         <source>Download only mode</source>
-        <target>Modo Apenas Download</target>
+        <target state="translated">Modo apenas descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">202</context>
@@ -1755,9 +1755,9 @@
         </context-group>
         <note priority="1" from="description">Twitch API Key setting hint AKA preamble</note>
       </trans-unit>
-      <trans-unit id="5fb1e0083c9b2a40ac8ae7dcb2618311c291b8b9" datatype="html">
+      <trans-unit id="5fb1e0083c9b2a40ac8ae7dcb2618311c291b8b9" datatype="html" xml:space="preserve">
         <source>Auto-download Twitch Chat</source>
-        <target>Baixar Twitch Chat automaticamente</target>
+        <target state="translated">Descarregar Twitch Chat automaticamente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">244</context>
@@ -1781,9 +1781,9 @@
         </context-group>
         <note priority="1" from="description">Chrome ext click here</note>
       </trans-unit>
-      <trans-unit id="7f09776373995003161235c0c8d02b7f91dbc4df" datatype="html">
+      <trans-unit id="7f09776373995003161235c0c8d02b7f91dbc4df" datatype="html" xml:space="preserve">
         <source>to download the official YoutubeDL-Material Chrome extension manually.</source>
-        <target>para baixar a extensão do YoutubeDL-Material para o Chrome manualmente.</target>
+        <target state="translated">para descarregar a extensão do YoutubeDL-Material para o Chrome manualmente.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">259</context>
@@ -1826,9 +1826,9 @@
         </context-group>
         <note priority="1" from="description">Firefox setup suffix</note>
       </trans-unit>
-      <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2" datatype="html">
+      <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2" datatype="html" xml:space="preserve">
         <source>Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</source>
-        <target>Arraste o link abaixo para seus Favoritos, e pronto! Navegue para o vídeo do Youtube que deseja baixar e clique no link favoritado.</target>
+        <target state="translated">Arraste a ligação abaixo para os seus favoritos, e pronto! Navegue para o vídeo do Youtube que deseja descarregar e clique na ligação favorita.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">271</context>
@@ -1844,27 +1844,27 @@
         </context-group>
         <note priority="1" from="description">Generate audio only bookmarklet checkbox</note>
       </trans-unit>
-      <trans-unit id="ec71e08aee647ea4a71fd6b7510c54d84a797ca6" datatype="html">
+      <trans-unit id="ec71e08aee647ea4a71fd6b7510c54d84a797ca6" datatype="html" xml:space="preserve">
         <source>Select a downloader</source>
-        <target>Selecione um downloader</target>
+        <target state="translated">Selecione um descarregador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">287</context>
         </context-group>
         <note priority="1" from="description">Default downloader select label</note>
       </trans-unit>
-      <trans-unit id="5fab47f146b0a4b809dcebf3db9da94df6299ea1" datatype="html">
+      <trans-unit id="5fab47f146b0a4b809dcebf3db9da94df6299ea1" datatype="html" xml:space="preserve">
         <source>Use default downloading agent</source>
-        <target>Usar agente de download padrão</target>
+        <target state="translated">Usar agente de descargas padrão</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">295</context>
         </context-group>
         <note priority="1" from="description">Use default downloading agent setting</note>
       </trans-unit>
-      <trans-unit id="c776eb4992b6c98f58cd89b20c1ea8ac37888521" datatype="html">
+      <trans-unit id="c776eb4992b6c98f58cd89b20c1ea8ac37888521" datatype="html" xml:space="preserve">
         <source>Select a download agent</source>
-        <target>Selecionar um agente de download</target>
+        <target state="translated">Selecionar um agente de descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">299</context>
@@ -1889,9 +1889,9 @@
         </context-group>
         <note priority="1" from="description">Login expiration select label</note>
       </trans-unit>
-      <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html">
+      <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html" xml:space="preserve">
         <source>Allow advanced download</source>
-        <target>Permitir Download avançado</target>
+        <target state="translated">Permitir descarga avançada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">336</context>
@@ -2177,9 +2177,9 @@
         </context-group>
         <note priority="1" from="description">Current session</note>
       </trans-unit>
-      <trans-unit id="7117fc42f860e86d983bfccfcf2654e5750f3406" datatype="html">
+      <trans-unit id="7117fc42f860e86d983bfccfcf2654e5750f3406" datatype="html" xml:space="preserve">
         <source>No downloads available!</source>
-        <target>Não há downloads disponíveis!</target>
+        <target state="translated">Não há descargas disponíveis!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2459,9 +2459,9 @@
         </context-group>
         <note priority="1" from="description">Go to subscription menu item</note>
       </trans-unit>
-      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
+      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html" xml:space="preserve">
         <source>Delete and redownload</source>
-        <target>Excluir e baixar novamente</target>
+        <target state="translated">Apagar e descarregar novamente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2565,18 +2565,18 @@
           <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4f9f174dc9939283b3192acc9e87d6c1e4cca118" datatype="html">
+      <trans-unit id="4f9f174dc9939283b3192acc9e87d6c1e4cca118" datatype="html" xml:space="preserve">
         <source>Limits the amount of downloads that can be simultaneously downloaded. Use -1 for no limit.</source>
-        <target>Limita a quantidade de downloads simultâneos. Use -1 para ilimitado.</target>
+        <target state="translated">Limita a quantidade de descargas simultâneas. Use -1 para ilimitado.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">Max concurrent downloads input hint</note>
       </trans-unit>
-      <trans-unit id="6c2714fbfa525868fea90cc7a8f8de62458fbecf" datatype="html">
+      <trans-unit id="6c2714fbfa525868fea90cc7a8f8de62458fbecf" datatype="html" xml:space="preserve">
         <source>Max concurrent downloads</source>
-        <target>Número máximo de downloads simultâneos</target>
+        <target state="translated">Número máximo de descargas simultâneas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">175</context>
@@ -2636,9 +2636,9 @@
         </context-group>
         <note priority="1" from="description">Title</note>
       </trans-unit>
-      <trans-unit id="b36b7458192b833592e13029fa8a0b3555e0d9bd" datatype="html">
+      <trans-unit id="b36b7458192b833592e13029fa8a0b3555e0d9bd" datatype="html" xml:space="preserve">
         <source>Pause all downloads</source>
-        <target>Pausar todos os downloads</target>
+        <target state="translated">Pausar todas as descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">83</context>
@@ -2680,9 +2680,9 @@
         </context-group>
         <note priority="1" from="description">Clear</note>
       </trans-unit>
-      <trans-unit id="7220285196408439810" datatype="html">
-        <source>Download for <x id="url" equiv-text="d, cropF"/> has been queued!</source>
-        <target>Download de <x id="url" equiv-text="d, cropF"/> foi adicionado à fila!</target>
+      <trans-unit id="7220285196408439810" datatype="html" xml:space="preserve">
+        <source>Download for <x id="url" equiv-text="url"/> has been queued!</source>
+        <target state="translated">A descarga de <x id="url" equiv-text="url"/> foi adicionado à fila!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">469</context>
@@ -2773,18 +2773,18 @@
         </context-group>
         <note priority="1" from="description">Allow playlist categorization setting label</note>
       </trans-unit>
-      <trans-unit id="a30fc9944a494022ba67b3046ad3d27c62dd7fee" datatype="html">
+      <trans-unit id="a30fc9944a494022ba67b3046ad3d27c62dd7fee" datatype="html" xml:space="preserve">
         <source>Download rate limit</source>
-        <target>Taxa limite do download</target>
+        <target state="translated">Taxa limite de descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">181</context>
         </context-group>
         <note priority="1" from="description">Download rate limit input placeholder</note>
       </trans-unit>
-      <trans-unit id="0af5ee1867be592a6cd35a94faba8833b52c740f" datatype="html">
+      <trans-unit id="0af5ee1867be592a6cd35a94faba8833b52c740f" datatype="html" xml:space="preserve">
         <source>Rate limits your downloads to the specified amount. Ex: 200K</source>
-        <target>Limita a taxa de seus downloads na quantidade especificada. Ex: 200K</target>
+        <target state="translated">Limita a taxa das suas descargas na quantidade especificada. Ex: 200K</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">182</context>
@@ -2930,9 +2930,9 @@
         </context-group>
         <note priority="1" from="description">Share video dialog title</note>
       </trans-unit>
-      <trans-unit id="2827589726081052618" datatype="html">
+      <trans-unit id="2827589726081052618" datatype="html" xml:space="preserve">
         <source>Creating download</source>
-        <target>Criando download</target>
+        <target state="translated">A criar descarga</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -3068,9 +3068,9 @@
         </context-group>
         <note priority="1" from="description">Stage</note>
       </trans-unit>
-      <trans-unit id="9b2084f9aea764292cf0978cb083907d8be51bf7" datatype="html">
+      <trans-unit id="9b2084f9aea764292cf0978cb083907d8be51bf7" datatype="html" xml:space="preserve">
         <source>Resume all downloads</source>
-        <target>Resumir todos os downloads</target>
+        <target state="translated">Resumir todos as descargas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">84</context>
