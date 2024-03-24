@@ -224,7 +224,7 @@
       </trans-unit>
       <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716">
         <source>Settings</source>
-        <target state="translated" state-qualifier="leveraged-glossary">Configuraciones</target>
+        <target state="translated" state-qualifier="leveraged-glossary">Ajustes</target>
       </trans-unit>
       <trans-unit id="801b98c6f02fe3b32f6afa3ee854c99ed83474e6">
         <source>URL</source>
@@ -532,7 +532,7 @@
       </trans-unit>
       <trans-unit id="6765b4c916060f6bc42d9bb69e80377dbcb5e4e9">
         <source>Login</source>
-        <target state="translated">Identificarse</target>
+        <target state="translated">Iniciar Sesión</target>
       </trans-unit>
       <trans-unit id="bb694b49d408265c91c62799c2b3a7e3151c824d">
         <source>Logout</source>
@@ -1800,7 +1800,7 @@
       </trans-unit>
       <trans-unit id="4027175717527633324" datatype="html">
         <source>Getting info</source>
-        <target>Cogiendo info</target>
+        <target state="translated">Obteniendo info</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">59</context>
@@ -2530,7 +2530,7 @@
       </trans-unit>
       <trans-unit id="3961621815065792326" datatype="html">
         <source>Failed to clear finished downloads!</source>
-        <target state="translated">¡Error al limpiar las descargas finalizadas!</target>
+        <target state="translated">¡No se pudo limpiar las descargas finalizadas!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">157</context>
@@ -2546,7 +2546,7 @@
       </trans-unit>
       <trans-unit id="5223827577229167333" datatype="html">
         <source>Failed to pause all downloads! See server logs for more info.</source>
-        <target state="translated">¡No se pudieron pausar todas las descargas! Vea el registro del servidor para más información.</target>
+        <target state="translated">¡No se pudo pausar todas las descargas! Vea el registro del servidor para más información.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">178</context>
@@ -2734,7 +2734,7 @@
       </trans-unit>
       <trans-unit id="39921032161993566" datatype="html">
         <source>Successfully created playlist!</source>
-        <target state="translated">¡Lista de reproducción creada con éxito!</target>
+        <target state="translated">¡Lista de reproducción creada exitosamente!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -2742,7 +2742,7 @@
       </trans-unit>
       <trans-unit id="7114033980971410157" datatype="html">
         <source>Failed to pause download! See server logs for more info.</source>
-        <target state="translated">¡Error al pausar las descargas! Vea el registro del servidor para más información.</target>
+        <target state="translated">¡No se pudo pausar las descargas! Vea el registro del servidor para más información.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">170</context>
@@ -3169,7 +3169,7 @@
       </trans-unit>
       <trans-unit id="4b3972c3e9485218508a95f7a4ce7758e3f09ced" datatype="html">
         <source>Upload</source>
-        <target state="translated">Cargado</target>
+        <target state="translated">Subir</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">137</context>
@@ -3206,7 +3206,7 @@
       </trans-unit>
       <trans-unit id="3159807825117518005" datatype="html">
         <source>Delete archives</source>
-        <target state="translated">Borrar los archivos</target>
+        <target state="translated">Borrar archivos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">152</context>
@@ -3829,7 +3829,7 @@
       </trans-unit>
       <trans-unit id="8425787787095143143" datatype="html">
         <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
-        <target state="translated">¿ Quieres borrar el(los) archivo(s) de <x id="selected archives amount" equiv-text="this.selection.selected.length"/> ?</target>
+        <target state="translated">¿Quieres borrar el(los) archivo(s) de <x id="selected archives amount" equiv-text="this.selection.selected.length"/> ?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">153</context>
@@ -3962,7 +3962,7 @@
       </trans-unit>
       <trans-unit id="8456659390937171831" datatype="html">
         <source>Show error</source>
-        <target state="translated">Mostrar el error</target>
+        <target state="translated">Mostrar error</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">56</context>
