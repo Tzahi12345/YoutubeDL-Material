@@ -4688,6 +4688,58 @@
           <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="9e766e11a9de375907aaf566897ecc6dac393ebc" datatype="html" xml:space="preserve">
+        <source>Webhook URL</source>
+        <target state="translated">Adres URL Webhook</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">366</context>
+        </context-group>
+        <note priority="1" from="description">webhook URL</note>
+      </trans-unit>
+      <trans-unit id="3264d82792954815be755b3da01e2625458711dc" datatype="html" xml:space="preserve">
+        <source>Discord Webhook URL</source>
+        <target state="translated">Adres URL Webhook Discord</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">373</context>
+        </context-group>
+        <note priority="1" from="description">Discord Webhook URL</note>
+      </trans-unit>
+      <trans-unit id="0cfc9cfe7cd8ea14bc053693b28872da739af02c" datatype="html" xml:space="preserve">
+        <source>See docs here.</source>
+        <target state="translated">Zobacz dokumentacje tutaj.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">375</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">382</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">392</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">402</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">409</context>
+        </context-group>
+        <note priority="1" from="description">Discord API setting hint</note>
+      </trans-unit>
+      <trans-unit id="378c072ce05889c9771718d05106e7685fcd3507" datatype="html" xml:space="preserve">
+        <source>Medium</source>
+        <target state="translated">Średnia</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+        <note priority="1" from="description">Medium</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
