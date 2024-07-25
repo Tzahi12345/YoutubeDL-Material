@@ -3325,6 +3325,42 @@
         </context-group>
         <note priority="1" from="description">Update button</note>
       </trans-unit>
+      <trans-unit id="c748ac656af9f13998206ef2c52018dd418b0483" datatype="html" xml:space="preserve">
+        <source>Archives</source>
+        <target state="translated">Ахриви</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">Archives menu label</note>
+      </trans-unit>
+      <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html" xml:space="preserve">
+        <source>Filter</source>
+        <target state="translated">Филтер</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <note priority="1" from="description">Filter</note>
+      </trans-unit>
+      <trans-unit id="c150a30bbbdb175b4d08820196a9acb66b167653" datatype="html" xml:space="preserve">
+        <source>Archives empty</source>
+        <target state="translated">Архивите се празни</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+        <note priority="1" from="description">Archives empty</note>
+      </trans-unit>
+      <trans-unit id="c41475a25c9f9d9639db9efa56637603a77528b4" datatype="html" xml:space="preserve">
+        <source>Download archive</source>
+        <target state="translated">Симни архива</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+        <note priority="1" from="description">Download archive</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
