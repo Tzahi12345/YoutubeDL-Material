@@ -4777,7 +4777,7 @@
       </trans-unit>
       <trans-unit id="b78a98bc54259a29cf6250dbaeab5fe11fae91cf" datatype="html" xml:space="preserve">
         <source>Favorited</source>
-        <target state="translated">Mis en favoris</target>
+        <target state="translated">Favoris</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
           <context context-type="linenumber">51</context>
