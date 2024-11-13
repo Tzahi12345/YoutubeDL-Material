@@ -354,7 +354,7 @@
       </trans-unit>
       <trans-unit id="8425787787095143143" datatype="html" xml:space="preserve">
         <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
-        <target state="translated"><X ஐடி="தேர்ந்தெடுக்கப்பட்ட காப்பகங்களின் தொகை" சமம்-உரை="this.selection.selected.length"/> காப்பகம் (கள்) நீக்க விரும்புகிறீர்களா?</target>
+        <target state="translated"><x id="selected archives amount" equiv-text="this.selection.selected.length"/> காப்பகம் (கள்) நீக்க விரும்புகிறீர்களா?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">153</context>
@@ -698,7 +698,7 @@
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html" xml:space="preserve">
         <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="translated"><X ஐடி="முகவரி" சம-உரை="பதிவிறக்கம் ['url']"/> க்கான பிழை</target>
+        <target state="translated"><x id="url" equiv-text="download['url']"/> க்கான பிழை</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">308</context>
@@ -1252,7 +1252,7 @@
       </trans-unit>
       <trans-unit id="6219551536751479443" datatype="html" xml:space="preserve">
         <source>Finished downloading</source>
-        <target state="translated">பதிவிறக்கம் முடிந்தது</target>
+        <target state="translated">முடிந்தது பதிவிறக்கம்</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">17</context>
@@ -1542,7 +1542,7 @@
       </trans-unit>
       <trans-unit id="ea2b65121b93921fe54692025da9b9e3ce779ad5" datatype="html" xml:space="preserve">
         <source>Task settings - <x id="INTERPOLATION" equiv-text="{{task.title}}"/></source>
-        <target state="translated">பணி அமைப்புகள் - &lt;x ஐடி = "இடைக்கணிப்பு" சமம் -உரை = "{{fork.title}}"/&gt;</target>
+        <target state="translated">பணி அமைப்புகள் -<x id="INTERPOLATION" equiv-text="{{task.title}}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1832,7 +1832,7 @@
       </trans-unit>
       <trans-unit id="9176960997786930103" datatype="html" xml:space="preserve">
         <source>Error for: <x id="PH" equiv-text="task['title']"/></source>
-        <target state="translated">இதற்கான பிழை: <x/></target>
+        <target state="translated">இதற்கான பிழை:<x id="PH" equiv-text="task['title']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">174</context>
@@ -1918,7 +1918,7 @@
       </trans-unit>
       <trans-unit id="321e4419a943044e674beb55b8039f42a9761ca5" datatype="html" xml:space="preserve">
         <source>Info</source>
-        <target state="translated">தகவல்</target>
+        <target state="translated">செய்தி</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">29</context>
@@ -2631,7 +2631,7 @@
       </trans-unit>
       <trans-unit id="d5cec7468241d72cafd86ad1af6d55b09a6e3ae5" datatype="html" xml:space="preserve">
         <source>Restore</source>
-        <target state="translated">மீட்டமை</target>
+        <target state="translated">மீட்பு</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
           <context context-type="linenumber">25</context>
@@ -2890,7 +2890,7 @@
       </trans-unit>
       <trans-unit id="8336047719608684263" datatype="html" xml:space="preserve">
         <source>Unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/></source>
-        <target state="translated"><X ஐடி="சந்தா பெயர்" சமம்-உரை="this.sub ['பெயர்']"/> இலிருந்து குழுவிலகவும்</target>
+        <target state="translated"><x id="subscription name" equiv-text="this.sub['name']"/> இலிருந்து குழுவிலகவும்</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
           <context context-type="linenumber">30</context>
@@ -2898,7 +2898,7 @@
       </trans-unit>
       <trans-unit id="784837056777689544" datatype="html" xml:space="preserve">
         <source>Would you like to unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/>?</source>
-        <target state="translated"><X ஐடி="சந்தா பெயர்" சமம்-உரை="this.sub ['பெயர்']"/> இலிருந்து குழுவிலக விரும்புகிறீர்களா?</target>
+        <target state="translated"><x id="subscription name" equiv-text="this.sub['name']"/> இலிருந்து குழுவிலக விரும்புகிறீர்களா?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -2949,7 +2949,7 @@
       </trans-unit>
       <trans-unit id="67aed6c588eb854f2f30ef642e85147da0027a61" datatype="html" xml:space="preserve">
         <source>Recurring</source>
-        <target state="translated">மீண்டும் மீண்டும்</target>
+        <target state="translated">மீண்டும்நிகழும்</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">10</context>
@@ -3400,7 +3400,7 @@
       </trans-unit>
       <trans-unit id="7220285196408439810" datatype="html" xml:space="preserve">
         <source>Download for <x id="url" equiv-text="url"/> has been queued!</source>
-        <target state="translated"><X ஐடி="முகவரி" சம-உரை="URL"/> க்கு பதிவிறக்கப்பட்டுள்ளது!</target>
+        <target state="translated"><x id="url" equiv-text="url"/> க்கு பதிவிறக்கப்பட்டுள்ளது!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
           <context context-type="linenumber">384</context>
@@ -3671,7 +3671,7 @@
       </trans-unit>
       <trans-unit id="fd374bee82dab66055b933496860f82b7b780159" datatype="html" xml:space="preserve">
         <source>Global custom args for downloads on the home page. (Set args for subscriptions for each subscriptions separately!) Args are delimited using two commas like so: ,,</source>
-        <target state="translated">முகப்பு பக்கத்தில் பதிவிறக்கங்களுக்கான உலகளாவிய தனிப்பயன் வாதங்கள். .</target>
+        <target state="translated">முகப்பு பக்கத்தில் பதிவிறக்கங்களுக்கான உலகளாவிய தனிப்பயன் வாதங்கள். (ஒவ்வொரு சந்தாக்களுக்கும் தனித்தனியாகச் சந்தாக்களுக்கான வாதங்களை அமைக்கவும்!) வாதங்கள் இரண்டு காற்புள்ளிகளைப் பயன்படுத்தி பிரிக்கப்படுகின்றன: ,,</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">120</context>
@@ -4548,7 +4548,7 @@
       </trans-unit>
       <trans-unit id="2481374649045841364" datatype="html" xml:space="preserve">
         <source>Would you like to delete <x id="category name" equiv-text="category['name']"/>?</source>
-        <target state="translated"><X ஐடி="வகை பெயர்" சமம்-உரை="வகை ['பெயர்']"/> ஐ நீக்க விரும்புகிறீர்களா?</target>
+        <target state="translated"><x id="category name" equiv-text="category['name']"/> ஐ நீக்க விரும்புகிறீர்களா?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">159</context>
@@ -4556,7 +4556,7 @@
       </trans-unit>
       <trans-unit id="7332320960988475089" datatype="html" xml:space="preserve">
         <source>Successfully deleted <x id="category name" equiv-text="category['name']"/>!</source>
-        <target state="translated">வெற்றிகரமாக நீக்கப்பட்டது <x/>!</target>
+        <target state="translated">வெற்றிகரமாக நீக்கப்பட்டது <x id="category name" equiv-text="category['name']"/>!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">168</context>
@@ -4564,7 +4564,7 @@
       </trans-unit>
       <trans-unit id="3371159074051387771" datatype="html" xml:space="preserve">
         <source>Failed to delete <x id="category name" equiv-text="category['name']"/>!</source>
-        <target state="translated"><X ஐடி="வகை பெயர்" சமம்-உரை="வகை ['பெயர்']"/> நீக்குவதில் தோல்வி!</target>
+        <target state="translated"><x id="category name" equiv-text="category['name']"/> நீக்குவதில் தோல்வி!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">172</context>
