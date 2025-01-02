@@ -4618,6 +4618,178 @@
           <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="8525406024045742391" datatype="html" xml:space="preserve">
+        <source>Settings access</source>
+        <target state="translated">Доступ к настройкам</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5029464708330583545" datatype="html" xml:space="preserve">
+        <source>Use advanced download mode</source>
+        <target state="translated">Использовать расширенный режим загрузки</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2723988842145709249" datatype="html" xml:space="preserve">
+        <source>Errored downloads</source>
+        <target state="translated">Загрузки с ошибками</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7114033980971410157" datatype="html" xml:space="preserve">
+        <source>Failed to pause download! See server logs for more info.</source>
+        <target state="translated">Не удалось приостановить загрузку! Смотрите логи сервера для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">214</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">266</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5223827577229167333" datatype="html" xml:space="preserve">
+        <source>Failed to pause all downloads! See server logs for more info.</source>
+        <target state="translated">Не удалось приостановить все загрузки! Смотрите логи сервера для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">222</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5456775416888155476" datatype="html" xml:space="preserve">
+        <source>Failed to resume download! See server logs for more info.</source>
+        <target state="translated">Не удалось возобновить загрузку! Смотрите логи сервера для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">230</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6268791413935580107" datatype="html" xml:space="preserve">
+        <source>Failed to resume all downloads! See server logs for more info.</source>
+        <target state="translated">Не удалось возобновить все загрузки! Смотрите логи сервера для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="571023367671104036" datatype="html" xml:space="preserve">
+        <source>Failed to restart download! See server logs for more info.</source>
+        <target state="translated">Не удалось перезапустить загрузку! Смотрите логи сервера для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">246</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4529487534884306633" datatype="html" xml:space="preserve">
+        <source>Failed to cancel download! See server logs for more info.</source>
+        <target state="translated">Не удалось отменить загрузку! Смотрите логи сервера для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">258</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1019978815798793544" datatype="html" xml:space="preserve">
+        <source>Failed to retrieve logs!</source>
+        <target state="translated">Не удалось получить логи!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2293081271355999967" datatype="html" xml:space="preserve">
+        <source>Logs successfully cleared!</source>
+        <target state="translated">Логи успешно очищены!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4516710756538206828" datatype="html" xml:space="preserve">
+        <source>Failed to clear logs!</source>
+        <target state="translated">Ошибка при очистке логов!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html" xml:space="preserve">
+        <source>ID</source>
+        <target state="needs-translation">ID</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="28da11220a3377ddce3c7948825d33101f142782" datatype="html" xml:space="preserve">
+        <source>Extractor</source>
+        <target state="translated">Экстрактор</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c150a30bbbdb175b4d08820196a9acb66b167653" datatype="html" xml:space="preserve">
+        <source>Archives empty</source>
+        <target state="translated">Архивы пусты</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4744991787069301975" datatype="html" xml:space="preserve">
+        <source>Share files</source>
+        <target state="translated">Поделиться файлами</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3426988753455920032" datatype="html" xml:space="preserve">
+        <source>Use tasks manager</source>
+        <target state="translated">Использовать менеджер задач</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6219551536751479443" datatype="html" xml:space="preserve">
+        <source>Finished downloading</source>
+        <target state="translated">Загрузка завершена</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
