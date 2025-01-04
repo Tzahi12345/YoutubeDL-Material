@@ -1502,9 +1502,9 @@
         </context-group>
         <note priority="1" from="description">Share audio dialog title</note>
       </trans-unit>
-      <trans-unit id="1f6d14a780a37a97899dc611881e6bc971268285" datatype="html">
+      <trans-unit id="1f6d14a780a37a97899dc611881e6bc971268285" datatype="html" xml:space="preserve">
         <source>Enable sharing</source>
-        <target>Включить совместное использование</target>
+        <target state="translated">Включить общий доступ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1668,9 +1668,9 @@
         </context-group>
         <note priority="1" from="description">Custom args hint</note>
       </trans-unit>
-      <trans-unit id="98b6ec9ec138186d663e64770267b67334353d63" datatype="html">
+      <trans-unit id="98b6ec9ec138186d663e64770267b67334353d63" datatype="html" xml:space="preserve">
         <source>Custom file output</source>
-        <target state="needs-translation">Пользовательский файл для вывода</target>
+        <target state="translated">Вывод пользовательских файлов</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">57</context>
@@ -2489,9 +2489,9 @@
         </context-group>
         <note priority="1" from="description">Add content</note>
       </trans-unit>
-      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html">
+      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html" xml:space="preserve">
         <source>NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
-        <target state="needs-translation">ПРИМЕЧАНИЕ: Загрузка новых cookie отменяет предыдущие cookie. Также обратите внимание, что cookie используются в масштабах всего экземпляра, а не каждого пользователя.</target>
+        <target state="translated">ПРИМЕЧАНИЕ: Загрузка новых cookie перезаписывает предыдущие cookie. Также обратите внимание, что cookie используются в масштабах всего сервера, а не каждого пользователя.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -3213,9 +3213,9 @@
         </context-group>
         <note priority="1" from="description">Status</note>
       </trans-unit>
-      <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html">
+      <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html" xml:space="preserve">
         <source>Busy</source>
-        <target state="needs-translation">Занято</target>
+        <target state="translated">Занято</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">36</context>
@@ -3952,8 +3952,9 @@
           <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6268070779441507380" datatype="html">
+      <trans-unit id="6268070779441507380" datatype="html" xml:space="preserve">
         <source>Download Date</source>
+        <target state="translated">Дата скачивания</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
           <context context-type="linenumber">13</context>
@@ -4736,7 +4737,7 @@
       </trans-unit>
       <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html" xml:space="preserve">
         <source>ID</source>
-        <target state="needs-translation">ID</target>
+        <target state="translated">ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">47</context>
@@ -4788,6 +4789,354 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4960870191807928282" datatype="html" xml:space="preserve">
+        <source>Sharing enabled.</source>
+        <target state="translated">Общий доступ включен.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5681417617361245213" datatype="html" xml:space="preserve">
+        <source>Failed to transfer DB -- transfer was aborted. Error:</source>
+        <target state="translated">Не удалось перенести БД - передача была прервана. Ошибка:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">326</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4604336107574138791" datatype="html" xml:space="preserve">
+        <source>Chrome users must drag the 'Alternate URL' link to your bookmarks.</source>
+        <target state="translated">Пользователи Chrome должны перетащить ссылку «Альтернативный URL» в закладки.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">220</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6123898845299902958" datatype="html" xml:space="preserve">
+        <source>Successfully transfered DB! Reloading info...</source>
+        <target state="translated">Успешный перенос БД! Перезагрузка информации...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">323</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6018050954136387828" datatype="html" xml:space="preserve">
+        <source>Connection successful!</source>
+        <target state="translated">Подключение успешно!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">340</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2720327817780634026" datatype="html" xml:space="preserve">
+        <source>Failed to enable sharing.</source>
+        <target state="translated">Не удалось включить общий доступ.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2859348955905483094" datatype="html" xml:space="preserve">
+        <source>Failed to enable sharing - server error.</source>
+        <target state="translated">Не удалось включить общий доступ - ошибка сервера.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7840375760456214518" datatype="html" xml:space="preserve">
+        <source>Failed to disable sharing.</source>
+        <target state="translated">Не удалось отключить общий доступ.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3561468911579213356" datatype="html" xml:space="preserve">
+        <source>Sharing disabled.</source>
+        <target state="translated">Общий доступ выключен.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5397815846940616259" datatype="html" xml:space="preserve">
+        <source>You must specify an amount of time</source>
+        <target state="translated">Необходимо указать количество времени</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="989f5aa799ee9672675d68109bff29d1d88ebd49" datatype="html" xml:space="preserve">
+        <source>Local view count</source>
+        <target state="translated">Количество локальных просмотров</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4257962986336738751" datatype="html" xml:space="preserve">
+        <source>Successfully killed all downloads!</source>
+        <target state="translated">Все загрузки успешно прерваны!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">275</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2600933489084742998" datatype="html" xml:space="preserve">
+        <source>Failed to kill all downloads! Check logs for details.</source>
+        <target state="translated">Ошибка при прерывании всех загрузок! Смотрите логи для доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">278</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">282</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1942965859829798388" datatype="html" xml:space="preserve">
+        <source>Restarting!</source>
+        <target state="translated">Перезагрузка!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6224607866493148072" datatype="html" xml:space="preserve">
+        <source>Failed to restart the server.</source>
+        <target state="translated">Не удалось перезапустить сервер.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">292</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6519219215739537829" datatype="html" xml:space="preserve">
+        <source>Connection failed! Error: Server error. See logs for more info.</source>
+        <target state="translated">Подключение не удалось! Ошибка: Ошибка сервера. Смотрите логи для получения доп. информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">346</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4021495815084152271" datatype="html" xml:space="preserve">
+        <source>Connection failed! Error:</source>
+        <target state="translated">Подключение не удалось! Ошибка:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">342</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5704ec2049d007c5f5fb495a5d8b607e68d58081" datatype="html" xml:space="preserve">
+        <source>Order</source>
+        <target state="translated">Сортировка</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7157191502004604261" datatype="html" xml:space="preserve">
+        <source>Chat could not be downloaded.</source>
+        <target state="translated">Не удалось загрузить чат.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
+          <context context-type="linenumber">111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1f2809e6a99d511fdb6eaf041d785fe54d0680cc" datatype="html" xml:space="preserve">
+        <source>File card size</source>
+        <target state="translated">Размер миниатюры</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c2faa86201eab08b5b39b5437f96ab9432e125e7" datatype="html" xml:space="preserve">
+        <source>Item limit</source>
+        <target state="translated">Лимит элементов</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b770c48628d98cb4633d6a17e3f0ba0265376af5" datatype="html" xml:space="preserve">
+        <source>Gotify app token</source>
+        <target state="needs-translation">Gotify app token</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">407</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1716030487077666916" datatype="html" xml:space="preserve">
+        <source>Failed to transfer DB -- API call failed. See browser logs for details.</source>
+        <target state="translated">Не удалось передать БД - вызов API не удался. Подробности см. в логах браузера.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">330</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8c6e24eab969d9f63a8a0e9d617aee3b99e28ae6" datatype="html" xml:space="preserve">
+        <source>Play all</source>
+        <target state="translated">Воспроизвести все</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="674a999dd48d7da565ffdd105602261b8a4761ea" datatype="html" xml:space="preserve">
+        <source>Download zip</source>
+        <target state="translated">Скачать zip архив</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8643601595923420698" datatype="html" xml:space="preserve">
+        <source>Retry download</source>
+        <target state="translated">Повторить загрузку</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3533826530554274875" datatype="html" xml:space="preserve">
+        <source>Upload Date</source>
+        <target state="translated">Дата добавления</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9176960997786930103" datatype="html" xml:space="preserve">
+        <source>Error for: <x id="PH" equiv-text="task['title']"/></source>
+        <target state="translated">Ошибка для: <x id="PH" equiv-text="task['title']"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
+          <context context-type="linenumber">174</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8692976466689769553" datatype="html" xml:space="preserve">
+        <source>Failed to disable sharing - server error.</source>
+        <target state="translated">Не удалось отключить общий доступ - ошибка сервера.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="35cf4cdcedc8ef3f94b6100e0d86836e31dbb908" datatype="html" xml:space="preserve">
+        <source>Force autoplay</source>
+        <target state="translated">Принудительное автовоспроизведение</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="61d6b5fa4311b1c617b66dad72496f9dd43b07b4" datatype="html" xml:space="preserve">
+        <source>Be careful enabling this with multi-user mode! User data may be exposed.</source>
+        <target state="translated">Будьте осторожны при включении этой функции в многопользовательском режиме! Пользовательские данные могут быть уязвимы.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">272</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9e766e11a9de375907aaf566897ecc6dac393ebc" datatype="html" xml:space="preserve">
+        <source>Webhook URL</source>
+        <target state="needs-translation">Webhook URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">366</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3264d82792954815be755b3da01e2625458711dc" datatype="html" xml:space="preserve">
+        <source>Discord Webhook URL</source>
+        <target state="needs-translation">Discord Webhook URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">373</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7cedb649779673568447b994463b2882c4e0436a" datatype="html" xml:space="preserve">
+        <source>Slack Webhook URL</source>
+        <target state="needs-translation">Slack Webhook URL</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">380</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8c1bf02206fbc371ff69ab1b7e35a17ba29d169d" datatype="html" xml:space="preserve">
+        <source>Use ntfy API</source>
+        <target state="translated">Использовать ntfy API</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">386</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="06f503e492d6dbcf59e7b9c412ca86913d718689" datatype="html" xml:space="preserve">
+        <source>ntfy topic URL</source>
+        <target state="translated">URL-адрес ntfy темы</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">390</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5827fde8fcafdd55ae80921ad3ad4aa01012e203" datatype="html" xml:space="preserve">
+        <source>Use gotify API</source>
+        <target state="translated">Использовать gotify API</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">396</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="55f559d6f666b945479f534b0c182f70cd0a8a69" datatype="html" xml:space="preserve">
+        <source>Gotify server URL</source>
+        <target state="translated">Gotify URL сервера</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">400</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0ed98b4c6ec1db6708a963e8a2699478ac97f55c" datatype="html" xml:space="preserve">
+        <source>Add subscription</source>
+        <target state="translated">Добавить подписку</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="643438049907907768" datatype="html" xml:space="preserve">
+        <source>Failed to restore database! See logs for more info.</source>
+        <target state="translated">Не удалось восстановить базу данных! Смотрите журналы для получения дополнительной информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2876893175497409225" datatype="html" xml:space="preserve">
+        <source>Update failed. Check logs for more details.</source>
+        <target state="translated">Обновление не удалось. Проверьте логи для получения более подробной информации.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3481862581074838726" datatype="html" xml:space="preserve">
+        <source>VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"</source>
+        <target state="translated">VOD url для этого видео не поддерживается. Идентификатор VOD должен находиться после «twitch.tv/videos/»</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
+          <context context-type="linenumber">100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="37469c9f3e31d95087fa22b6c9c3bc64adf1692d" datatype="html" xml:space="preserve">
+        <source>Enable RSS Feed</source>
+        <target state="translated">Включить RSS-ленту</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">271</context>
         </context-group>
       </trans-unit>
     </body>
