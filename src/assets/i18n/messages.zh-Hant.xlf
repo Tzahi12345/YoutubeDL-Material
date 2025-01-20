@@ -1549,48 +1549,54 @@
         </context-group>
         <note priority="1" from="description">Task settings</note>
       </trans-unit>
-      <trans-unit id="c65dd978b3c7566551c0ebefb234c2d41942b847" datatype="html">
+      <trans-unit id="c65dd978b3c7566551c0ebefb234c2d41942b847" datatype="html" xml:space="preserve">
         <source>Delete files older than</source>
+        <target state="translated">刪除早於</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
           <context context-type="linenumber">6</context>
         </context-group>
         <note priority="1" from="description">Delete files older than</note>
       </trans-unit>
-      <trans-unit id="56b1a3c93fb95fed1805005c561a5e431d57ffae" datatype="html">
+      <trans-unit id="56b1a3c93fb95fed1805005c561a5e431d57ffae" datatype="html" xml:space="preserve">
         <source>Blacklist all files</source>
+        <target state="translated">將所有文件列入黑名單</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
         <note priority="1" from="description">Blacklist deleted files</note>
       </trans-unit>
-      <trans-unit id="9aa1b4779a515170b297d2c0507e6ff9d2e3e0e0" datatype="html">
+      <trans-unit id="9aa1b4779a515170b297d2c0507e6ff9d2e3e0e0" datatype="html" xml:space="preserve">
         <source>Blacklist deleted subscription files</source>
+        <target state="translated">黑名單刪除的訂閱文件</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
         <note priority="1" from="description">Blacklist deleted subscription files</note>
       </trans-unit>
-      <trans-unit id="cdf5297d8d080a78e8b10debc5c38b7845a3cbe7" datatype="html">
+      <trans-unit id="cdf5297d8d080a78e8b10debc5c38b7845a3cbe7" datatype="html" xml:space="preserve">
         <source>Do not ask for confirmation</source>
+        <target state="translated">不要求確認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">Do not ask for confirmation</note>
       </trans-unit>
-      <trans-unit id="e4c3cd97461b220b9cea67cfe08c5399799cfeed" datatype="html">
+      <trans-unit id="e4c3cd97461b220b9cea67cfe08c5399799cfeed" datatype="html" xml:space="preserve">
         <source>Last ran</source>
+        <target state="translated">上次運行</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">16</context>
         </context-group>
         <note priority="1" from="description">Last ran</note>
       </trans-unit>
-      <trans-unit id="84a36cb75660b736773fe36ffa3d54f0f0fe363e" datatype="html">
+      <trans-unit id="84a36cb75660b736773fe36ffa3d54f0f0fe363e" datatype="html" xml:space="preserve">
         <source>N/A</source>
+        <target state="translated">N/A</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">19</context>
