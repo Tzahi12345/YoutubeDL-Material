@@ -1607,104 +1607,117 @@
         </context-group>
         <note priority="1" from="description">N/A</note>
       </trans-unit>
-      <trans-unit id="698f716f927f633b16cbe2308d90b2dba51f7556" datatype="html">
+      <trans-unit id="698f716f927f633b16cbe2308d90b2dba51f7556" datatype="html" xml:space="preserve">
         <source>Last confirmed</source>
+        <target state="translated">上次確認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Last confirmed</note>
       </trans-unit>
-      <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html">
+      <trans-unit id="81b97b8ea996ad1e4f9fca8415021850214884b1" datatype="html" xml:space="preserve">
         <source>Status</source>
+        <target state="translated">狀態</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">34</context>
         </context-group>
         <note priority="1" from="description">Status</note>
       </trans-unit>
-      <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html">
+      <trans-unit id="d97425ce76bf3df50bcb643b5f409844770458f6" datatype="html" xml:space="preserve">
         <source>Busy</source>
+        <target state="translated">繁忙</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">Busy</note>
       </trans-unit>
-      <trans-unit id="7e121a443a8e9d92218f987001b650c59504d815" datatype="html">
+      <trans-unit id="7e121a443a8e9d92218f987001b650c59504d815" datatype="html" xml:space="preserve">
         <source>Scheduled for</source>
+        <target state="translated">計劃於</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
         <note priority="1" from="description">Scheduled</note>
       </trans-unit>
-      <trans-unit id="3b7d6ff5d14ab177ce3e2d217b1927fb2e4aefd1" datatype="html">
+      <trans-unit id="3b7d6ff5d14ab177ce3e2d217b1927fb2e4aefd1" datatype="html" xml:space="preserve">
         <source>Not scheduled</source>
+        <target state="translated">尚未計劃</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">42</context>
         </context-group>
         <note priority="1" from="description">Not scheduled</note>
       </trans-unit>
-      <trans-unit id="5ff9ae1f4c26bf2ddf6e9d5e4136916c5ce6a941" datatype="html">
+      <trans-unit id="5ff9ae1f4c26bf2ddf6e9d5e4136916c5ce6a941" datatype="html" xml:space="preserve">
         <source>Clear missing files from DB:</source>
+        <target state="translated">清除資料庫中缺少的檔案：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">57</context>
         </context-group>
         <note priority="1" from="description">Clear missing files from DB</note>
       </trans-unit>
-      <trans-unit id="4391397241847e675f6c38bbdec6b2883157fb1a" datatype="html">
+      <trans-unit id="4391397241847e675f6c38bbdec6b2883157fb1a" datatype="html" xml:space="preserve">
         <source>Clear duplicate files from DB:</source>
+        <target state="translated">清除資料庫中重複的檔案：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">60</context>
         </context-group>
         <note priority="1" from="description">Clear duplicate files from DB</note>
       </trans-unit>
-      <trans-unit id="9562dd1e902acc4cc6a6e09cba66a2775daf7794" datatype="html">
+      <trans-unit id="9562dd1e902acc4cc6a6e09cba66a2775daf7794" datatype="html" xml:space="preserve">
         <source>Update binary to:</source>
+        <target state="translated">升級二進位檔案：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">63</context>
         </context-group>
         <note priority="1" from="description">Update binary to</note>
       </trans-unit>
-      <trans-unit id="7b4585a9072f3c1292972c14a3d0e14978fbfc9c" datatype="html">
+      <trans-unit id="7b4585a9072f3c1292972c14a3d0e14978fbfc9c" datatype="html" xml:space="preserve">
         <source>Delete old files:</source>
+        <target state="translated">刪除舊檔案:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
         <note priority="1" from="description">Delete old files</note>
       </trans-unit>
-      <trans-unit id="9b3d305551358858e1892169a94527e0cc4dbf5b" datatype="html">
+      <trans-unit id="9b3d305551358858e1892169a94527e0cc4dbf5b" datatype="html" xml:space="preserve">
         <source>Run</source>
+        <target state="translated">運行</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">72</context>
         </context-group>
         <note priority="1" from="description">Run</note>
       </trans-unit>
-      <trans-unit id="4a4f46a2dcec36bd5c8c371ceee55c2226dec27f" datatype="html">
+      <trans-unit id="4a4f46a2dcec36bd5c8c371ceee55c2226dec27f" datatype="html" xml:space="preserve">
         <source>Schedule</source>
+        <target state="translated">計劃</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">75</context>
         </context-group>
         <note priority="1" from="description">Schedule</note>
       </trans-unit>
-      <trans-unit id="54cb4c7c3a0da911ebda5a07666b448868020308" datatype="html">
+      <trans-unit id="54cb4c7c3a0da911ebda5a07666b448868020308" datatype="html" xml:space="preserve">
         <source>Show error</source>
+        <target state="translated">查看錯誤</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">Show error</note>
       </trans-unit>
-      <trans-unit id="40bd7093f5fbd3fbeff9a50baaf5d4c8416add1e" datatype="html">
+      <trans-unit id="40bd7093f5fbd3fbeff9a50baaf5d4c8416add1e" datatype="html" xml:space="preserve">
         <source>Restore DB from backup</source>
+        <target state="translated">從備份中還原資料庫</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">98</context>
@@ -1715,31 +1728,35 @@
         </context-group>
         <note priority="1" from="description">Restore DB from backup button</note>
       </trans-unit>
-      <trans-unit id="f8a2361f3bd8fb05bf92080e2755bddd56ab64d7" datatype="html">
+      <trans-unit id="f8a2361f3bd8fb05bf92080e2755bddd56ab64d7" datatype="html" xml:space="preserve">
         <source>Reset tasks</source>
+        <target state="translated">重設任務</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">99</context>
         </context-group>
         <note priority="1" from="description">Reset tasks button</note>
       </trans-unit>
-      <trans-unit id="5e96c9d4528bf259da3944daac3171d7462b065a" datatype="html">
+      <trans-unit id="5e96c9d4528bf259da3944daac3171d7462b065a" datatype="html" xml:space="preserve">
         <source>No tasks available!</source>
+        <target state="translated">無可用任務！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">103</context>
         </context-group>
         <note priority="1" from="description">No tasks label</note>
       </trans-unit>
-      <trans-unit id="5615896113581458384" datatype="html">
+      <trans-unit id="5615896113581458384" datatype="html" xml:space="preserve">
         <source>Successfully ran task!</source>
+        <target state="translated">運行成功！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">86</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2106110452479146311" datatype="html">
+      <trans-unit id="2106110452479146311" datatype="html" xml:space="preserve">
         <source>Failed to run task!</source>
+        <target state="translated">運行失敗！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">87</context>
@@ -1749,15 +1766,17 @@
           <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4707127982271899773" datatype="html">
+      <trans-unit id="4707127982271899773" datatype="html" xml:space="preserve">
         <source>Successfully confirmed task!</source>
+        <target state="translated">任務確認成功！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">97</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="9121124215111024650" datatype="html">
+      <trans-unit id="9121124215111024650" datatype="html" xml:space="preserve">
         <source>Failed to confirm task!</source>
+        <target state="translated">任務確認失敗！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">98</context>
@@ -1767,36 +1786,41 @@
           <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5588424857086384816" datatype="html">
+      <trans-unit id="5588424857086384816" datatype="html" xml:space="preserve">
         <source>Reset tasks</source>
+        <target state="translated">重置任務</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">148</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4334913030311371594" datatype="html">
+      <trans-unit id="4334913030311371594" datatype="html" xml:space="preserve">
         <source>Would you like to reset your tasks? All your schedules will be removed as well.</source>
+        <target state="translated">是否確認重置所有任務？您的所有計劃都將移除。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">149</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7808756054397155068" datatype="html">
+      <trans-unit id="7808756054397155068" datatype="html" xml:space="preserve">
         <source>Reset</source>
+        <target state="translated">重置</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">150</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8612475568724527886" datatype="html">
+      <trans-unit id="8612475568724527886" datatype="html" xml:space="preserve">
         <source>Tasks successfully reset!</source>
+        <target state="translated">重置成功！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1709994363138824316" datatype="html">
+      <trans-unit id="1709994363138824316" datatype="html" xml:space="preserve">
         <source>Failed to reset tasks!</source>
+        <target state="translated">重置失敗！</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">160</context>
@@ -1806,84 +1830,95 @@
           <context context-type="linenumber">163</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="9176960997786930103" datatype="html">
+      <trans-unit id="9176960997786930103" datatype="html" xml:space="preserve">
         <source>Error for: <x id="PH" equiv-text="task['title']"/></source>
+        <target state="translated">錯誤: <x id="PH" equiv-text="task['title']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
           <context context-type="linenumber">174</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html">
+      <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html" xml:space="preserve">
         <source>Download Twitch Chat</source>
+        <target state="translated">下載Twitch彈幕</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.html</context>
           <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">Download Twitch Chat button</note>
       </trans-unit>
-      <trans-unit id="3481862581074838726" datatype="html">
+      <trans-unit id="3481862581074838726" datatype="html" xml:space="preserve">
         <source>VOD url for this video is not supported. VOD ID must be after "twitch.tv/videos/"</source>
+        <target state="translated">不支援此影片的視訊點播網址。視訊點播 ID 必須在“twitch.tv/videos/”之後</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="880407735794041263" datatype="html">
+      <trans-unit id="880407735794041263" datatype="html" xml:space="preserve">
         <source>Download failed.</source>
+        <target state="translated">下載失敗。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7157191502004604261" datatype="html">
+      <trans-unit id="7157191502004604261" datatype="html" xml:space="preserve">
         <source>Chat could not be downloaded.</source>
+        <target state="translated">聊天記錄無法下載。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">111</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="24dc3ecf7ec2c2144910c4f3d38343828be03a4c" datatype="html">
+      <trans-unit id="24dc3ecf7ec2c2144910c4f3d38343828be03a4c" datatype="html" xml:space="preserve">
         <source>Auto-generated</source>
+        <target state="translated">自動產生的</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
         <note priority="1" from="description">Auto-generated label</note>
       </trans-unit>
-      <trans-unit id="ccf5ea825526ac490974336cb5c24352886abc07" datatype="html">
+      <trans-unit id="ccf5ea825526ac490974336cb5c24352886abc07" datatype="html" xml:space="preserve">
         <source>Open file</source>
+        <target state="translated">打開檔案</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">18</context>
         </context-group>
         <note priority="1" from="description">Open file button</note>
       </trans-unit>
-      <trans-unit id="5656a06f17c24b2d7eae9c221567b209743829a9" datatype="html">
+      <trans-unit id="5656a06f17c24b2d7eae9c221567b209743829a9" datatype="html" xml:space="preserve">
         <source>Open file in new tab</source>
+        <target state="translated">在新分頁中開啟檔案</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
         <note priority="1" from="description">Open file in new tab</note>
       </trans-unit>
-      <trans-unit id="11a0771f88158a540a54e0e4ec5d25733d65fc0e" datatype="html">
+      <trans-unit id="11a0771f88158a540a54e0e4ec5d25733d65fc0e" datatype="html" xml:space="preserve">
         <source>Favorite</source>
+        <target state="translated">喜歡</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
         <note priority="1" from="description">Favorite button</note>
       </trans-unit>
-      <trans-unit id="1d4fa01d25990f60abf21c3a451fa8ba262b7912" datatype="html">
+      <trans-unit id="1d4fa01d25990f60abf21c3a451fa8ba262b7912" datatype="html" xml:space="preserve">
         <source>Unfavorite</source>
+        <target state="translated">不喜歡</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">27</context>
         </context-group>
         <note priority="1" from="description">Unfavorite button</note>
       </trans-unit>
-      <trans-unit id="321e4419a943044e674beb55b8039f42a9761ca5" datatype="html">
+      <trans-unit id="321e4419a943044e674beb55b8039f42a9761ca5" datatype="html" xml:space="preserve">
         <source>Info</source>
+        <target state="translated">詳情</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">29</context>
@@ -1898,32 +1933,36 @@
         </context-group>
         <note priority="1" from="description">Video info button</note>
       </trans-unit>
-      <trans-unit id="a0720c36ee1057e5c54a86591b722485c62d7b1a" datatype="html">
+      <trans-unit id="a0720c36ee1057e5c54a86591b722485c62d7b1a" datatype="html" xml:space="preserve">
         <source>Go to subscription</source>
+        <target state="translated">前往訂閱</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">30</context>
         </context-group>
         <note priority="1" from="description">Go to subscription menu item</note>
       </trans-unit>
-      <trans-unit id="50e85c3b33fb74c0d3c0f97182611f6c1d9cf10e" datatype="html">
+      <trans-unit id="50e85c3b33fb74c0d3c0f97182611f6c1d9cf10e" datatype="html" xml:space="preserve">
         <source>Add to playlist</source>
+        <target state="translated">新增到播放列表</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
         <note priority="1" from="description">Add to playlist menu item</note>
       </trans-unit>
-      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
+      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html" xml:space="preserve">
         <source>Delete and redownload</source>
+        <target state="translated">刪除並重新下載</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">38</context>
         </context-group>
         <note priority="1" from="description">Delete and redownload subscription video button</note>
       </trans-unit>
-      <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html">
+      <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html" xml:space="preserve">
         <source>Delete</source>
+        <target state="translated">刪除</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1934,16 +1973,18 @@
         </context-group>
         <note priority="1" from="description">Delete video button</note>
       </trans-unit>
-      <trans-unit id="e58f5716d6c08b6a841eb003c9f9774b5c5d34a9" datatype="html">
+      <trans-unit id="e58f5716d6c08b6a841eb003c9f9774b5c5d34a9" datatype="html" xml:space="preserve">
         <source>Delete and don't download again</source>
+        <target state="translated">刪除並取消下載</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">40</context>
         </context-group>
         <note priority="1" from="description">Delete and don't download again</note>
       </trans-unit>
-      <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html">
+      <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html" xml:space="preserve">
         <source>Edit</source>
+        <target state="translated">編輯</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">43</context>
@@ -1962,24 +2003,27 @@
         </context-group>
         <note priority="1" from="description">Playlist edit button</note>
       </trans-unit>
-      <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6" datatype="html">
+      <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6" datatype="html" xml:space="preserve">
         <source>Create a playlist</source>
+        <target state="translated">建立播放清單</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Create a playlist dialog title</note>
       </trans-unit>
-      <trans-unit id="4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1" datatype="html">
+      <trans-unit id="4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1" datatype="html" xml:space="preserve">
         <source>Modify playlist</source>
+        <target state="translated">修改播放清單</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
         <note priority="1" from="description">Modify playlist dialog title</note>
       </trans-unit>
-      <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
+      <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html" xml:space="preserve">
         <source>Name</source>
+        <target state="translated">名稱</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1994,8 +2038,9 @@
         </context-group>
         <note priority="1" from="description">Playlist name</note>
       </trans-unit>
-      <trans-unit id="70a67e04629f6d412db0a12d51820b480788d795" datatype="html">
+      <trans-unit id="70a67e04629f6d412db0a12d51820b480788d795" datatype="html" xml:space="preserve">
         <source>Create</source>
+        <target state="translated">創建</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">22</context>
@@ -2006,8 +2051,9 @@
         </context-group>
         <note priority="1" from="description">Create button</note>
       </trans-unit>
-      <trans-unit id="9203653061903371757" datatype="html">
+      <trans-unit id="9203653061903371757" datatype="html" xml:space="preserve">
         <source>Playlist updated successfully.</source>
+        <target state="translated">播放清單更新成功。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -2017,64 +2063,72 @@
           <context context-type="linenumber">75</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
+      <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html" xml:space="preserve">
         <source>About YoutubeDL-Material</source>
+        <target state="translated">關於 YoutubeDL-Material</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">About dialog title</note>
       </trans-unit>
-      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
+      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html" xml:space="preserve">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
+        <target state="translated">是根據Google的Material Design規範建構的開源YouTube下載器。您可以將喜歡的影片下載為影片或音訊檔案，並且可以訂閱喜歡的頻道和播放列表，以便及時下載他們的新影片。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
         <note priority="1" from="description">About first paragraph</note>
       </trans-unit>
-      <trans-unit id="bc0ad0ee6630acb7fcb7802ec79f5a0ee943c1a7" datatype="html">
+      <trans-unit id="bc0ad0ee6630acb7fcb7802ec79f5a0ee943c1a7" datatype="html" xml:space="preserve">
         <source>has some awesome features included! An extensive API, Docker support, and localization (translation) support. Read up on all the supported features by clicking on the GitHub icon above.</source>
+        <target state="translated">包含很多很棒的功能！支援API，Docker和本地化。在Github上尋找所有支援的功能。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">About second paragraph</note>
       </trans-unit>
-      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
+      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html" xml:space="preserve">
         <source>Installed version:</source>
+        <target state="translated">安裝版本：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
         <note priority="1" from="description">Version label</note>
       </trans-unit>
-      <trans-unit id="e22f3a5351944f3a1a10cfc7da6f65dfbe0037fe" datatype="html">
+      <trans-unit id="e22f3a5351944f3a1a10cfc7da6f65dfbe0037fe" datatype="html" xml:space="preserve">
         <source>Checking for updates...</source>
+        <target state="translated">檢查更新...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
         <note priority="1" from="description">Checking for updates text</note>
       </trans-unit>
-      <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html">
+      <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html" xml:space="preserve">
         <source>Update available</source>
+        <target state="translated">更新可用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">View latest update</note>
       </trans-unit>
-      <trans-unit id="189b28aaa19b3c51c6111ad039c4fd5e2a22e370" datatype="html">
+      <trans-unit id="189b28aaa19b3c51c6111ad039c4fd5e2a22e370" datatype="html" xml:space="preserve">
         <source>You can update from the settings menu.</source>
+        <target state="translated">你可以從設定選單進行更新。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">Update through settings menu hint</note>
       </trans-unit>
-      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html">
+      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html" xml:space="preserve">
         <source>Installation type:</source>
+        <target state="translated">安裝類型：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">25</context>
