@@ -8,6 +8,7 @@ import { Archive } from 'api-types/models/Archive';
 import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
 import { PostsService } from 'app/posts.services';
 import { NgxFileDropEntry } from 'ngx-file-drop';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-archive-viewer',

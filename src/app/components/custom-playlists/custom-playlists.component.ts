@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Playlist } from 'api-types';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-custom-playlists',

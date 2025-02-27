@@ -1,216 +1,249 @@
 <br/>
 <div class="big demo-basic">
-    <mat-card id="card" style="margin-right: 20px; margin-left: 20px;" [ngClass]="(allowAdvancedDownload) ? 'no-border-radius-bottom' : 'border-radius-both'">
-        <mat-card-content style="padding: 0px 8px 0px 8px;">
-            <div style="position: relative; margin-right: 15px; margin-top: 20px;">
-                <form class="example-form">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div [ngClass]="allowQualitySelect ? 'col-sm-9' : null" class="col-12">
-                                <mat-form-field color="accent" class="example-full-width">
-                                    <textarea class="url-input" cdkTextareaAutosize cdkAutosizeMinRows="1" wrap="off" matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" #urlinput></textarea>
-                                </mat-form-field>
-                                <!--<button type="button" class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>-->
-                            </div>
-                            <div *ngIf="allowQualitySelect" class="col-7 col-sm-3">
-                                <mat-form-field color="accent" style="display: inline-block; width: inherit; min-width: 120px;">
-                                    <mat-label>
-                                        <ng-container i18n="Quality select label">
-                                            Quality
-                                        </ng-container>
-                                    </mat-label>
-                                    <mat-select [disabled]="url === '' || cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']" [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality" (ngModelChange)="argsChanged()">
-                                        <mat-option i18n="Best" [value]="''">
-                                            Best
-                                        </mat-option>
-                                        <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats && !cachedAvailableFormats[url]?.formats_failed">
-                                            <ng-container *ngFor="let option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']">
-                                                <mat-option [matTooltip]="option.expected_filesize ? humanFileSize(option.expected_filesize) : null" *ngIf="option.key !== 'best_audio_format'" [value]="option">
-                                                    {{option.key}}
-                                                </mat-option>
-                                            </ng-container>
-                                        </ng-container>
-                                        <ng-container *ngIf="url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats_failed">
-                                            <ng-container *ngFor="let option of qualityOptions[audioOnly ? 'audio' : 'video']">
-                                                <mat-option [value]="option.value">
-                                                    {{option.label}}
-                                                </mat-option>
-                                            </ng-container>
-                                        </ng-container>
-                                    </mat-select>
-                                </mat-form-field>
-                                <div class="spinner-div" *ngIf="url !== '' && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']">
-                                    <mat-spinner [diameter]="25"></mat-spinner>
-                                </div>
-                            </div>
-                        </div>
+  <mat-card id="card" style="margin-right: 20px; margin-left: 20px;" [ngClass]="(allowAdvancedDownload) ? 'no-border-radius-bottom' : 'border-radius-both'">
+    <mat-card-content style="padding: 0px 8px 0px 8px;">
+      <div style="position: relative; margin-right: 15px; margin-top: 20px;">
+        <form class="example-form">
+          <div class="container-fluid">
+            <div class="row">
+              <div [ngClass]="allowQualitySelect ? 'col-sm-9' : null" class="col-12">
+                <mat-form-field color="accent" class="example-full-width">
+                  <textarea class="url-input" cdkTextareaAutosize cdkAutosizeMinRows="1" wrap="off" matInput (ngModelChange)="inputChanged($event)" [(ngModel)]="url" [placeholder]="'URL' + (youtubeSearchEnabled ? ' or search' : '')" type="url" name="url" #urlinput></textarea>
+                </mat-form-field>
+                <!--<button type="button" class="input-clear-button" mat-icon-button (click)="clearInput()"><mat-icon>clear</mat-icon></button>-->
+              </div>
+              @if (allowQualitySelect) {
+                <div class="col-7 col-sm-3">
+                  <mat-form-field color="accent" style="display: inline-block; width: inherit; min-width: 120px;">
+                    <mat-label>
+                      <ng-container i18n="Quality select label">
+                        Quality
+                      </ng-container>
+                    </mat-label>
+                    <mat-select [disabled]="url === '' || cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']" [ngModelOptions]="{standalone: true}" [(ngModel)]="selectedQuality" (ngModelChange)="argsChanged()">
+                      <mat-option i18n="Best" [value]="''">
+                        Best
+                      </mat-option>
+                      @if (url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats && !cachedAvailableFormats[url]?.formats_failed) {
+                        @for (option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']; track option) {
+                          @if (option.key !== 'best_audio_format') {
+                            <mat-option [matTooltip]="option.expected_filesize ? humanFileSize(option.expected_filesize) : null" [value]="option">
+                              {{option.key}}
+                            </mat-option>
+                          }
+                        }
+                      }
+                      @if (url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats_failed) {
+                        @for (option of qualityOptions[audioOnly ? 'audio' : 'video']; track option) {
+                          <mat-option [value]="option.value">
+                            {{option.label}}
+                          </mat-option>
+                        }
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  @if (url !== '' && cachedAvailableFormats[url] && cachedAvailableFormats[url]['formats_loading']) {
+                    <div class="spinner-div">
+                      <mat-spinner [diameter]="25"></mat-spinner>
                     </div>
-                    <div class="results-div" *ngIf="results_showing">
-                        <span *ngFor="let result of results; let i = index">
-                            <mat-card appearance="outlined" class="result-card mat-elevation-z7" [ngClass]="[(i === 0 && results.length > 1) ? 'first-result-card' : '', ((i === results.length-1) && results.length > 1) ? 'last-result-card' : '', (results.length === 1) ? 'only-result-card' : '']">
-                                <div class="search-card-title">
-                                    {{result.title}}
-                                </div>
-                                <div style="font-size: 12px; margin-bottom: 10px;">
-                                    {{result.uploaded}}
-                                </div>
-                                <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">
-                                    <ng-container i18n="YT search Use URL button for searched video">Use URL</ng-container>
-                                </button>
-                                <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">
-                                    <ng-container i18n="YT search View button for searched video">
-                                        View
-                                    </ng-container>
-                                </button>
-                            </mat-card>
-                        </span>
-                    </div>
-                </form>
-                <br/>
-                <mat-checkbox [disabled]="autoplay && !!current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px; margin-left: 4px;">
-                    <ng-container i18n="Only Audio checkbox">
-                        Only Audio
-                    </ng-container>
-                </mat-checkbox>
-                <mat-checkbox *ngIf="!forceAutoplay" [disabled]="getURLArray(url).length > 1" (change)="autoplayChanged($event)" [(ngModel)]="autoplay" style="float: right; margin-top: -12px">
-                    <ng-container i18n="Autoplay checkbox">
-                        Autoplay
-                    </ng-container>
-                </mat-checkbox>
-                
-            </div>
-        </mat-card-content>
-        <mat-card-actions>
-            <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile || url === ''" type="submit" mat-stroked-button color="accent">
-                <ng-container i18n="Main download button">
-                    Download
-                </ng-container>
-            </button>
-            <button (click)="cancelDownload()" style="margin-left: 8px; margin-bottom: 8px" *ngIf="!!current_download" mat-stroked-button color="warn">
-                <ng-container i18n="Cancel download button">
-                    Cancel
-                </ng-container>
-            </button>
-        </mat-card-actions>
-    </mat-card>
-</div>
-<div *ngIf="allowAdvancedDownload" class="big demo-basic">
-    <form style="margin-left: 20px; margin-right: 20px;">
-        <mat-expansion-panel class="big no-border-radius-top">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    <ng-container i18n="Advanced download mode panel">
-                        Advanced
-                    </ng-container>
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            <p *ngIf="this.simulatedOutput">
-                <ng-container i18n="Simulated command label">
-                    Simulated command:
-                </ng-container>
-                &nbsp;<i>{{this.simulatedOutput}}</i></p>
-            <div class="container" style="padding-bottom: 20px;">
-                <div class="row">
-                    <div class="col-12 col-sm-6">
-                        <mat-checkbox color="accent" [disabled]="!!current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
-                            <ng-container i18n="Use custom args checkbox">
-                                Use custom args
-                            </ng-container>
-                        </mat-checkbox>
-                        <button class="edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
-                        <mat-checkbox color="accent" [disabled]="!customArgsEnabled || !!current_download" (change)="replaceArgsChanged($event)" [(ngModel)]="replaceArgs" style="z-index: 999; margin-left: 10px" [ngModelOptions]="{standalone: true}">
-                            <ng-container i18n="Replace args">
-                                Replace args
-                            </ng-container>
-                        </mat-checkbox>
-                        <mat-form-field color="accent" style="margin-bottom: 42px;" class="advanced-input">
-                            <mat-label i18n="Custom args">Custom args</mat-label>
-                            <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput (ngModelChange)="argsChanged()">
-                            <mat-hint>
-                                <ng-container i18n="Custom Args input hint">
-                                    No need to include URL, just everything after. Args are delimited using two commas like so: ,,
-                                </ng-container>
-                            </mat-hint>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <mat-checkbox color="accent" [disabled]="!!current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
-                            <ng-container i18n="Use custom output checkbox">
-                                Use custom output
-                            </ng-container>
-                        </mat-checkbox>
-                        <mat-form-field style="margin-bottom: 42px;" color="accent" class="advanced-input">
-                            <mat-label i18n="Custom output">Custom output</mat-label>
-                            <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput (ngModelChange)="argsChanged()">
-                            <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
-                                <ng-container i18n="Youtube-dl output template documentation link">Documentation</ng-container></a>.
-                                <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
-                            </mat-hint>
-                        </mat-form-field>
-                    </div>
-                    <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-3">
-                        <mat-checkbox color="accent" [disabled]="!!current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
-                            <ng-container i18n="Use authentication checkbox">
-                                Use authentication
-                            </ng-container>
-                        </mat-checkbox>
-                        <mat-form-field *ngIf="youtubeAuthEnabled" color="accent" class="advanced-input">
-                            <mat-label i18n="Username">Username</mat-label>
-                            <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()">
-                        </mat-form-field>
-                    </div>
-                    <div *ngIf="!youtubeAuthDisabledOverride" class="col-12 col-sm-6 mt-3">
-                        <mat-form-field *ngIf="youtubeAuthEnabled" style="margin-top: 40px;" color="accent" class="advanced-input">
-                            <mat-label i18n="Password">Password</mat-label>
-                            <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-sm-6 mt-3">
-                        <mat-checkbox color="accent" [disabled]="!!current_download" [(ngModel)]="cropFile" style="z-index: 999" [ngModelOptions]="{standalone: true}">
-                            <ng-container i18n="Crop video checkbox">
-                                Crop file
-                            </ng-container>
-                        </mat-checkbox>
-                        <mat-form-field *ngIf="cropFile" color="accent" class="advanced-input">
-                            <mat-label i18n="Crop from (seconds)">Crop from (seconds)</mat-label>
-                            <input [(ngModel)]="cropFileStart" type="number" [ngModelOptions]="{standalone: true}" matInput>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-12 col-sm-6 mt-3">
-                        <mat-form-field *ngIf="cropFile" style="margin-top: 40px;" color="accent" class="advanced-input">
-                            <mat-label i18n="Crop to (seconds)">Crop to (seconds)</mat-label>
-                            <input [(ngModel)]="cropFileEnd" type="number" [ngModelOptions]="{standalone: true}" matInput>
-                        </mat-form-field>
-                    </div>
+                  }
                 </div>
+              }
             </div>
-        </mat-expansion-panel>
-    </form>
+          </div>
+          @if (results_showing) {
+            <div class="results-div">
+              @for (result of results; track result; let i = $index) {
+                <span>
+                  <mat-card appearance="outlined" class="result-card mat-elevation-z7" [ngClass]="[(i === 0 && results.length > 1) ? 'first-result-card' : '', ((i === results.length-1) && results.length > 1) ? 'last-result-card' : '', (results.length === 1) ? 'only-result-card' : '']">
+                    <div class="search-card-title">
+                      {{result.title}}
+                    </div>
+                    <div style="font-size: 12px; margin-bottom: 10px;">
+                      {{result.uploaded}}
+                    </div>
+                    <button mat-flat-button color="primary" style="float: left;" (click)="useURL(result.videoUrl)">
+                      <ng-container i18n="YT search Use URL button for searched video">Use URL</ng-container>
+                    </button>
+                    <button mat-stroked-button color="primary" (click)="visitURL(result.videoUrl)" style="float: right">
+                      <ng-container i18n="YT search View button for searched video">
+                        View
+                      </ng-container>
+                    </button>
+                  </mat-card>
+                </span>
+              }
+            </div>
+          }
+        </form>
+        <br/>
+        <mat-checkbox [disabled]="autoplay && !!current_download" (change)="videoModeChanged($event)" [(ngModel)]="audioOnly" style="float: left; margin-top: -12px; margin-left: 4px;">
+          <ng-container i18n="Only Audio checkbox">
+            Only Audio
+          </ng-container>
+        </mat-checkbox>
+        @if (!forceAutoplay) {
+          <mat-checkbox [disabled]="getURLArray(url).length > 1" (change)="autoplayChanged($event)" [(ngModel)]="autoplay" style="float: right; margin-top: -12px">
+            <ng-container i18n="Autoplay checkbox">
+              Autoplay
+            </ng-container>
+          </mat-checkbox>
+        }
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button style="margin-left: 8px; margin-bottom: 8px" (click)="downloadClicked()" [disabled]="downloadingfile || url === ''" type="submit" mat-stroked-button color="accent">
+        <ng-container i18n="Main download button">
+          Download
+        </ng-container>
+      </button>
+      @if (!!current_download) {
+        <button (click)="cancelDownload()" style="margin-left: 8px; margin-bottom: 8px" mat-stroked-button color="warn">
+          <ng-container i18n="Cancel download button">
+            Cancel
+          </ng-container>
+        </button>
+      }
+    </mat-card-actions>
+  </mat-card>
 </div>
-<br/>
-<div class="centered big" id="bar_div" *ngIf="current_download && autoplay">
-    <div class="margined">
-        <div [ngClass]="(+percentDownloaded > 99)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px" *ngIf="current_download.percent_complete && current_download.percent_complete > 1;else indeterminateprogress">
+@if (allowAdvancedDownload) {
+  <div class="big demo-basic">
+    <form style="margin-left: 20px; margin-right: 20px;">
+      <mat-expansion-panel class="big no-border-radius-top">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <ng-container i18n="Advanced download mode panel">
+              Advanced
+            </ng-container>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        @if (this.simulatedOutput) {
+          <p>
+            <ng-container i18n="Simulated command label">
+              Simulated command:
+            </ng-container>
+            &nbsp;<i>{{this.simulatedOutput}}</i></p>
+          }
+          <div class="container" style="padding-bottom: 20px;">
+            <div class="row">
+              <div class="col-12 col-sm-6">
+                <mat-checkbox color="accent" [disabled]="!!current_download" (change)="customArgsEnabledChanged($event)" [(ngModel)]="customArgsEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                  <ng-container i18n="Use custom args checkbox">
+                    Use custom args
+                  </ng-container>
+                </mat-checkbox>
+                <button class="edit-button" (click)="openArgsModifierDialog()" mat-icon-button><mat-icon>edit</mat-icon></button>
+                <mat-checkbox color="accent" [disabled]="!customArgsEnabled || !!current_download" (change)="replaceArgsChanged($event)" [(ngModel)]="replaceArgs" style="z-index: 999; margin-left: 10px" [ngModelOptions]="{standalone: true}">
+                  <ng-container i18n="Replace args">
+                    Replace args
+                  </ng-container>
+                </mat-checkbox>
+                <mat-form-field color="accent" style="margin-bottom: 42px;" class="advanced-input">
+                  <mat-label i18n="Custom args">Custom args</mat-label>
+                  <input [(ngModel)]="customArgs" [ngModelOptions]="{standalone: true}" [disabled]="!customArgsEnabled" matInput (ngModelChange)="argsChanged()">
+                  <mat-hint>
+                    <ng-container i18n="Custom Args input hint">
+                      No need to include URL, just everything after. Args are delimited using two commas like so: ,,
+                    </ng-container>
+                  </mat-hint>
+                </mat-form-field>
+              </div>
+              <div class="col-12 col-sm-6">
+                <mat-checkbox color="accent" [disabled]="!!current_download" (change)="customOutputEnabledChanged($event)" [(ngModel)]="customOutputEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                  <ng-container i18n="Use custom output checkbox">
+                    Use custom output
+                  </ng-container>
+                </mat-checkbox>
+                <mat-form-field style="margin-bottom: 42px;" color="accent" class="advanced-input">
+                  <mat-label i18n="Custom output">Custom output</mat-label>
+                  <input [(ngModel)]="customOutput" [ngModelOptions]="{standalone: true}" [disabled]="!customOutputEnabled" matInput (ngModelChange)="argsChanged()">
+                  <mat-hint><a target="_blank" href="https://github.com/ytdl-org/youtube-dl/blob/master/README.md#output-template">
+                    <ng-container i18n="Youtube-dl output template documentation link">Documentation</ng-container></a>.
+                    <ng-container i18n="Custom Output input hint">Path is relative to the config download path. Don't include extension.</ng-container>
+                  </mat-hint>
+                </mat-form-field>
+              </div>
+              @if (!youtubeAuthDisabledOverride) {
+                <div class="col-12 col-sm-6 mt-3">
+                  <mat-checkbox color="accent" [disabled]="!!current_download" (change)="youtubeAuthEnabledChanged($event)" [(ngModel)]="youtubeAuthEnabled" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                    <ng-container i18n="Use authentication checkbox">
+                      Use authentication
+                    </ng-container>
+                  </mat-checkbox>
+                  @if (youtubeAuthEnabled) {
+                    <mat-form-field color="accent" class="advanced-input">
+                      <mat-label i18n="Username">Username</mat-label>
+                      <input [(ngModel)]="youtubeUsername" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()">
+                    </mat-form-field>
+                  }
+                </div>
+                <div class="col-12 col-sm-6 mt-3">
+                  @if (youtubeAuthEnabled) {
+                    <mat-form-field style="margin-top: 40px;" color="accent" class="advanced-input">
+                      <mat-label i18n="Password">Password</mat-label>
+                      <input [(ngModel)]="youtubePassword" type="password" [ngModelOptions]="{standalone: true}" matInput (ngModelChange)="argsChanged()">
+                    </mat-form-field>
+                  }
+                </div>
+              }
+              <div class="col-12 col-sm-6 mt-3">
+                <mat-checkbox color="accent" [disabled]="!!current_download" [(ngModel)]="cropFile" style="z-index: 999" [ngModelOptions]="{standalone: true}">
+                  <ng-container i18n="Crop video checkbox">
+                    Crop file
+                  </ng-container>
+                </mat-checkbox>
+                @if (cropFile) {
+                  <mat-form-field color="accent" class="advanced-input">
+                    <mat-label i18n="Crop from (seconds)">Crop from (seconds)</mat-label>
+                    <input [(ngModel)]="cropFileStart" type="number" [ngModelOptions]="{standalone: true}" matInput>
+                  </mat-form-field>
+                }
+              </div>
+              <div class="col-12 col-sm-6 mt-3">
+                @if (cropFile) {
+                  <mat-form-field style="margin-top: 40px;" color="accent" class="advanced-input">
+                    <mat-label i18n="Crop to (seconds)">Crop to (seconds)</mat-label>
+                    <input [(ngModel)]="cropFileEnd" type="number" [ngModelOptions]="{standalone: true}" matInput>
+                  </mat-form-field>
+                }
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </form>
+    </div>
+  }
+  <br/>
+  @if (current_download && autoplay) {
+    <div class="centered big" id="bar_div">
+      <div class="margined">
+        @if (current_download.percent_complete && current_download.percent_complete > 1) {
+          <div [ngClass]="(+percentDownloaded > 99)?'make-room-for-spinner':'equal-sizes'" style="display: inline-block; width: 100%; padding-left: 20px">
             <mat-progress-bar style="border-radius: 5px;" mode="determinate" value="{{percentDownloaded}}"></mat-progress-bar>
             <br/>
-        </div>
-        <div *ngIf="+percentDownloaded > 99" class="spinner">
+          </div>
+        } @else {
+          <mat-progress-bar style="border-radius: 5px;" mode="indeterminate"></mat-progress-bar>
+        }
+        @if (+percentDownloaded > 99) {
+          <div class="spinner">
             <mat-spinner [diameter]="25"></mat-spinner>
-        </div>
-        <ng-template #indeterminateprogress>
-            <mat-progress-bar style="border-radius: 5px;" mode="indeterminate"></mat-progress-bar>
-        </ng-template>
+          </div>
+        }
+      </div>
+      <br/>
     </div>
-    <br/>
-</div>
-
-<div style="display: flex; justify-content: center;" *ngIf="downloads && downloads.length > 0 && !autoplay">
-    <app-downloads style="width: 80%; min-width: 350px; margin-bottom: 10px" [uids]="download_uids"></app-downloads>
-</div>
-
-<ng-container *ngIf="cachedFileManagerEnabled || fileManagerEnabled">
+  }
+  @if (downloads && downloads.length > 0 && !autoplay) {
+    <div style="display: flex; justify-content: center;">
+      <app-downloads style="width: 80%; min-width: 350px; margin-bottom: 10px" [uids]="download_uids"></app-downloads>
+    </div>
+  }
+  @if (cachedFileManagerEnabled || fileManagerEnabled) {
     <app-recent-videos #recentVideos></app-recent-videos>
     <br/>
     <h4 style="text-align: center">Custom playlists</h4>
     <app-custom-playlists></app-custom-playlists>
-</ng-container>
+  }
+  

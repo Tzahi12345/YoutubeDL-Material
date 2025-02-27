@@ -1,17 +1,19 @@
-<h4 *ngIf="role" mat-dialog-title><ng-container i18n="Manage role dialog title">Manage role</ng-container>&nbsp;-&nbsp;{{role.key}}</h4>
-
-<mat-dialog-content *ngIf="role">
-    <div *ngFor="let permission of available_permissions">
+@if (role) {
+  <h4 mat-dialog-title><ng-container i18n="Manage role dialog title">Manage role</ng-container>&nbsp;-&nbsp;{{role.key}}</h4>
+  <mat-dialog-content>
+    @for (permission of available_permissions; track permission) {
+      <div>
         <div matListItemTitle>{{permissionToLabel[permission] ? permissionToLabel[permission] : permission}}</div>
         <div matListItemLine>
-            <mat-radio-group [disabled]="permission === 'settings' && role.key === 'admin'" (change)="changeRolePermissions($event, permission)" [(ngModel)]="permissions[permission]" [attr.aria-label]="'Give role permission for ' + permission">
-                <mat-radio-button value="yes"><ng-container i18n="Yes">Yes</ng-container></mat-radio-button>
-                <mat-radio-button value="no"><ng-container i18n="No">No</ng-container></mat-radio-button>
-            </mat-radio-group>
+          <mat-radio-group [disabled]="permission === 'settings' && role.key === 'admin'" (change)="changeRolePermissions($event, permission)" [(ngModel)]="permissions[permission]" [attr.aria-label]="'Give role permission for ' + permission">
+            <mat-radio-button value="yes"><ng-container i18n="Yes">Yes</ng-container></mat-radio-button>
+            <mat-radio-button value="no"><ng-container i18n="No">No</ng-container></mat-radio-button>
+          </mat-radio-group>
         </div>
-    </div>
-</mat-dialog-content>
-
+      </div>
+    }
+  </mat-dialog-content>
+}
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close><ng-container i18n="Close">Close</ng-container></button>
+  <button mat-button mat-dialog-close><ng-container i18n="Close">Close</ng-container></button>
 </mat-dialog-actions>

@@ -529,7 +529,9 @@ exports.parseOutputJSON = (output, err) => {
     let split_output = [];
     // const output_jsons = [];
     if (err && !output) {
-        if (!err.stderr.includes('This video is unavailable') && !err.stderr.includes('Private video')) {
+        const attempt_backup_errs = ['This video is unavailable', 'Private video', 'unavailable video'];
+        const attempt_backup = err.stderr ? attempt_backup_errs.some(err_msg => err.stderr.includes(err_msg)) : false;
+        if (!attempt_backup) {
             return null;
         }
         logger.info('An error was encountered with at least one video, backup method will be used.')
