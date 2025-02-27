@@ -2,24 +2,27 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="hu">
     <body>
-      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html">
+      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html" xml:space="preserve">
         <source>Profile</source>
+        <target state="translated">Profil</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
         <note priority="1" from="description">Profile menu label</note>
       </trans-unit>
-      <trans-unit id="c748ac656af9f13998206ef2c52018dd418b0483" datatype="html">
+      <trans-unit id="c748ac656af9f13998206ef2c52018dd418b0483" datatype="html" xml:space="preserve">
         <source>Archives</source>
+        <target state="translated">Archív</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
         <note priority="1" from="description">Archives menu label</note>
       </trans-unit>
-      <trans-unit id="adb4562d2dbd3584370e44496969d58c511ecb63" datatype="html">
+      <trans-unit id="adb4562d2dbd3584370e44496969d58c511ecb63" datatype="html" xml:space="preserve">
         <source>Dark</source>
+        <target state="translated">Sötét</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">30</context>
@@ -30,8 +33,9 @@
         </context-group>
         <note priority="1" from="description">Dark mode toggle label</note>
       </trans-unit>
-      <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
+      <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html" xml:space="preserve">
         <source>About</source>
+        <target state="translated">Névjegy</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">35</context>
