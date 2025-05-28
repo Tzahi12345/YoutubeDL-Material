@@ -136,7 +136,7 @@ Once you have enabled the API and have the key, you can start sending requests b
 
 ## iOS Shortcut 
 
-If you are using iOS, try YoutubeDL-Material more conveniently with a Shortcut. With this Shorcut, you can easily start downloading YouTube video with just two taps! (Or maybe three?)
+If you are using iOS, try YoutubeDL-Material more conveniently with a Shortcut. With this Shortcut, you can easily start downloading YouTube video with just two taps! (Or maybe three?)
 
 You can download Shortcut [here.](https://routinehub.co/shortcut/10283/)
 
