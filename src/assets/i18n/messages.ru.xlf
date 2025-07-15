@@ -289,7 +289,7 @@
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html" xml:space="preserve">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target state="translated">Путь является относительным к пути загрузки конфигурации. Не включайте расширение.</target>
+        <target state="translated">Путь является относительным к пути скачивания конфигурации. Не включайте расширение.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/main/main.component.html</context>
           <context context-type="linenumber">131</context>
@@ -588,9 +588,9 @@
         </context-group>
         <note priority="1" from="description">Delete and blacklist video button</note>
       </trans-unit>
-      <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html">
+      <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html" xml:space="preserve">
         <source>Upload new cookies</source>
-        <target>Загрузка новых cookie</target>
+        <target state="translated">Закачать новые файлы cookie</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1080,9 +1080,9 @@
         </context-group>
         <note priority="1" from="description">Chrome ext click here</note>
       </trans-unit>
-      <trans-unit id="7f09776373995003161235c0c8d02b7f91dbc4df" datatype="html">
+      <trans-unit id="7f09776373995003161235c0c8d02b7f91dbc4df" datatype="html" xml:space="preserve">
         <source>to download the official YoutubeDL-Material Chrome extension manually.</source>
-        <target>чтобы загрузить официальное расширение YoutubeDL-Material Chrome вручную.</target>
+        <target state="translated">чтобы скачивать официальное расширение YoutubeDL-Material Chrome вручную.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">233</context>
@@ -1125,9 +1125,9 @@
         </context-group>
         <note priority="1" from="description">Firefox setup suffix</note>
       </trans-unit>
-      <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2" datatype="html">
+      <trans-unit id="61b81b11aad0b9d970ece2fce18405f07eac69c2" datatype="html" xml:space="preserve">
         <source>Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</source>
-        <target>Перетащите приведенную ниже ссылку в закладки, и все готово! Просто перейдите к видео YouTube, которое вы хотите загрузить, и нажмите на закладку.</target>
+        <target state="translated">Перетащите приведенную ниже ссылку в закладки, и все готово! Просто перейдите к видео YouTube, которое вы хотите скачивать, и нажмите на закладку.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">245</context>
@@ -1152,18 +1152,18 @@
         </context-group>
         <note priority="1" from="description">Extra settings label</note>
       </trans-unit>
-      <trans-unit id="5fab47f146b0a4b809dcebf3db9da94df6299ea1" datatype="html">
+      <trans-unit id="5fab47f146b0a4b809dcebf3db9da94df6299ea1" datatype="html" xml:space="preserve">
         <source>Use default downloading agent</source>
-        <target>Использовать агент загрузки по умолчанию</target>
+        <target state="translated">Использовать агент скачивания по умолчанию</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">260</context>
         </context-group>
         <note priority="1" from="description">Use default downloading agent setting</note>
       </trans-unit>
-      <trans-unit id="ec71e08aee647ea4a71fd6b7510c54d84a797ca6" datatype="html">
+      <trans-unit id="ec71e08aee647ea4a71fd6b7510c54d84a797ca6" datatype="html" xml:space="preserve">
         <source>Select a downloader</source>
-        <target>Выберите программу загрузки</target>
+        <target state="translated">Выберите программу скачивания</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">264</context>
@@ -1179,9 +1179,9 @@
         </context-group>
         <note priority="1" from="description">Logger level select label</note>
       </trans-unit>
-      <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html">
+      <trans-unit id="dc3d990391c944d1fbfc7cfb402f7b5e112fb3a8" datatype="html" xml:space="preserve">
         <source>Allow advanced download</source>
-        <target>Разрешить расширенную загрузку</target>
+        <target state="translated">Разрешить расширенное скачивание</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/settings/settings.component.html</context>
           <context context-type="linenumber">289</context>
@@ -1269,9 +1269,9 @@
         </context-group>
         <note priority="1" from="description">About dialog title</note>
       </trans-unit>
-      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
+      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html" xml:space="preserve">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
-        <target>это загрузчик YouTube с открытым исходным кодом, созданный в соответствии со спецификациями Material Design от Google. Вы можете легко загружать любимые видеоролики в виде видео- или аудиофайлов и даже подписываться на любимые каналы и плейлисты, чтобы быть в курсе новых видео.</target>
+        <target state="translated">это скачиватель для YouTube с открытым исходным кодом, созданный в соответствии со спецификациями Material Design от Google. Вы можете легко скачивать любимые видеоролики в виде видео- или аудиофайлов и даже подписываться на любимые каналы и плейлисты, чтобы быть в курсе новых видео.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1794,9 +1794,9 @@
         </context-group>
         <note priority="1" from="description">Video duration label</note>
       </trans-unit>
-      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
+      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html" xml:space="preserve">
         <source>Delete and redownload</source>
-        <target>Удаление и повторная загрузка</target>
+        <target state="translated">Удалить и перескачать</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/subscription/subscription-file-card/subscription-file-card.component.html</context>
           <context context-type="linenumber">8</context>
@@ -2220,9 +2220,9 @@
         </context-group>
         <note priority="1" from="description">Log Level label</note>
       </trans-unit>
-      <trans-unit id="c776eb4992b6c98f58cd89b20c1ea8ac37888521" datatype="html">
+      <trans-unit id="c776eb4992b6c98f58cd89b20c1ea8ac37888521" datatype="html" xml:space="preserve">
         <source>Select a download agent</source>
-        <target>Выберите агент загрузки</target>
+        <target state="translated">Выберите агент скачивания</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">299</context>
@@ -2491,7 +2491,7 @@
       </trans-unit>
       <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html" xml:space="preserve">
         <source>NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
-        <target state="translated">ПРИМЕЧАНИЕ: Загрузка новых cookie перезаписывает предыдущие cookie. Также обратите внимание, что cookie используются в масштабах всего сервера, а не каждого пользователя.</target>
+        <target state="translated">ПРИМЕЧАНИЕ: Закачивание новых cookie перезаписывает предыдущие cookie. Также обратите внимание, что cookie используются в масштабах всего сервера, а не каждого пользователя.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">20</context>
@@ -3097,7 +3097,7 @@
       </trans-unit>
       <trans-unit id="e243d8408e1a3d2ef6501b85899d02374ea34880" datatype="html" xml:space="preserve">
         <source>Generates NFO files with every download, primarily used by Kodi.</source>
-        <target state="translated">Генерирует файлы NFO при каждого скачивания, в основном используется Kodi.</target>
+        <target state="translated">Генерирует файлы NFO для каждого скачивания, в основном используется Kodi.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">272</context>
@@ -3488,7 +3488,7 @@
       </trans-unit>
       <trans-unit id="880407735794041263" datatype="html" xml:space="preserve">
         <source>Download failed.</source>
-        <target state="translated">Ошибка при загрузке.</target>
+        <target state="translated">Ошибка при скачивании.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">107</context>
@@ -3816,7 +3816,7 @@
       </trans-unit>
       <trans-unit id="4b3972c3e9485218508a95f7a4ce7758e3f09ced" datatype="html" xml:space="preserve">
         <source>Upload</source>
-        <target state="translated">Загрузить</target>
+        <target state="translated">Закачать</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">137</context>
@@ -4300,7 +4300,7 @@
       </trans-unit>
       <trans-unit id="22bac71dbdc1ac62607135994f81cca8094cb251" datatype="html" xml:space="preserve">
         <source>Upload date</source>
-        <target state="translated">Дата загрузки</target>
+        <target state="translated">Дата закачивания</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -4881,7 +4881,7 @@
       </trans-unit>
       <trans-unit id="4257962986336738751" datatype="html" xml:space="preserve">
         <source>Successfully killed all downloads!</source>
-        <target state="translated">Все загрузки успешно прерваны!</target>
+        <target state="translated">Все скачивания успешно прерваны!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">275</context>
@@ -4889,7 +4889,7 @@
       </trans-unit>
       <trans-unit id="2600933489084742998" datatype="html" xml:space="preserve">
         <source>Failed to kill all downloads! Check logs for details.</source>
-        <target state="translated">Ошибка при прерывании всех загрузок! Смотрите логи для доп. информации.</target>
+        <target state="translated">Ошибка при прерывании всех скачиваний! Смотрите подробности в журнале.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
           <context context-type="linenumber">278</context>
@@ -4941,7 +4941,7 @@
       </trans-unit>
       <trans-unit id="7157191502004604261" datatype="html" xml:space="preserve">
         <source>Chat could not be downloaded.</source>
-        <target state="translated">Не удалось загрузить чат.</target>
+        <target state="translated">Не удалось скачать чат.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">111</context>
