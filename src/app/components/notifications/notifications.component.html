@@ -1,10 +1,16 @@
-<div *ngIf="notifications !== null && notifications.length === 0" style="text-align: center; margin: 10px;" i18n="No notifications available">No notifications available</div>
-<div *ngIf="notifications?.length > 0">
+@if (notifications !== null && notifications.length === 0) {
+  <div style="text-align: center; margin: 10px;" i18n="No notifications available">No notifications available</div>
+}
+@if (notifications?.length > 0) {
+  <div>
     <div class="notifications-list-parent">
-        <mat-chip-listbox [value]="selectedFilters" [multiple]="true" (change)="selectedFiltersChanged($event)">
-            <mat-chip-option *ngFor="let filter of notificationFilters | keyvalue: originalOrder" [value]="filter.key" [selected]="selectedFilters.includes(filter.key)" color="accent">{{filter.value.label}}</mat-chip-option>
-        </mat-chip-listbox>
-        <app-notifications-list class="notifications-list" [style.height]="list_height" (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="filtered_notifications"></app-notifications-list>
+      <mat-chip-listbox [value]="selectedFilters" [multiple]="true" (change)="selectedFiltersChanged($event)">
+        @for (filter of notificationFilters | keyvalue: originalOrder; track filter) {
+          <mat-chip-option [value]="filter.key" [selected]="selectedFilters.includes(filter.key)" color="accent">{{filter.value.label}}</mat-chip-option>
+        }
+      </mat-chip-listbox>
+      <app-notifications-list class="notifications-list" [style.height]="list_height" (notificationAction)="notificationAction($event)" (deleteNotification)="deleteNotification($event)" [notifications]="filtered_notifications"></app-notifications-list>
     </div>
-    <button style="margin: 10px 0px 2px 10px;" *ngIf="notifications?.length > 0" color="warn" (click)="deleteAllNotifications()" mat-stroked-button>Remove all</button>
-</div>
+    <button style="margin: 10px 0px 2px 10px;" color="warn" (click)="deleteAllNotifications()" mat-stroked-button>Remove all</button>
+  </div>
+}

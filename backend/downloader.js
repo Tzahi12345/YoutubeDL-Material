@@ -521,6 +521,8 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
             downloadConfig.push('--write-thumbnail');
         }
 
+        downloadConfig.push('-i');
+
         if (globalArgs && globalArgs !== '') {
             // adds global args
             if (downloadConfig.indexOf('-o') !== -1 && globalArgs.split(',,').indexOf('-o') !== -1) {
@@ -571,8 +573,8 @@ exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
     let {callback} = await youtubedl_api.runYoutubeDL(url, new_args);
     const {parsed_output, err} = await callback;
     if (!parsed_output || parsed_output.length === 0) {
-        let error_message = `Error while retrieving info on video with URL ${url} with the following message: ${err}`;
-        if (err.stderr) error_message += `\n\n${err.stderr}`;
+        let error_message = `Error while retrieving info on video with URL ${url}`;
+        if (err.stderr) error_message += ` with the following message: \n${err.stderr}`;
         logger.error(error_message);
         if (download_uid) {
             await handleDownloadError(download_uid, error_message, 'info_retrieve_failed');

@@ -1,60 +1,76 @@
 <br/>
-
 <h2 i18n="Subscriptions title" style="text-align: center; margin-bottom: 15px;">Your subscriptions</h2>
-
 <mat-divider style="width: 80%; margin: 0 auto"></mat-divider>
 <br/>
-
 <h4 i18n="Subscriptions channels title" style="text-align: center;">Channels</h4>
 <mat-nav-list class="sub-nav-list">
-    <mat-list-item *ngFor="let sub of channel_subscriptions" style="pointer-events: none">
-        <a style="pointer-events: auto;" class="a-list-item" matListItemTitle (click)="goToSubscription(sub)">
-            <strong *ngIf="sub.name">{{ sub.name }}&nbsp;<ng-container *ngIf="sub.paused" i18n="Paused suffix">(Paused)</ng-container></strong>
-            <div *ngIf="!sub.name">
-                <ng-container i18n="Subscription playlist not available text">Name not available. Channel retrieval in progress.</ng-container>
-            </div>
-        </a>
-        <div style="pointer-events: auto; color: unset" matListItemMeta>
-            <button matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button (click)="editSubscription(sub)">
-                <mat-icon>edit</mat-icon>
-            </button>
-            <button matTooltip="Info" i18n-matTooltip="Info" mat-icon-button (click)="showSubInfo(sub)">
-                <mat-icon>info</mat-icon>
-            </button>
-        </div>
+  @for (sub of channel_subscriptions; track sub) {
+    <mat-list-item style="pointer-events: none">
+      <a style="pointer-events: auto;" class="a-list-item" matListItemTitle (click)="goToSubscription(sub)">
+        @if (sub.name) {
+          <strong>{{ sub.name }}
+            @if (sub.paused) {
+              &nbsp;<ng-container i18n="Paused suffix">(Paused)</ng-container>
+            }
+          </strong>
+        } @else {
+          <div>
+            <ng-container i18n="Subscription playlist not available text">Name not available. Channel retrieval in progress.</ng-container>
+          </div>
+        }
+      </a>
+      <div style="pointer-events: auto; color: unset" matListItemMeta>
+        <button matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button (click)="editSubscription(sub)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button matTooltip="Info" i18n-matTooltip="Info" mat-icon-button (click)="showSubInfo(sub)">
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
     </mat-list-item>
- </mat-nav-list>
-
-<div style="width: 80%; margin: 0 auto; padding-left: 15px;" *ngIf="channel_subscriptions.length === 0 && subscriptions">
+  }
+</mat-nav-list>
+@if (channel_subscriptions.length === 0 && subscriptions) {
+  <div style="width: 80%; margin: 0 auto; padding-left: 15px;">
     <p i18n="No channel subscriptions text">You have no channel subscriptions.</p>
-</div>
-
+  </div>
+}
 <h4 i18n="Subscriptions playlists title" style="text-align: center; margin-top: 10px;">Playlists</h4>
 <mat-nav-list class="sub-nav-list">
-    <mat-list-item *ngFor="let sub of playlist_subscriptions" style="pointer-events: none">
-        <a style="pointer-events: auto;" class="a-list-item" matListItemTitle (click)="goToSubscription(sub)">
-            <strong *ngIf="sub.name">{{ sub.name }}&nbsp;<ng-container *ngIf="sub.paused" i18n="Paused suffix">(Paused)</ng-container></strong>
-            <div *ngIf="!sub.name">
-                <ng-container i18n="Subscription playlist not available text">Name not available. Channel retrieval in progress.</ng-container>
-            </div>
-        </a>
-        <div style="pointer-events: auto; color: unset" matListItemMeta>
-            <button matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button (click)="editSubscription(sub)">
-                <mat-icon>edit</mat-icon>
-            </button>
-            <button matTooltip="Info" i18n-matTooltip="Info" mat-icon-button (click)="showSubInfo(sub)">
-                <mat-icon>info</mat-icon>
-            </button>
-        </div>
+  @for (sub of playlist_subscriptions; track sub) {
+    <mat-list-item style="pointer-events: none">
+      <a style="pointer-events: auto;" class="a-list-item" matListItemTitle (click)="goToSubscription(sub)">
+        @if (sub.name) {
+          <strong>{{ sub.name }}
+            @if (sub.paused) {
+              &nbsp;<ng-container i18n="Paused suffix">(Paused)</ng-container>
+            }
+          </strong>
+        } @else {
+          <div>
+            <ng-container i18n="Subscription playlist not available text">Name not available. Channel retrieval in progress.</ng-container>
+          </div>
+        }
+      </a>
+      <div style="pointer-events: auto; color: unset" matListItemMeta>
+        <button matTooltip="Edit" i18n-matTooltip="Edit" mat-icon-button (click)="editSubscription(sub)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button matTooltip="Info" i18n-matTooltip="Info" mat-icon-button (click)="showSubInfo(sub)">
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
     </mat-list-item>
+  }
 </mat-nav-list>
-
-<div style="width: 80%; margin: 0 auto; padding-left: 15px;" *ngIf="playlist_subscriptions.length === 0 && subscriptions">
+@if (playlist_subscriptions.length === 0 && subscriptions) {
+  <div style="width: 80%; margin: 0 auto; padding-left: 15px;">
     <p i18n="No playlist subscriptions text">You have no playlist subscriptions.</p>
-</div>
-
-<div style="margin: 0 auto; width: 80%" *ngIf="subscriptions_loading">
+  </div>
+}
+@if (subscriptions_loading) {
+  <div style="margin: 0 auto; width: 80%">
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-</div>
-
+  </div>
+}
 <button class="add-subscription-button" (click)="openSubscribeDialog()" matTooltip="Add subscription" i18n-matTooltip="Add subscription" mat-fab><mat-icon>add</mat-icon></button>
