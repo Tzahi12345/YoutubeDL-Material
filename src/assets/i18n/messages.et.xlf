@@ -2172,16 +2172,18 @@
         </context-group>
         <note priority="1" from="description">Simulated args title</note>
       </trans-unit>
-      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html">
+      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html" xml:space="preserve">
         <source>Add an arg</source>
+        <target state="translated">新增參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
         <note priority="1" from="description">Add arg card title</note>
       </trans-unit>
-      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html">
+      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html" xml:space="preserve">
         <source>Arg</source>
+        <target state="translated">參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">41</context>
