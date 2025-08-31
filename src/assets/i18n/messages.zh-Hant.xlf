@@ -2135,40 +2135,45 @@
         </context-group>
         <note priority="1" from="description">Installation type</note>
       </trans-unit>
-      <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html">
+      <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html" xml:space="preserve">
         <source>Docker tag:</source>
+        <target state="translated">‌Docker 標籤：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
         <note priority="1" from="description">Docker tag</note>
       </trans-unit>
-      <trans-unit id="682ca154aba791fe87aa293b29c921247e12da9c" datatype="html">
+      <trans-unit id="682ca154aba791fe87aa293b29c921247e12da9c" datatype="html" xml:space="preserve">
         <source>Commit hash:</source>
+        <target state="translated">提交雜湊值：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
         <note priority="1" from="description">Commit hash</note>
       </trans-unit>
-      <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html">
+      <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html" xml:space="preserve">
         <source>Build date:</source>
+        <target state="translated">建寘日期：</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
         <note priority="1" from="description">Build date</note>
       </trans-unit>
-      <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html">
+      <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html" xml:space="preserve">
         <source>Found a bug or have a suggestion?</source>
+        <target state="translated">‌發現錯誤或有建議？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">About bug prefix</note>
       </trans-unit>
-      <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7" datatype="html">
+      <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7" datatype="html" xml:space="preserve">
         <source>Click here</source>
+        <target state="translated">按此處</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
@@ -2183,104 +2188,117 @@
         </context-group>
         <note priority="1" from="description">About bug click here</note>
       </trans-unit>
-      <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html">
+      <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html" xml:space="preserve">
         <source>to create an issue!</source>
+        <target state="translated">建立問題！‌</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">About bug suffix</note>
       </trans-unit>
-      <trans-unit id="b7ff2e2b909c53abe088fe60b9f4b6ac7757247f" datatype="html">
+      <trans-unit id="b7ff2e2b909c53abe088fe60b9f4b6ac7757247f" datatype="html" xml:space="preserve">
         <source>Register a user</source>
+        <target state="translated">賬戶註冊</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/add-user-dialog/add-user-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Register user dialog title</note>
       </trans-unit>
-      <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40" datatype="html">
+      <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40" datatype="html" xml:space="preserve">
         <source>Modify youtube-dl args</source>
+        <target state="translated">修改 youtube-dl 參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Modify args title</note>
       </trans-unit>
-      <trans-unit id="7fc1946abe2b40f60059c6cd19975d677095fd19" datatype="html">
+      <trans-unit id="7fc1946abe2b40f60059c6cd19975d677095fd19" datatype="html" xml:space="preserve">
         <source>Simulated new args</source>
+        <target state="translated">模擬新參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">Simulated args title</note>
       </trans-unit>
-      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html">
+      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html" xml:space="preserve">
         <source>Add an arg</source>
+        <target state="translated">新增參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
         <note priority="1" from="description">Add arg card title</note>
       </trans-unit>
-      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html">
+      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html" xml:space="preserve">
         <source>Arg</source>
+        <target state="translated">參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">41</context>
         </context-group>
         <note priority="1" from="description">Arg</note>
       </trans-unit>
-      <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23" datatype="html">
+      <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23" datatype="html" xml:space="preserve">
         <source>Search by category</source>
+        <target state="translated">依類別搜尋</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">64</context>
         </context-group>
         <note priority="1" from="description">Search args by category button</note>
       </trans-unit>
-      <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377" datatype="html">
+      <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377" datatype="html" xml:space="preserve">
         <source>Use arg value</source>
+        <target state="translated">使用參數值</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">68</context>
         </context-group>
         <note priority="1" from="description">Use arg value checkbox</note>
       </trans-unit>
-      <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd" datatype="html">
+      <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd" datatype="html" xml:space="preserve">
         <source>Arg value</source>
+        <target state="translated">參數值</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">72</context>
         </context-group>
         <note priority="1" from="description">Arg value</note>
       </trans-unit>
-      <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b" datatype="html">
+      <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b" datatype="html" xml:space="preserve">
         <source>Add arg</source>
+        <target state="translated">新增參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">78</context>
         </context-group>
         <note priority="1" from="description">Search args by category button</note>
       </trans-unit>
-      <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html">
+      <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html" xml:space="preserve">
         <source>Modify</source>
+        <target state="translated">修改</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">91</context>
         </context-group>
         <note priority="1" from="description">Arg modifier modify button</note>
       </trans-unit>
-      <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html">
+      <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html" xml:space="preserve">
         <source>Upload new cookies</source>
+        <target state="translated">上傳新 cookies</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Cookies uploader dialog title</note>
       </trans-unit>
-      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html">
+      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html" xml:space="preserve">
         <source>NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
+        <target state="translated">注意：上傳新 cookies 會覆蓋您之前的 cookies。另請注意，cookies 是全域性的，而非按使用者設定。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">20</context>
