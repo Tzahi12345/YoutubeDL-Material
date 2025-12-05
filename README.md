@@ -10,6 +10,10 @@ YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.gi
 
 Now with [Docker](#Docker) support!
 
+> **⚠️ This is a fork**
+>
+> This repository is a personal fork of [YoutubeDL-Material](https://github.com/Tzahi12345/YoutubeDL-Material). For the original project, please visit the upstream repository.
+
 <hr>
 
 ## Getting Started
