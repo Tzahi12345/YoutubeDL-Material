@@ -130,8 +130,9 @@
         </context-group>
         <note priority="1" from="description">Subscription</note>
       </trans-unit>
-      <trans-unit id="72c341bca7ebacc66e8a13f1a527d500619e89ff" datatype="html">
+      <trans-unit id="72c341bca7ebacc66e8a13f1a527d500619e89ff" datatype="html" xml:space="preserve">
         <source>Stage</source>
+        <target state="translated">Estágio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">36</context>
@@ -342,9 +343,9 @@
           <context context-type="linenumber">131</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2560364143605631750" datatype="html">
+      <trans-unit id="2560364143605631750" datatype="html" xml:space="preserve">
         <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="needs-translation">Erro para <x id="url" equiv-text="download['url']"/></target>
+        <target state="translated">Erro para <x id="url" equiv-text="download['url']"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">238</context>
@@ -387,9 +388,9 @@
         </context-group>
         <note priority="1" from="description">Register</note>
       </trans-unit>
-      <trans-unit id="5009630cdf32ab4f1c78737b9617b8773512c05a" datatype="html">
+      <trans-unit id="5009630cdf32ab4f1c78737b9617b8773512c05a" datatype="html" xml:space="preserve">
         <source>Lines:</source>
-        <target state="needs-translation">Linhas:</target>
+        <target state="translated">Linhas:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.html</context>
           <context context-type="linenumber">22</context>
@@ -3280,9 +3281,9 @@
           <context context-type="linenumber">152</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8425787787095143143" datatype="html">
+      <trans-unit id="8425787787095143143" datatype="html" xml:space="preserve">
         <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
-        <target state="needs-translation">Você gostaria de apagar <x id="selected archives amount" equiv-text="this.selection.selected.length"/>arquivo(s)?</target>
+        <target state="translated">Você gostaria de apagar <x id="selected archives amount" equiv-text="this.selection.selected.length"/>arquivo(s)?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">153</context>
