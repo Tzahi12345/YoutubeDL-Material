@@ -675,16 +675,18 @@
         </context-group>
         <note priority="1" from="description">Both</note>
       </trans-unit>
-      <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html">
+      <trans-unit id="4e1fdb6039c7c6b7630ed70d6d20eb0c9db7d342" datatype="html" xml:space="preserve">
         <source>Video only</source>
+        <target state="translated">Somente vídeo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">55</context>
         </context-group>
         <note priority="1" from="description">Video only</note>
       </trans-unit>
-      <trans-unit id="742202f9ba533bc9a92a1aec2862b0485c5f601b" datatype="html">
+      <trans-unit id="742202f9ba533bc9a92a1aec2862b0485c5f601b" datatype="html" xml:space="preserve">
         <source>Audio only</source>
+        <target state="translated">Somente áudio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">56</context>
@@ -1012,8 +1014,9 @@
         </context-group>
         <note priority="1" from="description">Add to playlist menu item</note>
       </trans-unit>
-      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
+      <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html" xml:space="preserve">
         <source>Delete and redownload</source>
+        <target state="translated">Apagar e baixar novamente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">34</context>
@@ -1036,8 +1039,9 @@
         </context-group>
         <note priority="1" from="description">Delete forever subscription video button</note>
       </trans-unit>
-      <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html">
+      <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html" xml:space="preserve">
         <source>Delete</source>
+        <target state="translated">Apagar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1056,24 +1060,27 @@
         </context-group>
         <note priority="1" from="description">Delete and blacklist video button</note>
       </trans-unit>
-      <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html">
+      <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html" xml:space="preserve">
         <source>Edit</source>
+        <target state="translated">Editar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
           <context context-type="linenumber">43</context>
         </context-group>
         <note priority="1" from="description">Playlist edit button</note>
       </trans-unit>
-      <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6" datatype="html">
+      <trans-unit id="17f0ea5d2d7a262b0e875acc70475f102aee84e6" datatype="html" xml:space="preserve">
         <source>Create a playlist</source>
+        <target state="translated">Criar lista de reprodução</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Create a playlist dialog title</note>
       </trans-unit>
-      <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
+      <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html" xml:space="preserve">
         <source>Name</source>
+        <target state="translated">Nome</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1134,72 +1141,81 @@
         </context-group>
         <note priority="1" from="description">Videos title</note>
       </trans-unit>
-      <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html">
+      <trans-unit id="cec82c0a545f37420d55a9b6c45c20546e82f94e" datatype="html" xml:space="preserve">
         <source>About YoutubeDL-Material</source>
+        <target state="translated">Sobre o YoutubeDL=Material</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">About dialog title</note>
       </trans-unit>
-      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
+      <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html" xml:space="preserve">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
+        <target state="translated">é um aplicativo de download do YouTube de código aberto construído sobre as especificações do Material Design da Google. Você poderá facilmente baixar seus videos favoritos como arquivos de áudio ou vídeo, e também se inscrever em seus canais favoritos e manter suas listas de reprodução atualizadas com seus novos vídeos.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
         <note priority="1" from="description">About first paragraph</note>
       </trans-unit>
-      <trans-unit id="bc0ad0ee6630acb7fcb7802ec79f5a0ee943c1a7" datatype="html">
+      <trans-unit id="bc0ad0ee6630acb7fcb7802ec79f5a0ee943c1a7" datatype="html" xml:space="preserve">
         <source>has some awesome features included! An extensive API, Docker support, and localization (translation) support. Read up on all the supported features by clicking on the GitHub icon above.</source>
+        <target state="translated">temos também incríveis recursos incluídos! Uma API expansiva, suporte ao Docker e suporte a localidade (tradução). Leia sobre todos os recursos incluídos clicando no ícone do GitHub acima.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">15</context>
         </context-group>
         <note priority="1" from="description">About second paragraph</note>
       </trans-unit>
-      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html">
+      <trans-unit id="a45e3b05f0529dc5246d70ef62304c94426d4c81" datatype="html" xml:space="preserve">
         <source>Installed version:</source>
+        <target state="translated">Versão instalada:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
         <note priority="1" from="description">Version label</note>
       </trans-unit>
-      <trans-unit id="e22f3a5351944f3a1a10cfc7da6f65dfbe0037fe" datatype="html">
+      <trans-unit id="e22f3a5351944f3a1a10cfc7da6f65dfbe0037fe" datatype="html" xml:space="preserve">
         <source>Checking for updates...</source>
+        <target state="translated">Procurando por atualizações...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
         <note priority="1" from="description">Checking for updates text</note>
       </trans-unit>
-      <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html">
+      <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html" xml:space="preserve">
         <source>Update available</source>
+        <target state="translated">Atualização disponível</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">View latest update</note>
       </trans-unit>
-      <trans-unit id="189b28aaa19b3c51c6111ad039c4fd5e2a22e370" datatype="html">
+      <trans-unit id="189b28aaa19b3c51c6111ad039c4fd5e2a22e370" datatype="html" xml:space="preserve">
         <source>You can update from the settings menu.</source>
+        <target state="translated">Você pode atualizar pelo menu de configurações.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
         <note priority="1" from="description">Update through settings menu hint</note>
       </trans-unit>
-      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html">
+      <trans-unit id="71e477b9cfa411def3404c5fe57d3986772c54e8" datatype="html" xml:space="preserve">
         <source>Installation type:</source>
+        <target state="translated">Tipo de instalação:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Installation type</note>
       </trans-unit>
-      <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html">
+      <trans-unit id="17afa163f202c8ee76e5b731f4bbdd9920fc4a18" datatype="html" xml:space="preserve">
         <source>Docker tag:</source>
+        <target state="translated">Tag do docker:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">28</context>
@@ -1214,24 +1230,27 @@
         </context-group>
         <note priority="1" from="description">Commit hash</note>
       </trans-unit>
-      <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html">
+      <trans-unit id="4ae1f7f102b455472992ae58bc18426316366760" datatype="html" xml:space="preserve">
         <source>Build date:</source>
+        <target state="translated">Data da build:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
         <note priority="1" from="description">Build date</note>
       </trans-unit>
-      <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html">
+      <trans-unit id="b33536f59b94ec935a16bd6869d836895dc5300c" datatype="html" xml:space="preserve">
         <source>Found a bug or have a suggestion?</source>
+        <target state="translated">Encontrou um bug ou tem uma sugestão?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">About bug prefix</note>
       </trans-unit>
-      <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7" datatype="html">
+      <trans-unit id="9b3cedfa83c6d7acb3210953289d1be4aab115c7" datatype="html" xml:space="preserve">
         <source>Click here</source>
+        <target state="translated">Clique aqui</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1246,16 +1265,18 @@
         </context-group>
         <note priority="1" from="description">About bug click here</note>
       </trans-unit>
-      <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html">
+      <trans-unit id="e1f398f38ff1534303d4bb80bd6cece245f24016" datatype="html" xml:space="preserve">
         <source>to create an issue!</source>
+        <target state="translated">para criar um problema!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">About bug suffix</note>
       </trans-unit>
-      <trans-unit id="b7ff2e2b909c53abe088fe60b9f4b6ac7757247f" datatype="html">
+      <trans-unit id="b7ff2e2b909c53abe088fe60b9f4b6ac7757247f" datatype="html" xml:space="preserve">
         <source>Register a user</source>
+        <target state="translated">Registrar um usuário</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/add-user-dialog/add-user-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1288,72 +1309,81 @@
         </context-group>
         <note priority="1" from="description">Password placeholder</note>
       </trans-unit>
-      <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40" datatype="html">
+      <trans-unit id="d9e83ac17026e70ef6e9c0f3240a3b2450367f40" datatype="html" xml:space="preserve">
         <source>Modify youtube-dl args</source>
+        <target state="translated">Modificar argumentos do youtube-dl</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">1,6</context>
         </context-group>
         <note priority="1" from="description">Modify args title</note>
       </trans-unit>
-      <trans-unit id="7fc1946abe2b40f60059c6cd19975d677095fd19" datatype="html">
+      <trans-unit id="7fc1946abe2b40f60059c6cd19975d677095fd19" datatype="html" xml:space="preserve">
         <source>Simulated new args</source>
+        <target state="translated">Novos argumentos simulados</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
         <note priority="1" from="description">Simulated args title</note>
       </trans-unit>
-      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html">
+      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html" xml:space="preserve">
         <source>Add an arg</source>
+        <target state="translated">Adicionar um argumento</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">34,37</context>
         </context-group>
         <note priority="1" from="description">Add arg card title</note>
       </trans-unit>
-      <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23" datatype="html">
+      <trans-unit id="c8b0e59eb491f2ac7505f0fbab747062e6b32b23" datatype="html" xml:space="preserve">
         <source>Search by category</source>
+        <target state="translated">Busca por categoria</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">60,63</context>
         </context-group>
         <note priority="1" from="description">Search args by category button</note>
       </trans-unit>
-      <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377" datatype="html">
+      <trans-unit id="9eeb91caef5a50256dd87e1c4b7b3e8216479377" datatype="html" xml:space="preserve">
         <source>Use arg value</source>
+        <target state="translated">Usar valor do argumento</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">64,66</context>
         </context-group>
         <note priority="1" from="description">Use arg value checkbox</note>
       </trans-unit>
-      <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd" datatype="html">
+      <trans-unit id="25d8ad5eba2ec24e68295a27d6a4bb9b49e3dacd" datatype="html" xml:space="preserve">
         <source>Arg value</source>
+        <target state="translated">Valor do argumento</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">68,69</context>
         </context-group>
         <note priority="1" from="description">Arg value placeholder</note>
       </trans-unit>
-      <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b" datatype="html">
+      <trans-unit id="7de2451ed3fb8d8b847979bd3f0c740b970f167b" datatype="html" xml:space="preserve">
         <source>Add arg</source>
+        <target state="translated">Adicionar argumento</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">73,77</context>
         </context-group>
         <note priority="1" from="description">Search args by category button</note>
       </trans-unit>
-      <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html">
+      <trans-unit id="b2623aee44b70c9a4ba1fce16c8a593b0a4c7974" datatype="html" xml:space="preserve">
         <source>Modify</source>
+        <target state="translated">Modificar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">85,86</context>
         </context-group>
         <note priority="1" from="description">Arg modifier modify button</note>
       </trans-unit>
-      <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html">
+      <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html" xml:space="preserve">
         <source>Upload new cookies</source>
+        <target state="translated">Upload novos cookies</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1369,40 +1399,45 @@
         </context-group>
         <note priority="1" from="description">Drag and Drop</note>
       </trans-unit>
-      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html">
+      <trans-unit id="a8b7b9c168fd936a75e500806a8c0d7755ef1198" datatype="html" xml:space="preserve">
         <source>NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</source>
+        <target state="translated">NOTA: Ao fazer upload de novos cookies irá reescrever seus cookies anteriores. Observe também que os cookies são válidos para toda a instância, e não para cada usuário.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
         <note priority="1" from="description">Cookies upload warning</note>
       </trans-unit>
-      <trans-unit id="c3b0b86523f1d10e84a71f9b188d54913a11af3b" datatype="html">
+      <trans-unit id="c3b0b86523f1d10e84a71f9b188d54913a11af3b" datatype="html" xml:space="preserve">
         <source>Editing category</source>
+        <target state="translated">Editando categoria</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Editing category dialog title</note>
       </trans-unit>
-      <trans-unit id="2489eefea00931942b91f4a1ae109514b591e2e1" datatype="html">
+      <trans-unit id="2489eefea00931942b91f4a1ae109514b591e2e1" datatype="html" xml:space="preserve">
         <source>Rules</source>
+        <target state="translated">Regras</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">Rules</note>
       </trans-unit>
-      <trans-unit id="e4eeb9106dbcbc91ca1ac3fb4068915998a70f37" datatype="html">
+      <trans-unit id="e4eeb9106dbcbc91ca1ac3fb4068915998a70f37" datatype="html" xml:space="preserve">
         <source>Add new rule</source>
+        <target state="translated">Adicionar nova regra</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
         <note priority="1" from="description">Add new rule tooltip</note>
       </trans-unit>
-      <trans-unit id="98b6ec9ec138186d663e64770267b67334353d63" datatype="html">
+      <trans-unit id="98b6ec9ec138186d663e64770267b67334353d63" datatype="html" xml:space="preserve">
         <source>Custom file output</source>
+        <target state="translated">Arquivo de saída customizado</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">44</context>
@@ -1417,8 +1452,9 @@
         </context-group>
         <note priority="1" from="description">Category custom file output placeholder</note>
       </trans-unit>
-      <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html">
+      <trans-unit id="fcfd4675b4c90f08d18d3abede9a9a4dff4cfdc7" datatype="html" xml:space="preserve">
         <source>Documentation</source>
+        <target state="translated">Documentação</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">47</context>
@@ -1441,8 +1477,9 @@
         </context-group>
         <note priority="1" from="description">Custom output template documentation link</note>
       </trans-unit>
-      <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
+      <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html" xml:space="preserve">
         <source>Path is relative to the config download path. Don't include extension.</source>
+        <target state="translated">O caminho é relativo ao caminho de download da configuração. Não inclua a extensão.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
           <context context-type="linenumber">48</context>
@@ -1461,16 +1498,18 @@
         </context-group>
         <note priority="1" from="description">Custom Output input hint</note>
       </trans-unit>
-      <trans-unit id="3697f8583ea42868aa269489ad366103d94aece7" datatype="html">
+      <trans-unit id="3697f8583ea42868aa269489ad366103d94aece7" datatype="html" xml:space="preserve">
         <source>Editing</source>
+        <target state="translated">Editando</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Edit subscription dialog title prefix</note>
       </trans-unit>
-      <trans-unit id="303e45ffae995c9817e510e38cb969e6bb3adcbf" datatype="html">
+      <trans-unit id="303e45ffae995c9817e510e38cb969e6bb3adcbf" datatype="html" xml:space="preserve">
         <source>(Paused)</source>
+        <target state="translated">(Pausado)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1493,16 +1532,18 @@
         </context-group>
         <note priority="1" from="description">Paused suffix</note>
       </trans-unit>
-      <trans-unit id="07db550ae114d9faad3a0cbb68bcc16ab6cd31fc" datatype="html">
+      <trans-unit id="07db550ae114d9faad3a0cbb68bcc16ab6cd31fc" datatype="html" xml:space="preserve">
         <source>Paused</source>
+        <target state="translated">Pausado</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">7</context>
         </context-group>
         <note priority="1" from="description">Paused subscription setting</note>
       </trans-unit>
-      <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html">
+      <trans-unit id="ea30873bd3f0d5e4fb2378eec3f0a1db77634a28" datatype="html" xml:space="preserve">
         <source>Download all uploads</source>
+        <target state="translated">Download todos os uploads</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1513,8 +1554,9 @@
         </context-group>
         <note priority="1" from="description">Download all uploads subscription setting</note>
       </trans-unit>
-      <trans-unit id="28a678e9cabf86e44c32594c43fa0e890135c20f" datatype="html">
+      <trans-unit id="28a678e9cabf86e44c32594c43fa0e890135c20f" datatype="html" xml:space="preserve">
         <source>Download videos uploaded in the last</source>
+        <target state="translated">Download vídeos que foram enviados recentemente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">13</context>
@@ -1525,8 +1567,9 @@
         </context-group>
         <note priority="1" from="description">Download time range prefix</note>
       </trans-unit>
-      <trans-unit id="c76a955642714b8949ff3e4b4990864a2e2cac95" datatype="html">
+      <trans-unit id="c76a955642714b8949ff3e4b4990864a2e2cac95" datatype="html" xml:space="preserve">
         <source>Audio-only mode</source>
+        <target state="translated">Modo de somente áudio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1537,8 +1580,9 @@
         </context-group>
         <note priority="1" from="description">Streaming-only mode</note>
       </trans-unit>
-      <trans-unit id="d641b8fa5ac5e85114c733b1f7de6976bd091f70" datatype="html">
+      <trans-unit id="d641b8fa5ac5e85114c733b1f7de6976bd091f70" datatype="html" xml:space="preserve">
         <source>Max quality</source>
+        <target state="translated">Máxima qualidade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">32</context>
@@ -1561,8 +1605,9 @@
         </context-group>
         <note priority="1" from="description">Streaming-only mode</note>
       </trans-unit>
-      <trans-unit id="ad2f8ac8b7de7945b80c8e424484da94e597125f" datatype="html">
+      <trans-unit id="ad2f8ac8b7de7945b80c8e424484da94e597125f" datatype="html" xml:space="preserve">
         <source>Custom args</source>
+        <target state="translated">Argumentos customizados</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">44</context>
@@ -1577,8 +1622,9 @@
         </context-group>
         <note priority="1" from="description">Subscription custom args placeholder</note>
       </trans-unit>
-      <trans-unit id="f432e1a8d6adb12e612127978ce2e0ced933959c" datatype="html">
+      <trans-unit id="f432e1a8d6adb12e612127978ce2e0ced933959c" datatype="html" xml:space="preserve">
         <source>These are added after the standard args.</source>
+        <target state="translated">Esses argumentos são adicionados após os argumentos padrão.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
           <context context-type="linenumber">47</context>
@@ -1589,8 +1635,9 @@
         </context-group>
         <note priority="1" from="description">Custom args hint</note>
       </trans-unit>
-      <trans-unit id="4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1" datatype="html">
+      <trans-unit id="4f389e41e4592f7f9bb76abdd8af4afdfb13f4f1" datatype="html" xml:space="preserve">
         <source>Modify playlist</source>
+        <target state="translated">Modificar a lista de reprodução</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/modify-playlist/modify-playlist.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1631,72 +1678,81 @@
         </context-group>
         <note priority="1" from="description">Add content</note>
       </trans-unit>
-      <trans-unit id="d5cec7468241d72cafd86ad1af6d55b09a6e3ae5" datatype="html">
+      <trans-unit id="d5cec7468241d72cafd86ad1af6d55b09a6e3ae5" datatype="html" xml:space="preserve">
         <source>Restore</source>
+        <target state="translated">Restaurar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
           <context context-type="linenumber">25</context>
         </context-group>
         <note priority="1" from="description">Restore button</note>
       </trans-unit>
-      <trans-unit id="a1dbca87b9f36d2b06a5cbcffb5814c4ae9b798a" datatype="html">
+      <trans-unit id="a1dbca87b9f36d2b06a5cbcffb5814c4ae9b798a" datatype="html" xml:space="preserve">
         <source>Create admin account</source>
+        <target state="translated">Criar conta administrador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Create admin account dialog title</note>
       </trans-unit>
-      <trans-unit id="2d2adf3ca26a676bca2269295b7455a26fd26980" datatype="html">
+      <trans-unit id="2d2adf3ca26a676bca2269295b7455a26fd26980" datatype="html" xml:space="preserve">
         <source>No default admin account detected. This will create and set the password for an admin account with the user name as 'admin'.</source>
+        <target state="translated">Nenhuma conta administradora detectada. Isto irá criar e definir uma senha para a conta administrador com o nome de usuário como 'admin'.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
         <note priority="1" from="description">No default admin detected explanation</note>
       </trans-unit>
-      <trans-unit id="70a67e04629f6d412db0a12d51820b480788d795" datatype="html">
+      <trans-unit id="70a67e04629f6d412db0a12d51820b480788d795" datatype="html" xml:space="preserve">
         <source>Create</source>
+        <target state="translated">Criar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/set-default-admin-dialog/set-default-admin-dialog.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">Create</note>
       </trans-unit>
-      <trans-unit id="a249a5ae13e0835383885aaf697d2890cc3e53e9" datatype="html">
+      <trans-unit id="a249a5ae13e0835383885aaf697d2890cc3e53e9" datatype="html" xml:space="preserve">
         <source>Share playlist</source>
+        <target state="translated">Compartilhar lista de reprodução</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
         <note priority="1" from="description">Share playlist dialog title</note>
       </trans-unit>
-      <trans-unit id="94e2674467c7a08a291f9bd97ce694d4e47ffd62" datatype="html">
+      <trans-unit id="94e2674467c7a08a291f9bd97ce694d4e47ffd62" datatype="html" xml:space="preserve">
         <source>Share file</source>
+        <target state="translated">Compartilhar arquivo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">Share video dialog title</note>
       </trans-unit>
-      <trans-unit id="1f6d14a780a37a97899dc611881e6bc971268285" datatype="html">
+      <trans-unit id="1f6d14a780a37a97899dc611881e6bc971268285" datatype="html" xml:space="preserve">
         <source>Enable sharing</source>
+        <target state="translated">Habilitar compartilhamento</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">Enable sharing checkbox</note>
       </trans-unit>
-      <trans-unit id="6580b6a950d952df847cb3d8e7176720a740adc8" datatype="html">
+      <trans-unit id="6580b6a950d952df847cb3d8e7176720a740adc8" datatype="html" xml:space="preserve">
         <source>Use timestamp</source>
+        <target state="translated">Usar marcação de data/hora</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">12</context>
         </context-group>
         <note priority="1" from="description">Use timestamp</note>
       </trans-unit>
-      <trans-unit id="4f2ed9e71a7c981db3e50ae2fedb28aff2ec4e6c" datatype="html">
+      <trans-unit id="4f2ed9e71a7c981db3e50ae2fedb28aff2ec4e6c" datatype="html" xml:space="preserve">
         <source>Seconds</source>
+        <target state="translated">Segundos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.html</context>
           <context context-type="linenumber">14</context>
@@ -1721,8 +1777,9 @@
         </context-group>
         <note priority="1" from="description">Subscribe dialog title</note>
       </trans-unit>
-      <trans-unit id="801b98c6f02fe3b32f6afa3ee854c99ed83474e6" datatype="html">
+      <trans-unit id="801b98c6f02fe3b32f6afa3ee854c99ed83474e6" datatype="html" xml:space="preserve">
         <source>URL</source>
+        <target state="translated">URL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1751,24 +1808,27 @@
         </context-group>
         <note priority="1" from="description">Subscription custom name placeholder</note>
       </trans-unit>
-      <trans-unit id="d0336848b0c375a1c25ba369b3481ee383217a4f" datatype="html">
+      <trans-unit id="d0336848b0c375a1c25ba369b3481ee383217a4f" datatype="html" xml:space="preserve">
         <source>Subscribe</source>
+        <target state="translated">Inscrever-se</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
           <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">Subscribe button</note>
       </trans-unit>
-      <trans-unit id="e78c0d60ac39787f62c9159646fe0b3c1ed55a1d" datatype="html">
+      <trans-unit id="e78c0d60ac39787f62c9159646fe0b3c1ed55a1d" datatype="html" xml:space="preserve">
         <source>Type:</source>
+        <target state="translated">Tipo:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">5</context>
         </context-group>
         <note priority="1" from="description">Subscription type property</note>
       </trans-unit>
-      <trans-unit id="c52db455cca9109ee47e1a612c3f4117c09eb71b" datatype="html">
+      <trans-unit id="c52db455cca9109ee47e1a612c3f4117c09eb71b" datatype="html" xml:space="preserve">
         <source>URL:</source>
+        <target state="translated">URL:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1779,88 +1839,99 @@
         </context-group>
         <note priority="1" from="description">Subscription URL property</note>
       </trans-unit>
-      <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1" datatype="html">
+      <trans-unit id="ca3dbbc7f3e011bffe32a10a3ea45cc84f30ecf1" datatype="html" xml:space="preserve">
         <source>ID:</source>
+        <target state="translated">ID:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
         <note priority="1" from="description">Subscription ID property</note>
       </trans-unit>
-      <trans-unit id="a44d86aa1e6c20ced07aca3a7c081d8db9ded1c6" datatype="html">
+      <trans-unit id="a44d86aa1e6c20ced07aca3a7c081d8db9ded1c6" datatype="html" xml:space="preserve">
         <source>Archive:</source>
+        <target state="translated">Arquivo:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">Subscription ID property</note>
       </trans-unit>
-      <trans-unit id="8efc77bf327659c0fec1f518cf48a98cdcd9dddf" datatype="html">
+      <trans-unit id="8efc77bf327659c0fec1f518cf48a98cdcd9dddf" datatype="html" xml:space="preserve">
         <source>Export Archive</source>
+        <target state="translated">Exportar Arquivo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
         <note priority="1" from="description">Export Archive button</note>
       </trans-unit>
-      <trans-unit id="3042bd3ad8dffcfeca5fd1ae6159fd1047434e95" datatype="html">
+      <trans-unit id="3042bd3ad8dffcfeca5fd1ae6159fd1047434e95" datatype="html" xml:space="preserve">
         <source>Unsubscribe</source>
+        <target state="translated">Cancelar inscrição</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.html</context>
           <context context-type="linenumber">26</context>
         </context-group>
         <note priority="1" from="description">Unsubscribe button</note>
       </trans-unit>
-      <trans-unit id="91ecce65f1d23f9419d1c953cd6b7bc7f91c110e" datatype="html">
+      <trans-unit id="91ecce65f1d23f9419d1c953cd6b7bc7f91c110e" datatype="html" xml:space="preserve">
         <source>Updater</source>
+        <target state="translated">Atualizador</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Update progress dialog title</note>
       </trans-unit>
-      <trans-unit id="998793c78895d53576f462054f13d6e515e923d9" datatype="html">
+      <trans-unit id="998793c78895d53576f462054f13d6e515e923d9" datatype="html" xml:space="preserve">
         <source>Update task schedule</source>
+        <target state="translated">Atualizar cronograma de tarefas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">Update task schedule</note>
       </trans-unit>
-      <trans-unit id="f50a33d3c339f8f4a465141f8caa5d2d8c005251" datatype="html">
+      <trans-unit id="f50a33d3c339f8f4a465141f8caa5d2d8c005251" datatype="html" xml:space="preserve">
         <source>Enabled</source>
+        <target state="translated">Habilitado</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">7</context>
         </context-group>
         <note priority="1" from="description">Enabled</note>
       </trans-unit>
-      <trans-unit id="67aed6c588eb854f2f30ef642e85147da0027a61" datatype="html">
+      <trans-unit id="67aed6c588eb854f2f30ef642e85147da0027a61" datatype="html" xml:space="preserve">
         <source>Recurring</source>
+        <target state="translated">Recorrente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="description">Recurring</note>
       </trans-unit>
-      <trans-unit id="047f50bc5b5d17b5bec0196355953e1a5c590ddb" datatype="html">
+      <trans-unit id="047f50bc5b5d17b5bec0196355953e1a5c590ddb" datatype="html" xml:space="preserve">
         <source>Update</source>
+        <target state="translated">Atualizar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
           <context context-type="linenumber">52</context>
         </context-group>
         <note priority="1" from="description">Update button</note>
       </trans-unit>
-      <trans-unit id="42ff677ec14f111e88bd6cdd30145378e994d1bf" datatype="html">
+      <trans-unit id="42ff677ec14f111e88bd6cdd30145378e994d1bf" datatype="html" xml:space="preserve">
         <source>Your Profile</source>
+        <target state="translated">Seu Perfil</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">User profile dialog title</note>
       </trans-unit>
-      <trans-unit id="616e206cb4f25bd5885fc35925365e43cf5fb929" datatype="html">
+      <trans-unit id="616e206cb4f25bd5885fc35925365e43cf5fb929" datatype="html" xml:space="preserve">
         <source>Name:</source>
+        <target state="translated">Nome:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1871,16 +1942,18 @@
         </context-group>
         <note priority="1" from="description">Name</note>
       </trans-unit>
-      <trans-unit id="ac9d09de42edca1296371e4d801349c9096ac8de" datatype="html">
+      <trans-unit id="ac9d09de42edca1296371e4d801349c9096ac8de" datatype="html" xml:space="preserve">
         <source>UID:</source>
+        <target state="translated">UID:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="description">UID</note>
       </trans-unit>
-      <trans-unit id="a5ed099ffc9e96f6970df843289ade8a7d20ab9f" datatype="html">
+      <trans-unit id="a5ed099ffc9e96f6970df843289ade8a7d20ab9f" datatype="html" xml:space="preserve">
         <source>Created:</source>
+        <target state="translated">Criado:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -1895,8 +1968,9 @@
         </context-group>
         <note priority="1" from="description">Not logged in notification</note>
       </trans-unit>
-      <trans-unit id="bb694b49d408265c91c62799c2b3a7e3151c824d" datatype="html">
+      <trans-unit id="bb694b49d408265c91c62799c2b3a7e3151c824d" datatype="html" xml:space="preserve">
         <source>Logout</source>
+        <target state="translated">Sair</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">28</context>
@@ -1911,16 +1985,18 @@
         </context-group>
         <note priority="1" from="description">Video ID property</note>
       </trans-unit>
-      <trans-unit id="109c6f4a5e46efb933612ededfaf52a13178b7e0" datatype="html">
+      <trans-unit id="109c6f4a5e46efb933612ededfaf52a13178b7e0" datatype="html" xml:space="preserve">
         <source>File size:</source>
+        <target state="translated">Tamanho do arquivo:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">17</context>
         </context-group>
         <note priority="1" from="description">Video file size property</note>
       </trans-unit>
-      <trans-unit id="bd630d8669b16e5f264ec4649d9b469fe03e5ff4" datatype="html">
+      <trans-unit id="bd630d8669b16e5f264ec4649d9b469fe03e5ff4" datatype="html" xml:space="preserve">
         <source>Path:</source>
+        <target state="translated">Caminho:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1943,128 +2019,144 @@
         </context-group>
         <note priority="1" from="description">Category property</note>
       </trans-unit>
-      <trans-unit id="a38ae1082fec79ba1f379978337385a539a28e73" datatype="html">
+      <trans-unit id="a38ae1082fec79ba1f379978337385a539a28e73" datatype="html" xml:space="preserve">
         <source>Quality</source>
+        <target state="translated">Qualidade</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">19,20</context>
         </context-group>
         <note priority="1" from="description">Quality select label</note>
       </trans-unit>
-      <trans-unit id="4be966a9dcfbc9b54dfcc604b831c0289f847fa4" datatype="html">
+      <trans-unit id="4be966a9dcfbc9b54dfcc604b831c0289f847fa4" datatype="html" xml:space="preserve">
         <source>Use URL</source>
+        <target state="translated">Usar URL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">51,53</context>
         </context-group>
         <note priority="1" from="description">YT search Use URL button for searched video</note>
       </trans-unit>
-      <trans-unit id="d3f02f845e62cebd75fde451ab8479d2a8ad784d" datatype="html">
+      <trans-unit id="d3f02f845e62cebd75fde451ab8479d2a8ad784d" datatype="html" xml:space="preserve">
         <source>View</source>
+        <target state="translated">Vizualizar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">55,57</context>
         </context-group>
         <note priority="1" from="description">YT search View button for searched video</note>
       </trans-unit>
-      <trans-unit id="4a9889d36910edc8323d7bab60858ab3da6d91df" datatype="html">
+      <trans-unit id="4a9889d36910edc8323d7bab60858ab3da6d91df" datatype="html" xml:space="preserve">
         <source>Only Audio</source>
+        <target state="translated">Áudio Somente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">65,67</context>
         </context-group>
         <note priority="1" from="description">Only Audio checkbox</note>
       </trans-unit>
-      <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html">
+      <trans-unit id="49e09cce4426975ba06c1667063d2c1df9c94362" datatype="html" xml:space="preserve">
         <source>Autoplay</source>
+        <target state="translated">Auto-reprodução</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">70,72</context>
         </context-group>
         <note priority="1" from="description">Autoplay checkbox</note>
       </trans-unit>
-      <trans-unit id="6a21ba5fb0ac804a525bf9ab168038c3ee88e661" datatype="html">
+      <trans-unit id="6a21ba5fb0ac804a525bf9ab168038c3ee88e661" datatype="html" xml:space="preserve">
         <source>Download</source>
+        <target state="translated">Download</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">79,82</context>
         </context-group>
         <note priority="1" from="description">Main download button</note>
       </trans-unit>
-      <trans-unit id="6a3777f913cf3f288664f0632b9f24794fdcc24e" datatype="html">
+      <trans-unit id="6a3777f913cf3f288664f0632b9f24794fdcc24e" datatype="html" xml:space="preserve">
         <source>Cancel</source>
+        <target state="translated">Cancelar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">84,87</context>
         </context-group>
         <note priority="1" from="description">Cancel download button</note>
       </trans-unit>
-      <trans-unit id="322ed150e02666fe2259c5b4614eac7066f4ffa0" datatype="html">
+      <trans-unit id="322ed150e02666fe2259c5b4614eac7066f4ffa0" datatype="html" xml:space="preserve">
         <source>Advanced</source>
+        <target state="translated">Avançado</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">96,99</context>
         </context-group>
         <note priority="1" from="description">Advanced download mode panel</note>
       </trans-unit>
-      <trans-unit id="b7ffe7c6586d6f3f18a9246806a7c7d5538ab43e" datatype="html">
+      <trans-unit id="b7ffe7c6586d6f3f18a9246806a7c7d5538ab43e" datatype="html" xml:space="preserve">
         <source>Simulated command:</source>
+        <target state="translated">Comando simulado:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">102,104</context>
         </context-group>
         <note priority="1" from="description">Simulated command label</note>
       </trans-unit>
-      <trans-unit id="4e4c721129466be9c3862294dc40241b64045998" datatype="html">
+      <trans-unit id="4e4c721129466be9c3862294dc40241b64045998" datatype="html" xml:space="preserve">
         <source>Use custom args</source>
+        <target state="translated">Usar argumentos customizados</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">110,112</context>
         </context-group>
         <note priority="1" from="description">Use custom args checkbox</note>
       </trans-unit>
-      <trans-unit id="87fd779c638aa5d04e006cd61890b0584c2da385" datatype="html">
+      <trans-unit id="87fd779c638aa5d04e006cd61890b0584c2da385" datatype="html" xml:space="preserve">
         <source>Replace args</source>
+        <target state="translated">Substituir argumentos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">116,118</context>
         </context-group>
         <note priority="1" from="description">Replace args</note>
       </trans-unit>
-      <trans-unit id="a6911c2157f1b775284bbe9654ce5eb30cf45d7f" datatype="html">
+      <trans-unit id="a6911c2157f1b775284bbe9654ce5eb30cf45d7f" datatype="html" xml:space="preserve">
         <source>No need to include URL, just everything after. Args are delimited using two commas like so: ,,</source>
+        <target state="translated">Não é necessário incluir a URL, apenas tudo o que vier depois. Os argumentos são delimitados por duas vírgulas, assim: ,,</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">123,125</context>
         </context-group>
         <note priority="1" from="description">Custom Args input hint</note>
       </trans-unit>
-      <trans-unit id="3a92a3443c65a52f37ca7efb8f453b35dbefbf29" datatype="html">
+      <trans-unit id="3a92a3443c65a52f37ca7efb8f453b35dbefbf29" datatype="html" xml:space="preserve">
         <source>Use custom output</source>
+        <target state="translated">Usar saida customizada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">131,133</context>
         </context-group>
         <note priority="1" from="description">Use custom output checkbox</note>
       </trans-unit>
-      <trans-unit id="d9c02face477f2f9cdaae318ccee5f89856851fb" datatype="html">
+      <trans-unit id="d9c02face477f2f9cdaae318ccee5f89856851fb" datatype="html" xml:space="preserve">
         <source>Custom output</source>
+        <target state="translated">Saida customizada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">135,136</context>
         </context-group>
         <note priority="1" from="description">Custom output placeholder</note>
       </trans-unit>
-      <trans-unit id="8fad10737d3e3735a6699a4d89cbf6c20f6bb55f" datatype="html">
+      <trans-unit id="8fad10737d3e3735a6699a4d89cbf6c20f6bb55f" datatype="html" xml:space="preserve">
         <source>Use authentication</source>
+        <target state="translated">Usar altenticação</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">145,147</context>
         </context-group>
         <note priority="1" from="description">Use authentication checkbox</note>
       </trans-unit>
-      <trans-unit id="08c74dc9762957593b91f6eb5d65efdfc975bf48" datatype="html">
+      <trans-unit id="08c74dc9762957593b91f6eb5d65efdfc975bf48" datatype="html" xml:space="preserve">
         <source>Username</source>
+        <target state="translated">Nome do usuário</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.html</context>
           <context context-type="linenumber">149,151</context>
@@ -2246,8 +2338,9 @@
         </context-group>
         <note priority="1" from="description">Allow theme change setting</note>
       </trans-unit>
-      <trans-unit id="fe46ccaae902ce974e2441abe752399288298619" datatype="html">
+      <trans-unit id="fe46ccaae902ce974e2441abe752399288298619" datatype="html" xml:space="preserve">
         <source>Language</source>
+        <target state="translated">Idioma</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">81</context>
@@ -3865,6 +3958,318 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/share-media-dialog/share-media-dialog.component.ts</context>
           <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9203653061903371757" datatype="html" xml:space="preserve">
+        <source>Playlist updated successfully.</source>
+        <target state="translated">Lista de reprodução atualizada com sucesso.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/create-playlist/create-playlist.component.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html" xml:space="preserve">
+        <source>Arg</source>
+        <target state="translated">Argumento</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1709839462010459086" datatype="html" xml:space="preserve">
+        <source>Cookies successfully uploaded!</source>
+        <target state="translated">Upload de cookies com sucesso!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/cookies-uploader-dialog/cookies-uploader-dialog.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c35ef0f03a863d33b04aae6807f140397a50f491" datatype="html" xml:space="preserve">
+        <source>Generate RSS URL</source>
+        <target state="translated">Gerar URL RSS</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">273</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1a9b415816364f554ee411020e65219092655271" datatype="html" xml:space="preserve">
+        <source>Title filter</source>
+        <target state="translated">Filtro de título</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9aa62bf1a535a97a4d752bbc5cf1c31af0f0c1f7" datatype="html" xml:space="preserve">
+        <source>Supports regex</source>
+        <target state="translated">Suporta o regex</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e08a77594f3d89311cdf6da5090044270909c194" datatype="html" xml:space="preserve">
+        <source>User</source>
+        <target state="translated">Usuário</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c2faa86201eab08b5b39b5437f96ab9432e125e7" datatype="html" xml:space="preserve">
+        <source>Item limit</source>
+        <target state="translated">Limite de itens</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b78a98bc54259a29cf6250dbaeab5fe11fae91cf" datatype="html" xml:space="preserve">
+        <source>Favorited</source>
+        <target state="translated">Favoritado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/generate-rss-url/generate-rss-url.component.html</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3480433876298276350" datatype="html" xml:space="preserve">
+        <source>Database successfully restored!</source>
+        <target state="translated">Base de dados restaurada com sucesso!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="643438049907907768" datatype="html" xml:space="preserve">
+        <source>Failed to restore database! See logs for more info.</source>
+        <target state="translated">Falha ao restaurar banco de dados! Veja os registros para mais informações.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1946323844380374711" datatype="html" xml:space="preserve">
+        <source>Failed to restore database! See browser console for more info.</source>
+        <target state="translated">Falha ao restaurar banco de dados! Veja o navegador do console para mais informações.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5397815846940616259" datatype="html" xml:space="preserve">
+        <source>You must specify an amount of time</source>
+        <target state="translated">Você deve especificar um período de tempo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3544790314111256717" datatype="html" xml:space="preserve">
+        <source>ERROR:</source>
+        <target state="translated">ERRO:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.ts</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8336047719608684263" datatype="html" xml:space="preserve">
+        <source>Unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/></source>
+        <target state="translated">Cancelar inscrição de <x id="subscription name" equiv-text="this.sub['name']"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="784837056777689544" datatype="html" xml:space="preserve">
+        <source>Would you like to unsubscribe from <x id="subscription name" equiv-text="this.sub['name']"/>?</source>
+        <target state="translated">Deseja cancelar a assinatura de <x id="subscription name" equiv-text="this.sub['name']"/>?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1698114086921246480" datatype="html" xml:space="preserve">
+        <source>Unsubscribe</source>
+        <target state="translated">Cancelar inscrição</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscription-info-dialog/subscription-info-dialog.component.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2876893175497409225" datatype="html" xml:space="preserve">
+        <source>Update failed. Check logs for more details.</source>
+        <target state="translated">A atualização falhou. Verifique os registros para obter mais detalhes.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-progress-dialog/update-progress-dialog.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3317b8688eb2cfabc4021cd7b2926b32f3864ad2" datatype="html" xml:space="preserve">
+        <source>Choose a date</source>
+        <target state="translated">Escolher a data</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1091872159779006651" datatype="html" xml:space="preserve">
+        <source>You must input a time!</source>
+        <target state="translated">Você precisa inserir um horário!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5ac5a0e5ffe8e5623b40696f4c2403c17349271f" datatype="html" xml:space="preserve">
+        <source>Sidepanel mode</source>
+        <target state="translated">Modo de painel lateral</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="338b44701a53ce3ef2f36abfb56f89c3edfa9eab" datatype="html" xml:space="preserve">
+        <source>Over</source>
+        <target state="translated">Acima</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b6399391e706e2d7b7b7880eb5630e4e6f49728c" datatype="html" xml:space="preserve">
+        <source>Side</source>
+        <target state="translated">Lado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1f2809e6a99d511fdb6eaf041d785fe54d0680cc" datatype="html" xml:space="preserve">
+        <source>File card size</source>
+        <target state="translated">Tamanho do cartão de arquivo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="e0a11fbea353b1ce1131161774e4a3e10bcb99b1" datatype="html" xml:space="preserve">
+        <source>Large</source>
+        <target state="translated">Grande</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="378c072ce05889c9771718d05106e7685fcd3507" datatype="html" xml:space="preserve">
+        <source>Medium</source>
+        <target state="translated">Médio</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9a865c2922f5c01899d06c472dba2e5bd63bcff9" datatype="html" xml:space="preserve">
+        <source>Small</source>
+        <target state="translated">Pequeno</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7180231139026789468" datatype="html" xml:space="preserve">
+        <source>Language successfully changed! Reload to update the page.</source>
+        <target state="translated">Idioma alterado com sucesso! Recarregue para atualizar a página.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="f8c7be184fefd6750e4e5d0c7a90e74721c58f8a" datatype="html" xml:space="preserve">
+        <source>Uploader</source>
+        <target state="translated">Uploader</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="22bac71dbdc1ac62607135994f81cca8094cb251" datatype="html" xml:space="preserve">
+        <source>Upload date</source>
+        <target state="translated">Data do upload</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d49d5d6786b69d140e20cfddfe29690a19641a88" datatype="html" xml:space="preserve">
+        <source>Thumbnail path</source>
+        <target state="translated">Caminho da miniatura</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="f4003b626fcbf3a871778d4dba166e109d02f87c" datatype="html" xml:space="preserve">
+        <source>Thumbnail URL</source>
+        <target state="translated">URL da miniatura</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="607de17c2a755f65775881c19e276e7c933bcf94" datatype="html" xml:space="preserve">
+        <source>Category</source>
+        <target state="translated">Categoria</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3f741a2c015bb728088b630296ca401e823c6af8" datatype="html" xml:space="preserve">
+        <source>View count</source>
+        <target state="translated">Contagem de vizualizações</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="989f5aa799ee9672675d68109bff29d1d88ebd49" datatype="html" xml:space="preserve">
+        <source>Local view count</source>
+        <target state="translated">Contagem de vizualizações local</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9fa37704969eeebd496a172c5077370f569df3ae" datatype="html" xml:space="preserve">
+        <source>Resolution:</source>
+        <target state="translated">Resolução:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9fc54db2830fbbd332b1adebe28e9283069107ef" datatype="html" xml:space="preserve">
+        <source>Audio bitrate:</source>
+        <target state="translated">Taxa de bits de áudio:</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d57c023a4cf63b2f12c10328c15b636ff18929aa" datatype="html" xml:space="preserve">
+        <source>Best</source>
+        <target state="translated">Melhor</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/main/main.component.html</context>
+          <context context-type="linenumber">24,25</context>
         </context-group>
       </trans-unit>
     </body>
