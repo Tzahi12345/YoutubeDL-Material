@@ -16,15 +16,14 @@ import { MatSelectionListChange } from '@angular/material/list';
 })
 export class RecentVideosComponent implements OnInit {
 
-  @Input() usePaginator = true;
+  @Input() config: RecentVideosConfig = {
+    usePaginator: true,
+    selectMode: false,
+    sub_id: null,
+    customHeader: null,
+    selectedIndex: 1
+  };
 
-  // File selection
-
-  @Input() selectMode = false;
-  @Input() defaultSelected: DatabaseFile[] = [];
-  @Input() sub_id = null;
-  @Input() customHeader = null;
-  @Input() selectedIndex = 1;
   @Output() fileSelectionEmitter = new EventEmitter<{new_selection: string[], thumbnailURL: string}>();
 
   pageSize = 10;
@@ -69,7 +68,7 @@ export class RecentVideosComponent implements OnInit {
   selectedFilters = [];
 
   sortProperty = 'registered';
-  
+
   playlists = null;
 
   @ViewChild('paginator') paginator: MatPaginator
@@ -90,9 +89,10 @@ export class RecentVideosComponent implements OnInit {
 
     // set file type filter to cached value
     const cached_file_filter = localStorage.getItem('file_filter');
-    if (this.usePaginator && cached_file_filter) {
-      this.selectedFilters = JSON.parse(cached_file_filter)
-    } else {
+    if (this.config.usePaginator && cached_file_filter) {
+      this.selectedFilters = JSON.parse(cached_file_filter);
+    }
+   else {
       this.selectedFilters = [];
     }
 
@@ -104,11 +104,11 @@ export class RecentVideosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.sub_id) {
-      // subscriptions can't download both audio and video (for now), so don't let users filter for these
+    if (this.config.sub_id) {
       delete this.fileFilters['audio_only'];
       delete this.fileFilters['video_only'];
     }
+
 
     if (this.postsService.initialized) {
       this.getAllFiles();
@@ -134,9 +134,9 @@ export class RecentVideosComponent implements OnInit {
       }
     });
 
-    
+
     this.selected_data = this.defaultSelected.map(file => file.uid);
-    this.selected_data_objs = this.defaultSelected;    
+    this.selected_data_objs = this.defaultSelected;
 
     this.searchChangedSubject
       .debounceTime(500)
@@ -169,7 +169,7 @@ export class RecentVideosComponent implements OnInit {
     localStorage.setItem('recent_videos_sort_order', value['order'] === -1 ? 'descending' : 'ascending');
     this.descendingMode = value['order'] === -1;
     this.sortProperty = value['by'];
-    
+
     this.getAllFiles();
   }
 
@@ -248,7 +248,7 @@ export class RecentVideosComponent implements OnInit {
     localStorage.setItem('player_navigator', this.router.url);
     if (file.sub_id) {
         !new_tab ? this.router.navigate(['/player', {uid: file.uid,
-                                        type: file.isAudio ? 'audio' : 'video'}]) 
+                                        type: file.isAudio ? 'audio' : 'video'}])
                  : window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
     } else {
       // normal files
