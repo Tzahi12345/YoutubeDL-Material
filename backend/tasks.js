@@ -54,6 +54,24 @@ const TASKS = {
 }
 const TASK_JOBS = new Map();
 
+// Backwards-compatible job access for tests/callers while storing jobs in a Map.
+for (const taskKey of Object.keys(TASKS)) {
+    Object.defineProperty(TASKS[taskKey], 'job', {
+        enumerable: true,
+        configurable: true,
+        get() {
+            return TASK_JOBS.get(taskKey) || null;
+        },
+        set(value) {
+            if (!value) {
+                TASK_JOBS.delete(taskKey);
+                return;
+            }
+            TASK_JOBS.set(taskKey, value);
+        }
+    });
+}
+
 const defaultOptions = {
     all: {
         auto_confirm: false
