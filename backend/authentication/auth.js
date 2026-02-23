@@ -130,7 +130,13 @@ exports.registerUser = async (userid, username, plaintextPassword) => {
 exports.deleteUser = async (uid) => {
   let success = false;
   let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
-  const user_folder = path.join(__dirname, usersFileFolder, uid);
+  const usersBaseFolder = path.join(__dirname, usersFileFolder);
+  const user_folder = path.join(usersBaseFolder, uid);
+  const relativeUserFolder = path.relative(usersBaseFolder, user_folder);
+  if (relativeUserFolder.startsWith('..') || path.isAbsolute(relativeUserFolder)) {
+      logger.error(`Refusing to delete user folder with unsafe uid path: ${uid}`);
+      return false;
+  }
   const user_db_obj = await db_api.getRecord('users', {uid: uid});
   if (user_db_obj) {
       // user exists, let's delete

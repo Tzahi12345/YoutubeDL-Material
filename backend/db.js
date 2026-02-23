@@ -727,7 +727,13 @@ exports.backupDB = async () => {
 }
 
 exports.restoreDB = async (file_name) => {
-    const path_to_backup = path.join('appdata', 'db_backup', file_name);
+    const backup_dir = path.join('appdata', 'db_backup');
+    const path_to_backup = path.join(backup_dir, file_name);
+    const relative_backup_path = path.relative(backup_dir, path_to_backup);
+    if (!file_name || path.basename(file_name) !== file_name || relative_backup_path.startsWith('..') || path.isAbsolute(relative_backup_path)) {
+        logger.error(`Failed to restore DB! Unsafe backup file name '${file_name}'.`);
+        return false;
+    }
 
     logger.debug('Reading database backup file.');
     const table_to_records = fs.readJSONSync(path_to_backup);

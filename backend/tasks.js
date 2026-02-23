@@ -201,6 +201,10 @@ exports.executeConfirm = async (task_key) => {
 
 exports.updateTaskSchedule = async (task_key, schedule) => {
     logger.verbose(`Updating schedule for task ${task_key}`);
+    if (!Object.prototype.hasOwnProperty.call(TASKS, task_key)) {
+        logger.error(`Cannot update schedule for unknown task key '${task_key}'.`);
+        return false;
+    }
     await db_api.updateRecord('tasks', {key: task_key}, {schedule: schedule});
     if (TASKS[task_key]['job']) {
         TASKS[task_key]['job'].cancel();

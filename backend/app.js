@@ -409,16 +409,33 @@ async function downloadReleaseFiles(tag) {
                 // get public folder files
                 const actualFileName = fileName.replace('youtubedl-material/public/', '');
                 if (actualFileName.length !== 0 && actualFileName.substring(actualFileName.length-1, actualFileName.length) !== '/') {
-                    fs.ensureDirSync(path.join(__dirname, 'public', path.dirname(actualFileName)));
-                    entry.pipe(fs.createWriteStream(path.join(__dirname, 'public', actualFileName)));
+                    const publicBasePath = path.join(__dirname, 'public');
+                    const targetPublicPath = path.resolve(publicBasePath, actualFileName);
+                    const relativePublicPath = path.relative(publicBasePath, targetPublicPath);
+                    if (relativePublicPath.startsWith('..') || path.isAbsolute(relativePublicPath)) {
+                        logger.warn(`Skipping unsafe public file path during update extraction: ${actualFileName}`);
+                        entry.autodrain();
+                        return;
+                    }
+
+                    fs.ensureDirSync(path.dirname(targetPublicPath));
+                    entry.pipe(fs.createWriteStream(targetPublicPath));
                 } else {
                     entry.autodrain();
                 }
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
                 const actualFileName = fileName.replace('youtubedl-material/', '');
+                const repoBasePath = path.resolve(__dirname);
+                const targetFilePath = path.resolve(repoBasePath, actualFileName);
+                const relativeRepoPath = path.relative(repoBasePath, targetFilePath);
+                if (relativeRepoPath.startsWith('..') || path.isAbsolute(relativeRepoPath)) {
+                    logger.warn(`Skipping unsafe file path during update extraction: ${actualFileName}`);
+                    entry.autodrain();
+                    return;
+                }
                 logger.verbose('Downloading file ' + actualFileName);
-                entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
+                entry.pipe(fs.createWriteStream(targetFilePath));
             } else {
                 entry.autodrain();
             }
@@ -450,7 +467,7 @@ async function downloadReleaseZip(tag) {
             resolve(false);
             return;
         }
-        await utils.writeFetchResponseToFile(res, output_path, 'update ' + tag);
+        await utils.writeFetchResponseToFile(res, fs.createWriteStream(output_path), 'update ' + tag);
         resolve(true);
     });
 
@@ -1624,10 +1641,23 @@ app.post('/api/deleteArchiveItems', optionalJwt, async (req, res) => {
 
 var upload_multer = multer({ dest: __dirname + '/appdata/' });
 app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res) => {
-    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+    if (!req.file || !req.file.path) {
+        res.sendStatus(400);
+        return;
+    }
 
-    if (await fs.pathExists(req.file.path)) {
-        await fs.rename(req.file.path, new_path);
+    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+    const uploadBasePath = path.join(__dirname, 'appdata');
+    const resolvedUploadedPath = path.resolve(req.file.path);
+    const relativeUploadedPath = path.relative(uploadBasePath, resolvedUploadedPath);
+    if (relativeUploadedPath.startsWith('..') || path.isAbsolute(relativeUploadedPath)) {
+        logger.error(`Refusing to move uploaded cookies file outside appdata: ${req.file.path}`);
+        res.sendStatus(400);
+        return;
+    }
+
+    if (await fs.pathExists(resolvedUploadedPath)) {
+        await fs.rename(resolvedUploadedPath, new_path);
     } else {
         res.sendStatus(500);
         return;
@@ -1929,9 +1959,41 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
 });
 
 app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
-    let file_path = decodeURIComponent(req.params.path);
-    if (fs.existsSync(file_path)) path.isAbsolute(file_path) ? res.sendFile(file_path) : res.sendFile(path.join(__dirname, file_path));
-    else res.sendStatus(404);
+    const requestedPath = decodeURIComponent(req.params.path || '');
+    const resolvedRequestedPath = path.isAbsolute(requestedPath) ? path.resolve(requestedPath) : path.resolve(__dirname, requestedPath);
+    const thumbnailExt = path.extname(resolvedRequestedPath).toLowerCase();
+    const allowedThumbnailExts = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+    if (!allowedThumbnailExts.has(thumbnailExt)) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const configuredRoots = [
+        __dirname,
+        config_api.getConfigItem('ytdl_audio_folder_path'),
+        config_api.getConfigItem('ytdl_video_folder_path'),
+        config_api.getConfigItem('ytdl_subscriptions_base_path'),
+        config_api.getConfigItem('ytdl_users_base_path')
+    ]
+        .filter(Boolean)
+        .map(root => path.resolve(__dirname, root));
+
+    const pathAllowed = configuredRoots.some(root => {
+        const relativePath = path.relative(root, resolvedRequestedPath);
+        return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+    });
+
+    if (!pathAllowed) {
+        logger.warn(`Refusing thumbnail request outside allowed roots: ${requestedPath}`);
+        res.sendStatus(403);
+        return;
+    }
+
+    if (fs.existsSync(resolvedRequestedPath)) {
+        res.sendFile(resolvedRequestedPath);
+    } else {
+        res.sendStatus(404);
+    }
 });
 
 // Downloads management

@@ -358,7 +358,7 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
 }
 
 // helper function to write an already-fetched response body to disk
-exports.writeFetchResponseToFile = async (res, path, file_label) => {
+exports.writeFetchResponseToFile = async (res, fileStream, file_label) => {
     var len = null;
     len = parseInt(res.headers.get("Content-Length"), 10);
 
@@ -368,7 +368,6 @@ exports.writeFetchResponseToFile = async (res, path, file_label) => {
         width: 20,
         total: len
     });
-    const fileStream = fs.createWriteStream(path);
     await new Promise((resolve, reject) => {
         res.body.pipe(fileStream);
         res.body.on("error", (err) => {

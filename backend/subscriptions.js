@@ -543,9 +543,17 @@ exports.writeSubscriptionMetadata = (sub) => {
     let basePath = sub.user_uid ? path.join(config_api.getConfigItem('ytdl_users_base_path'), sub.user_uid, 'subscriptions')
                                 : config_api.getConfigItem('ytdl_subscriptions_base_path');
     const appendedBasePath = getAppendedBasePath(sub, basePath);
-    const metadata_path = path.join(appendedBasePath, CONSTS.SUBSCRIPTION_BACKUP_PATH);
+    const resolvedBasePath = path.resolve(basePath);
+    const resolvedSubscriptionPath = path.resolve(appendedBasePath);
+    const relativeSubscriptionPath = path.relative(resolvedBasePath, resolvedSubscriptionPath);
+    if (relativeSubscriptionPath.startsWith('..') || path.isAbsolute(relativeSubscriptionPath)) {
+        logger.error(`Refusing to write subscription metadata outside subscriptions directory for subscription '${sub && sub.name}'.`);
+        return;
+    }
+
+    const metadata_path = path.resolve(resolvedSubscriptionPath, CONSTS.SUBSCRIPTION_BACKUP_PATH);
     
-    fs.ensureDirSync(appendedBasePath);
+    fs.ensureDirSync(resolvedSubscriptionPath);
     fs.writeJSONSync(metadata_path, sub);
 }
 

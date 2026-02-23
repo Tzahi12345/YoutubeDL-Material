@@ -168,7 +168,7 @@ async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version,
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
-        await utils.writeFetchResponseToFile(res, output_path, `${youtubedl_fork} ${new_version}`);
+        await utils.writeFetchResponseToFile(res, fs.createWriteStream(output_path), `${youtubedl_fork} ${new_version}`);
         fs.chmod(output_path, 0o777);
 
         updateDetailsJSON(new_version, youtubedl_fork, output_path);
