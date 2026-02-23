@@ -55,8 +55,16 @@ const TASKS = {
 const TASK_JOBS = new Map();
 
 // Backwards-compatible job access for tests/callers while storing jobs in a Map.
-for (const taskKey of Object.keys(TASKS)) {
-    Object.defineProperty(TASKS[taskKey], 'job', {
+function ensureTaskJobAccessor(taskKey) {
+    const taskObj = TASKS[taskKey];
+    if (!taskObj || typeof taskObj !== 'object') return;
+
+    const descriptor = Object.getOwnPropertyDescriptor(taskObj, 'job');
+    if (descriptor && typeof descriptor.get === 'function' && typeof descriptor.set === 'function') {
+        return;
+    }
+
+    Object.defineProperty(taskObj, 'job', {
         enumerable: true,
         configurable: true,
         get() {
@@ -70,6 +78,9 @@ for (const taskKey of Object.keys(TASKS)) {
             TASK_JOBS.set(taskKey, value);
         }
     });
+}
+for (const taskKey of Object.keys(TASKS)) {
+    ensureTaskJobAccessor(taskKey);
 }
 
 const defaultOptions = {
@@ -124,6 +135,7 @@ exports.setupTasks = async () => {
     const tasks_keys = Object.keys(TASKS);
     for (let i = 0; i < tasks_keys.length; i++) {
         const task_key = tasks_keys[i];
+        ensureTaskJobAccessor(task_key);
         const mergedDefaultOptions = Object.assign({}, defaultOptions['all'], defaultOptions[task_key] || {});
         const task_in_db = await db_api.getRecord('tasks', {key: task_key});
         if (!task_in_db) {
@@ -216,6 +228,7 @@ exports.updateTaskSchedule = async (task_key, schedule) => {
         logger.error(`Cannot update schedule for unknown task key '${task_key}'.`);
         return false;
     }
+    ensureTaskJobAccessor(task_key);
     await db_api.updateRecord('tasks', {key: task_key}, {schedule: schedule});
     const existingJob = TASK_JOBS.get(task_key);
     if (existingJob) {
