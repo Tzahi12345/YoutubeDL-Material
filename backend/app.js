@@ -713,6 +713,32 @@ const testCookiesRateLimiter = rateLimit({
     }
 });
 
+const apiRateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+    // Keep public media/feed endpoints usable while protecting stateful/file-system routes.
+    skip: (req) => req.path.includes('/api/stream/') ||
+                   req.path.includes('/api/thumbnail/') ||
+                   req.path.includes('/api/rss') ||
+                   req.path.includes('/api/telegramRequest')
+});
+
+const authRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 25,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        error: 'Too many authentication requests. Please wait and try again.'
+    }
+});
+
+app.use('/api', apiRateLimiter);
+app.use('/api/auth', authRateLimiter);
+
 const optionalJwt = async function (req, res, next) {
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     if (multiUserMode && ((req.body && req.body.uuid) || (req.query && req.query.uuid)) && (req.path.includes('/api/getFile') ||
