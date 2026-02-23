@@ -21,7 +21,6 @@ const CONSTS = require('./consts')
 const read_last_lines = require('read-last-lines');
 const ps = require('ps-node');
 const Feed = require('feed').Feed;
-const session = require('express-session');
 
 const logger = require('./logger');
 const config_api = require('./config.js');
@@ -162,16 +161,6 @@ app.use(bodyParser.json());
 
 // use passport
 app.use(auth_api.passport.initialize());
-app.use(session({
-    secret: uuid(),
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        sameSite: 'strict'
-    }
-}))
-app.use(auth_api.passport.session());
 
 // reverse proxy whitelist
 app.use(reverseProxyWhitelistMiddleware);
@@ -442,15 +431,26 @@ async function downloadReleaseFiles(tag) {
 
 async function downloadReleaseZip(tag) {
     return new Promise(async resolve => {
+        if (typeof tag !== 'string' || !/^v[0-9A-Za-z][0-9A-Za-z._-]*$/.test(tag)) {
+            logger.error(`Refusing to download release with invalid tag: ${tag}`);
+            resolve(false);
+            return;
+        }
+
         // get name of zip file, which depends on the version
-        const latest_release_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${tag}/`;
         const tag_without_v = tag.substring(1, tag.length);
-        const zip_file_name = `youtubedl-material-${tag_without_v}.zip`
-        const latest_zip_link = latest_release_link + zip_file_name;
+        const zip_file_name = `youtubedl-material-${tag_without_v}.zip`;
+        const latest_zip_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(zip_file_name)}`;
         let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
 
         // download zip from release
-        await utils.fetchFile(latest_zip_link, output_path, 'update ' + tag);
+        const res = await fetch(latest_zip_link);
+        if (!res.ok) {
+            logger.error(`Failed to download release zip for ${tag}: HTTP ${res.status}`);
+            resolve(false);
+            return;
+        }
+        await utils.writeFetchResponseToFile(res, output_path, 'update ' + tag);
         resolve(true);
     });
 
@@ -2188,7 +2188,7 @@ app.post('/api/auth/register', optionalJwt, async (req, res) => {
     });
 });
 app.post('/api/auth/login'
-        , auth_api.passport.authenticate(['local', 'ldapauth'], {})
+        , auth_api.passport.authenticate(['local', 'ldapauth'], { session: false })
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
 );

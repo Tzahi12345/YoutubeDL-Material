@@ -1,9 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { URL } = require('url');
 const ffmpeg = require('fluent-ffmpeg');
 const archiver = require('archiver');
-const fetch = require('node-fetch');
 const ProgressBar = require('progress');
 const winston = require('winston');
 
@@ -12,57 +10,6 @@ const logger = require('./logger');
 const CONSTS = require('./consts');
 
 const is_windows = process.platform === 'win32';
-const TRUSTED_DOWNLOAD_HOSTS = new Set([
-    'api.github.com',
-    'codeload.github.com',
-    'github.com',
-    'github-releases.githubusercontent.com',
-    'objects.githubusercontent.com',
-    'raw.githubusercontent.com',
-    'release-assets.githubusercontent.com',
-]);
-
-function validateTrustedDownloadUrl(rawUrl) {
-    let parsedUrl = null;
-    try {
-        parsedUrl = new URL(rawUrl);
-    } catch {
-        throw new Error(`Invalid download URL: ${rawUrl}`);
-    }
-
-    if (parsedUrl.protocol !== 'https:') {
-        throw new Error(`Refusing non-HTTPS download URL: ${parsedUrl.protocol}`);
-    }
-
-    const hostname = parsedUrl.hostname.toLowerCase();
-    const isGithubusercontentHost = hostname === 'githubusercontent.com' || hostname.endsWith('.githubusercontent.com');
-    if (!TRUSTED_DOWNLOAD_HOSTS.has(hostname) && !isGithubusercontentHost) {
-        throw new Error(`Refusing download from untrusted host: ${hostname}`);
-    }
-
-    return parsedUrl.toString();
-}
-
-async function fetchTrustedDownload(url, redirects = 0) {
-    const validatedUrl = validateTrustedDownloadUrl(url);
-    const res = await fetch(validatedUrl, { redirect: 'manual' });
-
-    if (res.status >= 300 && res.status < 400) {
-        if (redirects >= 5) {
-            throw new Error(`Too many redirects while downloading from ${validatedUrl}`);
-        }
-
-        const location = res.headers.get('location');
-        if (!location) {
-            throw new Error(`Redirect response missing location for ${validatedUrl}`);
-        }
-
-        const nextUrl = new URL(location, validatedUrl).toString();
-        return fetchTrustedDownload(nextUrl, redirects + 1);
-    }
-
-    return res;
-}
 
 // replaces .webm with appropriate extension
 exports.getTrueFileName = (unfixed_path, type, force_ext = null) => {
@@ -410,14 +357,9 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
     });
 }
 
-// helper function to download file using fetch
-exports.fetchFile = async (url, path, file_label) => {
+// helper function to write an already-fetched response body to disk
+exports.writeFetchResponseToFile = async (res, path, file_label) => {
     var len = null;
-    const res = await fetchTrustedDownload(url);
-    if (!res.ok) {
-        throw new Error(`Failed to download ${file_label}: HTTP ${res.status}`);
-    }
-
     len = parseInt(res.headers.get("Content-Length"), 10);
 
     var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
