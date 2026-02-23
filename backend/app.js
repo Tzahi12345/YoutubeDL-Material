@@ -21,7 +21,6 @@ const CONSTS = require('./consts')
 const read_last_lines = require('read-last-lines');
 const ps = require('ps-node');
 const Feed = require('feed').Feed;
-const session = require('express-session');
 
 const logger = require('./logger');
 const config_api = require('./config.js');
@@ -36,6 +35,44 @@ const files_api = require('./files');
 const notifications_api = require('./notifications');
 
 var app = express();
+
+function parseTrustProxySetting(value) {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== 'string') return value;
+
+    const trimmed = value.trim();
+    if (trimmed === '') return undefined;
+
+    const lowerValue = trimmed.toLowerCase();
+    if (lowerValue === 'true') return true;
+    if (lowerValue === 'false') return false;
+    if (/^\d+$/.test(trimmed)) return parseInt(trimmed, 10);
+    if (trimmed.includes(',')) return trimmed.split(',').map(item => item.trim()).filter(item => item !== '');
+
+    return trimmed;
+}
+
+function configureExpressTrustProxy() {
+    const trustProxyFromEnv = parseTrustProxySetting(process.env.YTDL_TRUST_PROXY);
+    if (trustProxyFromEnv !== undefined) {
+        app.set('trust proxy', trustProxyFromEnv);
+        logger.info(`Express trust proxy configured from YTDL_TRUST_PROXY: ${JSON.stringify(trustProxyFromEnv)}`);
+        return;
+    }
+
+    const reverseProxyWhitelist = config_api.getConfigItem('ytdl_reverse_proxy_whitelist');
+    if (reverseProxyWhitelist && reverseProxyWhitelist.trim() !== '') {
+        const trustedProxies = reverseProxyWhitelist
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item !== '');
+
+        if (trustedProxies.length > 0) {
+            app.set('trust proxy', trustedProxies);
+            logger.info('Express trust proxy configured from reverse proxy whitelist.');
+        }
+    }
+}
 
 // database setup
 const FileSync = require('lowdb/adapters/FileSync');
@@ -162,8 +199,6 @@ app.use(bodyParser.json());
 
 // use passport
 app.use(auth_api.passport.initialize());
-app.use(session({ secret: uuid(), resave: true, saveUninitialized: true }))
-app.use(auth_api.passport.session());
 
 // reverse proxy whitelist
 app.use(reverseProxyWhitelistMiddleware);
@@ -412,16 +447,33 @@ async function downloadReleaseFiles(tag) {
                 // get public folder files
                 const actualFileName = fileName.replace('youtubedl-material/public/', '');
                 if (actualFileName.length !== 0 && actualFileName.substring(actualFileName.length-1, actualFileName.length) !== '/') {
-                    fs.ensureDirSync(path.join(__dirname, 'public', path.dirname(actualFileName)));
-                    entry.pipe(fs.createWriteStream(path.join(__dirname, 'public', actualFileName)));
+                    const publicBasePath = path.join(__dirname, 'public');
+                    const targetPublicPath = path.resolve(publicBasePath, actualFileName);
+                    const relativePublicPath = path.relative(publicBasePath, targetPublicPath);
+                    if (relativePublicPath.startsWith('..') || path.isAbsolute(relativePublicPath)) {
+                        logger.warn(`Skipping unsafe public file path during update extraction: ${actualFileName}`);
+                        entry.autodrain();
+                        return;
+                    }
+
+                    fs.ensureDirSync(path.dirname(targetPublicPath));
+                    entry.pipe(fs.createWriteStream(targetPublicPath));
                 } else {
                     entry.autodrain();
                 }
             } else if (!is_dir && !replace_ignore_list.includes(fileName)) {
                 // get package.json
                 const actualFileName = fileName.replace('youtubedl-material/', '');
+                const repoBasePath = path.resolve(__dirname);
+                const targetFilePath = path.resolve(repoBasePath, actualFileName);
+                const relativeRepoPath = path.relative(repoBasePath, targetFilePath);
+                if (relativeRepoPath.startsWith('..') || path.isAbsolute(relativeRepoPath)) {
+                    logger.warn(`Skipping unsafe file path during update extraction: ${actualFileName}`);
+                    entry.autodrain();
+                    return;
+                }
                 logger.verbose('Downloading file ' + actualFileName);
-                entry.pipe(fs.createWriteStream(path.join(__dirname, actualFileName)));
+                entry.pipe(fs.createWriteStream(targetFilePath));
             } else {
                 entry.autodrain();
             }
@@ -434,15 +486,33 @@ async function downloadReleaseFiles(tag) {
 
 async function downloadReleaseZip(tag) {
     return new Promise(async resolve => {
+        if (typeof tag !== 'string' || !/^v[0-9A-Za-z][0-9A-Za-z._-]*$/.test(tag)) {
+            logger.error(`Refusing to download release with invalid tag: ${tag}`);
+            resolve(false);
+            return;
+        }
+
         // get name of zip file, which depends on the version
-        const latest_release_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${tag}/`;
         const tag_without_v = tag.substring(1, tag.length);
-        const zip_file_name = `youtubedl-material-${tag_without_v}.zip`
-        const latest_zip_link = latest_release_link + zip_file_name;
+        const zip_file_name = `youtubedl-material-${tag_without_v}.zip`;
+        const latest_zip_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(zip_file_name)}`;
         let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
+        const resolvedOutputPath = path.resolve(output_path);
+        const relativeOutputPath = path.relative(__dirname, resolvedOutputPath);
+        if (relativeOutputPath.startsWith('..') || path.isAbsolute(relativeOutputPath)) {
+            logger.error(`Refusing to write update zip outside application directory for tag ${tag}`);
+            resolve(false);
+            return;
+        }
 
         // download zip from release
-        await utils.fetchFile(latest_zip_link, output_path, 'update ' + tag);
+        const res = await fetch(latest_zip_link);
+        if (!res.ok) {
+            logger.error(`Failed to download release zip for ${tag}: HTTP ${res.status}`);
+            resolve(false);
+            return;
+        }
+        await utils.writeFetchResponseToFile(res, fs.createWriteStream(resolvedOutputPath), 'update ' + tag);
         resolve(true);
     });
 
@@ -632,6 +702,8 @@ function loadConfigValues() {
 
     let logger_level = config_api.getConfigItem('ytdl_logger_level');
     utils.updateLoggerLevel(logger_level);
+
+    configureExpressTrustProxy();
 }
 
 function getOrigin() {
@@ -687,23 +759,56 @@ app.use(function(req, res, next) {
     } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/rss') || req.path.includes('/api/telegramRequest')) {
         next();
     } else {
-        logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
+        logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key present: ${!!req.query.apiKey}`);
         req.socket.end();
     }
 });
 
 app.use(compression());
 
+const rateLimitValidateOptions = {
+    xForwardedForHeader: false
+};
+
 const testCookiesRateLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: rateLimitValidateOptions,
     message: {
         success: false,
         error: 'Too many cookie test requests. Please wait a minute and try again.'
     }
 });
+
+const apiRateLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: rateLimitValidateOptions,
+    // Keep public media/feed endpoints usable while protecting stateful/file-system routes.
+    skip: (req) => req.path.includes('/api/stream/') ||
+                   req.path.includes('/api/thumbnail/') ||
+                   req.path.includes('/api/rss') ||
+                   req.path.includes('/api/telegramRequest')
+});
+
+const authRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 25,
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: rateLimitValidateOptions,
+    message: {
+        success: false,
+        error: 'Too many authentication requests. Please wait and try again.'
+    }
+});
+
+app.use('/api', apiRateLimiter);
+app.use('/api/auth', authRateLimiter);
 
 const optionalJwt = async function (req, res, next) {
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
@@ -1590,10 +1695,23 @@ app.post('/api/deleteArchiveItems', optionalJwt, async (req, res) => {
 
 var upload_multer = multer({ dest: __dirname + '/appdata/' });
 app.post('/api/uploadCookies', upload_multer.single('cookies'), async (req, res) => {
-    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+    if (!req.file || !req.file.path) {
+        res.sendStatus(400);
+        return;
+    }
 
-    if (await fs.pathExists(req.file.path)) {
-        await fs.rename(req.file.path, new_path);
+    const new_path = path.join(__dirname, 'appdata', 'cookies.txt');
+    const uploadBasePath = path.join(__dirname, 'appdata');
+    const resolvedUploadedPath = path.resolve(req.file.path);
+    const relativeUploadedPath = path.relative(uploadBasePath, resolvedUploadedPath);
+    if (relativeUploadedPath.startsWith('..') || path.isAbsolute(relativeUploadedPath)) {
+        logger.error(`Refusing to move uploaded cookies file outside appdata: ${req.file.path}`);
+        res.sendStatus(400);
+        return;
+    }
+
+    if (await fs.pathExists(resolvedUploadedPath)) {
+        await fs.rename(resolvedUploadedPath, new_path);
     } else {
         res.sendStatus(500);
         return;
@@ -1895,9 +2013,52 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
 });
 
 app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
-    let file_path = decodeURIComponent(req.params.path);
-    if (fs.existsSync(file_path)) path.isAbsolute(file_path) ? res.sendFile(file_path) : res.sendFile(path.join(__dirname, file_path));
-    else res.sendStatus(404);
+    const requestedPath = decodeURIComponent(req.params.path || '');
+    const resolvedRequestedPath = path.isAbsolute(requestedPath) ? path.resolve(requestedPath) : path.resolve(__dirname, requestedPath);
+    const thumbnailExt = path.extname(resolvedRequestedPath).toLowerCase();
+    const allowedThumbnailExts = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+    if (!allowedThumbnailExts.has(thumbnailExt)) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const configuredRoots = [
+        __dirname,
+        config_api.getConfigItem('ytdl_audio_folder_path'),
+        config_api.getConfigItem('ytdl_video_folder_path'),
+        config_api.getConfigItem('ytdl_subscriptions_base_path'),
+        config_api.getConfigItem('ytdl_users_base_path')
+    ]
+        .filter(Boolean)
+        .map(root => path.resolve(__dirname, root));
+
+    let thumbnailRoot = null;
+    let thumbnailRelativePath = null;
+    for (const root of configuredRoots) {
+        const relativePath = path.relative(root, resolvedRequestedPath);
+        if (relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath)) {
+            thumbnailRoot = root;
+            thumbnailRelativePath = relativePath;
+            break;
+        }
+    }
+
+    if (!thumbnailRoot || !thumbnailRelativePath) {
+        logger.warn(`Refusing thumbnail request outside allowed roots: ${requestedPath}`);
+        res.sendStatus(403);
+        return;
+    }
+
+    res.sendFile(thumbnailRelativePath, { root: thumbnailRoot }, (err) => {
+        if (!err) return;
+        if (res.headersSent) return;
+        if (err.statusCode === 404) {
+            res.sendStatus(404);
+            return;
+        }
+        logger.error(err);
+        res.sendStatus(500);
+    });
 });
 
 // Downloads management
@@ -2180,7 +2341,7 @@ app.post('/api/auth/register', optionalJwt, async (req, res) => {
     });
 });
 app.post('/api/auth/login'
-        , auth_api.passport.authenticate(['local', 'ldapauth'], {})
+        , auth_api.passport.authenticate(['local', 'ldapauth'], { session: false })
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
 );
@@ -2312,8 +2473,22 @@ app.post('/api/telegramRequest', async (req, res) => {
     const text = req.body.message.text;
     const regex_exp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
     const url_regex = new RegExp(regex_exp);
-    if (text.match(url_regex)) {
-        downloader_api.createDownload(text, 'video', {}, req.query.user_uid ? req.query.user_uid : null);
+    const matched_urls = text.match(url_regex);
+    if (matched_urls && matched_urls.length) {
+        let parsed_url = null;
+        try {
+            parsed_url = new URL(matched_urls[0]);
+        } catch {
+            parsed_url = null;
+        }
+
+        if (!parsed_url || (parsed_url.protocol !== 'http:' && parsed_url.protocol !== 'https:')) {
+            logger.error('Invalid Telegram request received! URL protocol is not allowed.');
+            res.sendStatus(400);
+            return;
+        }
+
+        downloader_api.createDownload(parsed_url.toString(), 'video', {}, req.query.user_uid ? req.query.user_uid : null);
         res.sendStatus(200);
     } else {
         logger.error('Invalid Telegram request received! Make sure you only send a valid URL.');

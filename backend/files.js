@@ -216,8 +216,11 @@ exports.setPlaylistProperty = async (playlist_id, assignment_obj, user_uid = nul
 exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) => {
     if (!playlist_file_objs) {
         playlist_file_objs = [];
-        for (let i = 0; i < playlist['uids'].length; i++) {
-            const uid = playlist['uids'][i];
+        const playlist_uids = Array.isArray(playlist['uids']) ? playlist['uids'] : [];
+        const max_playlist_uids_to_scan = 10000;
+        const playlist_uids_to_scan = playlist_uids.slice(0, max_playlist_uids_to_scan);
+        for (let i = 0; i < playlist_uids_to_scan.length; i++) {
+            const uid = playlist_uids_to_scan[i];
             const file_obj = await exports.getVideo(uid);
             if (file_obj) playlist_file_objs.push(file_obj);
         }

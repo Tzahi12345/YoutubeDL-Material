@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const archiver = require('archiver');
-const fetch = require('node-fetch');
 const ProgressBar = require('progress');
 const winston = require('winston');
 
@@ -358,11 +357,9 @@ exports.checkExistsWithTimeout = async (filePath, timeout) => {
     });
 }
 
-// helper function to download file using fetch
-exports.fetchFile = async (url, path, file_label) => {
+// helper function to write an already-fetched response body to disk
+exports.writeFetchResponseToFile = async (res, fileStream, file_label) => {
     var len = null;
-    const res = await fetch(url);
-
     len = parseInt(res.headers.get("Content-Length"), 10);
 
     var bar = new ProgressBar(`  Downloading ${file_label} [:bar] :percent :etas`, {
@@ -371,7 +368,6 @@ exports.fetchFile = async (url, path, file_label) => {
         width: 20,
         total: len
     });
-    const fileStream = fs.createWriteStream(path);
     await new Promise((resolve, reject) => {
         res.body.pipe(fileStream);
         res.body.on("error", (err) => {
@@ -422,7 +418,7 @@ exports.injectArgs = (original_args, new_args) => {
         }
     } catch (err) {
         logger.warn(err);
-        logger.warn(`Failed to inject args (${new_args}) into (${original_args})`);
+        logger.warn(`Failed to inject args (${new_args.length} new args) into (${original_args.length} original args)`);
     }
 
     return updated_args;
@@ -591,4 +587,3 @@ function File(id, title, thumbnailURL, isAudio, duration, url, uploader, size, p
     this.favorite = false;
 }   
 exports.File = File;
-

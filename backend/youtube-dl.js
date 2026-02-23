@@ -60,7 +60,7 @@ const runYoutubeDLProcess = async (url, args, youtubedl_fork = config_api.getCon
         logger.error(err);
         return;
     }
-    logger.info(`[DEBUG] Spawning yt-dlp process: ${youtubedl_path} ${url} ${args.join(' ')}`);
+    logger.info(`[DEBUG] Spawning ${youtubedl_fork} process with ${args.length + 1} arguments`);
     const child_process = execa(getYoutubeDLPath(youtubedl_fork), [url, ...args], {
         maxBuffer: Infinity,
         stdin: 'ignore',
@@ -147,11 +147,28 @@ async function downloadLatestYoutubeDLBinaryGeneric(youtubedl_fork, new_version,
     const file_ext = is_windows ? '.exe' : '';
 
     // build the URL
-    const download_url = `${exports.youtubedl_forks[youtubedl_fork]['download_url']}${file_ext}`;
+    let download_url = null;
+    switch (youtubedl_fork) {
+        case 'youtube-dl':
+            download_url = `https://github.com/ytdl-org/youtube-dl/releases/latest/download/youtube-dl${file_ext}`;
+            break;
+        case 'youtube-dlc':
+            download_url = `https://github.com/blackjack4494/yt-dlc/releases/latest/download/youtube-dlc${file_ext}`;
+            break;
+        case 'yt-dlp':
+            download_url = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp${file_ext}`;
+            break;
+        default:
+            throw new Error(`Unsupported downloader fork: ${youtubedl_fork}`);
+    }
     const output_path = custom_output_path || getYoutubeDLPath(youtubedl_fork);
 
     try {
-        await utils.fetchFile(download_url, output_path, `${youtubedl_fork} ${new_version}`);
+        const res = await fetch(download_url);
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+        await utils.writeFetchResponseToFile(res, fs.createWriteStream(output_path), `${youtubedl_fork} ${new_version}`);
         fs.chmod(output_path, 0o777);
 
         updateDetailsJSON(new_version, youtubedl_fork, output_path);

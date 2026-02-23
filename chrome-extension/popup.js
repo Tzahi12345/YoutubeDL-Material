@@ -35,8 +35,16 @@ function loadInputs() {
         var activeTab = tabs[0];
         var current_url = activeTab.url;
         console.log(current_url);
-        if (current_url && current_url.includes('youtube.com')) {
-            document.getElementById("url_input").value = current_url;
+        if (current_url) {
+            try {
+                const parsed = new URL(current_url);
+                const hostname = parsed.hostname.replace(/^www\./, '').toLowerCase();
+                if (hostname === 'youtube.com' || hostname === 'm.youtube.com' || hostname === 'music.youtube.com' || hostname === 'youtu.be') {
+                    document.getElementById("url_input").value = current_url;
+                }
+            } catch (err) {
+                console.log(err);
+            }
         }
     });
 }

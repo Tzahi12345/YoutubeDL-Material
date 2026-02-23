@@ -56,7 +56,7 @@ export class MainComponent implements OnInit {
   customDownloadingAgent = null;
 
   // cache
-  cachedAvailableFormats = {};
+  cachedAvailableFormats: { [key: string]: any } = Object.create(null);
   cachedFileManagerEnabled = localStorage.getItem('cached_filemanager_enabled') === 'true';
 
   // youtube api
@@ -556,7 +556,7 @@ export class MainComponent implements OnInit {
 
   getURLInfo(url: string): void {
     if (!this.cachedAvailableFormats[url]) {
-      this.cachedAvailableFormats[url] = {};
+      this.cachedAvailableFormats[url] = Object.create(null);
     }
     // If URL is a YouTube playlist page (not a single watch?v=...), skip format probing
     if (this.isYouTubePlaylistUrl(url)) {

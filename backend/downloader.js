@@ -555,12 +555,12 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     // filter out incompatible args
     downloadConfig = filterArgs(downloadConfig, is_audio);
 
-    if (!simulated) logger.verbose(`${default_downloader} args being used: ${downloadConfig.join(',')}`);
+    if (!simulated) logger.verbose(`${default_downloader} args being used (${downloadConfig.length} args)`);
     return downloadConfig;
 }
 
 exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
-    logger.info(`[DEBUG] getVideoInfoByURL called for URL: ${url}`);
+    logger.info('[DEBUG] getVideoInfoByURL called');
 
     // For info retrieval, completely ignore input args and build clean minimal set
     // This prevents file-writing operations that cause yt-dlp to hang

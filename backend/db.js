@@ -356,6 +356,11 @@ exports.getRecords = async (table, filter_obj = null, return_count = false, sort
 // Update
 
 exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false) => {
+    if (!tables[table]) {
+        logger.error(`Refusing to update unknown table '${table}'.`);
+        return false;
+    }
+
     // local db override
     if (using_local_db) {
         if (nested_mode) {
@@ -375,6 +380,11 @@ exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false
 }
 
 exports.updateRecords = async (table, filter_obj, update_obj) => {
+    if (!tables[table]) {
+        logger.error(`Refusing to update unknown table '${table}'.`);
+        return false;
+    }
+
     // local db override
     if (using_local_db) {
         exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').each((record) => {
@@ -727,7 +737,13 @@ exports.backupDB = async () => {
 }
 
 exports.restoreDB = async (file_name) => {
-    const path_to_backup = path.join('appdata', 'db_backup', file_name);
+    const backup_dir = path.join('appdata', 'db_backup');
+    const path_to_backup = path.join(backup_dir, file_name);
+    const relative_backup_path = path.relative(backup_dir, path_to_backup);
+    if (!file_name || path.basename(file_name) !== file_name || relative_backup_path.startsWith('..') || path.isAbsolute(relative_backup_path)) {
+        logger.error(`Failed to restore DB! Unsafe backup file name '${file_name}'.`);
+        return false;
+    }
 
     logger.debug('Reading database backup file.');
     const table_to_records = fs.readJSONSync(path_to_backup);
