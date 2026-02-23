@@ -36,6 +36,44 @@ const notifications_api = require('./notifications');
 
 var app = express();
 
+function parseTrustProxySetting(value) {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== 'string') return value;
+
+    const trimmed = value.trim();
+    if (trimmed === '') return undefined;
+
+    const lowerValue = trimmed.toLowerCase();
+    if (lowerValue === 'true') return true;
+    if (lowerValue === 'false') return false;
+    if (/^\d+$/.test(trimmed)) return parseInt(trimmed, 10);
+    if (trimmed.includes(',')) return trimmed.split(',').map(item => item.trim()).filter(item => item !== '');
+
+    return trimmed;
+}
+
+function configureExpressTrustProxy() {
+    const trustProxyFromEnv = parseTrustProxySetting(process.env.YTDL_TRUST_PROXY);
+    if (trustProxyFromEnv !== undefined) {
+        app.set('trust proxy', trustProxyFromEnv);
+        logger.info(`Express trust proxy configured from YTDL_TRUST_PROXY: ${JSON.stringify(trustProxyFromEnv)}`);
+        return;
+    }
+
+    const reverseProxyWhitelist = config_api.getConfigItem('ytdl_reverse_proxy_whitelist');
+    if (reverseProxyWhitelist && reverseProxyWhitelist.trim() !== '') {
+        const trustedProxies = reverseProxyWhitelist
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item !== '');
+
+        if (trustedProxies.length > 0) {
+            app.set('trust proxy', trustedProxies);
+            logger.info('Express trust proxy configured from reverse proxy whitelist.');
+        }
+    }
+}
+
 // database setup
 const FileSync = require('lowdb/adapters/FileSync');
 
@@ -664,6 +702,8 @@ function loadConfigValues() {
 
     let logger_level = config_api.getConfigItem('ytdl_logger_level');
     utils.updateLoggerLevel(logger_level);
+
+    configureExpressTrustProxy();
 }
 
 function getOrigin() {
@@ -726,11 +766,16 @@ app.use(function(req, res, next) {
 
 app.use(compression());
 
+const rateLimitValidateOptions = {
+    xForwardedForHeader: false
+};
+
 const testCookiesRateLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 10,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: rateLimitValidateOptions,
     message: {
         success: false,
         error: 'Too many cookie test requests. Please wait a minute and try again.'
@@ -742,6 +787,7 @@ const apiRateLimiter = rateLimit({
     max: 300,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: rateLimitValidateOptions,
     // Keep public media/feed endpoints usable while protecting stateful/file-system routes.
     skip: (req) => req.path.includes('/api/stream/') ||
                    req.path.includes('/api/thumbnail/') ||
@@ -754,6 +800,7 @@ const authRateLimiter = rateLimit({
     max: 25,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: rateLimitValidateOptions,
     message: {
         success: false,
         error: 'Too many authentication requests. Please wait and try again.'
