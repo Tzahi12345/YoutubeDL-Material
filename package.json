@@ -38,13 +38,13 @@
     "@ngneat/content-loader": "^7.0.0",
     "@videogular/ngx-videogular": "^6.0.0",
     "core-js": "^2.4.1",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "file-saver": "^2.0.2",
     "filesize": "^10.0.7",
     "fs-extra": "^10.0.0",
     "material-icons": "^1.10.8",
     "nan": "^2.14.1",
-    "ngx-avatars": "^1.4.1",
+    "ngx-avatars": "1.4.1",
     "ngx-file-drop": "^15.0.0",
     "rxjs": "^6.6.3",
     "rxjs-compat": "^6.6.7",
@@ -74,7 +74,7 @@
     "karma-cli": "~1.0.1",
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "^1.5.0",
+    "karma-jasmine-html-reporter": "1.5.4",
     "openapi-typescript-codegen": "^0.23.0",
     "protractor": "~7.0.0",
     "ts-node": "~3.0.4",
@@ -82,8 +82,8 @@
   },
   "overrides": {
     "ngx-avatars": {
-      "@angular/common": "15.0.1",
-      "@angular/core": "15.0.1"
+      "@angular/common": "15.2.10",
+      "@angular/core": "15.2.10"
     }
-}
+  }
 }

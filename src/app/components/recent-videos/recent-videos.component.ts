@@ -8,6 +8,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatChipListboxChange } from '@angular/material/chips';
 import { MatSelectionListChange } from '@angular/material/list';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-recent-videos',
@@ -379,9 +380,10 @@ export class RecentVideosComponent implements OnInit {
   }
 
   fileSelectionChanged(event: MatSelectionListChange): void {
-    // TODO: make sure below line is possible (_selected is private)
-    const adding = event.option['_selected'];
-    const value = event.option.value;
+    const option = event.options?.[0];
+    if (!option) return;
+    const adding = option.selected;
+    const value = option.value;
     if (adding) {
       this.selected_data.push(value.uid);
       this.selected_data_objs.push(value);

@@ -7,6 +7,7 @@ import { FileType } from 'api-types';
 import { Archive } from 'api-types/models/Archive';
 import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialog.component';
 import { PostsService } from 'app/posts.services';
+import { saveAs } from 'file-saver';
 import { NgxFileDropEntry } from 'ngx-file-drop';
 
 @Component({
