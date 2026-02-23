@@ -356,6 +356,11 @@ exports.getRecords = async (table, filter_obj = null, return_count = false, sort
 // Update
 
 exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false) => {
+    if (!tables[table]) {
+        logger.error(`Refusing to update unknown table '${table}'.`);
+        return false;
+    }
+
     // local db override
     if (using_local_db) {
         if (nested_mode) {
@@ -375,6 +380,11 @@ exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false
 }
 
 exports.updateRecords = async (table, filter_obj, update_obj) => {
+    if (!tables[table]) {
+        logger.error(`Refusing to update unknown table '${table}'.`);
+        return false;
+    }
+
     // local db override
     if (using_local_db) {
         exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').each((record) => {

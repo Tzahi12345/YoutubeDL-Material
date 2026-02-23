@@ -459,6 +459,13 @@ async function downloadReleaseZip(tag) {
         const zip_file_name = `youtubedl-material-${tag_without_v}.zip`;
         const latest_zip_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(zip_file_name)}`;
         let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
+        const resolvedOutputPath = path.resolve(output_path);
+        const relativeOutputPath = path.relative(__dirname, resolvedOutputPath);
+        if (relativeOutputPath.startsWith('..') || path.isAbsolute(relativeOutputPath)) {
+            logger.error(`Refusing to write update zip outside application directory for tag ${tag}`);
+            resolve(false);
+            return;
+        }
 
         // download zip from release
         const res = await fetch(latest_zip_link);
@@ -467,7 +474,7 @@ async function downloadReleaseZip(tag) {
             resolve(false);
             return;
         }
-        await utils.writeFetchResponseToFile(res, fs.createWriteStream(output_path), 'update ' + tag);
+        await utils.writeFetchResponseToFile(res, fs.createWriteStream(resolvedOutputPath), 'update ' + tag);
         resolve(true);
     });
 
@@ -712,7 +719,7 @@ app.use(function(req, res, next) {
     } else if (req.path.includes('/api/stream/') || req.path.includes('/api/thumbnail/') || req.path.includes('/api/rss') || req.path.includes('/api/telegramRequest')) {
         next();
     } else {
-        logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key received: ${req.query.apiKey}`);
+        logger.verbose(`Rejecting request - invalid API use for endpoint: ${req.path}. API key present: ${!!req.query.apiKey}`);
         req.socket.end();
     }
 });
@@ -1978,22 +1985,33 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
         .filter(Boolean)
         .map(root => path.resolve(__dirname, root));
 
-    const pathAllowed = configuredRoots.some(root => {
+    let thumbnailRoot = null;
+    let thumbnailRelativePath = null;
+    for (const root of configuredRoots) {
         const relativePath = path.relative(root, resolvedRequestedPath);
-        return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
-    });
+        if (relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath)) {
+            thumbnailRoot = root;
+            thumbnailRelativePath = relativePath;
+            break;
+        }
+    }
 
-    if (!pathAllowed) {
+    if (!thumbnailRoot || !thumbnailRelativePath) {
         logger.warn(`Refusing thumbnail request outside allowed roots: ${requestedPath}`);
         res.sendStatus(403);
         return;
     }
 
-    if (fs.existsSync(resolvedRequestedPath)) {
-        res.sendFile(resolvedRequestedPath);
-    } else {
-        res.sendStatus(404);
-    }
+    res.sendFile(thumbnailRelativePath, { root: thumbnailRoot }, (err) => {
+        if (!err) return;
+        if (res.headersSent) return;
+        if (err.statusCode === 404) {
+            res.sendStatus(404);
+            return;
+        }
+        logger.error(err);
+        res.sendStatus(500);
+    });
 });
 
 // Downloads management
@@ -2408,8 +2426,22 @@ app.post('/api/telegramRequest', async (req, res) => {
     const text = req.body.message.text;
     const regex_exp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
     const url_regex = new RegExp(regex_exp);
-    if (text.match(url_regex)) {
-        downloader_api.createDownload(text, 'video', {}, req.query.user_uid ? req.query.user_uid : null);
+    const matched_urls = text.match(url_regex);
+    if (matched_urls && matched_urls.length) {
+        let parsed_url = null;
+        try {
+            parsed_url = new URL(matched_urls[0]);
+        } catch {
+            parsed_url = null;
+        }
+
+        if (!parsed_url || (parsed_url.protocol !== 'http:' && parsed_url.protocol !== 'https:')) {
+            logger.error('Invalid Telegram request received! URL protocol is not allowed.');
+            res.sendStatus(400);
+            return;
+        }
+
+        downloader_api.createDownload(parsed_url.toString(), 'video', {}, req.query.user_uid ? req.query.user_uid : null);
         res.sendStatus(200);
     } else {
         logger.error('Invalid Telegram request received! Make sure you only send a valid URL.');

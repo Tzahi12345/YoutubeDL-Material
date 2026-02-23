@@ -418,7 +418,7 @@ exports.injectArgs = (original_args, new_args) => {
         }
     } catch (err) {
         logger.warn(err);
-        logger.warn(`Failed to inject args (${new_args}) into (${original_args})`);
+        logger.warn(`Failed to inject args (${new_args.length} new args) into (${original_args.length} original args)`);
     }
 
     return updated_args;

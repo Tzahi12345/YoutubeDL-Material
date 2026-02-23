@@ -60,7 +60,7 @@ const runYoutubeDLProcess = async (url, args, youtubedl_fork = config_api.getCon
         logger.error(err);
         return;
     }
-    logger.info(`[DEBUG] Spawning yt-dlp process: ${youtubedl_path} ${url} ${args.join(' ')}`);
+    logger.info(`[DEBUG] Spawning ${youtubedl_fork} process with ${args.length + 1} arguments`);
     const child_process = execa(getYoutubeDLPath(youtubedl_fork), [url, ...args], {
         maxBuffer: Infinity,
         stdin: 'ignore',
