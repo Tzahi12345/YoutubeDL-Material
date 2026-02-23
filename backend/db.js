@@ -73,6 +73,71 @@ const tables_list = Object.keys(tables);
 
 let using_local_db = null; 
 
+const BLOCKED_OBJECT_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+
+function isPlainObject(value) {
+    return Object.prototype.toString.call(value) === '[object Object]';
+}
+
+function validateMongoFieldPath(fieldPath) {
+    if (typeof fieldPath !== 'string' || fieldPath.length === 0) {
+        throw new Error('Mongo field path must be a non-empty string.');
+    }
+
+    const pathParts = fieldPath.split('.');
+    for (const part of pathParts) {
+        if (!part || part.startsWith('$') || BLOCKED_OBJECT_KEYS.has(part)) {
+            throw new Error(`Unsafe Mongo field path '${fieldPath}'.`);
+        }
+    }
+}
+
+function sanitizeMongoLiteralValue(value) {
+    if (value === null || value === undefined) return value;
+    if (Array.isArray(value)) return value.map(sanitizeMongoLiteralValue);
+    if (!isPlainObject(value)) return value;
+
+    const sanitized = {};
+    for (const key of Object.keys(value)) {
+        if (key.includes('.') || key.startsWith('$') || BLOCKED_OBJECT_KEYS.has(key)) {
+            throw new Error(`Unsafe nested object key '${key}'.`);
+        }
+        sanitized[key] = sanitizeMongoLiteralValue(value[key]);
+    }
+    return sanitized;
+}
+
+function sanitizeMongoLiteralFilter(filter_obj) {
+    if (!isPlainObject(filter_obj)) {
+        throw new Error('Mongo filter object must be a plain object.');
+    }
+
+    const sanitized = {};
+    for (const key of Object.keys(filter_obj)) {
+        validateMongoFieldPath(key);
+        const value = filter_obj[key];
+        if (isPlainObject(value)) {
+            throw new Error(`Refusing non-literal Mongo filter value for '${key}'.`);
+        }
+        sanitized[key] = {$eq: sanitizeMongoLiteralValue(value)};
+    }
+    return sanitized;
+}
+
+function sanitizeMongoUpdateSetObject(update_obj) {
+    if (!isPlainObject(update_obj)) {
+        throw new Error('Mongo update object must be a plain object.');
+    }
+
+    const sanitized = {};
+    for (const key of Object.keys(update_obj)) {
+        if (key === '_id') continue;
+        validateMongoFieldPath(key);
+        sanitized[key] = sanitizeMongoLiteralValue(update_obj[key]);
+    }
+    return sanitized;
+}
+
 function setDB(input_db, input_users_db) {
     db = input_db; users_db = input_users_db;
     exports.db = input_db;
@@ -361,21 +426,35 @@ exports.updateRecord = async (table, filter_obj, update_obj, nested_mode = false
         return false;
     }
 
+    let sanitized_update_obj = null;
+    try {
+        sanitized_update_obj = sanitizeMongoUpdateSetObject(update_obj);
+    } catch (err) {
+        logger.error(`Refusing unsafe update for table '${table}': ${err.message}`);
+        return false;
+    }
+
     // local db override
     if (using_local_db) {
         if (nested_mode) {
             // if object is nested we need to handle it differently
-            update_obj = utils.convertFlatObjectToNestedObject(update_obj);
-            exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').merge(update_obj).write();
+            sanitized_update_obj = utils.convertFlatObjectToNestedObject(sanitized_update_obj);
+            exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').merge(sanitized_update_obj).write();
             return true;
         }
-        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').assign(update_obj).write();
+        exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'find').assign(sanitized_update_obj).write();
         return true;
     }
 
-    // sometimes _id will be in the update obj, this breaks mongodb
-    if (update_obj['_id']) delete update_obj['_id'];
-    const output = await database.collection(table).updateOne(filter_obj, {$set: update_obj});
+    let sanitized_filter_obj = null;
+    try {
+        sanitized_filter_obj = sanitizeMongoLiteralFilter(filter_obj || {});
+    } catch (err) {
+        logger.error(`Refusing unsafe update filter for table '${table}': ${err.message}`);
+        return false;
+    }
+
+    const output = await database.collection(table).updateOne(sanitized_filter_obj, {$set: sanitized_update_obj});
     return !!(output['result']['ok']);
 }
 
@@ -385,20 +464,36 @@ exports.updateRecords = async (table, filter_obj, update_obj) => {
         return false;
     }
 
+    let sanitized_update_obj = null;
+    try {
+        sanitized_update_obj = sanitizeMongoUpdateSetObject(update_obj);
+    } catch (err) {
+        logger.error(`Refusing unsafe bulk update for table '${table}': ${err.message}`);
+        return false;
+    }
+
     // local db override
     if (using_local_db) {
         exports.applyFilterLocalDB(local_db.get(table), filter_obj, 'filter').each((record) => {
-            const props_to_update = Object.keys(update_obj);
+            const props_to_update = Object.keys(sanitized_update_obj);
             for (let i = 0; i < props_to_update.length; i++) {
                 const prop_to_update = props_to_update[i];
-                const prop_value = update_obj[prop_to_update];
+                const prop_value = sanitized_update_obj[prop_to_update];
                 record[prop_to_update] = prop_value;
             }
         }).write();
         return true;
     }
 
-    const output = await database.collection(table).updateMany(filter_obj, {$set: update_obj});
+    let sanitized_filter_obj = null;
+    try {
+        sanitized_filter_obj = sanitizeMongoLiteralFilter(filter_obj || {});
+    } catch (err) {
+        logger.error(`Refusing unsafe bulk update filter for table '${table}': ${err.message}`);
+        return false;
+    }
+
+    const output = await database.collection(table).updateMany(sanitized_filter_obj, {$set: sanitized_update_obj});
     return !!(output['result']['ok']);
 }
 

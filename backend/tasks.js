@@ -17,49 +17,42 @@ const scheduler = require('node-schedule');
 const TASKS = {
     backup_local_db: {
         run: db_api.backupDB,
-        title: 'Backup DB',
-        job: null
+        title: 'Backup DB'
     },
     missing_files_check: {
         run: checkForMissingFiles,
         confirm: deleteMissingFiles,
-        title: 'Missing files check',
-        job: null
+        title: 'Missing files check'
     },
     missing_db_records: {
         run: files_api.importUnregisteredFiles,
-        title: 'Import missing DB records',
-        job: null
+        title: 'Import missing DB records'
     },
     duplicate_files_check: {
         run: checkForDuplicateFiles,
         confirm: removeDuplicates,
-        title: 'Find duplicate files in DB',
-        job: null
+        title: 'Find duplicate files in DB'
     },
     youtubedl_update_check: {
         run: youtubedl_api.checkForYoutubeDLUpdate,
         confirm: youtubedl_api.updateYoutubeDL,
-        title: 'Update youtube-dl',
-        job: null
+        title: 'Update youtube-dl'
     },
     delete_old_files: {
         run: checkForAutoDeleteFiles,
         confirm: autoDeleteFiles,
-        title: 'Delete old files',
-        job: null
+        title: 'Delete old files'
     },
     import_legacy_archives: {
         run: archive_api.importArchives,
-        title: 'Import legacy archives',
-        job: null
+        title: 'Import legacy archives'
     },
     rebuild_database: {
         run: rebuildDB,
-        title: 'Rebuild database',
-        job: null
+        title: 'Rebuild database'
     }
 }
+const TASK_JOBS = new Map();
 
 const defaultOptions = {
     all: {
@@ -150,7 +143,7 @@ exports.setupTasks = async () => {
                     await db_api.updateRecord('tasks', {key: task_key}, {schedule: null});
                     continue;
                 }
-                TASKS[task_key]['job'] = scheduleJob(task_key, task_in_db['schedule']);
+                TASK_JOBS.set(task_key, scheduleJob(task_key, task_in_db['schedule']));
             }
         }
     }
@@ -206,12 +199,13 @@ exports.updateTaskSchedule = async (task_key, schedule) => {
         return false;
     }
     await db_api.updateRecord('tasks', {key: task_key}, {schedule: schedule});
-    if (TASKS[task_key]['job']) {
-        TASKS[task_key]['job'].cancel();
-        TASKS[task_key]['job'] = null;
+    const existingJob = TASK_JOBS.get(task_key);
+    if (existingJob) {
+        existingJob.cancel();
+        TASK_JOBS.delete(task_key);
     }
     if (schedule) {
-        TASKS[task_key]['job'] = scheduleJob(task_key, schedule);
+        TASK_JOBS.set(task_key, scheduleJob(task_key, schedule));
     }
 }
 

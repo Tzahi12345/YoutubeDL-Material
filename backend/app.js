@@ -422,11 +422,22 @@ async function updateServer(tag) {
 
 async function downloadReleaseFiles(tag) {
     tag = tag ? tag : await getLatestVersion();
+    const safeTag = getValidatedReleaseTag(tag);
+    const releaseZipPath = getSafeReleaseZipPath(tag);
+    if (!safeTag || !releaseZipPath) {
+        logger.error(`Refusing to install release with invalid tag: ${tag}`);
+        return false;
+    }
+
     return new Promise(async resolve => {
         logger.info('Downloading new files...')
 
         // downloads the latest release zip file
-        await downloadReleaseZip(tag);
+        const zipDownloaded = await downloadReleaseZip(safeTag);
+        if (!zipDownloaded) {
+            resolve(false);
+            return;
+        }
 
         // deletes contents of public dir
         fs.removeSync(path.join(__dirname, 'public'));
@@ -436,10 +447,10 @@ async function downloadReleaseFiles(tag) {
                                     'youtubedl-material/appdata/db.json',
                                     'youtubedl-material/appdata/users.json',
                                     'youtubedl-material/appdata/*']
-        logger.info(`Installing update ${tag}...`)
+        logger.info(`Installing update ${safeTag}...`)
 
         // downloads new package.json and adds new public dir files from the downloaded zip
-        fs.createReadStream(path.join(__dirname, `youtubedl-material-release-${tag}.zip`)).pipe(unzipper.Parse())
+        fs.createReadStream(releaseZipPath).pipe(unzipper.Parse())
         .on('entry', function (entry) {
             var fileName = entry.path;
             var is_dir = fileName.substring(fileName.length-1, fileName.length) === '/'
@@ -486,33 +497,27 @@ async function downloadReleaseFiles(tag) {
 
 async function downloadReleaseZip(tag) {
     return new Promise(async resolve => {
-        if (typeof tag !== 'string' || !/^v[0-9A-Za-z][0-9A-Za-z._-]*$/.test(tag)) {
+        const safeTag = getValidatedReleaseTag(tag);
+        const resolvedOutputPath = getSafeReleaseZipPath(tag);
+        if (!safeTag || !resolvedOutputPath) {
             logger.error(`Refusing to download release with invalid tag: ${tag}`);
             resolve(false);
             return;
         }
 
         // get name of zip file, which depends on the version
-        const tag_without_v = tag.substring(1, tag.length);
+        const tag_without_v = safeTag.substring(1, safeTag.length);
         const zip_file_name = `youtubedl-material-${tag_without_v}.zip`;
-        const latest_zip_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(zip_file_name)}`;
-        let output_path = path.join(__dirname, `youtubedl-material-release-${tag}.zip`);
-        const resolvedOutputPath = path.resolve(output_path);
-        const relativeOutputPath = path.relative(__dirname, resolvedOutputPath);
-        if (relativeOutputPath.startsWith('..') || path.isAbsolute(relativeOutputPath)) {
-            logger.error(`Refusing to write update zip outside application directory for tag ${tag}`);
-            resolve(false);
-            return;
-        }
+        const latest_zip_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${encodeURIComponent(safeTag)}/${encodeURIComponent(zip_file_name)}`;
 
         // download zip from release
         const res = await fetch(latest_zip_link);
         if (!res.ok) {
-            logger.error(`Failed to download release zip for ${tag}: HTTP ${res.status}`);
+            logger.error(`Failed to download release zip for ${safeTag}: HTTP ${res.status}`);
             resolve(false);
             return;
         }
-        await utils.writeFetchResponseToFile(res, fs.createWriteStream(resolvedOutputPath), 'update ' + tag);
+        await utils.writeFetchResponseToFile(res, fs.createWriteStream(resolvedOutputPath), 'update ' + safeTag);
         resolve(true);
     });
 
@@ -709,6 +714,35 @@ function loadConfigValues() {
 function getOrigin() {
     if (process.env.CODESPACES) return `https://${process.env.CODESPACE_NAME}-4200.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`;
     return url_domain.origin;
+}
+
+const VALID_RELEASE_TAG_PATTERN = /^v[0-9A-Za-z][0-9A-Za-z._-]*$/;
+const XML_ENTITY_MAP = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;'
+};
+
+function getValidatedReleaseTag(tag) {
+    return (typeof tag === 'string' && VALID_RELEASE_TAG_PATTERN.test(tag)) ? tag : null;
+}
+
+function getSafeReleaseZipPath(tag) {
+    const validTag = getValidatedReleaseTag(tag);
+    if (!validTag) return null;
+
+    const resolvedOutputPath = path.resolve(__dirname, `youtubedl-material-release-${validTag}.zip`);
+    const relativeOutputPath = path.relative(__dirname, resolvedOutputPath);
+    if (relativeOutputPath.startsWith('..') || path.isAbsolute(relativeOutputPath)) return null;
+
+    return resolvedOutputPath;
+}
+
+function escapeXmlEntities(value) {
+    if (value === undefined || value === null) return value;
+    return String(value).replace(/[&<>"']/g, char => XML_ENTITY_MAP[char]);
 }
 
 // gets a list of config items that are stored as an environment variable
@@ -2541,7 +2575,7 @@ app.get('/api/rss', async function (req, res) {
             contributor: [],
             date: file.timestamp,
             // https://stackoverflow.com/a/45415677/8088021
-            image: file.thumbnailURL.replace('&', '&amp;')
+            image: escapeXmlEntities(file.thumbnailURL)
         });
       });
     res.send(feed.rss2());
