@@ -162,7 +162,15 @@ app.use(bodyParser.json());
 
 // use passport
 app.use(auth_api.passport.initialize());
-app.use(session({ secret: uuid(), resave: true, saveUninitialized: true }))
+app.use(session({
+    secret: uuid(),
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'strict'
+    }
+}))
 app.use(auth_api.passport.session());
 
 // reverse proxy whitelist
