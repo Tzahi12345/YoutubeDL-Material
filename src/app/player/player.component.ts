@@ -94,7 +94,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.cdr.detectChanges();
-    this.postsService.sidenav.close();
+    // On hard refresh, AppComponent may not have assigned the shared sidenav yet.
+    setTimeout(() => this.postsService.sidenav?.close());
   }
 
   ngOnDestroy(): void {
