@@ -64,7 +64,7 @@
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
-    "ajv": "^7.2.4",
+    "ajv": "^8.18.0",
     "codelyzer": "^6.0.0",
     "eslint": "^7.32.0",
     "jasmine-core": "~3.6.0",
