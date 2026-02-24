@@ -1,16 +1,29 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, NgZone } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { diagEvent, diagHttpCallback } from './diagnostics';
+
+function runInAngularZone<T>(source$: Observable<T>, ngZone: NgZone): Observable<T> {
+    return new Observable<T>((subscriber) => {
+        const subscription = source$.subscribe({
+            next: (value) => ngZone.run(() => subscriber.next(value)),
+            error: (error) => ngZone.run(() => subscriber.error(error)),
+            complete: () => ngZone.run(() => subscriber.complete())
+        });
+
+        return () => subscription.unsubscribe();
+    });
+}
 
 export const h401InterceptorFn: HttpInterceptorFn = (request, next) => {
     const router = inject(Router);
     const snackBar = inject(MatSnackBar);
+    const ngZone = inject(NgZone);
 
-    return next(request).pipe(
+    return runInAngularZone(next(request), ngZone).pipe(
         tap({
             next: () => diagHttpCallback('next', request.method, request.urlWithParams),
             error: () => diagHttpCallback('error', request.method, request.urlWithParams),
