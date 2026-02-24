@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { registerLocaleData, CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -207,6 +207,7 @@ registerLocaleData(es, 'es');
     providers: [
         PostsService,
         DatePipe,
+        provideZoneChangeDetection(),
         provideHttpClient(withInterceptors([h401InterceptorFn]))
     ],
     bootstrap: [AppComponent]
