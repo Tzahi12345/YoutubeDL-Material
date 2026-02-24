@@ -240,13 +240,21 @@ export class PostsService {
     canActivate(route: ActivatedRouteSnapshot, state): Promise<boolean> {
         if (this.initialized) {
             return this._canActivate(route);
-        } else {
-            this.service_initialized.subscribe(init => {
+        }
+
+        return new Promise((resolve, reject) => {
+            let sub;
+            sub = this.service_initialized.subscribe(init => {
                 if (init) {
-                    return this._canActivate(route);
+                    if (sub) {
+                        sub.unsubscribe();
+                    }
+                    this._canActivate(route)
+                        .then(resolve)
+                        .catch(reject);
                 }
             });
-        }
+        });
     }
 
     _canActivate(route: ActivatedRouteSnapshot): Promise<boolean> {
