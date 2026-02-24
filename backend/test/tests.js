@@ -584,6 +584,14 @@ describe('Downloader', function() {
         assert(returned_download);
     });
 
+    it('Respect max concurrent downloads sentinel -1', function() {
+        assert.strictEqual(downloader_api.hasReachedConcurrentDownloadLimit(-1, 0), false);
+        assert.strictEqual(downloader_api.hasReachedConcurrentDownloadLimit('-1', 5), false);
+        assert.strictEqual(downloader_api.hasReachedConcurrentDownloadLimit(0, 0), true);
+        assert.strictEqual(downloader_api.hasReachedConcurrentDownloadLimit(1, 0), false);
+        assert.strictEqual(downloader_api.hasReachedConcurrentDownloadLimit(1, 1), true);
+    });
+
     it('Pause file', async function() {
         const returned_download = await downloader_api.createDownload(url, 'video', options);
         await downloader_api.pauseDownload(returned_download['uid']);
