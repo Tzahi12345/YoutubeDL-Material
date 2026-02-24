@@ -10,7 +10,7 @@
     "prebuild": "node src/postbuild.mjs",
     "heroku-postbuild": "npm install --prefix backend",
     "test": "ng test",
-    "lint": "ng lint",
+    "lint": "eslint --ext .ts,.js src",
     "electron": "ng build --base-href ./ && electron .",
     "generate": "openapi --input ./\"Public API v1.yaml\" --output ./src/api-types --exportCore false --exportServices false --exportModels true",
     "i18n-source": "ng extract-i18n --output-path=src/assets/i18n --out-file=messages.en.xlf"
@@ -64,7 +64,6 @@
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "ajv": "^8.18.0",
-    "codelyzer": "^6.0.0",
     "eslint": "^7.32.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
@@ -75,13 +74,16 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "1.5.4",
     "openapi-typescript-codegen": "^0.23.0",
-    "ts-node": "~3.0.4",
-    "tslint": "~6.1.0"
+    "ts-node": "~3.0.4"
   },
   "overrides": {
+    "@angular-devkit/core": {
+      "ajv": "8.18.0"
+    },
     "ngx-avatars": {
       "@angular/common": "15.2.10",
       "@angular/core": "15.2.10"
-    }
+    },
+    "tmp": "0.2.5"
   }
 }
