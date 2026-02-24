@@ -1,34 +1,50 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { ApplicationRef, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
-@Injectable()
-export class H401Interceptor implements HttpInterceptor {
+let tickQueued = false;
 
-    constructor(private router: Router, private snackBar: MatSnackBar) { }
+function scheduleUiTick(appRef: ApplicationRef): void {
+    if (tickQueued) {
+        return;
+    }
+    tickQueued = true;
+    setTimeout(() => {
+        tickQueued = false;
+        try {
+            appRef.tick();
+        } catch {
+            // Ignore if Angular is mid-navigation or being destroyed.
+        }
+    });
+}
 
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return next.handle(request).pipe(catchError(err => {
+export const h401InterceptorFn: HttpInterceptorFn = (request, next) => {
+    const router = inject(Router);
+    const snackBar = inject(MatSnackBar);
+    const appRef = inject(ApplicationRef);
+
+    return next(request).pipe(
+        tap({
+            next: () => scheduleUiTick(appRef),
+            error: () => scheduleUiTick(appRef),
+            complete: () => scheduleUiTick(appRef)
+        }),
+        catchError((err: HttpErrorResponse) => {
             if (err.status === 401) {
                 localStorage.setItem('jwt_token', null);
-                if (this.router.url !== '/login' && !this.router.url.includes('player')) {
-                    this.router.navigate(['/login']).then(() => {
-                        this.openSnackBar('Login expired, please login again.');
+                if (router.url !== '/login' && !router.url.includes('player')) {
+                    router.navigate(['/login']).then(() => {
+                        snackBar.open('Login expired, please login again.', '', { duration: 2000 });
                     });
                 }
             }
 
-            const error = err.error.message || err.statusText;
+            const error = err?.error?.message || err?.statusText || 'Request failed';
             return throwError(error);
-        }));
-    }
-
-    public openSnackBar(message: string, action: string = '') {
-        this.snackBar.open(message, action, {
-          duration: 2000,
-        });
-      }
-}
+        })
+    );
+};
