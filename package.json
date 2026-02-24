@@ -81,8 +81,8 @@
       "ajv": "8.18.0"
     },
     "ngx-avatars": {
-      "@angular/common": "15.2.10",
-      "@angular/core": "15.2.10"
+      "@angular/common": "21.1.5",
+      "@angular/core": "21.1.5"
     },
     "tmp": "0.2.5"
   }
