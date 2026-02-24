@@ -37,7 +37,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
@@ -150,6 +150,10 @@ registerLocaleData(es, 'es');
         OnlyNumberDirective,
         ArchiveViewerComponent
     ],
+    exports: [
+        HighlightPipe,
+        LinkifyPipe
+    ],
     imports: [
         CommonModule,
         BrowserModule,
@@ -160,7 +164,6 @@ registerLocaleData(es, 'es');
         MatInputModule,
         MatSelectModule,
         ReactiveFormsModule,
-        HttpClientModule,
         MatToolbarModule,
         MatCardModule,
         MatSnackBarModule,
@@ -199,16 +202,13 @@ registerLocaleData(es, 'es');
         VgOverlayPlayModule,
         VgBufferingModule,
         RouterModule,
-        AppRoutingModule,
+        AppRoutingModule
     ],
     providers: [
         PostsService,
         { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true },
-        DatePipe
-    ],
-    exports: [
-        HighlightPipe,
-        LinkifyPipe
+        DatePipe,
+        provideHttpClient(withInterceptorsFromDi())
     ],
     bootstrap: [AppComponent]
 })

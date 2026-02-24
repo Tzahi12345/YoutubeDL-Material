@@ -27,11 +27,11 @@ $custom-typography: mat-typography-config(
 @include mat.core();
 
 // Default colors
-$my-app-primary: mat.define-palette(mat.$light-blue-palette, 700, 100, 800);
-$my-app-accent:  mat.define-palette(mat.$blue-palette, 700, 100, 800);
-$my-app-warn: mat.define-palette(mat.$red-palette, 700, 100, 800);
+$my-app-primary: mat.m2-define-palette(mat.$m2-light-blue-palette, 700, 100, 800);
+$my-app-accent:  mat.m2-define-palette(mat.$m2-blue-palette, 700, 100, 800);
+$my-app-warn: mat.m2-define-palette(mat.$m2-red-palette, 700, 100, 800);
 
-$my-app-theme: mat.define-light-theme((
+$my-app-theme: mat.m2-define-light-theme((
   color: (
     primary: $my-app-primary,
     accent: $my-app-accent,
@@ -41,11 +41,11 @@ $my-app-theme: mat.define-light-theme((
 @include mat.all-component-themes($my-app-theme);
 
 // Dark theme
-$dark-primary: mat.define-palette(mat.$light-blue-palette, 700, 100, 800);
-$dark-accent:  mat.define-palette(mat.$blue-palette);
-$dark-warn:    mat.define-palette(mat.$deep-orange-palette);
+$dark-primary: mat.m2-define-palette(mat.$m2-light-blue-palette, 700, 100, 800);
+$dark-accent:  mat.m2-define-palette(mat.$m2-blue-palette);
+$dark-warn:    mat.m2-define-palette(mat.$m2-deep-orange-palette);
 
-$dark-theme: mat.define-dark-theme((
+$dark-theme: mat.m2-define-dark-theme((
   color: (
     primary: $dark-primary,
     accent: $dark-accent,
@@ -62,11 +62,11 @@ $dark-theme: mat.define-dark-theme((
 }
 
 // Light theme
-$light-primary: mat.define-palette(mat.$grey-palette, 200, 500, 300);
-$light-accent: mat.define-palette(mat.$brown-palette, 200);
-$light-warn: mat.define-palette(mat.$deep-orange-palette, 200);
+$light-primary: mat.m2-define-palette(mat.$m2-grey-palette, 200, 500, 300);
+$light-accent: mat.m2-define-palette(mat.$m2-brown-palette, 200);
+$light-warn: mat.m2-define-palette(mat.$m2-deep-orange-palette, 200);
 
-$light-theme: mat.define-light-theme((
+$light-theme: mat.m2-define-light-theme((
   color: (
     primary: $light-primary,
     accent: $light-accent,
