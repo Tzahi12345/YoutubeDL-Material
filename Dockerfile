@@ -33,10 +33,16 @@ RUN mkdir /usr/local/nvm
 ENV PATH="/usr/local/nvm/current/bin:${PATH}"
 ENV NVM_DIR=/usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-RUN . "$NVM_DIR/nvm.sh" && \
+RUN apt update && \
+    apt install -y --no-install-recommends python3 python-is-python3 make g++ && \
+    . "$NVM_DIR/nvm.sh" && \
     nvm install ${NODE_VERSION} && \
     nvm use v${NODE_VERSION} && \
     nvm alias default v${NODE_VERSION} && \
+    apt purge -y python3 python-is-python3 make g++ && \
+    apt autoremove -y --purge && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/* && \
     rm -f "$NVM_DIR/current" && \
     ln -s "$(dirname "$(dirname "$(command -v node)")")" "$NVM_DIR/current"
 
