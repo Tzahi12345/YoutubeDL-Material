@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { DatabaseFile, FileType, FileTypeFilter, Sort } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { distinctUntilChanged, filter, take } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatChipListboxChange } from '@angular/material/chips';
 import { MatSelectionListChange } from '@angular/material/list';
@@ -141,8 +141,9 @@ export class RecentVideosComponent implements OnInit {
     this.selected_data_objs = this.defaultSelected;    
 
     this.searchChangedSubject
-      .debounceTime(500)
-      .pipe(distinctUntilChanged()
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged()
       ).subscribe(model => {
         if (model.length > 0) {
           this.search_mode = true;

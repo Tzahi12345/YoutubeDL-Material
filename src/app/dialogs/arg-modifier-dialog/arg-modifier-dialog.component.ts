@@ -5,8 +5,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { UntypedFormControl } from '@angular/forms';
 import { args, ArgsByCategory, args_info } from './youtubedl_args';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators/map';
-import { startWith } from 'rxjs/operators/startWith';
+import { map, startWith } from 'rxjs/operators';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Pipe({

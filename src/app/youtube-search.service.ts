@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class Result {
   id: string
@@ -49,7 +50,7 @@ export class YoutubeSearchService {
       `maxResults=5`
     ].join('&')
     const queryUrl = `${this.url}?${params}`
-    return this.http.get(queryUrl).map(response => {
+    return this.http.get(queryUrl).pipe(map(response => {
       return <any>response['items'].map(item => {
         return new Result({
           id: item.id.videoId,
@@ -59,7 +60,7 @@ export class YoutubeSearchService {
           uploaded: item.snippet.publishedAt
         })
       })
-    })
+    }))
   }
 
   // checks if url is a valid URL
