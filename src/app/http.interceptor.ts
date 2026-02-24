@@ -1,5 +1,5 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable, NgZone } from '@angular/core';
+import { ApplicationRef, Injectable, NgZone } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
@@ -7,15 +7,40 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class H401Interceptor implements HttpInterceptor {
+    private tickQueued = false;
 
-    constructor(private router: Router, private snackBar: MatSnackBar, private ngZone: NgZone) { }
+    constructor(private router: Router, private snackBar: MatSnackBar, private ngZone: NgZone, private appRef: ApplicationRef) { }
+
+    private scheduleTick(): void {
+        if (this.tickQueued) {
+            return;
+        }
+        this.tickQueued = true;
+        setTimeout(() => {
+            this.tickQueued = false;
+            try {
+                this.appRef.tick();
+            } catch {
+                // Ignore if Angular is mid-destroy/navigation.
+            }
+        });
+    }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const zonedResponse$ = new Observable<HttpEvent<any>>(observer => {
             const subscription = next.handle(request).subscribe({
-                next: (event) => this.ngZone.run(() => observer.next(event)),
-                error: (err) => this.ngZone.run(() => observer.error(err)),
-                complete: () => this.ngZone.run(() => observer.complete())
+                next: (event) => this.ngZone.run(() => {
+                    observer.next(event);
+                    this.scheduleTick();
+                }),
+                error: (err) => this.ngZone.run(() => {
+                    observer.error(err);
+                    this.scheduleTick();
+                }),
+                complete: () => this.ngZone.run(() => {
+                    observer.complete();
+                    this.scheduleTick();
+                })
             });
 
             return () => subscription.unsubscribe();
