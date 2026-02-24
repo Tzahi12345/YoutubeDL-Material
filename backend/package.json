@@ -25,7 +25,7 @@
   "dependencies": {
     "@discordjs/builders": "^1.6.1",
     "@discordjs/core": "^0.5.2",
-    "archiver": "^5.3.1",
+    "archiver": "^4.0.2",
     "async": "^3.2.3",
     "async-mutex": "^0.4.0",
     "axios": "^1.13.5",
@@ -46,7 +46,7 @@
     "lodash": "^4.17.23",
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
-    "mocha": "^9.2.2",
+    "mocha": "^10.8.2",
     "moment": "^2.29.4",
     "mongodb": "^3.6.9",
     "multer": "^2.0.2",
@@ -63,7 +63,7 @@
     "ps-node": "^0.1.6",
     "read-last-lines": "^1.7.2",
     "rxjs": "^7.3.0",
-    "shortid": "^2.2.15",
+    "shortid": "^2.2.17",
     "tree-kill": "^1.2.2",
     "unzipper": "^0.10.10",
     "uuid": "^9.0.1",
@@ -71,12 +71,13 @@
     "xmlbuilder2": "^3.0.2"
   },
   "overrides": {
+    "braces": "3.0.3",
+    "cross-spawn": "7.0.6",
     "mocha": {
-      "diff": "5.2.2",
-      "js-yaml": "4.1.1",
-      "nanoid": "3.3.8",
-      "serialize-javascript": "6.0.2"
+      "js-yaml": "4.1.1"
     },
+    "undici": "5.29.0",
+    "ws": "8.17.1",
     "xmlbuilder2": {
       "js-yaml": "3.14.2"
     }
