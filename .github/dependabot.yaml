@@ -12,6 +12,24 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      angular-toolchain:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+          - "@schematics/angular"
+          - "typescript"
+          - "zone.js"
+          - "rxjs"
+      lint-tooling:
+        patterns:
+          - "eslint"
+          - "@typescript-eslint/*"
+          - "@angular-eslint/*"
+    ignore:
+      - dependency-name: "@angular-devkit/build-angular"
+        update-types:
+          - "version-update:semver-major"
   - package-ecosystem: "npm"
     directory: "/backend/"
     schedule:
