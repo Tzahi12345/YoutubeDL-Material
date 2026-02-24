@@ -99,7 +99,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.innerWidth = window.innerWidth;
     this.recalculateColumns();
