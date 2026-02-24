@@ -153,6 +153,7 @@ If you're interested in translating the app into a new language, check out the [
 ## Authors
 
 * **Isaac Grynsztein** (me!) - *Initial work*
+* **voc0der** - *Current maintenance*
 
 Official translators:
 
