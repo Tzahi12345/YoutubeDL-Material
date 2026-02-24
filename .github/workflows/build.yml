@@ -17,7 +17,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v6
         with:
-          node-version: '16'
+          node-version: '24'
           cache: 'npm'
       - name: install dependencies
         run: |
