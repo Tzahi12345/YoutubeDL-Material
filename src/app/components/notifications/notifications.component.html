@@ -5,7 +5,7 @@
   <div>
     <div class="notifications-list-parent">
       <mat-chip-listbox [value]="selectedFilters" [multiple]="true" (change)="selectedFiltersChanged($event)">
-        @for (filter of notificationFilters | keyvalue: originalOrder; track filter) {
+        @for (filter of notificationFilters | keyvalue: originalOrder; track filter.key) {
           <mat-chip-option [value]="filter.key" [selected]="selectedFilters.includes(filter.key)" color="accent">{{filter.value.label}}</mat-chip-option>
         }
       </mat-chip-listbox>

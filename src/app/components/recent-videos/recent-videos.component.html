@@ -25,7 +25,7 @@
   <!-- Filters -->
   <div class="row justify-content-center">
     <mat-chip-listbox class="filter-list" [value]="selectedFilters" [multiple]="true" (change)="selectedFiltersChanged($event)">
-      @for (filter of fileFilters | keyvalue: originalOrder; track filter) {
+      @for (filter of fileFilters | keyvalue: originalOrder; track filter.key) {
         <mat-chip-option [value]="filter.key" [selected]="selectedFilters.includes(filter.key)" color="accent">{{filter.value.label}}</mat-chip-option>
       }
     </mat-chip-listbox>
@@ -38,9 +38,9 @@
       <div class="row justify-content-center">
         <!-- Real cards -->
         @if (normal_files_received && paged_data) {
-          @for (file of paged_data; track file; let i = $index) {
+          @for (file of paged_data; track file.uid; let i = $index) {
             <div style="display: flex; align-items: center;" class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[ postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
-              <app-unified-file-card [ngClass]="downloading_content[file.uid] ? 'blurred' : ''" [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" (toggleFavorite)="toggleFavorite($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [availablePlaylists]="playlists" (addFileToPlaylist)="addFileToPlaylist($event)" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? this.postsService.token : ''"></app-unified-file-card>
+              <app-unified-file-card [ngClass]="downloading_content[file.uid] ? 'blurred' : ''" [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" (goToFile)="goToFile($event)" (goToSubscription)="goToSubscription($event)" (toggleFavorite)="toggleFavorite($event)" [file_obj]="file" [use_youtubedl_archive]="postsService.config['Downloader']['use_youtubedl_archive']" [availablePlaylists]="playlists" (addFileToPlaylist)="addFileToPlaylist($event)" [loading]="false" (deleteFile)="deleteFile($event)" [baseStreamPath]="postsService.path" [jwtString]="postsService.isLoggedIn ? this.postsService.token : ''" [apiKeyString]="!postsService.isLoggedIn ? postsService.auth_token : ''"></app-unified-file-card>
               @if (downloading_content[file.uid]) {
                 <mat-spinner class="downloading-spinner" [diameter]="32"></mat-spinner>
               }
@@ -54,7 +54,7 @@
         }
         <!-- Fake cards -->
         <ng-container>
-          @for (file of loading_files; track file; let i = $index) {
+          @for (file of loading_files; track $index; let i = $index) {
             <div class="mb-2 mt-2 d-flex justify-content-center" [ngClass]="[normal_files_received ? 'hide' : '', postsService.card_size === 'small' ? 'col-2 small-col' : '', postsService.card_size === 'medium' ? 'col-6 col-lg-4 medium-col' : '', postsService.card_size === 'large' ? 'col-12 large-col' : '' ]">
               <app-unified-file-card [index]="i" [card_size]="postsService.card_size" [locale]="postsService.locale" [loading]="true" [theme]="postsService.theme"></app-unified-file-card>
             </div>
@@ -84,7 +84,7 @@
           @if (selected_data.length) {
             <mat-button-toggle-group class="media-list" cdkDropList (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical #group="matButtonToggleGroup">
               <!-- The following for loop can be optimized but it requires a pipe https://stackoverflow.com/a/35703364/8088021 -->
-              @for (file of (reverse_order ? selected_data_objs.slice().reverse() : selected_data_objs); track file; let i = $index) {
+              @for (file of (reverse_order ? selected_data_objs.slice().reverse() : selected_data_objs); track file.uid; let i = $index) {
                 <mat-button-toggle class="media-box" cdkDrag [checked]="false"><div><div class="playlist-item-text">{{file.title}}</div> <button (click)="removeSelectedFile(i)" class="remove-item-button" mat-icon-button><mat-icon>cancel</mat-icon></button></div></mat-button-toggle>
               }
             </mat-button-toggle-group>
@@ -98,7 +98,7 @@
         <mat-tab label="Select files" i18n-label="Select files">
           @if (normal_files_received) {
             <mat-selection-list (selectionChange)="fileSelectionChanged($event)">
-              @for (file of paged_data; track file) {
+              @for (file of paged_data; track file.uid) {
                 <mat-list-option [selected]="selected_data.includes(file.uid)" [value]="file">
                   <div class="container">
                     <div class="row justify-content-center">
@@ -116,7 +116,7 @@
           @if (!normal_files_received && loading_files && loading_files.length > 0) {
             @if (!normal_files_received) {
               <mat-selection-list>
-                @for (file of paged_data; track file) {
+                @for (file of paged_data; track $index) {
                   <mat-list-option>
                     <content-loader class="list-ghosts" [backgroundColor]="postsService.theme.ghost_primary" [foregroundColor]="postsService.theme.ghost_secondary" viewBox="0 0 250 8"><svg:rect x="0" y="0" rx="3" ry="3" width="250" height="8" /></content-loader>
                   </mat-list-option>

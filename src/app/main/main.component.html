@@ -25,7 +25,7 @@
                                             Best
                                         </mat-option>
                       @if (url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats && !cachedAvailableFormats[url]?.formats_failed) {
-                        @for (option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']; track option) {
+                        @for (option of cachedAvailableFormats[url]['formats'][audioOnly ? 'audio' : 'video']; track option.key) {
                           @if (option.key !== 'best_audio_format') {
                             <mat-option [matTooltip]="option.expected_filesize ? humanFileSize(option.expected_filesize) : null" [value]="option">
                               {{option.key}}
@@ -34,7 +34,7 @@
                         }
                       }
                       @if (url && cachedAvailableFormats && cachedAvailableFormats[url]?.formats_failed) {
-                        @for (option of qualityOptions[audioOnly ? 'audio' : 'video']; track option) {
+                        @for (option of qualityOptions[audioOnly ? 'audio' : 'video']; track option.value) {
                           <mat-option [value]="option.value">
                             {{option.label}}
                           </mat-option>
@@ -53,7 +53,7 @@
           </div>
           @if (results_showing) {
             <div class="results-div">
-              @for (result of results; track result; let i = $index) {
+              @for (result of results; track result.videoUrl; let i = $index) {
                 <span>
                   <mat-card appearance="outlined" class="result-card mat-elevation-z7" [ngClass]="[(i === 0 && results.length > 1) ? 'first-result-card' : '', ((i === results.length-1) && results.length > 1) ? 'last-result-card' : '', (results.length === 1) ? 'only-result-card' : '']">
                     <div class="search-card-title">

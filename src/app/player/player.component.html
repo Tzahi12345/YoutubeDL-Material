@@ -8,7 +8,7 @@
               <video [ngClass]="(currentItem.type === 'audio/mp3') ? 'audio-styles' : 'video-styles'" #media class="video-player" [vgMedia]="$any(media)" [src]="currentItem.src" id="singleVideo" preload="auto" controls playsinline>
               </video>
               @if (postsService['config']['API']['use_sponsorblock_API'] && api && playlist?.length > 0 && playlist[currentIndex]['type'] === 'video/mp4') {
-                <app-skip-ad-button (setPlaybackTimestamp)="setPlaybackTimestamp($event)" [current_video]="playlist[currentIndex]" [playback_timestamp]="api.currentTime" class="skip-ad-button"></app-skip-ad-button>
+                <app-skip-ad-button (setPlaybackTimestamp)="setPlaybackTimestamp($event)" [current_video]="playlist[currentIndex]" [playback_timestamp]="api?.currentTime ?? 0" class="skip-ad-button"></app-skip-ad-button>
               }
             </vg-player>
           </div>
@@ -69,17 +69,17 @@
           </div>
           <div style="height: fit-content; width: 100%; margin-top: 10px;">
             <mat-button-toggle-group cdkDropList [cdkDropListSortingDisabled]="true" (cdkDropListDropped)="drop($event)" style="width: 80%; left: 9%" vertical name="videoSelect" aria-label="Video Select" #group="matButtonToggleGroup">
-              @for (playlist_item of playlist; track playlist_item; let i = $index) {
+              @for (playlist_item of playlist; track (playlist_item.uid ?? playlist_item.url ?? $index); let i = $index) {
                 <mat-button-toggle cdkDrag [checked]="currentItem.title === playlist_item.title" (click)="onClickPlaylistItem(playlist_item, i)" class="toggle-button" [value]="playlist_item.title">{{playlist_item.label}}</mat-button-toggle>
               }
             </mat-button-toggle-group>
           </div>
-          @if (db_file && api && postsService.config) {
-            <app-concurrent-stream (setPlaybackRate)="setPlaybackRate($event)" (togglePlayback)="togglePlayback($event)" (setPlaybackTimestamp)="setPlaybackTimestamp($event)" [playing]="api.state === 'playing'" [uid]="uid" [playback_timestamp]="api.time.current/1000" [server_mode]="!postsService.config.Advanced.multi_user_mode || postsService.isLoggedIn"></app-concurrent-stream>
+          @if (db_file && api && api.time && postsService.config) {
+            <app-concurrent-stream (setPlaybackRate)="setPlaybackRate($event)" (togglePlayback)="togglePlayback($event)" (setPlaybackTimestamp)="setPlaybackTimestamp($event)" [playing]="api?.state === 'playing'" [uid]="uid" [playback_timestamp]="(api?.time?.current ?? 0)/1000" [server_mode]="!postsService.config.Advanced.multi_user_mode || postsService.isLoggedIn"></app-concurrent-stream>
           }
           <mat-drawer #drawer class="example-sidenav" mode="side" position="end" [opened]="db_file && db_file['chat_exists']">
             @if (api_ready && db_file && db_file.url.includes('twitch.tv')) {
-              <app-twitch-chat #twitchchat [db_file]="db_file" [current_timestamp]="api.currentTime" [sub]="subscription"></app-twitch-chat>
+              <app-twitch-chat #twitchchat [db_file]="db_file" [current_timestamp]="api?.currentTime ?? 0" [sub]="subscription"></app-twitch-chat>
             }
           </mat-drawer>
         </mat-drawer-container>

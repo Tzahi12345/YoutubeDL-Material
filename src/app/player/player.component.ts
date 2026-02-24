@@ -204,6 +204,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.postsService.isLoggedIn) {
         fullLocation += `&jwt=${this.postsService.token}`;
+      } else if (this.postsService.auth_token) {
+        fullLocation += `&apiKey=${this.postsService.auth_token}`;
       }
       
       if (this.uuid) {

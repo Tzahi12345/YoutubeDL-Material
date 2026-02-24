@@ -50,6 +50,7 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() locale = null;
   @Input() baseStreamPath = null;
   @Input() jwtString = null;
+  @Input() apiKeyString = null;
   @Input() availablePlaylists = null;
   @Output() goToFile = new EventEmitter<any>();
   @Output() toggleFavorite = new EventEmitter<DatabaseFile>();
@@ -77,7 +78,13 @@ export class UnifiedFileCardComponent implements OnInit {
     }
 
     if (this.file_obj && this.file_obj.thumbnailPath) {
-      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}?jwt=${this.jwtString}`;
+      let authQuery = '';
+      if (this.jwtString) {
+        authQuery = `jwt=${this.jwtString}`;
+      } else if (this.apiKeyString) {
+        authQuery = `apiKey=${this.apiKeyString}`;
+      }
+      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}${authQuery ? '?' + authQuery : ''}`;
     }
 
     if (this.file_obj) this.streamURL = this.generateStreamURL();
@@ -140,6 +147,8 @@ export class UnifiedFileCardComponent implements OnInit {
     let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${this.file_obj['uid']}`;
     if (this.jwtString) {
       fullLocation += `&jwt=${this.jwtString}`;
+    } else if (this.apiKeyString) {
+      fullLocation += `&apiKey=${this.apiKeyString}`;
     }
 
     fullLocation += '&t=,10';

@@ -115,14 +115,15 @@ export class RecentVideosComponent implements OnInit {
     if (this.postsService.initialized) {
       this.getAllFiles();
       this.getAllPlaylists();
+    } else {
+      const initSub = this.postsService.service_initialized.subscribe(init => {
+        if (init) {
+          this.getAllFiles();
+          this.getAllPlaylists();
+          initSub.unsubscribe();
+        }
+      });
     }
-
-    this.postsService.service_initialized.subscribe(init => {
-      if (init) {
-        this.getAllFiles();
-        this.getAllPlaylists();
-      }
-    });
 
     this.postsService.files_changed.subscribe(changed => {
       if (changed) {
