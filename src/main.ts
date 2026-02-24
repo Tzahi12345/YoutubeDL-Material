@@ -6,10 +6,13 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { environment } from './environments/environment';
 
 import { loadTranslations } from '@angular/localize';
+import { getYdmDiag } from './app/diagnostics';
 
 if (environment.production) {
   enableProdMode();
 }
+
+getYdmDiag();
 
 const locale = localStorage.getItem('locale');
 if (!locale) {

@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Category, DBInfoResponse } from 'api-types';
 import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-rss-url.component';
 import { filter, take } from 'rxjs/operators';
+import { diagEvent } from 'app/diagnostics';
 
 type CookiesTestResponse = {
   success: boolean;
@@ -112,8 +113,13 @@ export class SettingsComponent implements OnInit {
         // sets new config as old config
         this.initial_config = JSON.parse(JSON.stringify(this.new_config));
         this.postsService.reload_config.next(true);
+        diagEvent('settings.save.success', {
+          settingsSame: this.settingsSame(),
+          multiUserMode: this.new_config?.Advanced?.multi_user_mode
+        }, true);
       }
     }, () => {
+      diagEvent('settings.save.error', {}, true);
       console.error('Failed to save config!');
     })
   }

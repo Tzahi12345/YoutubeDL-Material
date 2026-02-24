@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, HostBinding, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostBinding, AfterViewInit, ApplicationRef, NgZone } from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {PostsService} from './posts.services';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +14,7 @@ import { UserProfileDialogComponent } from './dialogs/user-profile-dialog/user-p
 import { SetDefaultAdminDialogComponent } from './dialogs/set-default-admin-dialog/set-default-admin-dialog.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
+import { diagCount, diagEvent, getYdmDiag } from './diagnostics';
 
 @Component({
     selector: 'app-root',
@@ -47,7 +48,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   notification_count = 0;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
-    public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
+    public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef,
+    private appRef: ApplicationRef, private ngZone: NgZone) {
+
+    this.installDiagnosticsProbe();
 
     this.navigator = localStorage.getItem('player_navigator');
     // runs on navigate, captures the route that navigated to the player (if needed)
@@ -67,6 +71,36 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     });
 
+  }
+
+  private installDiagnosticsProbe(): void {
+    const diag = getYdmDiag();
+    diag.flags['probeInstalled'] = true;
+
+    const appRefAny = this.appRef as any;
+    if (!appRefAny.__ydmTickPatched) {
+      const originalTick = this.appRef.tick.bind(this.appRef);
+      appRefAny.__ydmTickPatched = true;
+      this.appRef.tick = (() => {
+        diagCount('appRef.tick');
+        return originalTick();
+      }) as typeof this.appRef.tick;
+      diagEvent('probe.appRef.tick.patched');
+    }
+
+    if (diag.flags['zoneSubscriptionsInstalled']) {
+      return;
+    }
+
+    diag.flags['zoneSubscriptionsInstalled'] = true;
+    this.ngZone.onUnstable.subscribe(() => diagCount('ngZone.onUnstable'));
+    this.ngZone.onMicrotaskEmpty.subscribe(() => diagCount('ngZone.onMicrotaskEmpty'));
+    this.ngZone.onStable.subscribe(() => diagCount('ngZone.onStable'));
+    this.ngZone.onError.subscribe(err => {
+      diagCount('ngZone.onError');
+      diagEvent('ngZone.onError', { message: err?.message ?? String(err) }, true);
+    });
+    diagEvent('probe.zone.subscriptions.installed');
   }
 
   ngOnInit(): void {

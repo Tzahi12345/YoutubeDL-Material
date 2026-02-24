@@ -3,13 +3,19 @@ import { inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { diagEvent, diagHttpCallback } from './diagnostics';
 
 export const h401InterceptorFn: HttpInterceptorFn = (request, next) => {
     const router = inject(Router);
     const snackBar = inject(MatSnackBar);
 
     return next(request).pipe(
+        tap({
+            next: () => diagHttpCallback('next', request.method, request.urlWithParams),
+            error: () => diagHttpCallback('error', request.method, request.urlWithParams),
+            complete: () => diagHttpCallback('complete', request.method, request.urlWithParams)
+        }),
         catchError((err: HttpErrorResponse) => {
             if (err.status === 401) {
                 localStorage.setItem('jwt_token', null);
@@ -19,6 +25,12 @@ export const h401InterceptorFn: HttpInterceptorFn = (request, next) => {
                     });
                 }
             }
+
+            diagEvent('http.401Interceptor.catchError', {
+                method: request.method,
+                url: request.urlWithParams,
+                status: err.status
+            });
 
             const error = err?.error?.message || err?.statusText || 'Request failed';
             return throwError(error);
