@@ -3,9 +3,10 @@ import { DatabaseFile } from 'api-types';
 import { PostsService } from 'app/posts.services';
 
 @Component({
-  selector: 'app-twitch-chat',
-  templateUrl: './twitch-chat.component.html',
-  styleUrls: ['./twitch-chat.component.scss']
+    selector: 'app-twitch-chat',
+    templateUrl: './twitch-chat.component.html',
+    styleUrls: ['./twitch-chat.component.scss'],
+    standalone: false
 })
 export class TwitchChatComponent implements OnInit, OnDestroy {
 

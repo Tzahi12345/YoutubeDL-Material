@@ -3,9 +3,10 @@ import { PostsService } from 'app/posts.services';
 import { CURRENT_VERSION } from 'app/consts';
 
 @Component({
-  selector: 'app-about-dialog',
-  templateUrl: './about-dialog.component.html',
-  styleUrls: ['./about-dialog.component.scss']
+    selector: 'app-about-dialog',
+    templateUrl: './about-dialog.component.html',
+    styleUrls: ['./about-dialog.component.scss'],
+    standalone: false
 })
 export class AboutDialogComponent implements OnInit {
 

@@ -3,9 +3,10 @@ import { PostsService } from 'app/posts.services';
 import CryptoJS from 'crypto-js';
 
 @Component({
-  selector: 'app-skip-ad-button',
-  templateUrl: './skip-ad-button.component.html',
-  styleUrls: ['./skip-ad-button.component.scss']
+    selector: 'app-skip-ad-button',
+    templateUrl: './skip-ad-button.component.html',
+    styleUrls: ['./skip-ad-button.component.scss'],
+    standalone: false
 })
 export class SkipAdButtonComponent implements OnInit {
 

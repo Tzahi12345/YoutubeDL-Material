@@ -12,9 +12,10 @@ import { TaskSettingsComponent } from '../task-settings/task-settings.component'
 import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
-  selector: 'app-tasks',
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.scss']
+    selector: 'app-tasks',
+    templateUrl: './tasks.component.html',
+    styleUrls: ['./tasks.component.scss'],
+    standalone: false
 })
 export class TasksComponent implements OnInit {
 

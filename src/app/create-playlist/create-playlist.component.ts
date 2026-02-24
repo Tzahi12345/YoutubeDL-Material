@@ -5,9 +5,10 @@ import { PostsService } from 'app/posts.services';
 import { Playlist } from 'api-types';
 
 @Component({
-  selector: 'app-create-playlist',
-  templateUrl: './create-playlist.component.html',
-  styleUrls: ['./create-playlist.component.scss']
+    selector: 'app-create-playlist',
+    templateUrl: './create-playlist.component.html',
+    styleUrls: ['./create-playlist.component.scss'],
+    standalone: false
 })
 export class CreatePlaylistComponent implements OnInit {
   // really "createAndModifyPlaylistDialogComponent"

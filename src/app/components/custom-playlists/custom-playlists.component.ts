@@ -7,9 +7,10 @@ import { Playlist } from 'api-types';
 import { saveAs } from 'file-saver';
 
 @Component({
-  selector: 'app-custom-playlists',
-  templateUrl: './custom-playlists.component.html',
-  styleUrls: ['./custom-playlists.component.scss']
+    selector: 'app-custom-playlists',
+    templateUrl: './custom-playlists.component.html',
+    styleUrls: ['./custom-playlists.component.scss'],
+    standalone: false
 })
 export class CustomPlaylistsComponent implements OnInit {
 

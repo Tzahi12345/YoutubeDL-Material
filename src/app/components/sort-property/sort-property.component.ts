@@ -2,9 +2,10 @@ import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { Sort } from 'api-types';
 
 @Component({
-  selector: 'app-sort-property',
-  templateUrl: './sort-property.component.html',
-  styleUrls: ['./sort-property.component.scss']
+    selector: 'app-sort-property',
+    templateUrl: './sort-property.component.html',
+    styleUrls: ['./sort-property.component.scss'],
+    standalone: false
 })
 export class SortPropertyComponent {
   sortProperties = {

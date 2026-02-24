@@ -11,9 +11,10 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Download } from 'api-types';
 
 @Component({
-  selector: 'app-downloads',
-  templateUrl: './downloads.component.html',
-  styleUrls: ['./downloads.component.scss']
+    selector: 'app-downloads',
+    templateUrl: './downloads.component.html',
+    styleUrls: ['./downloads.component.scss'],
+    standalone: false
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
 

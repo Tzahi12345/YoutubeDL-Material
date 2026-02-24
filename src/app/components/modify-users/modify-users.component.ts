@@ -11,9 +11,10 @@ import { ManageRoleComponent } from '../manage-role/manage-role.component';
 import { User } from 'api-types';
 
 @Component({
-  selector: 'app-modify-users',
-  templateUrl: './modify-users.component.html',
-  styleUrls: ['./modify-users.component.scss']
+    selector: 'app-modify-users',
+    templateUrl: './modify-users.component.html',
+    styleUrls: ['./modify-users.component.scss'],
+    standalone: false
 })
 export class ModifyUsersComponent implements OnInit, AfterViewInit {
 

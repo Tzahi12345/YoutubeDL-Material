@@ -8,9 +8,10 @@ type CookiesTestResponse = {
 };
 
 @Component({
-  selector: 'app-cookies-uploader-dialog',
-  templateUrl: './cookies-uploader-dialog.component.html',
-  styleUrls: ['./cookies-uploader-dialog.component.scss']
+    selector: 'app-cookies-uploader-dialog',
+    templateUrl: './cookies-uploader-dialog.component.html',
+    styleUrls: ['./cookies-uploader-dialog.component.scss'],
+    standalone: false
 })
 export class CookiesUploaderDialogComponent implements OnInit {
   public files: NgxFileDropEntry[] = [];

@@ -4,9 +4,10 @@ import { PostsService } from 'app/posts.services';
 import { ArgModifierDialogComponent } from '../arg-modifier-dialog/arg-modifier-dialog.component';
 
 @Component({
-  selector: 'app-edit-subscription-dialog',
-  templateUrl: './edit-subscription-dialog.component.html',
-  styleUrls: ['./edit-subscription-dialog.component.scss']
+    selector: 'app-edit-subscription-dialog',
+    templateUrl: './edit-subscription-dialog.component.html',
+    styleUrls: ['./edit-subscription-dialog.component.scss'],
+    standalone: false
 })
 export class EditSubscriptionDialogComponent implements OnInit {
 

@@ -11,9 +11,10 @@ import { MatSelectionListChange } from '@angular/material/list';
 import { saveAs } from 'file-saver';
 
 @Component({
-  selector: 'app-recent-videos',
-  templateUrl: './recent-videos.component.html',
-  styleUrls: ['./recent-videos.component.scss']
+    selector: 'app-recent-videos',
+    templateUrl: './recent-videos.component.html',
+    styleUrls: ['./recent-videos.component.scss'],
+    standalone: false
 })
 export class RecentVideosComponent implements OnInit {
 

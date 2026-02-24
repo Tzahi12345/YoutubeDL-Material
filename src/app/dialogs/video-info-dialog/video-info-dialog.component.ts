@@ -6,9 +6,10 @@ import { Category, DatabaseFile } from 'api-types';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-video-info-dialog',
-  templateUrl: './video-info-dialog.component.html',
-  styleUrls: ['./video-info-dialog.component.scss']
+    selector: 'app-video-info-dialog',
+    templateUrl: './video-info-dialog.component.html',
+    styleUrls: ['./video-info-dialog.component.scss'],
+    standalone: false
 })
 export class VideoInfoDialogComponent implements OnInit {
   file: DatabaseFile;

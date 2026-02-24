@@ -19,9 +19,10 @@ registerLocaleData(localeZH);
 registerLocaleData(localeNB);
 
 @Component({
-  selector: 'app-unified-file-card',
-  templateUrl: './unified-file-card.component.html',
-  styleUrls: ['./unified-file-card.component.scss']
+    selector: 'app-unified-file-card',
+    templateUrl: './unified-file-card.component.html',
+    styleUrls: ['./unified-file-card.component.scss'],
+    standalone: false
 })
 export class UnifiedFileCardComponent implements OnInit {
 

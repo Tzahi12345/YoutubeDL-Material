@@ -9,7 +9,10 @@ import { map } from 'rxjs/operators/map';
 import { startWith } from 'rxjs/operators/startWith';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
-@Pipe({ name: 'highlight' })
+@Pipe({
+    name: 'highlight',
+    standalone: false
+})
 export class HighlightPipe implements PipeTransform {
   transform(text: string, search): string {
     const pattern = search ? search
@@ -24,10 +27,11 @@ export class HighlightPipe implements PipeTransform {
 };
 
 @Component({
-  selector: 'app-arg-modifier-dialog',
-  templateUrl: './arg-modifier-dialog.component.html',
-  providers: [HighlightPipe],
-  styleUrls: ['./arg-modifier-dialog.component.scss'],
+    selector: 'app-arg-modifier-dialog',
+    templateUrl: './arg-modifier-dialog.component.html',
+    providers: [HighlightPipe],
+    styleUrls: ['./arg-modifier-dialog.component.scss'],
+    standalone: false
 })
 export class ArgModifierDialogComponent implements OnInit, AfterViewInit {
   myGroup = new UntypedFormControl();
