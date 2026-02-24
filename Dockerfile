@@ -8,8 +8,7 @@ RUN sh ./ffmpeg-fetch.sh
 RUN sh ./fetch-twitchdownloader.sh
 
 
-# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
-# Go to 20.04
+# Base runtime image with Node.js 24 (installed via nvm for multi-arch compatibility)
 FROM ubuntu:24.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
@@ -21,8 +20,8 @@ ENV PM2_HOME=/app/pm2
 ENV ALLOW_CONFIG_MUTATIONS=true
 ENV npm_config_cache=/app/.npm
 
-# Use NVM to get specific node version
-ENV NODE_VERSION=16.14.2
+# Use NVM to get the current Node 24 LTS line
+ENV NODE_VERSION=24
 RUN (groupadd -g $GID $USER || groupadd $USER) && \
     (useradd --system -m -g $USER --uid $UID $USER || useradd --system -m -g $USER $USER) && \
     apt update && \
@@ -31,16 +30,19 @@ RUN (groupadd -g $GID $USER || groupadd $USER) && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /usr/local/nvm
-ENV PATH="/usr/local/nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+ENV PATH="/usr/local/nvm/current/bin:${PATH}"
 ENV NVM_DIR=/usr/local/nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
-RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && \
+    nvm install ${NODE_VERSION} && \
+    nvm use v${NODE_VERSION} && \
+    nvm alias default v${NODE_VERSION} && \
+    rm -f "$NVM_DIR/current" && \
+    ln -s "$(dirname "$(dirname "$(command -v node)")")" "$NVM_DIR/current"
 
 # Build frontend
 ARG BUILDPLATFORM
-FROM --platform=${BUILDPLATFORM} node:25 as frontend
+FROM --platform=${BUILDPLATFORM} node:24 as frontend
 RUN npm install -g @angular/cli
 WORKDIR /build
 COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
