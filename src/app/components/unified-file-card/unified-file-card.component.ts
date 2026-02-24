@@ -38,6 +38,7 @@ export class UnifiedFileCardComponent implements OnInit {
 
   streamURL = null;
   hide_image = false;
+  previewHoverTimeout: ReturnType<typeof setTimeout> = null;
 
   // input/output
   @Input() loading = true;
@@ -87,7 +88,6 @@ export class UnifiedFileCardComponent implements OnInit {
       this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}${authQuery ? '?' + authQuery : ''}`;
     }
 
-    if (this.file_obj) this.streamURL = this.generateStreamURL();
   }
 
   emitDeleteFile(blacklistMode = false) {
@@ -158,14 +158,24 @@ export class UnifiedFileCardComponent implements OnInit {
 
   onMouseOver() {
     this.elevated = true;
-    setTimeout(() => {
+    if (this.previewHoverTimeout) {
+      clearTimeout(this.previewHoverTimeout);
+    }
+    this.previewHoverTimeout = setTimeout(() => {
       if (this.elevated) {
+        if (!this.streamURL && this.file_obj && !this.is_playlist && !(this.file_obj.type === 'audio' || this.file_obj.isAudio)) {
+          this.streamURL = this.generateStreamURL();
+        }
         this.hide_image = true;
       }
     }, 500);
   }
 
   onMouseOut() {
+    if (this.previewHoverTimeout) {
+      clearTimeout(this.previewHoverTimeout);
+      this.previewHoverTimeout = null;
+    }
     this.elevated = false;
     this.hide_image = false;
   }
