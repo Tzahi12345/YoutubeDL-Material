@@ -1,4 +1,4 @@
-import {Injectable, isDevMode, Inject, DOCUMENT} from '@angular/core';
+import {Injectable, isDevMode, Inject, DOCUMENT, NgZone} from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -171,8 +171,9 @@ export class PostsService {
     version_info = null;
 
     constructor(private http: HttpClient, private router: Router, @Inject(DOCUMENT) private document: Document,
-                public snackBar: MatSnackBar, private titleService: Title) {
+                public snackBar: MatSnackBar, private titleService: Title, private ngZone: NgZone) {
         console.log('PostsService Initialized...');
+        this.patchHttpClientIntoAngularZone();
         this.path = this.document.location.origin + '/api/';
 
         if (isDevMode()) {
@@ -236,6 +237,37 @@ export class PostsService {
             this.locale = isoLangs[locale];
         }
 
+    }
+
+    private patchHttpClientIntoAngularZone(): void {
+        const httpAny = this.http as any;
+        if (httpAny.__ydm_zone_patched_request) {
+            return;
+        }
+
+        const originalRequest = this.http.request.bind(this.http);
+        const zone = this.ngZone;
+
+        httpAny.request = function (...args: any[]) {
+            const source$ = originalRequest(...args);
+            return new Observable(observer => {
+                const sub = source$.subscribe({
+                    next(value) {
+                        zone.run(() => observer.next(value));
+                    },
+                    error(err) {
+                        zone.run(() => observer.error(err));
+                    },
+                    complete() {
+                        zone.run(() => observer.complete());
+                    }
+                });
+
+                return () => sub.unsubscribe();
+            });
+        };
+
+        httpAny.__ydm_zone_patched_request = true;
     }
     canActivate(route: ActivatedRouteSnapshot, state): Promise<boolean> {
         if (this.initialized) {
