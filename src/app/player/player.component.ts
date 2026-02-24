@@ -107,6 +107,18 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
               private cdr: ChangeDetectorRef) {
 
   }
+
+  private refreshView(): void {
+    // Some async init paths can complete without an immediate UI tick.
+    setTimeout(() => {
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Ignore if the view is already destroyed.
+      }
+    });
+  }
+
   processConfig(): void {
     this.baseStreamPath = this.postsService.path;
     this.audioFolderPath = this.postsService.config['Downloader']['path-audio'];
@@ -135,6 +147,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playlist.push(imedia);
       this.updateCurrentItem(this.playlist[0], 0);
       this.show_player = true;
+      this.refreshView();
     }
   }
 
@@ -235,6 +248,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentItem = this.playlist[this.currentIndex];
     this.original_playlist = JSON.stringify(this.playlist);
     this.show_player = true;
+    this.refreshView();
   }
 
   onPlayerReady(api: VgApiService): void {
