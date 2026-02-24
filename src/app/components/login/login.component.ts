@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PostsService } from 'app/posts.services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-login',
@@ -31,14 +32,14 @@ export class LoginComponent implements OnInit {
     if (this.postsService.isLoggedIn && localStorage.getItem('jwt_token') !== 'null') {
       this.router.navigate(['/home']);
     }
-    this.postsService.service_initialized.subscribe(init => {
-      if (init) {
+    this.postsService.service_initialized
+      .pipe(filter(Boolean), take(1))
+      .subscribe(() => {
         if (!this.postsService.config['Advanced']['multi_user_mode']) {
           this.router.navigate(['/home']);
         }
         this.registrationEnabled = this.postsService.config['Users'] && this.postsService.config['Users']['allow_registration'];
-      }
-    });
+      });
   }
 
   login() {

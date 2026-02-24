@@ -14,6 +14,7 @@ import { EditCategoryDialogComponent } from 'app/dialogs/edit-category-dialog/ed
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category, DBInfoResponse } from 'api-types';
 import { GenerateRssUrlComponent } from 'app/dialogs/generate-rss-url/generate-rss-url.component';
+import { filter, take } from 'rxjs/operators';
 
 type CookiesTestResponse = {
   success: boolean;
@@ -75,12 +76,12 @@ export class SettingsComponent implements OnInit {
       this.getConfig();
       this.getDBInfo();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => {
           this.getConfig();
           this.getDBInfo();
-        }
-      });
+        });
     }
 
     this.generated_bookmarklet_code = this.sanitizer.bypassSecurityTrustUrl(this.generateBookmarkletCode());

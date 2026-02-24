@@ -823,8 +823,11 @@ export class PostsService {
     }
 
     setInitialized() {
-        this.service_initialized.next(true);
+        if (this.initialized) {
+            return;
+        }
         this.initialized = true;
+        this.service_initialized.next(true);
         this.config_reloaded.next(true);
     }
 

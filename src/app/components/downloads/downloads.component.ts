@@ -9,6 +9,7 @@ import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialo
 import { MatSort } from '@angular/material/sort';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Download } from 'api-types';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-downloads',
@@ -120,11 +121,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     if (this.postsService.initialized) {
       this.getCurrentDownloadsRecurring();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.getCurrentDownloadsRecurring();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.getCurrentDownloadsRecurring());
     }
   }
 

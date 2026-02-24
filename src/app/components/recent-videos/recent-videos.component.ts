@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { DatabaseFile, FileType, FileTypeFilter, Sort } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatChipListboxChange } from '@angular/material/chips';
 import { MatSelectionListChange } from '@angular/material/list';
@@ -116,13 +116,12 @@ export class RecentVideosComponent implements OnInit {
       this.getAllFiles();
       this.getAllPlaylists();
     } else {
-      const initSub = this.postsService.service_initialized.subscribe(init => {
-        if (init) {
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => {
           this.getAllFiles();
           this.getAllPlaylists();
-          initSub.unsubscribe();
-        }
-      });
+        });
     }
 
     this.postsService.files_changed.subscribe(changed => {

@@ -9,6 +9,7 @@ import { DatabaseFile, FileType, Playlist } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 import { saveAs } from 'file-saver';
+import { filter, take } from 'rxjs/operators';
 
 export interface IMedia {
   title: string;
@@ -84,11 +85,9 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.postsService.initialized) {
       this.processConfig();
     } else {
-      this.postsService.service_initialized.subscribe(init => { // loads settings
-        if (init) {
-          this.processConfig();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.processConfig());
     }
   }
 
@@ -154,6 +153,9 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.uids = [this.db_file['uid']];
       this.type = this.db_file['isAudio'] ? 'audio' as FileType : 'video' as FileType;
       this.parseFileNames();
+    }, err => {
+      console.error(err);
+      this.postsService.openSnackBar($localize`Failed to get file information from the server.`, 'Dismiss');
     });
   }
 
@@ -161,7 +163,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.postsService.getSubscription(this.sub_id).subscribe(res => {
       const subscription = res['subscription'];
       this.subscription = subscription;
-      this.type === this.subscription.type;
+      this.type = this.subscription.type;
       this.uids = this.subscription.videos.map(video => video['uid']);
       this.parseFileNames();
     }, () => {

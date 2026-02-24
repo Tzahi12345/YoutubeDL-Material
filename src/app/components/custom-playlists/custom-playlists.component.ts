@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreatePlaylistComponent } from 'app/create-playlist/create-playlist.component';
 import { Playlist } from 'api-types';
 import { saveAs } from 'file-saver';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-custom-playlists',
@@ -21,11 +22,9 @@ export class CustomPlaylistsComponent implements OnInit {
   constructor(public postsService: PostsService, private router: Router, private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.postsService.service_initialized.subscribe(init => {
-      if (init) {
-        this.getAllPlaylists();
-      }
-    });
+    this.postsService.service_initialized
+      .pipe(filter(Boolean), take(1))
+      .subscribe(() => this.getAllPlaylists());
 
     this.postsService.playlists_changed.subscribe(changed => {
       if (changed) {

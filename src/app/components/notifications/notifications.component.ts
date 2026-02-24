@@ -4,6 +4,7 @@ import { PostsService } from 'app/posts.services';
 import { Notification, NotificationType } from 'api-types';
 import { NotificationAction } from 'api-types/models/NotificationAction';
 import { MatChipListboxChange } from '@angular/material/chips';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-notifications',
@@ -43,11 +44,9 @@ export class NotificationsComponent implements OnInit {
     if (this.postsService.initialized) {
       this.getNotifications();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.getNotifications();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.getNotifications());
     }
   }
 

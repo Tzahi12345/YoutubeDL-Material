@@ -10,6 +10,7 @@ import { PostsService } from 'app/posts.services';
 import { Task, TaskType } from 'api-types';
 import { TaskSettingsComponent } from '../task-settings/task-settings.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-tasks',
@@ -47,11 +48,9 @@ export class TasksComponent implements OnInit {
     if (this.postsService.initialized) {
       this.getTasksRecurring();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.getTasksRecurring();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.getTasksRecurring());
     }
   }
 

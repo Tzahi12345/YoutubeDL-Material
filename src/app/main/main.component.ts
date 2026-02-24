@@ -11,6 +11,7 @@ import { Platform } from '@angular/cdk/platform';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { RecentVideosComponent } from 'app/components/recent-videos/recent-videos.component';
 import { DatabaseFile, Download, FileType, Playlist } from 'api-types';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -250,11 +251,9 @@ export class MainComponent implements OnInit {
     if (this.postsService.initialized) {
       this.configLoad();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.configLoad();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.configLoad());
     }
 
     this.postsService.config_reloaded.subscribe(changed => {
