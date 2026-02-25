@@ -2046,7 +2046,8 @@ app.get('/api/stream', optionalJwt, async (req, res) => {
 });
 
 app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
-    const requestedPath = decodeURIComponent(req.params.path || '');
+    // Express route params are already decoded.
+    const requestedPath = typeof req.params.path === 'string' ? req.params.path : '';
     const resolvedRequestedPath = path.isAbsolute(requestedPath) ? path.resolve(requestedPath) : path.resolve(__dirname, requestedPath);
     const thumbnailExt = path.extname(resolvedRequestedPath).toLowerCase();
     const allowedThumbnailExts = new Set(['.jpg', '.jpeg', '.png', '.webp']);

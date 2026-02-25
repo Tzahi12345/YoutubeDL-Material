@@ -17,6 +17,7 @@ import { saveAs } from 'file-saver';
     standalone: false
 })
 export class RecentVideosComponent implements OnInit {
+  readonly pageSizeStorageKey = 'recent_videos_page_size';
 
   @Input() usePaginator = true;
 
@@ -77,6 +78,11 @@ export class RecentVideosComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator
 
   constructor(public postsService: PostsService, private router: Router) {
+    const saved_page_size = +localStorage.getItem(this.pageSizeStorageKey);
+    if ([5, 10, 25, 100, 250].includes(saved_page_size)) {
+      this.pageSize = saved_page_size;
+    }
+
     // get cached file count
     const sub_id_appendix = this.sub_id ? `_${this.sub_id}` : ''
     if (localStorage.getItem(`cached_file_count${sub_id_appendix}`)) {
@@ -377,6 +383,7 @@ export class RecentVideosComponent implements OnInit {
 
   pageChangeEvent(event) {
     this.pageSize = event.pageSize;
+    localStorage.setItem(this.pageSizeStorageKey, '' + this.pageSize);
     this.loading_files = Array(this.pageSize).fill(0);
     this.getAllFiles();
   }
