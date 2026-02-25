@@ -27,7 +27,7 @@
     "@discordjs/core": "^0.5.2",
     "archiver": "^7.0.1",
     "async": "^3.2.3",
-    "async-mutex": "^0.4.0",
+    "async-mutex": "^0.5.0",
     "axios": "^1.13.5",
     "bcryptjs": "^2.4.0",
     "body-parser": "^1.20.4",
@@ -46,14 +46,13 @@
     "lodash": "^4.17.23",
     "lowdb": "^1.0.0",
     "md5": "^2.2.1",
-    "mocha": "^10.8.2",
+    "mocha": "^11.7.5",
     "moment": "^2.29.4",
     "mongodb": "^3.6.9",
     "multer": "^2.0.2",
     "node-fetch": "^2.7.0",
-    "node-id3": "^0.2.6",
-    "node-schedule": "^2.1.0",
-    "node-telegram-bot-api": "^0.67.0",
+    "node-id3": "^0.2.9",
+    "node-schedule": "^2.1.1",
     "passport": "^0.6.0",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.1",
@@ -68,12 +67,13 @@
     "unzipper": "^0.12.3",
     "uuid": "^9.0.1",
     "winston": "^3.7.2",
-    "xmlbuilder2": "^3.0.2"
+    "xmlbuilder2": "^4.0.3"
   },
   "overrides": {
     "brace-expansion": "1.1.12",
     "braces": "3.0.3",
     "cross-spawn": "7.0.6",
+    "diff": "8.0.3",
     "got": "11.8.6",
     "mocha": {
       "js-yaml": "4.1.1"
