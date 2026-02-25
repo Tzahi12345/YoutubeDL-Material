@@ -50,7 +50,6 @@
     "moment": "^2.29.4",
     "mongodb": "^6.21.0",
     "multer": "^2.0.2",
-    "node-fetch": "^2.7.0",
     "node-id3": "^0.2.9",
     "node-schedule": "^2.1.1",
     "passport": "^0.6.0",

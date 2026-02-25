@@ -6,7 +6,7 @@ const consts = require('./consts');
 
 const { v4: uuid } = require('uuid');
 
-const fetch = require('node-fetch');
+const fetch = globalThis.fetch;
 const axios = require('axios');
 const { gotify } = require("gotify");
 let telegram_bot = null;

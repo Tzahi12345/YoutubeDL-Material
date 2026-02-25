@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const { Readable } = require('stream');
 const ffmpeg = require('fluent-ffmpeg');
 const archiver = require('archiver');
 const ProgressBar = require('progress');
@@ -368,13 +369,30 @@ exports.writeFetchResponseToFile = async (res, fileStream, file_label) => {
         width: 20,
         total: len
     });
+
+    let bodyStream = res.body;
+    if (!bodyStream) {
+        throw new Error('Fetch response body is empty');
+    }
+
+    // Native fetch returns a WHATWG ReadableStream. Older clients may still provide a Node stream.
+    if (typeof bodyStream.pipe !== 'function') {
+        if (typeof Readable.fromWeb !== 'function') {
+            throw new Error('Readable.fromWeb is unavailable for fetch response streaming');
+        }
+        bodyStream = Readable.fromWeb(bodyStream);
+    }
+
     await new Promise((resolve, reject) => {
-        res.body.pipe(fileStream);
-        res.body.on("error", (err) => {
+        bodyStream.pipe(fileStream);
+        bodyStream.on("error", (err) => {
           reject(err);
         });
-        res.body.on('data', function (chunk) {
+        bodyStream.on('data', function (chunk) {
             bar.tick(chunk.length);
+        });
+        fileStream.on("error", function(err) {
+          reject(err);
         });
         fileStream.on("finish", function() {
           resolve();

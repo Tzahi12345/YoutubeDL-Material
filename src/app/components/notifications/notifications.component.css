@@ -3,6 +3,20 @@
     text-align: center
 }
 
+.notifications-empty-state {
+    margin: 10px;
+    text-align: center;
+    color: var(--mat-menu-item-label-text-color, var(--mat-sidenav-container-text-color, inherit));
+}
+
+:host-context(.dark-theme) .notifications-empty-state {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+:host-context(.light-theme) .notifications-empty-state {
+    color: rgba(0, 0, 0, 0.87);
+}
+
 .notifications-list-parent {
     overflow-y: auto;
     padding: 0px 10px 10px 10px;
