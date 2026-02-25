@@ -146,6 +146,21 @@ environment:
     GID: YOUR_GID
 ```
 
+### Logging
+
+You can control backend log verbosity with the `YTDL_LOG_LEVEL` environment variable (or `ytdl_log_level`).
+
+- Default: `info` (mostly startup messages, warnings, and errors)
+- Use `debug` to enable verbose yt-dlp/debug diagnostics
+- Supported values follow standard Winston levels (for example: `error`, `warn`, `info`, `verbose`, `debug`)
+
+Example Docker Compose snippet:
+
+```yml
+environment:
+    YTDL_LOG_LEVEL: debug
+```
+
 ## MongoDB
 
 For much better scaling with large datasets please run your YoutubeDL-Material instance with MongoDB backend rather than the json file-based default. It will fix a lot of performance problems (especially with datasets in the tens of thousands videos/audios)!
