@@ -10,7 +10,6 @@ import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.comp
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 import { saveAs } from 'file-saver';
 import { filter, take } from 'rxjs/operators';
-import { diagEvent } from 'app/diagnostics';
 
 export interface IMedia {
   title: string;
@@ -154,15 +153,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.uids = [this.db_file['uid']];
       this.type = this.db_file['isAudio'] ? 'audio' as FileType : 'video' as FileType;
       this.parseFileNames();
-      diagEvent('player.getFile.success', {
-        uid: this.uid,
-        fileUid: this.db_file?.uid,
-        show_player: this.show_player,
-        playlistLength: this.playlist?.length ?? 0,
-        currentSrcSet: !!this.currentItem?.src
-      }, true);
     }, err => {
-      diagEvent('player.getFile.error', { uid: this.uid, err: String(err) }, true);
       console.error(err);
       this.postsService.openSnackBar($localize`Failed to get file information from the server.`, 'Dismiss');
     });

@@ -3,8 +3,7 @@ import { inject, NgZone } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { diagEvent, diagHttpCallback } from './diagnostics';
+import { catchError } from 'rxjs/operators';
 
 function runInAngularZone<T>(source$: Observable<T>, ngZone: NgZone): Observable<T> {
     return new Observable<T>((subscriber) => {
@@ -24,11 +23,6 @@ export const h401InterceptorFn: HttpInterceptorFn = (request, next) => {
     const ngZone = inject(NgZone);
 
     return runInAngularZone(next(request), ngZone).pipe(
-        tap({
-            next: () => diagHttpCallback('next', request.method, request.urlWithParams),
-            error: () => diagHttpCallback('error', request.method, request.urlWithParams),
-            complete: () => diagHttpCallback('complete', request.method, request.urlWithParams)
-        }),
         catchError((err: HttpErrorResponse) => {
             if (err.status === 401) {
                 localStorage.setItem('jwt_token', null);
@@ -38,12 +32,6 @@ export const h401InterceptorFn: HttpInterceptorFn = (request, next) => {
                     });
                 }
             }
-
-            diagEvent('http.401Interceptor.catchError', {
-                method: request.method,
-                url: request.urlWithParams,
-                status: err.status
-            });
 
             const error = err?.error?.message || err?.statusText || 'Request failed';
             return throwError(error);
