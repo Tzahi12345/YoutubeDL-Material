@@ -567,15 +567,71 @@ exports.generateArgs = async (url, type, options, user_uid = null, simulated = f
     return downloadConfig;
 }
 
+function filterInfoLookupArgs(args = []) {
+    if (!Array.isArray(args)) return [];
+
+    // Keep selection/output/auth args so predicted filename and size match the real download,
+    // but remove flags that write files or trigger an actual download during info lookup.
+    const args_to_remove = new Set([
+        '--write-info-json',
+        '--write-thumbnail',
+        '--write-all-thumbnails',
+        '--write-description',
+        '--write-comments',
+        '--write-annotations',
+        '--write-subs',
+        '--write-auto-subs',
+        '--all-subs',
+        '--print-json',
+        '-j',
+        '--dump-json',
+        '-J',
+        '--dump-single-json',
+        '--no-clean-info-json',
+        '--no-simulate',
+        '--force-write-archive'
+    ]);
+    const args_with_values_to_remove = new Set([
+        '--download-archive',
+        '--exec',
+        '--exec-before-download',
+        '--print'
+    ]);
+
+    const filtered_args = [];
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (args_to_remove.has(arg)) continue;
+
+        if (arg === '--print-to-file') {
+            // --print-to-file takes a template and destination path.
+            i += 2;
+            continue;
+        }
+
+        if (args_with_values_to_remove.has(arg)) {
+            i++;
+            continue;
+        }
+
+        if (typeof arg === 'string' && arg.startsWith('--print=')) continue;
+
+        filtered_args.push(arg);
+    }
+
+    return filtered_args;
+}
+
 exports.getVideoInfoByURL = async (url, args = [], download_uid = null) => {
     logger.info('[DEBUG] getVideoInfoByURL called');
 
-    // For info retrieval, completely ignore input args and build clean minimal set
-    // This prevents file-writing operations that cause yt-dlp to hang
-    const new_args = ['--dump-json'];
+    // Preserve safe args (notably -o/-f/-S) so progress prediction uses the real
+    // filename and selected formats, but strip flags that write files/download data.
+    const new_args = filterInfoLookupArgs(args);
+    new_args.push('--dump-json');
 
-    // Only add cookies if they exist
-    if (await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
+    // Only add cookies if they exist and args do not already provide them.
+    if (new_args.indexOf('--cookies') === -1 && await fs.pathExists(path.join(__dirname, 'appdata', 'cookies.txt'))) {
         new_args.push('--cookies', path.join('appdata', 'cookies.txt'));
     }
 

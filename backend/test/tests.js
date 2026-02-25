@@ -521,6 +521,41 @@ describe('Downloader', function() {
         assert(!!info && info.length > 0);
     });
 
+    it('Get file info preserves safe args used for progress prediction', async function() {
+        let captured_args = null;
+        const original_runYoutubeDL = youtubedl_api.runYoutubeDL;
+        youtubedl_api.runYoutubeDL = async (requestedUrl, run_args) => {
+            captured_args = run_args;
+            return {
+                callback: Promise.resolve({parsed_output: fixture_single, err: null})
+            };
+        };
+
+        try {
+            await _originalGetVideoInfoByURL(url, [
+                '-o', '/tmp/%(title)s.%(ext)s',
+                '-f', 'bestvideo+bestaudio',
+                '--write-info-json',
+                '--no-clean-info-json',
+                '-j',
+                '--no-simulate'
+            ]);
+        } finally {
+            youtubedl_api.runYoutubeDL = original_runYoutubeDL;
+        }
+
+        assert(captured_args);
+        assert(captured_args.includes('-o'));
+        assert(captured_args.includes('/tmp/%(title)s.%(ext)s'));
+        assert(captured_args.includes('-f'));
+        assert(captured_args.includes('bestvideo+bestaudio'));
+        assert(captured_args.includes('--dump-json'));
+        assert(!captured_args.includes('--write-info-json'));
+        assert(!captured_args.includes('--no-clean-info-json'));
+        assert(!captured_args.includes('-j'));
+        assert(!captured_args.includes('--no-simulate'));
+    });
+
     it('Download file', async function() {
         this.timeout(300000);
         await downloader_api.setupDownloads();
