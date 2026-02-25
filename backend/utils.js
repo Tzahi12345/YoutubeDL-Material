@@ -428,6 +428,50 @@ exports.filterArgs = (args, args_to_remove) => {
     return args.filter(x => !args_to_remove.includes(x));
 }
 
+exports.redactCommandArgsForLogging = (args = []) => {
+    if (!Array.isArray(args)) return [];
+
+    const sensitive_flags = new Set([
+        '--username',
+        '--password',
+        '--video-password',
+        '--ap-username',
+        '--ap-password',
+        '--proxy',
+        '--cookies',
+        '--cookies-from-browser',
+        '--add-header'
+    ]);
+
+    const redacted_args = [];
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (typeof arg !== 'string') {
+            redacted_args.push(arg);
+            continue;
+        }
+
+        if (sensitive_flags.has(arg)) {
+            redacted_args.push(arg);
+            if (i + 1 < args.length) {
+                redacted_args.push('[REDACTED]');
+                i++;
+            }
+            continue;
+        }
+
+        const inline_sensitive_flag = [...sensitive_flags].find(flag => arg.startsWith(`${flag}=`));
+        if (inline_sensitive_flag) {
+            redacted_args.push(`${inline_sensitive_flag}=[REDACTED]`);
+            continue;
+        }
+
+        redacted_args.push(arg);
+    }
+
+    return redacted_args;
+}
+
 exports.searchObjectByString = (o, s) => {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, '');           // strip a leading dot

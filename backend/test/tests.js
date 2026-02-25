@@ -1011,6 +1011,24 @@ describe('Utils', async function() {
         assert(nested_obj2['test1'] && nested_obj2['test1']['test_sub']);
         assert(nested_obj2['test1'] && nested_obj2['test1']['test2'] && nested_obj2['test1']['test2']['test_sub']);
     });
+
+    it('Redacts sensitive command args for logging', async function() {
+        const redacted = utils.redactCommandArgsForLogging([
+            '--username', 'user@example.com',
+            '--password', 'super-secret',
+            '--cookies=appdata/cookies.txt',
+            '--proxy', 'http://user:pass@proxy:8080',
+            '-o', '%(title)s.%(ext)s'
+        ]);
+
+        assert.deepStrictEqual(redacted, [
+            '--username', '[REDACTED]',
+            '--password', '[REDACTED]',
+            '--cookies=[REDACTED]',
+            '--proxy', '[REDACTED]',
+            '-o', '%(title)s.%(ext)s'
+        ]);
+    });
 });
 
 describe('Categories', async function() {

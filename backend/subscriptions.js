@@ -293,7 +293,7 @@ async function _getVideosForSub(sub) {
     const downloadConfig = await generateArgsForSubscription(sub, user_uid);
 
     // get videos
-    logger.verbose(`Subscription: getting list of videos to download for ${sub.name} with args: ${downloadConfig.join(',')}`);
+    logger.verbose(`Subscription: getting list of videos to download for ${sub.name} with args: ${utils.redactCommandArgsForLogging(downloadConfig).join(',')}`);
 
     let {child_process, callback} = await youtubedl_api.runYoutubeDL(sub.url, downloadConfig);
     updateSubscriptionProperty(sub, {child_process: child_process}, user_uid);
