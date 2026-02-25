@@ -3,9 +3,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PostsService } from 'app/posts.services';
 
 @Component({
-  selector: 'app-restore-db-dialog',
-  templateUrl: './restore-db-dialog.component.html',
-  styleUrls: ['./restore-db-dialog.component.scss']
+    selector: 'app-restore-db-dialog',
+    templateUrl: './restore-db-dialog.component.html',
+    styleUrls: ['./restore-db-dialog.component.scss'],
+    standalone: false
 })
 export class RestoreDbDialogComponent implements OnInit {
 

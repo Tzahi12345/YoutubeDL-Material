@@ -6,9 +6,10 @@ import { Subscription } from 'api-types';
 import { saveAs } from 'file-saver';
 
 @Component({
-  selector: 'app-subscription-info-dialog',
-  templateUrl: './subscription-info-dialog.component.html',
-  styleUrls: ['./subscription-info-dialog.component.scss']
+    selector: 'app-subscription-info-dialog',
+    templateUrl: './subscription-info-dialog.component.html',
+    styleUrls: ['./subscription-info-dialog.component.scss'],
+    standalone: false
 })
 export class SubscriptionInfoDialogComponent implements OnInit {
 

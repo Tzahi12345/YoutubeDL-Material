@@ -4,9 +4,10 @@ import { NotificationAction } from 'api-types/models/NotificationAction';
 import { NotificationType } from 'api-types/models/NotificationType';
 
 @Component({
-  selector: 'app-notifications-list',
-  templateUrl: './notifications-list.component.html',
-  styleUrls: ['./notifications-list.component.scss']
+    selector: 'app-notifications-list',
+    templateUrl: './notifications-list.component.html',
+    styleUrls: ['./notifications-list.component.scss'],
+    standalone: false
 })
 export class NotificationsListComponent {
   @Input() notifications = null;

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { registerLocaleData, CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -37,7 +37,7 @@ import { TextFieldModule } from '@angular/cdk/text-field';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { PostsService } from 'app/posts.services';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
@@ -83,7 +83,7 @@ import { CustomPlaylistsComponent } from './components/custom-playlists/custom-p
 import { EditCategoryDialogComponent } from './dialogs/edit-category-dialog/edit-category-dialog.component';
 import { TwitchChatComponent } from './components/twitch-chat/twitch-chat.component';
 import { LinkifyPipe, SeeMoreComponent } from './components/see-more/see-more.component';
-import { H401Interceptor } from './http.interceptor';
+import { h401InterceptorFn } from './http.interceptor';
 import { ConcurrentStreamComponent } from './components/concurrent-stream/concurrent-stream.component';
 import { SkipAdButtonComponent } from './components/skip-ad-button/skip-ad-button.component';
 import { TasksComponent } from './components/tasks/tasks.component';
@@ -150,6 +150,10 @@ registerLocaleData(es, 'es');
         OnlyNumberDirective,
         ArchiveViewerComponent
     ],
+    exports: [
+        HighlightPipe,
+        LinkifyPipe
+    ],
     imports: [
         CommonModule,
         BrowserModule,
@@ -160,7 +164,6 @@ registerLocaleData(es, 'es');
         MatInputModule,
         MatSelectModule,
         ReactiveFormsModule,
-        HttpClientModule,
         MatToolbarModule,
         MatCardModule,
         MatSnackBarModule,
@@ -199,16 +202,13 @@ registerLocaleData(es, 'es');
         VgOverlayPlayModule,
         VgBufferingModule,
         RouterModule,
-        AppRoutingModule,
+        AppRoutingModule
     ],
     providers: [
         PostsService,
-        { provide: HTTP_INTERCEPTORS, useClass: H401Interceptor, multi: true },
-        DatePipe
-    ],
-    exports: [
-        HighlightPipe,
-        LinkifyPipe
+        DatePipe,
+        provideZoneChangeDetection(),
+        provideHttpClient(withInterceptors([h401InterceptorFn]))
     ],
     bootstrap: [AppComponent]
 })

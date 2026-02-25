@@ -3,9 +3,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PostsService } from 'app/posts.services';
 
 @Component({
-  selector: 'app-manage-role',
-  templateUrl: './manage-role.component.html',
-  styleUrls: ['./manage-role.component.scss']
+    selector: 'app-manage-role',
+    templateUrl: './manage-role.component.html',
+    styleUrls: ['./manage-role.component.scss'],
+    standalone: false
 })
 export class ManageRoleComponent implements OnInit {
 

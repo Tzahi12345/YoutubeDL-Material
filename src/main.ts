@@ -20,21 +20,21 @@ if (locale && locale !== 'en') {
         loadTranslations(data as any);
         import('./app/app.module').then(module => {
           platformBrowserDynamic()
-            .bootstrapModule(module.AppModule)
+            .bootstrapModule(module.AppModule, { ngZone: 'zone.js' })
             .catch(err => console.error(err));
         });
     }
     ).catch(err => {
       import('./app/app.module').then(module => {
         platformBrowserDynamic()
-          .bootstrapModule(module.AppModule)
+          .bootstrapModule(module.AppModule, { ngZone: 'zone.js' })
           .catch(err2 => console.error(err2));
       });
     });
 } else {
   import('./app/app.module').then(module => {
     platformBrowserDynamic()
-      .bootstrapModule(module.AppModule)
+      .bootstrapModule(module.AppModule, { ngZone: 'zone.js' })
       .catch(err => console.error(err));
   });
 }

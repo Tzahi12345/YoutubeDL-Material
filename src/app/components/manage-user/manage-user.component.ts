@@ -4,9 +4,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { User } from 'api-types';
 
 @Component({
-  selector: 'app-manage-user',
-  templateUrl: './manage-user.component.html',
-  styleUrls: ['./manage-user.component.scss']
+    selector: 'app-manage-user',
+    templateUrl: './manage-user.component.html',
+    styleUrls: ['./manage-user.component.scss'],
+    standalone: false
 })
 export class ManageUserComponent implements OnInit {
 

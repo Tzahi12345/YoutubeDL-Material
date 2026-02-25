@@ -4,9 +4,10 @@ import { Task, TaskType } from 'api-types';
 import { PostsService } from 'app/posts.services';
 
 @Component({
-  selector: 'app-task-settings',
-  templateUrl: './task-settings.component.html',
-  styleUrls: ['./task-settings.component.scss']
+    selector: 'app-task-settings',
+    templateUrl: './task-settings.component.html',
+    styleUrls: ['./task-settings.component.scss'],
+    standalone: false
 })
 export class TaskSettingsComponent {
   task_key: TaskType;

@@ -19,9 +19,10 @@ registerLocaleData(localeZH);
 registerLocaleData(localeNB);
 
 @Component({
-  selector: 'app-unified-file-card',
-  templateUrl: './unified-file-card.component.html',
-  styleUrls: ['./unified-file-card.component.scss']
+    selector: 'app-unified-file-card',
+    templateUrl: './unified-file-card.component.html',
+    styleUrls: ['./unified-file-card.component.scss'],
+    standalone: false
 })
 export class UnifiedFileCardComponent implements OnInit {
 
@@ -37,6 +38,7 @@ export class UnifiedFileCardComponent implements OnInit {
 
   streamURL = null;
   hide_image = false;
+  previewHoverTimeout: ReturnType<typeof setTimeout> = null;
 
   // input/output
   @Input() loading = true;
@@ -49,6 +51,7 @@ export class UnifiedFileCardComponent implements OnInit {
   @Input() locale = null;
   @Input() baseStreamPath = null;
   @Input() jwtString = null;
+  @Input() apiKeyString = null;
   @Input() availablePlaylists = null;
   @Output() goToFile = new EventEmitter<any>();
   @Output() toggleFavorite = new EventEmitter<DatabaseFile>();
@@ -76,10 +79,15 @@ export class UnifiedFileCardComponent implements OnInit {
     }
 
     if (this.file_obj && this.file_obj.thumbnailPath) {
-      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}?jwt=${this.jwtString}`;
+      let authQuery = '';
+      if (this.jwtString) {
+        authQuery = `jwt=${this.jwtString}`;
+      } else if (this.apiKeyString) {
+        authQuery = `apiKey=${this.apiKeyString}`;
+      }
+      this.thumbnailBlobURL = `${this.baseStreamPath}thumbnail/${encodeURIComponent(this.file_obj.thumbnailPath)}${authQuery ? '?' + authQuery : ''}`;
     }
 
-    if (this.file_obj) this.streamURL = this.generateStreamURL();
   }
 
   emitDeleteFile(blacklistMode = false) {
@@ -139,6 +147,8 @@ export class UnifiedFileCardComponent implements OnInit {
     let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${this.file_obj['uid']}`;
     if (this.jwtString) {
       fullLocation += `&jwt=${this.jwtString}`;
+    } else if (this.apiKeyString) {
+      fullLocation += `&apiKey=${this.apiKeyString}`;
     }
 
     fullLocation += '&t=,10';
@@ -148,14 +158,24 @@ export class UnifiedFileCardComponent implements OnInit {
 
   onMouseOver() {
     this.elevated = true;
-    setTimeout(() => {
+    if (this.previewHoverTimeout) {
+      clearTimeout(this.previewHoverTimeout);
+    }
+    this.previewHoverTimeout = setTimeout(() => {
       if (this.elevated) {
+        if (!this.streamURL && this.file_obj && !this.is_playlist && !(this.file_obj.type === 'audio' || this.file_obj.isAudio)) {
+          this.streamURL = this.generateStreamURL();
+        }
         this.hide_image = true;
       }
     }, 500);
   }
 
   onMouseOut() {
+    if (this.previewHoverTimeout) {
+      clearTimeout(this.previewHoverTimeout);
+      this.previewHoverTimeout = null;
+    }
     this.elevated = false;
     this.hide_image = false;
   }

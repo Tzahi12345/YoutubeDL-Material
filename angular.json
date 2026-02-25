@@ -83,24 +83,24 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "youtube-dl-material:build"
+            "buildTarget": "youtube-dl-material:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "youtube-dl-material:build:production"
+              "buildTarget": "youtube-dl-material:build:production"
             },
             "es": {
-              "browserTarget": "youtube-dl-material:build:es"
+              "buildTarget": "youtube-dl-material:build:es"
             },
             "codespaces": {
-              "browserTarget": "youtube-dl-material:build:codespaces"
+              "buildTarget": "youtube-dl-material:build:codespaces"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "youtube-dl-material:build"
+            "buildTarget": "youtube-dl-material:build"
           }
         },
         "serve-electron": {
@@ -182,10 +182,30 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "style": "scss"
+      "style": "scss",
+      "type": "component"
     },
     "@schematics/angular:directive": {
-      "prefix": "app"
+      "prefix": "app",
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   },
   "cli": {

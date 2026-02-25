@@ -5,9 +5,10 @@ import { PostsService } from 'app/posts.services';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
-  selector: 'app-generate-rss-url',
-  templateUrl: './generate-rss-url.component.html',
-  styleUrls: ['./generate-rss-url.component.scss']
+    selector: 'app-generate-rss-url',
+    templateUrl: './generate-rss-url.component.html',
+    styleUrls: ['./generate-rss-url.component.scss'],
+    standalone: false
 })
 export class GenerateRssUrlComponent {
   usersList = null;

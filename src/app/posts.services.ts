@@ -1,11 +1,8 @@
-import {Injectable, isDevMode, Inject} from '@angular/core';
+import {Injectable, isDevMode, Inject, DOCUMENT} from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
 import { THEMES_CONFIG } from '../themes';
-import { Router, CanActivate, ActivatedRouteSnapshot } from '@angular/router';
-import { DOCUMENT } from '@angular/common';
+import { Router, ActivatedRouteSnapshot } from '@angular/router';
+
 import { BehaviorSubject, Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -122,7 +119,7 @@ import { MatDrawerMode } from '@angular/material/sidenav';
 import { environment } from '../environments/environment';
 
 @Injectable()
-export class PostsService implements CanActivate {
+export class PostsService {
     path = '';
 
     // local settings
@@ -240,13 +237,21 @@ export class PostsService implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state): Promise<boolean> {
         if (this.initialized) {
             return this._canActivate(route);
-        } else {
-            this.service_initialized.subscribe(init => {
+        }
+
+        return new Promise((resolve, reject) => {
+            let sub;
+            sub = this.service_initialized.subscribe(init => {
                 if (init) {
-                    return this._canActivate(route);
+                    if (sub) {
+                        sub.unsubscribe();
+                    }
+                    this._canActivate(route)
+                        .then(resolve)
+                        .catch(reject);
                 }
             });
-        }
+        });
     }
 
     _canActivate(route: ActivatedRouteSnapshot): Promise<boolean> {
@@ -257,7 +262,7 @@ export class PostsService implements CanActivate {
             tasks: 'tasks_manager'
         }
         const required_perm = PATH_TO_REQUIRED_PERM[route.routeConfig.path];
-        return required_perm ? this.hasPermission(required_perm) : true;
+        return required_perm ? this.hasPermission(required_perm) : Promise.resolve(true);
     }
 
     setTheme(theme) {
@@ -815,8 +820,11 @@ export class PostsService implements CanActivate {
     }
 
     setInitialized() {
-        this.service_initialized.next(true);
+        if (this.initialized) {
+            return;
+        }
         this.initialized = true;
+        this.service_initialized.next(true);
         this.config_reloaded.next(true);
     }
 

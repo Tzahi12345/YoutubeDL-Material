@@ -5,14 +5,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/mapTo';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/observable/fromEvent'
-import 'rxjs/add/operator/filter'
-import 'rxjs/add/operator/debounceTime'
-import 'rxjs/add/operator/do'
-import 'rxjs/add/operator/switch'
 import { Router, NavigationStart, NavigationEnd } from '@angular/router';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { THEMES_CONFIG } from '../themes';
@@ -24,13 +16,14 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { ArchiveViewerComponent } from './components/archive-viewer/archive-viewer.component';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  providers: [{
-    provide: MatDialogRef,
-    useValue: {}
-  }]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    providers: [{
+            provide: MatDialogRef,
+            useValue: {}
+        }],
+    standalone: false
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
@@ -54,7 +47,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   notification_count = 0;
 
   constructor(public postsService: PostsService, public snackBar: MatSnackBar, private dialog: MatDialog,
-    public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef) {
+    public router: Router, public overlayContainer: OverlayContainer, private elementRef: ElementRef,
+  ) {
 
     this.navigator = localStorage.getItem('player_navigator');
     // runs on navigate, captures the route that navigated to the player (if needed)
@@ -75,7 +69,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
 
   }
-
   ngOnInit(): void {
     if (localStorage.getItem('theme')) {
       this.setTheme(localStorage.getItem('theme'));
@@ -227,4 +220,3 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
 }
-

@@ -5,9 +5,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostsService } from 'app/posts.services';
 
 @Component({
-  selector: 'app-share-media-dialog',
-  templateUrl: './share-media-dialog.component.html',
-  styleUrls: ['./share-media-dialog.component.scss']
+    selector: 'app-share-media-dialog',
+    templateUrl: './share-media-dialog.component.html',
+    styleUrls: ['./share-media-dialog.component.scss'],
+    standalone: false
 })
 export class ShareMediaDialogComponent implements OnInit {
 

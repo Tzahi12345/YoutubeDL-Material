@@ -2,9 +2,10 @@ import { Component, OnInit, Input, Inject, EventEmitter } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-input-dialog',
-  templateUrl: './input-dialog.component.html',
-  styleUrls: ['./input-dialog.component.css']
+    selector: 'app-input-dialog',
+    templateUrl: './input-dialog.component.html',
+    styleUrls: ['./input-dialog.component.css'],
+    standalone: false
 })
 export class InputDialogComponent implements OnInit {
 

@@ -19,6 +19,16 @@
 
 .notification-card {
     margin-top: 5px;
+    color: var(--mat-sidenav-container-text-color, inherit);
+}
+
+.notification-card .mat-mdc-card-title,
+.notification-card .mat-mdc-card-subtitle,
+.notification-card .mat-mdc-card-content,
+.notification-card .mat-mdc-card-actions,
+.notification-card .mat-icon,
+.notification-card .mat-mdc-icon-button {
+    color: inherit !important;
 }
 
 .notification-actions {

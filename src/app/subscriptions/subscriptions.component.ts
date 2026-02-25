@@ -8,9 +8,10 @@ import { SubscriptionInfoDialogComponent } from 'app/dialogs/subscription-info-d
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 
 @Component({
-  selector: 'app-subscriptions',
-  templateUrl: './subscriptions.component.html',
-  styleUrls: ['./subscriptions.component.scss']
+    selector: 'app-subscriptions',
+    templateUrl: './subscriptions.component.html',
+    styleUrls: ['./subscriptions.component.scss'],
+    standalone: false
 })
 export class SubscriptionsComponent implements OnInit {
 

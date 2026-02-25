@@ -3,9 +3,10 @@ import { PostsService } from 'app/posts.services';
 import { UpdaterStatus } from '../../../api-types';
 
 @Component({
-  selector: 'app-update-progress-dialog',
-  templateUrl: './update-progress-dialog.component.html',
-  styleUrls: ['./update-progress-dialog.component.scss']
+    selector: 'app-update-progress-dialog',
+    templateUrl: './update-progress-dialog.component.html',
+    styleUrls: ['./update-progress-dialog.component.scss'],
+    standalone: false
 })
 export class UpdateProgressDialogComponent implements OnInit {
 

@@ -1,63 +1,77 @@
 <h4 mat-dialog-title i18n="Cookies uploader dialog title">Upload new cookies</h4>
 
 <mat-dialog-content>
-    <div>
-        <div class="center">
-            <ngx-file-drop [multiple]="false" accept=".txt" dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" 
-            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
-                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-                    <div>
-                        <div>
-                            <ng-container i18n="Drag and Drop">Drag and Drop</ng-container>
-                        </div>
-                        <div style="margin-top: 6px;">
-                            <button mat-stroked-button (click)="openFileSelector()">Browse Files</button>
-                        </div>
-                    </div>
-                </ng-template>
-            </ngx-file-drop>
-            <div style="margin-top: 15px;">
-                <p style="font-size: 14px;" i18n="Cookies upload warning">NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</p>
+  <div>
+    <div class="center">
+      <ngx-file-drop [multiple]="false" accept=".txt" dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)"
+        (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+          <div>
+            <div>
+              <ng-container i18n="Drag and Drop">Drag and Drop</ng-container>
             </div>
-            <div style="margin-top: 10px;">
-                <table class="table">
-                    <tbody class="upload-name-style">
-                        <tr *ngFor="let item of files; let i=index">
-                            <td style="vertical-align: middle;">
-                                <strong>{{ item.relativePath }}</strong>
-                            </td>
-                            <td>
-                                <button [disabled]="uploading || uploaded" (click)="uploadFile()" style="float: right" matTooltip="Upload" i18n-matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon><mat-spinner *ngIf="uploading" class="spinner" [diameter]="38"></mat-spinner></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div style="margin-top: 6px;">
+              <button mat-stroked-button (click)="openFileSelector()">Browse Files</button>
             </div>
-            <mat-divider></mat-divider>
-            <div class="cookie-test-section">
-                <h5 i18n="Cookies test section title">Test cookies</h5>
-                <p i18n="Cookies test section description">Run a metadata-only check with your uploaded cookies and inspect logs to verify the setup.</p>
-                <mat-form-field class="cookie-test-url">
-                    <mat-label i18n="Cookies test URL label">Test URL</mat-label>
-                    <input matInput [(ngModel)]="cookiesTestUrl" placeholder="https://www.youtube.com/watch?v=..." i18n-placeholder="Cookies test URL placeholder">
-                </mat-form-field>
-                <div class="cookie-test-actions">
-                    <button mat-flat-button color="accent" (click)="runCookiesTest()" [disabled]="testingCookies || !cookiesTestUrl || !cookiesTestUrl.trim()">
-                        <ng-container i18n="Run cookies test button">Run Cookie Test</ng-container>
-                    </button>
-                    <mat-spinner *ngIf="testingCookies" class="cookie-test-spinner" [diameter]="22"></mat-spinner>
-                </div>
-                <div class="cookie-test-status" *ngIf="cookiesTestComplete && cookiesTestSuccess !== null">
-                    <span *ngIf="cookiesTestSuccess" class="cookie-test-success" i18n="Cookies test success message">Cookies test passed.</span>
-                    <span *ngIf="cookiesTestSuccess === false" class="cookie-test-failed" i18n="Cookies test failure message">Cookies test failed.</span>
-                </div>
-                <div class="cookie-test-logs-wrapper" *ngIf="cookiesTestLogs.length > 0">
-                    <div class="cookie-test-logs-label" i18n="Cookies test logs title">Test logs</div>
-                    <pre class="cookie-test-logs">{{ cookiesTestLogs.join('\n') }}</pre>
-                </div>
-            </div>
-        </div>
+          </div>
+        </ng-template>
+      </ngx-file-drop>
+      <div style="margin-top: 15px;">
+        <p style="font-size: 14px;" i18n="Cookies upload warning">NOTE: Uploading new cookies will override your previous cookies. Also note that cookies are instance-wide, not per-user.</p>
+      </div>
+      <div style="margin-top: 10px;">
+        <table class="table">
+          <tbody class="upload-name-style">
+            @for (item of files; track item; let i = $index) {
+              <tr>
+                <td style="vertical-align: middle;">
+                  <strong>{{ item.relativePath }}</strong>
+                </td>
+                <td>
+                  <button [disabled]="uploading || uploaded" (click)="uploadFile()" style="float: right" matTooltip="Upload" i18n-matTooltip="Upload" mat-mini-fab><mat-icon>publish</mat-icon>@if (uploading) {
+                  <mat-spinner class="spinner" [diameter]="38"></mat-spinner>
+                }</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
+    <mat-divider></mat-divider>
+    <div class="cookie-test-section">
+      <h5 i18n="Cookies test section title">Test cookies</h5>
+      <p i18n="Cookies test section description">Run a metadata-only check with your uploaded cookies and inspect logs to verify the setup.</p>
+      <mat-form-field class="cookie-test-url">
+        <mat-label i18n="Cookies test URL label">Test URL</mat-label>
+        <input matInput [(ngModel)]="cookiesTestUrl" placeholder="https://www.youtube.com/watch?v=..." i18n-placeholder="Cookies test URL placeholder">
+      </mat-form-field>
+      <div class="cookie-test-actions">
+        <button mat-flat-button color="accent" (click)="runCookiesTest()" [disabled]="testingCookies || !cookiesTestUrl || !cookiesTestUrl.trim()">
+          <ng-container i18n="Run cookies test button">Run Cookie Test</ng-container>
+        </button>
+        @if (testingCookies) {
+          <mat-spinner class="cookie-test-spinner" [diameter]="22"></mat-spinner>
+        }
+      </div>
+      @if (cookiesTestComplete && cookiesTestSuccess !== null) {
+        <div class="cookie-test-status">
+          @if (cookiesTestSuccess) {
+            <span class="cookie-test-success" i18n="Cookies test success message">Cookies test passed.</span>
+          }
+          @if (cookiesTestSuccess === false) {
+            <span class="cookie-test-failed" i18n="Cookies test failure message">Cookies test failed.</span>
+          }
+        </div>
+      }
+      @if (cookiesTestLogs.length > 0) {
+        <div class="cookie-test-logs-wrapper">
+          <div class="cookie-test-logs-label" i18n="Cookies test logs title">Test logs</div>
+          <pre class="cookie-test-logs">{{ cookiesTestLogs.join('\n') }}</pre>
+        </div>
+      }
+    </div>
+  </div>
+</div>
 </mat-dialog-content>
 
 <mat-dialog-actions><button style="margin-bottom: 5px;" mat-dialog-close mat-stroked-button><ng-container i18n="Close">Close</ng-container></button></mat-dialog-actions>

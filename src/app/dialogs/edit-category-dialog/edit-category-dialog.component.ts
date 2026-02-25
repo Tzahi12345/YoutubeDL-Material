@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PostsService } from 'app/posts.services';
 
 @Component({
-  selector: 'app-edit-category-dialog',
-  templateUrl: './edit-category-dialog.component.html',
-  styleUrls: ['./edit-category-dialog.component.scss']
+    selector: 'app-edit-category-dialog',
+    templateUrl: './edit-category-dialog.component.html',
+    styleUrls: ['./edit-category-dialog.component.scss'],
+    standalone: false
 })
 export class EditCategoryDialogComponent implements OnInit {
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import {PostsService} from '../posts.services';
-import { Observable, Subject } from 'rxjs';
+import { fromEvent, Subject } from 'rxjs';
 import {UntypedFormControl, Validators} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,11 +11,13 @@ import { Platform } from '@angular/cdk/platform';
 import { ArgModifierDialogComponent } from 'app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component';
 import { RecentVideosComponent } from 'app/components/recent-videos/recent-videos.component';
 import { DatabaseFile, Download, FileType, Playlist } from 'api-types';
+import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.css']
+    selector: 'app-root',
+    templateUrl: './main.component.html',
+    styleUrls: ['./main.component.css'],
+    standalone: false
 })
 export class MainComponent implements OnInit {
   youtubeAuthDisabledOverride = false;
@@ -249,11 +251,9 @@ export class MainComponent implements OnInit {
     if (this.postsService.initialized) {
       this.configLoad();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.configLoad();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.configLoad());
     }
 
     this.postsService.config_reloaded.subscribe(changed => {
@@ -284,7 +284,7 @@ export class MainComponent implements OnInit {
     }
 
     this.argsChangedSubject
-      .debounceTime(500)
+      .pipe(debounceTime(500))
       .subscribe((should_simulate) => {
         if (should_simulate) this.getSimulatedOutput();
     });
@@ -694,13 +694,14 @@ export class MainComponent implements OnInit {
   }
 
   attachToInput(): void {
-    Observable.fromEvent(this.urlInput.nativeElement, 'keyup')
-      .map((e: any) => e.target.value)           // extract the value of input
-      .filter((text: string) => text.length > 1) // filter out if empty
-      .debounceTime(250)                         // only once every 250ms
-      .do(() => this.results_loading = true)         // enable loading
-      .map((query: string) => this.youtubeSearch.search(query))
-      .switch()                                  // act on the return of the search
+    fromEvent(this.urlInput.nativeElement, 'keyup')
+      .pipe(
+        map((e: any) => e.target.value),            // extract the value of input
+        filter((text: string) => text.length > 1),  // filter out if empty
+        debounceTime(250),                          // only once every 250ms
+        tap(() => this.results_loading = true),     // enable loading
+        switchMap((query: string) => this.youtubeSearch.search(query))
+      )
       .subscribe(
         (results: Result[]) => {
           this.results_loading = false;

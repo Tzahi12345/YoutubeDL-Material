@@ -7,7 +7,7 @@
     "baseUrl": "src",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "ES2022",
@@ -15,10 +15,6 @@
     "esModuleInterop": true,
     "typeRoots": [
       "node_modules/@types"
-    ],
-    "lib": [
-      "es2019",
-      "dom"
     ],
     "module": "es2020",
     "useDefineForClassFields": false

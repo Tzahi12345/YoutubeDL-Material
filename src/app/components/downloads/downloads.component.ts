@@ -9,11 +9,13 @@ import { ConfirmDialogComponent } from 'app/dialogs/confirm-dialog/confirm-dialo
 import { MatSort } from '@angular/material/sort';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Download } from 'api-types';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-downloads',
-  templateUrl: './downloads.component.html',
-  styleUrls: ['./downloads.component.scss']
+    selector: 'app-downloads',
+    templateUrl: './downloads.component.html',
+    styleUrls: ['./downloads.component.scss'],
+    standalone: false
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
 
@@ -98,7 +100,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     this.innerWidth = window.innerWidth;
     this.recalculateColumns();
@@ -119,11 +121,9 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     if (this.postsService.initialized) {
       this.getCurrentDownloadsRecurring();
     } else {
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
-          this.getCurrentDownloadsRecurring();
-        }
-      });
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => this.getCurrentDownloadsRecurring());
     }
   }
 

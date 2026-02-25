@@ -4,16 +4,17 @@ import { Router } from '@angular/router';
 import { DatabaseFile, FileType, FileTypeFilter, Sort } from '../../../api-types';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatChipListboxChange } from '@angular/material/chips';
 import { MatSelectionListChange } from '@angular/material/list';
 import { saveAs } from 'file-saver';
 
 @Component({
-  selector: 'app-recent-videos',
-  templateUrl: './recent-videos.component.html',
-  styleUrls: ['./recent-videos.component.scss']
+    selector: 'app-recent-videos',
+    templateUrl: './recent-videos.component.html',
+    styleUrls: ['./recent-videos.component.scss'],
+    standalone: false
 })
 export class RecentVideosComponent implements OnInit {
 
@@ -114,14 +115,14 @@ export class RecentVideosComponent implements OnInit {
     if (this.postsService.initialized) {
       this.getAllFiles();
       this.getAllPlaylists();
+    } else {
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => {
+          this.getAllFiles();
+          this.getAllPlaylists();
+        });
     }
-
-    this.postsService.service_initialized.subscribe(init => {
-      if (init) {
-        this.getAllFiles();
-        this.getAllPlaylists();
-      }
-    });
 
     this.postsService.files_changed.subscribe(changed => {
       if (changed) {
@@ -140,8 +141,9 @@ export class RecentVideosComponent implements OnInit {
     this.selected_data_objs = this.defaultSelected;    
 
     this.searchChangedSubject
-      .debounceTime(500)
-      .pipe(distinctUntilChanged()
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged()
       ).subscribe(model => {
         if (model.length > 0) {
           this.search_mode = true;

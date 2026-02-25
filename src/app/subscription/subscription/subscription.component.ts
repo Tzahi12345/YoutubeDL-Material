@@ -5,11 +5,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 import { Subscription } from 'api-types';
 import { saveAs } from 'file-saver';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-subscription',
-  templateUrl: './subscription.component.html',
-  styleUrls: ['./subscription.component.scss']
+    selector: 'app-subscription',
+    templateUrl: './subscription.component.html',
+    styleUrls: ['./subscription.component.scss'],
+    standalone: false
 })
 export class SubscriptionComponent implements OnInit, OnDestroy {
 
@@ -30,13 +32,13 @@ export class SubscriptionComponent implements OnInit, OnDestroy {
 
       if (this.sub_interval) { clearInterval(this.sub_interval); }
 
-      this.postsService.service_initialized.subscribe(init => {
-        if (init) {
+      this.postsService.service_initialized
+        .pipe(filter(Boolean), take(1))
+        .subscribe(() => {
           this.getConfig();
           this.getSubscription();
           this.sub_interval = setInterval(() => this.getSubscription(true), 1000);
-        }
-      });
+        });
     });
   }
 

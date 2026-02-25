@@ -4,9 +4,10 @@ import { CURRENT_VERSION } from 'app/consts';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateProgressDialogComponent } from 'app/dialogs/update-progress-dialog/update-progress-dialog.component';
 @Component({
-  selector: 'app-updater',
-  templateUrl: './updater.component.html',
-  styleUrls: ['./updater.component.scss']
+    selector: 'app-updater',
+    templateUrl: './updater.component.html',
+    styleUrls: ['./updater.component.scss'],
+    standalone: false
 })
 export class UpdaterComponent implements OnInit {
 

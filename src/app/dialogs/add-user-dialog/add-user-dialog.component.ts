@@ -3,9 +3,10 @@ import { PostsService } from 'app/posts.services';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-add-user-dialog',
-  templateUrl: './add-user-dialog.component.html',
-  styleUrls: ['./add-user-dialog.component.scss']
+    selector: 'app-add-user-dialog',
+    templateUrl: './add-user-dialog.component.html',
+    styleUrls: ['./add-user-dialog.component.scss'],
+    standalone: false
 })
 export class AddUserDialogComponent implements OnInit {
 

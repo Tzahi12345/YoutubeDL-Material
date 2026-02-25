@@ -6,7 +6,7 @@ describe('YoutubeSearchService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: YoutubeSearchService = TestBed.get(YoutubeSearchService);
+    const service: YoutubeSearchService = TestBed.inject(YoutubeSearchService);
     expect(service).toBeTruthy();
   });
 });
