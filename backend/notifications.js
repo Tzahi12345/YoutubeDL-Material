@@ -7,8 +7,8 @@ const consts = require('./consts');
 const { v4: uuid } = require('uuid');
 
 const fetch = require('node-fetch');
+const axios = require('axios');
 const { gotify } = require("gotify");
-const TelegramBotAPI = require('node-telegram-bot-api');
 let telegram_bot = null;
 const REST = require('@discordjs/rest').REST;
 const API = require('@discordjs/core').API;
@@ -167,12 +167,15 @@ config_api.config_updated.subscribe(change => {
 async function setupTelegramBot() {
     const use_telegram_api = config_api.getConfigItem('ytdl_use_telegram_API');
     const bot_token = config_api.getConfigItem('ytdl_telegram_bot_token');
-    if (!use_telegram_api || !bot_token) return;
+    if (!use_telegram_api || !bot_token) {
+        telegram_bot = null;
+        return;
+    }
     
-    telegram_bot = new TelegramBotAPI(bot_token);
+    telegram_bot = createTelegramBot(bot_token);
     const webhook_proxy = config_api.getConfigItem('ytdl_telegram_webhook_proxy');
     const webhook_url = webhook_proxy ? webhook_proxy : `${utils.getBaseURL()}/api/telegramRequest`;
-    telegram_bot.setWebHook(webhook_url);
+    await telegram_bot.setWebHook(webhook_url);
 }
 
 exports.sendTelegramNotification = async ({body, title, type, url, thumbnail}) => {
@@ -189,7 +192,37 @@ exports.sendTelegramNotification = async ({body, title, type, url, thumbnail}) =
     
     logger.verbose('Sending notification to Telegram');
     if (thumbnail) await telegram_bot.sendPhoto(chat_id, thumbnail);
-    telegram_bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
+    await telegram_bot.sendMessage(chat_id, `<b>${title}</b>\n\n${body}\n<a href="${url}">${url}</a>`, {parse_mode: 'HTML'});
+}
+
+function createTelegramBot(bot_token) {
+    const base_url = `https://api.telegram.org/bot${bot_token}`;
+
+    async function callTelegram(method, data) {
+        try {
+            const response = await axios.post(`${base_url}/${method}`, data, { timeout: 15000 });
+            return response.data;
+        } catch (err) {
+            const description = err?.response?.data?.description;
+            logger.error(`Telegram API ${method} failed${description ? `: ${description}` : ''}`);
+            if (!description && err) {
+                logger.error(err);
+            }
+            return null;
+        }
+    }
+
+    return {
+        setWebHook(url) {
+            return callTelegram('setWebhook', { url });
+        },
+        sendPhoto(chat_id, photo) {
+            return callTelegram('sendPhoto', { chat_id, photo });
+        },
+        sendMessage(chat_id, text, extra = {}) {
+            return callTelegram('sendMessage', Object.assign({ chat_id, text }, extra));
+        }
+    };
 }
 
 // Discord
