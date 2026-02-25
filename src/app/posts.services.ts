@@ -262,7 +262,7 @@ export class PostsService {
             tasks: 'tasks_manager'
         }
         const required_perm = PATH_TO_REQUIRED_PERM[route.routeConfig.path];
-        return required_perm ? this.hasPermission(required_perm) : Promise.resolve(true);
+        return Promise.resolve(required_perm ? this.hasPermission(required_perm) : true);
     }
 
     setTheme(theme) {
