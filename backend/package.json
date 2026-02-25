@@ -38,7 +38,7 @@
     "express": "^4.22.1",
     "express-rate-limit": "^6.11.2",
     "express-session": "^1.19.0",
-    "feed": "^4.2.2",
+    "feed": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^9.0.0",
     "gotify": "^1.1.0",
