@@ -17,8 +17,8 @@ export class LinkifyPipe implements PipeTransform {
   private stylize(text: string): string {
     let stylizedText: string = '';
     if (text && text.length > 0) {
-      for (let line of text.split("\n")) {
-        for (let t of line.split(" ")) {
+      for (const line of text.split("\n")) {
+        for (const t of line.split(" ")) {
           if (t.startsWith("http") && t.length>7) {  
             stylizedText += `<a target="_blank" href="${t}">${t}</a> `;
           }

@@ -542,7 +542,7 @@ export class MainComponent implements OnInit {
     // tslint:disable-next-line: max-line-length
     const youtubeStrRegex = /(?:http(?:s)?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user)\/))([^\?&\"'<> #]+)/;
     const reYT = new RegExp(youtubeStrRegex);
-    const ytValid = true || reYT.test(str);
+    const ytValid = true;
     if (valid && ytValid && Date.now() - this.last_url_check > 1000) {
       if (str !== this.last_valid_url && this.allowQualitySelect) {
         // get info
@@ -600,7 +600,7 @@ export class MainComponent implements OnInit {
     const isYouTubeHost = host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com' || host === 'youtu.be';
     if (!isYouTubeHost) return raw;
 
-    let videoId = '';
+    let videoId: string;
 
     if (host === 'youtu.be') {
       videoId = u.pathname.replace(/^\/+/, '').split('/')[0] || '';

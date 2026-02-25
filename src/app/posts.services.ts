@@ -4,6 +4,7 @@ import { THEMES_CONFIG } from '../themes';
 import { Router, ActivatedRouteSnapshot } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
     ChangeRolePermissionsRequest,
@@ -240,17 +241,13 @@ export class PostsService {
         }
 
         return new Promise((resolve, reject) => {
-            let sub;
-            sub = this.service_initialized.subscribe(init => {
-                if (init) {
-                    if (sub) {
-                        sub.unsubscribe();
-                    }
+            this.service_initialized
+                .pipe(filter(Boolean), take(1))
+                .subscribe(() => {
                     this._canActivate(route)
                         .then(resolve)
                         .catch(reject);
-                }
-            });
+                });
         });
     }
 
@@ -391,7 +388,7 @@ export class PostsService {
         return this.http.post<GetAllFilesResponse>(this.path + 'getAllFiles', body, this.httpOptions);
     }
 
-    updateFile(uid: string, change_obj: Object) {
+    updateFile(uid: string, change_obj: object) {
         const body: UpdateFileRequest = {uid: uid, change_obj: change_obj};
         return this.http.post<SuccessObject>(this.path + 'updateFile', body, this.httpOptions);
     }
