@@ -51,7 +51,7 @@ ARG BUILDPLATFORM
 FROM --platform=${BUILDPLATFORM} node:24 as frontend
 RUN npm install -g @angular/cli
 WORKDIR /build
-COPY [ "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
+COPY [ ".npmrc", "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
 COPY [ "src/", "/build/src/" ]
 RUN npm install && \
     npm run build && \

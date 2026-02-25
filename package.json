@@ -35,7 +35,7 @@
     "@angular/router": "^21.1.5",
     "@fontsource/material-icons": "^4.5.4",
     "@ngneat/content-loader": "^7.0.0",
-    "@videogular/ngx-videogular": "^6.0.0",
+    "@videogular/ngx-videogular": "^20.0.0",
     "core-js": "^2.4.1",
     "crypto-js": "^4.2.0",
     "file-saver": "^2.0.2",
