@@ -20,7 +20,6 @@ const URL = require('url').URL;
 const CONSTS = require('./consts')
 const read_last_lines = require('read-last-lines');
 const ps = require('ps-node');
-const Feed = require('feed').Feed;
 
 const logger = require('./logger');
 const config_api = require('./config.js');
@@ -2551,6 +2550,7 @@ app.get('/api/rss', async function (req, res) {
 
     const {files} = await files_api.getAllFiles(sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid);
 
+    const { Feed } = await import('feed');
     const feed = new Feed({
             title: 'Downloads',
             description: 'YoutubeDL-Material downloads',
