@@ -16,19 +16,7 @@
     </p>
     <mat-divider></mat-divider>
     <h5 style="margin-top: 10px;">Installation details:</h5>
-    <p>
-      <ng-container i18n="Version label">Installed version:</ng-container>&nbsp;{{current_version_tag}} - @if (checking_for_updates) {
-      <span style="display: inline-block"><mat-spinner class="version-spinner" [diameter]="22"></mat-spinner>&nbsp;<ng-container i18n="Checking for updates text">Checking for updates...</ng-container></span>
-    }
-    @if (!checking_for_updates) {
-      <mat-icon class="version-checked-icon">done</mat-icon>
-      }&nbsp;&nbsp;@if (!checking_for_updates && latestGithubRelease['tag_name'] !== current_version_tag) {
-      <a [href]="latestUpdateLink" target="_blank"><ng-container i18n="View latest update">Update available</ng-container> - {{latestGithubRelease['tag_name']}}</a>. <ng-container i18n="Update through settings menu hint">You can update from the settings menu.</ng-container>
-    }
-    @if (!checking_for_updates && latestGithubRelease['tag_name'] === current_version_tag) {
-      <span>You are up to date.</span>
-    }
-  </p>
+    <!-- Installed version/update status line intentionally hidden; it is confusing in custom/nightly builds. -->
   <p>
     <ng-container i18n="Installation type">Installation type:</ng-container>&nbsp;{{postsService.version_info.type}}
     <br>
