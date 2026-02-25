@@ -40,7 +40,7 @@
     "express-session": "^1.19.0",
     "feed": "^5.2.0",
     "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^11.3.3",
     "gotify": "^1.1.0",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
