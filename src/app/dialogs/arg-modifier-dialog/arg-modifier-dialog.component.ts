@@ -143,7 +143,7 @@ export class ArgModifierDialogComponent implements OnInit, AfterViewInit {
     });
 
     // converts array of arrays to one array
-    const singular_arg_array = [].concat.apply([], arg_arrays);
+    const singular_arg_array = [].concat(...arg_arrays);
     const args_by_key = singular_arg_array.reduce((acc, curr) => {
       acc[curr.key] = curr;
       return acc;

@@ -4,6 +4,7 @@ import { THEMES_CONFIG } from '../themes';
 import { Router, ActivatedRouteSnapshot } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
     ChangeRolePermissionsRequest,
@@ -240,17 +241,13 @@ export class PostsService {
         }
 
         return new Promise((resolve, reject) => {
-            let sub;
-            sub = this.service_initialized.subscribe(init => {
-                if (init) {
-                    if (sub) {
-                        sub.unsubscribe();
-                    }
+            this.service_initialized
+                .pipe(filter(Boolean), take(1))
+                .subscribe(() => {
                     this._canActivate(route)
                         .then(resolve)
                         .catch(reject);
-                }
-            });
+                });
         });
     }
 

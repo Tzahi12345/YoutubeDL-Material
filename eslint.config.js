@@ -33,4 +33,17 @@ module.exports = [
     files: SOURCE_FILES,
   },
   ...scopedTsConfigs,
+  {
+    files: SOURCE_FILES,
+    rules: {
+      'no-useless-escape': 'off',
+    },
+  },
+  {
+    files: TS_FILES,
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
 ];
