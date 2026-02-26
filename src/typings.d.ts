@@ -1,5 +1,2 @@
-/* SystemJS module definition */
-declare let module: NodeModule;
-interface NodeModule {
-  id: string;
-}
+/* Legacy placeholder retained for older Angular CLI projects.
+ * Modern @types/node already declares `module`, so do not redeclare it here. */
