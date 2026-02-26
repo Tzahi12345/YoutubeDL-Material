@@ -16,6 +16,12 @@ describe('SubscriptionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SubscriptionComponent);
     component = fixture.componentInstance;
+    component.subscription = {
+      id: 'sub-1',
+      name: 'Test subscription',
+      downloading: false,
+      videos: []
+    } as any;
     fixture.detectChanges();
   });
 

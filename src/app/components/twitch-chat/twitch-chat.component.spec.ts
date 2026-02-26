@@ -16,6 +16,12 @@ describe('TwitchChatComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TwitchChatComponent);
     component = fixture.componentInstance;
+    component.db_file = {
+      id: 'file-1',
+      isAudio: false,
+      url: 'https://twitch.tv/videos/1'
+    } as any;
+    component.current_timestamp = 0;
     fixture.detectChanges();
   });
 

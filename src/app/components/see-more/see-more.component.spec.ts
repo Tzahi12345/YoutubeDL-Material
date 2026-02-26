@@ -1,6 +1,6 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SeeMoreComponent } from './see-more.component';
+import { LinkifyPipe, SeeMoreComponent } from './see-more.component';
 
 describe('SeeMoreComponent', () => {
   let component: SeeMoreComponent;
@@ -8,7 +8,7 @@ describe('SeeMoreComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SeeMoreComponent ]
+      declarations: [ SeeMoreComponent, LinkifyPipe ]
     })
     .compileComponents();
   }));

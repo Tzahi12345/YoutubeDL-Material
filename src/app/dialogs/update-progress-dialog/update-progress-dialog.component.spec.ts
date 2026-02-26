@@ -16,6 +16,7 @@ describe('UpdateProgressDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(UpdateProgressDialogComponent);
     component = fixture.componentInstance;
+    component.updateStatus = { updating: false } as any;
     fixture.detectChanges();
   });
 
