@@ -1,6 +1,6 @@
 apiVersion: v2
 name: youtubedl-material
-description: A Helm chart for https://github.com/Tzahi12345/YoutubeDL-Material
+description: A Helm chart for https://github.com/voc0der/YoutubeDL-Material
 
 # A chart can be either an 'application' or a 'library' chart.
 #

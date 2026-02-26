@@ -507,7 +507,7 @@ async function downloadReleaseZip(tag) {
         // get name of zip file, which depends on the version
         const tag_without_v = safeTag.substring(1, safeTag.length);
         const zip_file_name = `youtubedl-material-${tag_without_v}.zip`;
-        const latest_zip_link = `https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/${encodeURIComponent(safeTag)}/${encodeURIComponent(zip_file_name)}`;
+        const latest_zip_link = `https://github.com/voc0der/YoutubeDL-Material/releases/download/${encodeURIComponent(safeTag)}/${encodeURIComponent(zip_file_name)}`;
 
         // download zip from release
         const res = await fetch(latest_zip_link);
@@ -580,7 +580,7 @@ async function isNewVersionAvailable() {
 }
 
 async function getLatestVersion() {
-    const res = await fetch('https://api.github.com/repos/tzahi12345/youtubedl-material/releases/latest', {method: 'Get'});
+    const res = await fetch('https://api.github.com/repos/voc0der/youtubedl-material/releases/latest', {method: 'Get'});
     const json = await res.json();
 
     if (json['message']) {
@@ -2557,8 +2557,8 @@ app.get('/api/rss', async function (req, res) {
             description: 'YoutubeDL-Material downloads',
             id: utils.getBaseURL(),
             link: utils.getBaseURL(),
-            image: 'https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/src/assets/images/logo_128px.png',
-            favicon: 'https://raw.githubusercontent.com/Tzahi12345/YoutubeDL-Material/master/src/favicon.ico',
+            image: 'https://github.com/voc0der/YoutubeDL-Material/blob/master/src/assets/images/logo_128px.png',
+            favicon: 'https://raw.githubusercontent.com/voc0der/YoutubeDL-Material/master/src/favicon.ico',
             generator: 'YoutubeDL-Material'
     });
 

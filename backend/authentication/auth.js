@@ -33,7 +33,7 @@ exports.initialize = function () {
       });
   }
 
-  // Sometimes this value is not properly typed: https://github.com/Tzahi12345/YoutubeDL-Material/issues/813
+  // Sometimes this value is not properly typed: https://github.com/voc0der/YoutubeDL-Material/issues/813
   JWT_EXPIRATION = config_api.getConfigItem('ytdl_jwt_expiration');
   if (!(+JWT_EXPIRATION)) {
     logger.warn(`JWT expiration value improperly set to ${JWT_EXPIRATION}, auto setting to 1 day.`);

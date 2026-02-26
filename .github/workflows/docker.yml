@@ -53,7 +53,7 @@ jobs:
         id: docker-meta
         uses: docker/metadata-action@v5
         # Defaults:
-        #     DOCKERHUB_USERNAME  : tzahi12345
+        #     DOCKERHUB_USERNAME  : voc0der
         #     DOCKERHUB_REPO      : youtubedl-material
         #     DOCKERHUB_MASTER_TAG: nightly
         with:

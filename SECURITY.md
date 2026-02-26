@@ -4,7 +4,7 @@
 
 If you would like to see the latest updates, use the `nightly` tag on Docker.
 
-If you'd like to stick with more stable releases, use the `latest` tag on Docker or download the [latest release here](https://github.com/Tzahi12345/YoutubeDL-Material/releases/latest). 
+If you'd like to stick with more stable releases, use the `latest` tag on Docker or download the [latest release here](https://github.com/voc0der/YoutubeDL-Material/releases/latest). 
 
 | Version              | Supported          |
 | -------------------- | ------------------ |

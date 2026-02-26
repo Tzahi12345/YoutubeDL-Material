@@ -4,13 +4,10 @@
 
 [![Docker pulls badge](https://img.shields.io/docker/pulls/voc0der/youtubedl-material.svg)](https://hub.docker.com/r/voc0der/youtubedl-material)
 [![Docker image size badge](https://img.shields.io/docker/image-size/voc0der/youtubedl-material?sort=date)](https://hub.docker.com/r/voc0der/youtubedl-material)
-[![Heroku deploy badge](https://img.shields.io/badge/%E2%86%91_Deploy_to-Heroku-7056bf.svg)](https://heroku.com/deploy?template=https://github.com/voc0der/YoutubeDL-Material)
 [![GitHub issues badge](https://img.shields.io/github/issues/voc0der/YoutubeDL-Material)](https://github.com/voc0der/YoutubeDL-Material/issues)
 [![License badge](https://img.shields.io/github/license/voc0der/YoutubeDL-Material)](https://github.com/voc0der/YoutubeDL-Material/blob/master/LICENSE.md)
 
 YoutubeDL-Material is a Material Design frontend for [youtube-dl](https://rg3.github.io/youtube-dl/) / yt-dlp workflows. It's coded using [Angular 21](https://angular.dev/) for the frontend, and [Node.js](https://nodejs.org/) on the backend.
-
-Now with [Docker](#Docker) support!
 
 <hr>
 
@@ -49,13 +46,6 @@ sudo apt-get install -y nodejs ffmpeg unzip python3 python3-pip
 # Optional but recommended for local installs:
 python3 -m pip install --user yt-dlp yt-dlp-ejs
 ```
-
-</details>
-
-<details>
-  <summary>CentOS 7 (legacy)</summary>
-
-Current builds require Node.js 24 (`>=24 <26`), so CentOS 7 is no longer a supported host for native installs. Use Docker or a newer distro.
 
 </details>
 
@@ -111,13 +101,16 @@ The repo currently uses Angular 21 and `@videogular/ngx-videogular@20`. Videogul
 
 Please keep this file when building locally or in Docker until Videogular publishes Angular 21 peer support.
 
-Lastly, type `npm -g install pm2` to install pm2 globally.
+### Run backend
 
-The frontend is now complete. The backend is much easier. Just go into the `backend` folder, and type `npm start`.
+Install `pm2` globally, then start the backend:
 
-Finally, if you want your instance to be available from outside your network, you can set up a [reverse proxy](https://github.com/voc0der/YoutubeDL-Material/wiki/Reverse-Proxy-Setup).
+```bash
+npm -g install pm2
+npm start --prefix backend
+```
 
-Alternatively, you can port forward the port specified in the config (defaults to `17442`) and point it to the server's IP address. Make sure the port is also allowed through the server's firewall.
+If you want your instance available outside your network, set up a [reverse proxy](https://github.com/voc0der/YoutubeDL-Material/wiki/Reverse-Proxy-Setup) or port forward the configured backend port (default `17442`).
 
 ## Docker
 
@@ -136,30 +129,38 @@ If you are looking to setup YoutubeDL-Material with Docker, this section is for 
 3. Run `docker compose up -d` (or `docker-compose up -d`) to start it up. The container exposes port `17442` internally. Please check your `docker-compose.yml` file for the *external* port. If you downloaded the file as described above, it defaults to **8998**.
 4. Make sure you can connect to the specified URL + *external* port, and if so, you are done!
 
-### Custom UID/GID
+<details>
+  <summary>Docker environment variables (click to expand)</summary>
 
-By default, the Docker container runs as non-root with UID=1000 and GID=1000. To set this to your own UID/GID, simply update the `environment` section in your `docker-compose.yml` like so:
+Common Docker env vars used by the provided `docker-compose.yml` (plus logging):
 
-```yml
-environment:
-    UID: YOUR_UID
-    GID: YOUR_GID
-```
-
-### Logging
-
-You can control backend log verbosity with the `YTDL_LOG_LEVEL` environment variable (or `ytdl_log_level`).
-
-- Default: `info` (mostly startup messages, warnings, and errors)
-- Use `debug` to enable verbose yt-dlp/debug diagnostics
-- Supported values follow standard Winston levels (for example: `error`, `warn`, `info`, `verbose`, `debug`)
+- `ytdl_mongodb_connection_string`: MongoDB connection string (default compose file points to `mongodb://ytdl-mongo-db:27017`)
+- `ytdl_use_local_db`: set to `'false'` to use MongoDB instead of the local JSON DB
+- `write_ytdl_config`: set to `'true'` to write env-backed settings into `appdata/default.json` on startup
+- `UID` / `GID`: set the app user/group IDs used inside the container (default behavior drops to `1000:1000`)
+- `YTDL_LOG_LEVEL` (or `ytdl_log_level`): backend log level, default `info`
+- Valid log levels: `error`, `warn`, `info`, `verbose`, `debug`
+- `ytdl_ssl_cert_path` / `ytdl_ssl_key_path`: enable HTTPS by pointing to mounted cert/key files
+- `ytdl_reverse_proxy_whitelist`: comma-separated CIDR ranges allowed to connect (reverse proxy IPs, not client IPs)
 
 Example Docker Compose snippet:
 
 ```yml
 environment:
-    YTDL_LOG_LEVEL: debug
+    ytdl_mongodb_connection_string: 'mongodb://ytdl-mongo-db:27017'
+    ytdl_use_local_db: 'false'
+    write_ytdl_config: 'true'
+    # UID: 1000
+    # GID: 1000
+    # YTDL_LOG_LEVEL: debug
+    # ytdl_ssl_cert_path: /mnt/keys/fullchain.pem
+    # ytdl_ssl_key_path: /mnt/keys/privkey.pem
+    # ytdl_reverse_proxy_whitelist: 172.28.0.100/32
 ```
+
+If you prefer, you can also use Docker's `user: "UID:GID"` setting instead of `UID`/`GID`.
+
+</details>
 
 ## MongoDB
 
@@ -174,12 +175,6 @@ For much better scaling with large datasets please run your YoutubeDL-Material i
 To get started, go to the settings menu and enable the public API from the *Extra* tab. You can generate an API key if one is missing.
 
 Once you have enabled the API and have the key, you can start sending requests by adding the query param `apiKey=API_KEY`. Replace `API_KEY` with your actual API key, and you should be good to go! Nearly all of the backend should be at your disposal. View available endpoints in the link above.
-
-## iOS Shortcut 
-
-If you are using iOS, try YoutubeDL-Material more conveniently with a Shortcut. With this Shorcut, you can easily start downloading YouTube video with just two taps! (Or maybe three?)
-
-You can download Shortcut [here.](https://routinehub.co/shortcut/10283/)
 
 ## Contributing
 

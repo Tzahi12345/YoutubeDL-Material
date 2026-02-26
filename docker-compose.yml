@@ -14,6 +14,9 @@ services:
             # ytdl_ssl_cert_path: /mnt/keys/bindable-internal/lurker/fullchain-or-ca.pem
             # ytdl_ssl_key_path: /mnt/keys/bindable-internal/lurker/privkey.pem
 
+            # Backend log level (optional): error, warn, info, verbose, debug
+            # YTDL_LOG_LEVEL: info
+
             # Reverse Proxy Whitelist (optional)
             # Whitelists the reverse proxy's IP (the direct connecting IP, not end clients)
             # This checks which reverse proxy is allowed to connect, not client IPs
@@ -27,7 +30,8 @@ services:
         # user: "1000:1000"
         restart: always
         depends_on:
-            - ytdl-mongo-db
+            ytdl-mongo-db:
+                condition: service_healthy
         volumes:
             - ./appdata:/app/appdata
             - ./audio:/app/audio
@@ -38,8 +42,15 @@ services:
             - "8998:17442"
         image: voc0der/youtubedl-material:nightly
     ytdl-mongo-db:
-        # If you are using a Raspberry Pi, use mongo:4.4.18
-        image: mongo:4
+        # If you are using an older Raspberry Pi / 32-bit setup, use mongo:4.4.18
+        image: mongo:8
+        healthcheck:
+            test: ["CMD-SHELL", "mongosh --eval 'db.runCommand({ping:1}).ok' --quiet"]
+            interval: 15s
+            timeout: 30s
+            retries: 5
+            start_period: 35s
+            start_interval: 1s
         logging:
             driver: "none"          
         container_name: mongo-db
