@@ -64,7 +64,6 @@ const runYoutubeDLProcess = async (url, args, youtubedl_fork = config_api.getCon
     const child_process = execa(getYoutubeDLPath(youtubedl_fork), [url, ...args], {
         maxBuffer: Infinity,
         stdin: 'ignore',
-        timeout: 60000,   // Reduce to 60 seconds - if it takes longer, something is wrong
         buffer: true,
         cleanup: true,    // Kill all child processes when parent exits
         killSignal: 'SIGKILL',  // Force kill instead of graceful SIGTERM
