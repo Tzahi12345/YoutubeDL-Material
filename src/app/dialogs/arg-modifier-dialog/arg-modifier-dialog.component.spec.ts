@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { ArgModifierDialogComponent } from './arg-modifier-dialog.component';
+import { ArgModifierDialogComponent, HighlightPipe } from './arg-modifier-dialog.component';
 
 describe('ArgModifierDialogComponent', () => {
   let component: ArgModifierDialogComponent;
@@ -8,7 +8,7 @@ describe('ArgModifierDialogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ArgModifierDialogComponent ]
+      declarations: [ ArgModifierDialogComponent, HighlightPipe ]
     })
     .compileComponents();
   }));

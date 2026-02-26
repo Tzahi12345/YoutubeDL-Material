@@ -16,6 +16,10 @@ describe('UnifiedFileCardComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(UnifiedFileCardComponent);
     component = fixture.componentInstance;
+    component.theme = {
+      ghost_primary: '#000000',
+      ghost_secondary: '#111111'
+    } as any;
     fixture.detectChanges();
   });
 
