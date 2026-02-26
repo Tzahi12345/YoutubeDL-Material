@@ -20,6 +20,7 @@ const mutex = new Mutex();
 let should_check_downloads = true;
 
 const download_to_child_process = {};
+const active_progress_checks = new Set();
 
 function hasReachedConcurrentDownloadLimit(maxConcurrentDownloads, runningDownloadsCount) {
     const normalizedLimit = Number(maxConcurrentDownloads);
@@ -672,33 +673,60 @@ async function checkDownloadPercent(download_uid) {
     be divided by the "total expected bytes."
     */
 
-    const download = await db_api.getRecord('download_queue', {uid: download_uid});
-    if (!download) return;
-    const files_to_check_for_progress = download['files_to_check_for_progress'];
-    const resulting_file_size = download['expected_file_size'];
+    if (active_progress_checks.has(download_uid)) return;
+    active_progress_checks.add(download_uid);
 
-    if (!resulting_file_size) return;
+    try {
+        const download = await db_api.getRecord('download_queue', {uid: download_uid});
+        if (!download || download['finished']) return;
 
-    let sum_size = 0;
-    for (let i = 0; i < files_to_check_for_progress.length; i++) {
-        const file_to_check_for_progress = files_to_check_for_progress[i];
-        const dir = path.dirname(file_to_check_for_progress);
-        if (!fs.existsSync(dir)) continue;
-        fs.readdir(dir, async (err, files) => {
+        const files_to_check_for_progress = download['files_to_check_for_progress'];
+        const resulting_file_size = download['expected_file_size'];
+
+        if (!resulting_file_size || !files_to_check_for_progress || files_to_check_for_progress.length === 0) return;
+
+        let sum_size = 0;
+        for (let i = 0; i < files_to_check_for_progress.length; i++) {
+            const file_to_check_for_progress = files_to_check_for_progress[i];
+            const dir = path.dirname(file_to_check_for_progress);
+            if (!fs.existsSync(dir)) continue;
+
+            let files = [];
+            try {
+                files = await fs.readdir(dir);
+            } catch (e) {
+                continue;
+            }
+
             for (let j = 0; j < files.length; j++) {
                 const file = files[j];
                 if (!file.includes(path.basename(file_to_check_for_progress))) continue;
                 try {
-                    const file_stats = fs.statSync(path.join(dir, file));
+                    const file_stats = await fs.stat(path.join(dir, file));
                     if (file_stats && file_stats.size) {
                         sum_size += file_stats.size;
                     }
                 } catch (e) {}
             }
-            
-            const percent_complete = (sum_size/resulting_file_size * 100).toFixed(2);
-            await db_api.updateRecord('download_queue', {uid: download_uid}, {percent_complete: percent_complete});
-        });
+        }
+
+        let computed_percent = (sum_size / resulting_file_size) * 100;
+        if (!Number.isFinite(computed_percent)) return;
+
+        // Keep in-progress estimates stable and reserve 100% for the final completion write.
+        computed_percent = Math.min(99.99, Math.max(0, computed_percent));
+
+        const latest_download = await db_api.getRecord('download_queue', {uid: download_uid});
+        if (!latest_download || latest_download['finished']) return;
+
+        const current_percent = Number(latest_download['percent_complete']);
+        const monotonic_percent = Math.max(Number.isFinite(current_percent) ? current_percent : 0, computed_percent);
+        const percent_complete = monotonic_percent.toFixed(2);
+
+        // Avoid overwriting the final 100% once the completion update marks the download finished.
+        await db_api.updateRecord('download_queue', {uid: download_uid, finished: false}, {percent_complete: percent_complete});
+    } finally {
+        active_progress_checks.delete(download_uid);
     }
 }
 
