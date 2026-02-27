@@ -23,8 +23,8 @@
   },
   "homepage": "",
   "dependencies": {
-    "@discordjs/builders": "^1.6.1",
-    "@discordjs/core": "^0.5.2",
+    "@discordjs/builders": "^1.13.1",
+    "@discordjs/core": "^2.4.0",
     "archiver": "^7.0.1",
     "async": "^3.2.3",
     "async-mutex": "^0.5.0",
@@ -59,13 +59,13 @@
     "passport-local": "^1.0.0",
     "progress": "^2.0.3",
     "ps-node": "^0.1.6",
-    "read-last-lines": "^1.7.2",
-    "rxjs": "^7.3.0",
+    "read-last-lines": "^1.8.0",
+    "rxjs": "^7.8.2",
     "shortid": "^2.2.17",
     "tree-kill": "^1.2.2",
     "unzipper": "^0.12.3",
     "uuid": "^13.0.0",
-    "winston": "^3.7.2",
+    "winston": "^3.19.0",
     "xmlbuilder2": "^4.0.3"
   },
   "overrides": {

@@ -55,7 +55,7 @@ jobs:
           Copy-Item -Path ./backend/*.js -Destination ./build/youtubedl-material
           Copy-Item -Path ./backend/*.json -Destination ./build/youtubedl-material
       - name: upload build artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: youtubedl-material
           path: build
@@ -81,7 +81,7 @@ jobs:
           draft: true
           prerelease: false
       - name: download build artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: youtubedl-material
           path: ${{runner.temp}}/youtubedl-material
