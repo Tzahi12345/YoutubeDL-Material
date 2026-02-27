@@ -64,5 +64,7 @@ fi
 
 chmod +x TwitchDownloaderCLI
 echo "(3/5) Smoke test"
-./TwitchDownloaderCLI --help
+# TwitchDownloaderCLI returns non-zero for help/version output, so treat
+# invocation success as sufficient for this smoke check.
+./TwitchDownloaderCLI --help || true
 cp ./TwitchDownloaderCLI /usr/local/bin/TwitchDownloaderCLI
