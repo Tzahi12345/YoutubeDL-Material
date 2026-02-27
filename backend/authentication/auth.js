@@ -20,6 +20,8 @@ let JWT_EXPIRATION = null;
 let opts = null;
 let saltRounds = 10;
 
+const SAFE_UID_PATTERN = /^[A-Za-z0-9._@-]+$/;
+
 exports.initialize = function () {
   /*************************
    * Authentication module
@@ -127,6 +129,153 @@ exports.registerUser = async (userid, username, plaintextPassword) => {
   }
 }
 
+function parseClaimPath(claims, claimPath) {
+  if (!claims || !claimPath || typeof claimPath !== 'string') return undefined;
+  const pathParts = claimPath.split('.').filter(part => part !== '');
+  if (pathParts.length === 0) return undefined;
+
+  let currentValue = claims;
+  for (const part of pathParts) {
+    if (!currentValue || typeof currentValue !== 'object' || !(part in currentValue)) {
+      return undefined;
+    }
+    currentValue = currentValue[part];
+  }
+  return currentValue;
+}
+
+function claimToArray(value) {
+  if (value === undefined || value === null) return [];
+  if (Array.isArray(value)) return value.map(v => String(v).trim()).filter(v => v.length > 0);
+  if (typeof value === 'string' && value.includes(',')) {
+    return value.split(',').map(v => v.trim()).filter(v => v.length > 0);
+  }
+  const normalized = String(value).trim();
+  return normalized ? [normalized] : [];
+}
+
+function valueIncludes(expectedValue, sourceValue) {
+  if (!expectedValue || expectedValue.length === 0) return false;
+  const expected = String(expectedValue).trim().toLowerCase();
+  if (!expected) return false;
+  return claimToArray(sourceValue).some(entry => entry.toLowerCase() === expected);
+}
+
+function claimValueToString(value) {
+  if (value === undefined || value === null) return '';
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return '';
+}
+
+exports.sanitizeUserUID = (rawUID) => {
+  const input = claimValueToString(rawUID);
+  if (!input) return null;
+  if (input === '.' || input === '..') return null;
+  if (!SAFE_UID_PATTERN.test(input)) return null;
+  return input;
+}
+
+function getOIDCIdentityFromClaims(claims, usernameClaim) {
+  const fallbackClaims = [usernameClaim, 'preferred_username', 'username', 'email', 'sub'];
+  for (const claimName of fallbackClaims) {
+    if (!claimName) continue;
+    const claimValue = parseClaimPath(claims, claimName);
+    const parsed = claimValueToString(claimValue);
+    if (parsed) return parsed;
+  }
+  return null;
+}
+
+exports.createJWTForUser = function(user_uid) {
+  const payload = {
+      exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION,
+      user: user_uid
+  };
+  return jwt.sign(payload, SERVER_SECRET);
+}
+
+exports.getAuthResponseObject = async function(user) {
+  const token = exports.createJWTForUser(user.uid);
+  return {
+    user: user,
+    token: token,
+    permissions: await exports.userPermissions(user.uid),
+    available_permissions: CONSTS.AVAILABLE_PERMISSIONS
+  };
+}
+
+exports.upsertOIDCUser = async (claims, options = {}) => {
+  const username_claim = options.username_claim || 'preferred_username';
+  const display_name_claim = options.display_name_claim || username_claim;
+  const groups_claim = options.groups_claim || 'groups';
+  const admin_claim = options.admin_claim || 'groups';
+  const admin_value = options.admin_value || 'admin';
+  const auto_register = options.auto_register !== false;
+
+  const oidc_subject = claimValueToString(parseClaimPath(claims, 'sub'));
+  const login_name = getOIDCIdentityFromClaims(claims, username_claim);
+  const display_name = claimValueToString(parseClaimPath(claims, display_name_claim)) || login_name;
+  const uid_to_use = exports.sanitizeUserUID(login_name);
+
+  if (!uid_to_use || !display_name) {
+    logger.error('OIDC login rejected: Could not derive a valid uid/name from OIDC claims.');
+    return null;
+  }
+
+  const groups = claimToArray(parseClaimPath(claims, groups_claim));
+  const admin_claim_value = parseClaimPath(claims, admin_claim);
+  const role = valueIncludes(admin_value, admin_claim_value) ? 'admin' : 'user';
+
+  let user_obj = null;
+  if (oidc_subject) {
+    user_obj = await db_api.getRecord('users', {oidc_subject: oidc_subject});
+  }
+  if (!user_obj) {
+    user_obj = await db_api.getRecord('users', {uid: uid_to_use});
+  }
+  if (!user_obj) {
+    user_obj = await db_api.getRecord('users', {name: display_name});
+  }
+
+  if (!user_obj) {
+    if (!auto_register) {
+      logger.error(`OIDC login rejected: user '${uid_to_use}' does not exist and auto registration is disabled.`);
+      return null;
+    }
+    user_obj = generateUserObject(uid_to_use, display_name, null, 'oidc');
+    user_obj.role = role;
+    user_obj.oidc_subject = oidc_subject || null;
+    user_obj.oidc_groups = groups;
+    const inserted = await db_api.insertRecordIntoTable('users', user_obj);
+    if (!inserted) {
+      logger.error(`OIDC login failed: could not create user '${uid_to_use}'.`);
+      return null;
+    }
+    return await db_api.getRecord('users', {uid: uid_to_use});
+  }
+
+  if (oidc_subject && user_obj.oidc_subject && user_obj.oidc_subject !== oidc_subject) {
+    logger.error(`OIDC login rejected: existing user '${user_obj.uid}' is mapped to a different subject.`);
+    return null;
+  }
+
+  const updated_user_values = {
+    name: display_name,
+    role: role,
+    auth_method: 'oidc',
+    oidc_groups: groups
+  };
+  if (oidc_subject) updated_user_values['oidc_subject'] = oidc_subject;
+
+  const updated = await db_api.updateRecord('users', {uid: user_obj.uid}, updated_user_values);
+  if (!updated) {
+    logger.error(`OIDC login failed: could not update user '${user_obj.uid}'.`);
+    return null;
+  }
+  return await db_api.getRecord('users', {uid: user_obj.uid});
+}
+
 exports.deleteUser = async (uid) => {
   let success = false;
   let usersFileFolder = config_api.getConfigItem('ytdl_users_base_path');
@@ -214,21 +363,14 @@ exports.passport.use(new LdapStrategy(getLDAPConfiguration,
  * request.
  *********************************/
 exports.generateJWT = function(req, res, next) {
-  var payload = {
-      exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
-    , user: req.user.uid
-  };
-  req.token = jwt.sign(payload, SERVER_SECRET);
+  req.token = exports.createJWTForUser(req.user.uid);
   next();
 }
 
 exports.returnAuthResponse = async function(req, res) {
-  res.status(200).json({
-    user: req.user,
-    token: req.token,
-    permissions: await exports.userPermissions(req.user.uid),
-    available_permissions: CONSTS.AVAILABLE_PERMISSIONS
-  });
+  const auth_response = await exports.getAuthResponseObject(req.user);
+  auth_response.token = req.token;
+  res.status(200).json(auth_response);
 }
 
 /***************************************
@@ -311,7 +453,11 @@ exports.getUserVideos = async function(user_uid, type) {
 }
 
 exports.getUserVideo = async function(user_uid, file_uid, requireSharing = false) {
-  let file = await db_api.getRecord('files', {uid: file_uid});
+  const filter_obj = {uid: file_uid};
+  if (config_api.getConfigItem('ytdl_multi_user_mode') && user_uid !== null && user_uid !== undefined) {
+    filter_obj['user_uid'] = user_uid;
+  }
+  let file = await db_api.getRecord('files', filter_obj);
 
   // prevent unauthorized users from accessing the file info
   if (file && !file['sharingEnabled'] && requireSharing) file = null;
@@ -329,7 +475,11 @@ exports.getUserPlaylists = async function(user_uid) {
 }
 
 exports.getUserPlaylist = async function(user_uid, playlistID, requireSharing = false) {
-  let playlist = await db_api.getRecord('playlists', {id: playlistID});
+  const filter_obj = {id: playlistID};
+  if (config_api.getConfigItem('ytdl_multi_user_mode') && user_uid !== null && user_uid !== undefined) {
+    filter_obj['user_uid'] = user_uid;
+  }
+  let playlist = await db_api.getRecord('playlists', filter_obj);
 
   // prevent unauthorized users from accessing the file info
   if (requireSharing && !playlist['sharingEnabled']) playlist = null;

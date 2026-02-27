@@ -264,6 +264,21 @@ const DEFAULT_CONFIG = {
             "bindCredentials": "secret",
             "searchBase": "ou=passport-ldapauth",
             "searchFilter": "(uid={{username}})"
+        },
+        "oidc": {
+            "enabled": false,
+            "issuer_url": "",
+            "client_id": "",
+            "client_secret": "",
+            "redirect_uri": "",
+            "scope": "openid profile email",
+            "auto_register": true,
+            "admin_claim": "groups",
+            "admin_value": "admin",
+            "group_claim": "groups",
+            "allowed_groups": "",
+            "username_claim": "preferred_username",
+            "display_name_claim": "preferred_username"
         }
       },
       "Database": {

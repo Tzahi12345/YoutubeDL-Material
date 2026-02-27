@@ -8,6 +8,10 @@ const archive_api = require('./archive');
 const utils = require('./utils')
 const logger = require('./logger');
 
+function shouldRestrictToUser(user_uid) {
+    return config_api.getConfigItem('ytdl_multi_user_mode') && user_uid !== null && user_uid !== undefined;
+}
+
 exports.registerFileDB = async (file_path, type, user_uid = null, category = null, sub_id = null, cropFileSettings = null, file_object = null) => {
     if (!file_object) file_object = generateFileObject(file_path, type);
     if (!file_object) {
@@ -137,7 +141,8 @@ exports.addMetadataPropertyToDB = async (property_key) => {
 }
 
 exports.createPlaylist = async (playlist_name, uids, user_uid = null) => {
-    const first_video = await exports.getVideo(uids[0]);
+    const first_video = await exports.getVideo(uids[0], user_uid);
+    if (!first_video) return null;
     const thumbnailToUse = first_video['thumbnailURL'];
     
     let new_playlist = {
@@ -160,12 +165,16 @@ exports.createPlaylist = async (playlist_name, uids, user_uid = null) => {
 }
 
 exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = false) => {
-    let playlist = await db_api.getRecord('playlists', {id: playlist_id});
+    const playlist_filter = {id: playlist_id};
+    if (shouldRestrictToUser(user_uid)) playlist_filter['user_uid'] = user_uid;
+    let playlist = await db_api.getRecord('playlists', playlist_filter);
 
     if (!playlist) {
         playlist = await db_api.getRecord('categories', {uid: playlist_id});
         if (playlist) {
-            const uids = (await db_api.getRecords('files', {'category.uid': playlist_id})).map(file => file.uid);
+            const files_filter = {'category.uid': playlist_id};
+            if (shouldRestrictToUser(user_uid)) files_filter['user_uid'] = user_uid;
+            const uids = (await db_api.getRecords('files', files_filter)).map(file => file.uid);
             playlist['uids'] = uids;
             playlist['auto'] = true;
         }
@@ -190,17 +199,21 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
     return playlist;
 }
 
-exports.updatePlaylist = async (playlist) => {
+exports.updatePlaylist = async (playlist, user_uid = null) => {
     let playlistID = playlist.id;
+    const filter_obj = {id: playlistID};
+    if (shouldRestrictToUser(user_uid)) filter_obj['user_uid'] = user_uid;
 
     const duration = await exports.calculatePlaylistDuration(playlist);
     playlist.duration = duration;
 
-    return await db_api.updateRecord('playlists', {id: playlistID}, playlist);
+    return await db_api.updateRecord('playlists', filter_obj, playlist);
 }
 
 exports.setPlaylistProperty = async (playlist_id, assignment_obj, user_uid = null) => {
-    let success = await db_api.updateRecord('playlists', {id: playlist_id}, assignment_obj);
+    const playlist_filter_obj = {id: playlist_id};
+    if (shouldRestrictToUser(user_uid)) playlist_filter_obj['user_uid'] = user_uid;
+    let success = await db_api.updateRecord('playlists', playlist_filter_obj, assignment_obj);
 
     if (!success) {
         success = await db_api.updateRecord('categories', {uid: playlist_id}, assignment_obj);
@@ -221,7 +234,7 @@ exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) 
         const playlist_uids_to_scan = playlist_uids.slice(0, max_playlist_uids_to_scan);
         for (let i = 0; i < playlist_uids_to_scan.length; i++) {
             const uid = playlist_uids_to_scan[i];
-            const file_obj = await exports.getVideo(uid);
+            const file_obj = await exports.getVideo(uid, playlist.user_uid);
             if (file_obj) playlist_file_objs.push(file_obj);
         }
     }
@@ -229,8 +242,9 @@ exports.calculatePlaylistDuration = async (playlist, playlist_file_objs = null) 
     return playlist_file_objs.reduce((a, b) => a + utils.durationStringToNumber(b.duration), 0);
 }
 
-exports.deleteFile = async (uid, blacklistMode = false) => {
-    const file_obj = await exports.getVideo(uid);
+exports.deleteFile = async (uid, blacklistMode = false, user_uid = null) => {
+    const file_obj = await exports.getVideo(uid, user_uid);
+    if (!file_obj) return false;
     const type = file_obj.isAudio ? 'audio' : 'video';
     const folderPath = path.dirname(file_obj.path);
     const name = file_obj.id;
@@ -316,16 +330,24 @@ exports.deleteFile = async (uid, blacklistMode = false) => {
 
 // Video ID is basically just the file name without the base path and file extension - this method helps us get away from that
 exports.getVideoUIDByID = async (file_id, uuid = null) => {
-    const file_obj = await db_api.getRecord('files', {id: file_id});
+    const filter_obj = {id: file_id};
+    if (shouldRestrictToUser(uuid)) filter_obj['user_uid'] = uuid;
+    const file_obj = await db_api.getRecord('files', filter_obj);
     return file_obj ? file_obj['uid'] : null;
 }
 
-exports.getVideo = async (file_uid) => {
-    return await db_api.getRecord('files', {uid: file_uid});
+exports.getVideo = async (file_uid, user_uid = null, sub_id = null) => {
+    const filter_obj = {uid: file_uid};
+    if (shouldRestrictToUser(user_uid)) filter_obj['user_uid'] = user_uid;
+    if (sub_id) filter_obj['sub_id'] = sub_id;
+    return await db_api.getRecord('files', filter_obj);
 }
 
 exports.getAllFiles = async (sort, range, text_search, file_type_filter, favorite_filter, sub_id, uuid) => {
-    const filter_obj = {user_uid: uuid};
+    const filter_obj = {};
+    if (config_api.getConfigItem('ytdl_multi_user_mode')) {
+        filter_obj['user_uid'] = uuid;
+    }
     const regex = true;
     if (text_search) {
         if (regex) {

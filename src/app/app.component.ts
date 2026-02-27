@@ -70,8 +70,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   }
   ngOnInit(): void {
-    if (localStorage.getItem('theme')) {
-      this.setTheme(localStorage.getItem('theme'));
+    const storedTheme = this.getStoredTheme();
+    if (storedTheme) {
+      this.setTheme(storedTheme);
     }
     
     this.postsService.open_create_default_admin_dialog.subscribe(open => {
@@ -106,8 +107,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.enableDownloadsManager = this.postsService.config['Extra']['enable_downloads_manager'];
 
     // sets theme to config default if it doesn't exist
-    if (!localStorage.getItem('theme')) {
+    const storedTheme = this.getStoredTheme();
+    if (!storedTheme) {
       this.setTheme(themingExists ? this.defaultTheme : 'default');
+    } else {
+      this.setTheme(storedTheme);
     }
 
     // gets the subscriptions
@@ -124,24 +128,44 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   // theme stuff
 
+  getThemeStorageKey(): string {
+    if (this.postsService.config && this.postsService.config['Advanced'] && this.postsService.config['Advanced']['multi_user_mode'] && this.postsService.user && this.postsService.user.uid) {
+      return `theme_${this.postsService.user.uid}`;
+    }
+    return 'theme';
+  }
+
+  getStoredTheme(): string {
+    return localStorage.getItem(this.getThemeStorageKey()) || localStorage.getItem('theme');
+  }
+
+  setStoredTheme(theme: string): void {
+    const key = this.getThemeStorageKey();
+    localStorage.setItem(key, theme);
+    if (key !== 'theme') {
+      localStorage.removeItem('theme');
+    }
+  }
+
   setTheme(theme) {
     // theme is registered, so set it to the stored cookie variable
     let old_theme = null;
     if (this.THEMES_CONFIG[theme]) {
-        if (localStorage.getItem('theme')) {
-          old_theme = localStorage.getItem('theme');
+        const currentTheme = this.getStoredTheme();
+        if (currentTheme) {
+          old_theme = currentTheme;
           if (!this.THEMES_CONFIG[old_theme]) {
             console.log('bad theme found, setting to default');
             if (this.defaultTheme === null) {
               // means it hasn't loaded yet
               console.error('No default theme detected');
             } else {
-              localStorage.setItem('theme', this.defaultTheme);
-              old_theme = localStorage.getItem('theme'); // updates old_theme
+              this.setStoredTheme(this.defaultTheme);
+              old_theme = this.getStoredTheme(); // updates old_theme
             }
           }
         }
-        localStorage.setItem('theme', theme);
+        this.setStoredTheme(theme);
         this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = this.THEMES_CONFIG[theme]['background_color'];
     } else {
         console.error('Invalid theme: ' + theme);

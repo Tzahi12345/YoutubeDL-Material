@@ -4,6 +4,7 @@ const { promisify } = require('util');
 const http = require('http');
 const https = require('https');
 const auth_api = require('./authentication/auth');
+const oidc_api = require('./authentication/oidc');
 const path = require('path');
 const compression = require('compression');
 const multer  = require('multer');
@@ -637,9 +638,57 @@ async function setPortItemFromENV() {
     return true;
 }
 
+function getOIDCMigrateTargetFromEnv() {
+    return process.env.ytdl_oidc_migrate_videos || process.env.YTDL_OIDC_MIGRATE_VIDEOS || null;
+}
+
+function getScopedFilterByUser(user_uid) {
+    if (!config_api.getConfigItem('ytdl_multi_user_mode')) return {};
+    return {user_uid: user_uid};
+}
+
+async function migrateUnassignedVideosToConfiguredUser() {
+    const migrate_target = getOIDCMigrateTargetFromEnv();
+    if (!migrate_target) return true;
+
+    const normalized_target = String(migrate_target).trim();
+    const safe_uid = auth_api.sanitizeUserUID(normalized_target);
+    if (!safe_uid) {
+        throw new Error(`Invalid ytdl_oidc_migrate_videos value '${normalized_target}'. It must be a valid uid.`);
+    }
+
+    let target_user = await db_api.getRecord('users', {uid: safe_uid});
+    if (!target_user) {
+        target_user = await db_api.getRecord('users', {name: normalized_target});
+    }
+
+    if (!target_user) {
+        throw new Error(`ytdl_oidc_migrate_videos requested migration to '${normalized_target}', but no such user exists.`);
+    }
+
+    const unassigned_filter = {user_uid: null};
+    const unassigned_count = await db_api.getRecords('files', unassigned_filter, true);
+    if (!unassigned_count) {
+        throw new Error('No unassigned videos/files exist for ytdl_oidc_migrate_videos. Remove this env variable to continue startup.');
+    }
+
+    const migrated = await db_api.updateRecords('files', unassigned_filter, {user_uid: target_user.uid});
+    if (!migrated) {
+        throw new Error(`Failed to migrate unassigned videos/files to user '${target_user.uid}'.`);
+    }
+
+    logger.info(`Migrated ${unassigned_count} unassigned videos/files to user '${target_user.uid}' from ytdl_oidc_migrate_videos.`);
+    return true;
+}
+
 async function setAndLoadConfig() {
-    await setConfigFromEnv();
-    await loadConfig();
+    try {
+        await setConfigFromEnv();
+        await loadConfig();
+    } catch (err) {
+        logger.error(`Startup failed: ${err.message}`);
+        process.exit(1);
+    }
 }
 
 async function setConfigFromEnv() {
@@ -659,6 +708,19 @@ async function setConfigFromEnv() {
 async function loadConfig() {
     loadConfigValues();
 
+    const oidc_enabled = oidc_api.isEnabled();
+    if (oidc_enabled && !config_api.getConfigItem('ytdl_multi_user_mode')) {
+        logger.error('OIDC startup failed: multi-user mode must be enabled when OIDC is enabled.');
+        process.exit(1);
+    }
+
+    try {
+        await oidc_api.initialize();
+    } catch (err) {
+        logger.error(`OIDC startup failed: ${err.message}`);
+        process.exit(1);
+    }
+
     // connect to DB
     if (!config_api.getConfigItem('ytdl_use_local_db'))
         await db_api.connectToDB();
@@ -667,6 +729,7 @@ async function loadConfig() {
 
     // check migrations
     await checkMigrations();
+    await migrateUnassignedVideosToConfiguredUser();
 
     // now this is done here due to youtube-dl's repo takedown
     await startYoutubeDL();
@@ -751,7 +814,7 @@ function getEnvConfigItems() {
     let config_item_keys = Object.keys(config_api.CONFIG_ITEMS);
     for (let i = 0; i < config_item_keys.length; i++) {
         let key = config_item_keys[i];
-        if (process['env'][key]) {
+        if (process['env'][key] || process['env'][key.toUpperCase()]) {
             const config_item = generateEnvVarConfigItem(key);
             config_items.push(config_item);
         }
@@ -762,7 +825,7 @@ function getEnvConfigItems() {
 
 // gets value of a config item and stores it in an object
 function generateEnvVarConfigItem(key) {
-    return {key: key, value: process['env'][key]};
+    return {key: key, value: process['env'][key] || process['env'][key.toUpperCase()]};
 }
 
 // youtube-dl functions
@@ -784,6 +847,10 @@ app.use(function(req, res, next) {
 
 app.use(function(req, res, next) {
     if (!req.path.includes('/api/')) {
+        next();
+    } else if (req.path.includes('/api/auth/oidc/login') ||
+               req.path.includes('/api/auth/oidc/callback') ||
+               req.path.includes('/api/auth/oidc/status')) {
         next();
     } else if (req.query.apiKey === admin_token) {
         next();
@@ -843,6 +910,13 @@ const authRateLimiter = rateLimit({
 app.use('/api', apiRateLimiter);
 app.use('/api/auth', authRateLimiter);
 
+function isPublicAuthPath(req_path) {
+    return req_path.includes('/api/auth/register')
+        || req_path.includes('/api/auth/oidc/login')
+        || req_path.includes('/api/auth/oidc/callback')
+        || req_path.includes('/api/auth/oidc/status');
+}
+
 const optionalJwt = async function (req, res, next) {
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
     if (multiUserMode && ((req.body && req.body.uuid) || (req.query && req.query.uuid)) && (req.path.includes('/api/getFile') ||
@@ -862,7 +936,7 @@ const optionalJwt = async function (req, res, next) {
             res.sendStatus(401);
             return;
         }
-    } else if (multiUserMode && !(req.path.includes('/api/auth/register') && !(req.path.includes('/api/config')) && !req.query.jwt)) { // registration should get passed through
+    } else if (multiUserMode && !isPublicAuthPath(req.path)) {
         if (!req.query.jwt) {
             res.sendStatus(401);
             return;
@@ -1035,10 +1109,14 @@ app.get('/api/getMp4s', optionalJwt, async function(req, res) {
 app.post('/api/getFile', optionalJwt, async function (req, res) {
     const uid = req.body.uid;
     const uuid = req.body.uuid;
-
-    let file = await db_api.getRecord('files', {uid: uid});
-
-    if (uuid && !file['sharingEnabled']) file = null;
+    let file = null;
+    if (req.isAuthenticated()) {
+        file = await files_api.getVideo(uid, req.user.uid);
+    } else if (uuid) {
+        file = await auth_api.getUserVideo(uuid, uid, true);
+    } else {
+        file = await files_api.getVideo(uid);
+    }
 
     // check if chat exists for twitch videos
     if (file && file['url'].includes('twitch.tv')) file['chat_exists'] = fs.existsSync(file['path'].substring(0, file['path'].length - 4) + '.twitch_chat.json');
@@ -1126,7 +1204,10 @@ app.post('/api/getFullTwitchChat', optionalJwt, async (req, res) => {
     var sub = req.body.sub;
     var user_uid = null;
 
-    if (req.isAuthenticated()) user_uid = req.user.uid;
+    if (req.isAuthenticated()) {
+        user_uid = req.user.uid;
+        uuid = req.user.uid;
+    }
 
     const chat_file = await twitch_api.getTwitchChatByFileID(id, type, user_uid, uuid, sub);
 
@@ -1143,7 +1224,10 @@ app.post('/api/downloadTwitchChatByVODID', optionalJwt, async (req, res) => {
     var sub = req.body.sub;
     var user_uid = null;
 
-    if (req.isAuthenticated()) user_uid = req.user.uid;
+    if (req.isAuthenticated()) {
+        user_uid = req.user.uid;
+        uuid = req.user.uid;
+    }
 
     // check if file already exists. if so, send that instead
     const file_exists_check = await twitch_api.getTwitchChatByFileID(id, type, user_uid, uuid, sub);
@@ -1227,9 +1311,7 @@ app.post('/api/incrementViewCount', async (req, res) => {
     let sub_id = req.body.sub_id;
     let uuid = req.body.uuid;
 
-    if (!uuid && req.isAuthenticated()) {
-        uuid = req.user.uid;
-    }
+    if (req.isAuthenticated()) uuid = req.user.uid;
 
     const file_obj = await files_api.getVideo(file_uid, uuid, sub_id);
 
@@ -1342,7 +1424,7 @@ app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
     let sub_id = req.body.sub_id;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let result_obj = subscriptions_api.unsubscribe(sub_id, deleteMode, user_uid);
+    let result_obj = await subscriptions_api.unsubscribe(sub_id, deleteMode, user_uid);
     if (result_obj.success) {
         res.send({
             success: result_obj.success
@@ -1358,8 +1440,9 @@ app.post('/api/unsubscribe', optionalJwt, async (req, res) => {
 app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
     let deleteForever = req.body.deleteForever;
     let file_uid = req.body.file_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    let success = await files_api.deleteFile(file_uid, deleteForever);
+    let success = await files_api.deleteFile(file_uid, deleteForever, user_uid);
 
     if (success) {
         res.send({
@@ -1374,13 +1457,14 @@ app.post('/api/deleteSubscriptionFile', optionalJwt, async (req, res) => {
 app.post('/api/getSubscription', optionalJwt, async (req, res) => {
     let subID = req.body.id;
     let subName = req.body.name; // if included, subID is optional
+    let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     // get sub from db
     let subscription = null;
     if (subID) {
-        subscription = await subscriptions_api.getSubscription(subID)
+        subscription = await subscriptions_api.getSubscription(subID, user_uid)
     } else if (subName) {
-        subscription = await subscriptions_api.getSubscriptionByName(subName)
+        subscription = await subscriptions_api.getSubscriptionByName(subName, user_uid)
     }
 
     if (!subscription) {
@@ -1393,7 +1477,8 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
 
     // get sub videos
     if (subscription.name) {
-        var parsed_files = await db_api.getRecords('files', {sub_id: subscription.id}); // subscription.videos;
+        const sub_files_filter = {sub_id: subscription.id, ...getScopedFilterByUser(user_uid)};
+        var parsed_files = await db_api.getRecords('files', sub_files_filter); // subscription.videos;
         subscription['videos'] = parsed_files;
         // loop through files for extra processing
         for (let i = 0; i < parsed_files.length; i++) {
@@ -1413,8 +1498,13 @@ app.post('/api/getSubscription', optionalJwt, async (req, res) => {
 
 app.post('/api/downloadVideosForSubscription', optionalJwt, async (req, res) => {
     const subID = req.body.subID;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    const sub = subscriptions_api.getSubscription(subID);
+    const sub = await subscriptions_api.getSubscription(subID, user_uid);
+    if (!sub) {
+        res.send({success: false});
+        return;
+    }
     subscriptions_api.getVideosForSub(sub.id);
     res.send({
         success: true
@@ -1423,8 +1513,9 @@ app.post('/api/downloadVideosForSubscription', optionalJwt, async (req, res) => 
 
 app.post('/api/updateSubscription', optionalJwt, async (req, res) => {
     const updated_sub = req.body.subscription;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    const success = subscriptions_api.updateSubscription(updated_sub);
+    const success = await subscriptions_api.updateSubscription(updated_sub, user_uid);
     res.send({
         success: success
     });
@@ -1434,7 +1525,7 @@ app.post('/api/checkSubscription', optionalJwt, async (req, res) => {
     let sub_id = req.body.sub_id;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    const success = subscriptions_api.getVideosForSub(sub_id, user_uid);
+    const success = await subscriptions_api.getVideosForSub(sub_id, user_uid);
     res.send({
         success: success
     });
@@ -1444,7 +1535,7 @@ app.post('/api/cancelCheckSubscription', optionalJwt, async (req, res) => {
     let sub_id = req.body.sub_id;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    const success = subscriptions_api.cancelCheckSubscription(sub_id, user_uid);
+    const success = await subscriptions_api.cancelCheckSubscription(sub_id, user_uid);
     res.send({
         success: success
     });
@@ -1454,7 +1545,7 @@ app.post('/api/cancelSubscriptionCheck', optionalJwt, async (req, res) => {
     let sub_id = req.body.sub_id;
     let user_uid = req.isAuthenticated() ? req.user.uid : null;
 
-    const success = subscriptions_api.getVideosForSub(sub_id, user_uid);
+    const success = await subscriptions_api.getVideosForSub(sub_id, user_uid);
     res.send({
         success: success
     });
@@ -1487,6 +1578,7 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
     let playlist_id = req.body.playlist_id;
     let uuid = req.body.uuid ? req.body.uuid : (req.user && req.user.uid ? req.user.uid : null);
     let include_file_metadata = req.body.include_file_metadata;
+    if (req.user && req.user.uid) uuid = req.user.uid;
 
     const playlist = await files_api.getPlaylist(playlist_id, uuid);
     const file_objs = [];
@@ -1510,8 +1602,9 @@ app.post('/api/getPlaylist', optionalJwt, async (req, res) => {
 app.post('/api/getPlaylists', optionalJwt, async (req, res) => {
     const uuid = req.isAuthenticated() ? req.user.uid : null;
     const include_categories = req.body.include_categories;
+    const filter_obj = getScopedFilterByUser(uuid);
 
-    let playlists = await db_api.getRecords('playlists', {user_uid: uuid});
+    let playlists = await db_api.getRecords('playlists', filter_obj);
     if (include_categories) {
         const categories = await categories_api.getCategoriesAsPlaylists();
         if (categories) {
@@ -1528,11 +1621,25 @@ app.post('/api/addFileToPlaylist', optionalJwt, async (req, res) => {
     let playlist_id = req.body.playlist_id;
     let file_uid = req.body.file_uid;
     
-    const playlist = await db_api.getRecord('playlists', {id: playlist_id});
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const playlist = await files_api.getPlaylist(playlist_id, user_uid);
+    if (!playlist) {
+        res.send({
+            success: false
+        });
+        return;
+    }
+    const file_obj = await files_api.getVideo(file_uid, user_uid);
+    if (!file_obj) {
+        res.send({
+            success: false
+        });
+        return;
+    }
 
     playlist.uids.push(file_uid);
 
-    let success = await files_api.updatePlaylist(playlist);
+    let success = await files_api.updatePlaylist(playlist, user_uid);
     res.send({
         success: success
     });
@@ -1548,11 +1655,13 @@ app.post('/api/updatePlaylist', optionalJwt, async (req, res) => {
 
 app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
     let playlistID = req.body.playlist_id;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     let success = null;
     try {
         // removes playlist from playlists
-        await db_api.removeRecord('playlists', {id: playlistID})
+        const filter_obj = {id: playlistID, ...getScopedFilterByUser(user_uid)};
+        await db_api.removeRecord('playlists', filter_obj)
 
         success = true;
     } catch(e) {
@@ -1568,9 +1677,10 @@ app.post('/api/deletePlaylist', optionalJwt, async (req, res) => {
 app.post('/api/deleteFile', optionalJwt, async (req, res) => {
     const uid = req.body.uid;
     const blacklistMode = req.body.blacklistMode;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
 
     let wasDeleted = false;
-    wasDeleted = await files_api.deleteFile(uid, blacklistMode);
+    wasDeleted = await files_api.deleteFile(uid, blacklistMode, user_uid);
     res.send(wasDeleted);
 });
 
@@ -1582,7 +1692,7 @@ app.post('/api/deleteAllFiles', optionalJwt, async (req, res) => {
     let text_search = req.body.text_search;
     let file_type_filter = req.body.file_type_filter;
 
-    const filter_obj = {user_uid: uuid};
+    const filter_obj = getScopedFilterByUser(uuid);
     const regex = true;
     if (text_search) {
         if (regex) {
@@ -1602,7 +1712,7 @@ app.post('/api/deleteAllFiles', optionalJwt, async (req, res) => {
 
     for (let i = 0; i < files.length; i++) {    
         let wasDeleted = false;
-        wasDeleted = await files_api.deleteFile(files[i].uid, blacklistMode);
+        wasDeleted = await files_api.deleteFile(files[i].uid, blacklistMode, uuid);
         if (wasDeleted) {
             delete_count++;
         }
@@ -1622,30 +1732,42 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
 
     let file_path_to_download = null;
 
-    if (!uuid && req.user) uuid = req.user.uid;
+    if (req.user && req.user.uid) uuid = req.user.uid;
 
     let zip_file_generated = false;
     if (playlist_id) {
         zip_file_generated = true;
         const playlist_files_to_download = [];
         const playlist = await files_api.getPlaylist(playlist_id, uuid);
+        if (!playlist) {
+            res.sendStatus(404);
+            return;
+        }
         for (let i = 0; i < playlist['uids'].length; i++) {
             const playlist_file_uid = playlist['uids'][i];
             const file_obj = await files_api.getVideo(playlist_file_uid, uuid);
-            playlist_files_to_download.push(file_obj);
+            if (file_obj) playlist_files_to_download.push(file_obj);
         }
 
         // generate zip
         file_path_to_download = await utils.createContainerZipFile(playlist['name'], playlist_files_to_download);
     } else if (sub_id && !uid) {
         zip_file_generated = true;
-        const sub = await db_api.getRecord('subscriptions', {id: sub_id});
-        const sub_files_to_download = await db_api.getRecords('files', {sub_id: sub_id});
+        const sub = await subscriptions_api.getSubscription(sub_id, req.isAuthenticated() ? req.user.uid : null);
+        if (!sub) {
+            res.sendStatus(404);
+            return;
+        }
+        const sub_files_to_download = await db_api.getRecords('files', {sub_id: sub_id, ...getScopedFilterByUser(req.isAuthenticated() ? req.user.uid : null)});
 
         // generate zip
         file_path_to_download = await utils.createContainerZipFile(sub['name'], sub_files_to_download);
     } else {
         const file_obj = await files_api.getVideo(uid, uuid, sub_id)
+        if (!file_obj) {
+            res.sendStatus(404);
+            return;
+        }
         file_path_to_download = file_obj.path;
     }
     if (!path.isAbsolute(file_path_to_download)) file_path_to_download = path.join(__dirname, file_path_to_download);
@@ -1666,7 +1788,7 @@ app.post('/api/downloadFileFromServer', optionalJwt, async (req, res) => {
 app.post('/api/getArchives', optionalJwt, async (req, res) => {
     const uuid = req.isAuthenticated() ? req.user.uid : null;
     const sub_id = req.body.sub_id;
-    const filter_obj = {user_uid: uuid, sub_id: sub_id};
+    const filter_obj = {sub_id: sub_id, ...getScopedFilterByUser(uuid)};
     const type = req.body.type;
 
     // we do this for file types because if type is null, that means get files of all types
@@ -1990,7 +2112,7 @@ app.post('/api/generateNewAPIKey', optionalJwt, function (req, res) {
 
 app.get('/api/stream', optionalJwt, async (req, res) => {
     const type = req.query.type;
-    const uuid = req.query.uuid ? req.query.uuid : (req.user ? req.user.uid : null);
+    const uuid = req.user ? req.user.uid : (req.query.uuid ? req.query.uuid : null);
     const sub_id = req.query.sub_id;
     const mimetype = type === 'audio' ? 'audio/mp3' : 'video/mp4';
     var head;
@@ -2100,7 +2222,8 @@ app.get('/api/thumbnail/:path', optionalJwt, async (req, res) => {
 app.post('/api/downloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
     const uids = req.body.uids;
-    let downloads = await db_api.getRecords('download_queue', {user_uid: user_uid});
+    const filter_obj = getScopedFilterByUser(user_uid);
+    let downloads = await db_api.getRecords('download_queue', filter_obj);
 
     if (uids) downloads = downloads.filter(download => uids.includes(download['uid']));
 
@@ -2109,8 +2232,10 @@ app.post('/api/downloads', optionalJwt, async (req, res) => {
 
 app.post('/api/download', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const filter_obj = {uid: download_uid, ...getScopedFilterByUser(user_uid)};
 
-    const download = await db_api.getRecord('download_queue', {uid: download_uid});
+    const download = await db_api.getRecord('download_queue', filter_obj);
 
     if (download) {
         res.send({download: download});
@@ -2121,24 +2246,37 @@ app.post('/api/download', optionalJwt, async (req, res) => {
 
 app.post('/api/clearDownloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const scoped_filter = getScopedFilterByUser(user_uid);
     const clear_finished = req.body.clear_finished;
     const clear_paused = req.body.clear_paused;
     const clear_errors = req.body.clear_errors;
     let success = true;
-    if (clear_finished) success &= await db_api.removeAllRecords('download_queue', {finished: true,        user_uid: user_uid, error: null});
-    if (clear_paused)   success &= await db_api.removeAllRecords('download_queue', {paused:   true,        user_uid: user_uid});
-    if (clear_errors)   success &= await db_api.removeAllRecords('download_queue', {error:    {$ne: null}, user_uid: user_uid});
+    if (clear_finished) success &= await db_api.removeAllRecords('download_queue', {finished: true, ...scoped_filter, error: null});
+    if (clear_paused)   success &= await db_api.removeAllRecords('download_queue', {paused: true, ...scoped_filter});
+    if (clear_errors)   success &= await db_api.removeAllRecords('download_queue', {error: {$ne: null}, ...scoped_filter});
     res.send({success: success});
 });
 
 app.post('/api/clearDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const owned_download = await db_api.getRecord('download_queue', {uid: download_uid, ...getScopedFilterByUser(user_uid)});
+    if (!owned_download) {
+        res.send({success: false});
+        return;
+    }
     const success = await downloader_api.clearDownload(download_uid);
     res.send({success: success});
 });
 
 app.post('/api/pauseDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const owned_download = await db_api.getRecord('download_queue', {uid: download_uid, ...getScopedFilterByUser(user_uid)});
+    if (!owned_download) {
+        res.send({success: false});
+        return;
+    }
     const success = await downloader_api.pauseDownload(download_uid);
     res.send({success: success});
 });
@@ -2146,7 +2284,7 @@ app.post('/api/pauseDownload', optionalJwt, async (req, res) => {
 app.post('/api/pauseAllDownloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
     let success = true;
-    const all_running_downloads = await db_api.getRecords('download_queue', {paused: false, finished: false, user_uid: user_uid});
+    const all_running_downloads = await db_api.getRecords('download_queue', {paused: false, finished: false, ...getScopedFilterByUser(user_uid)});
     for (let i = 0; i < all_running_downloads.length; i++) {
         success &= await downloader_api.pauseDownload(all_running_downloads[i]['uid']);
     }
@@ -2155,6 +2293,12 @@ app.post('/api/pauseAllDownloads', optionalJwt, async (req, res) => {
 
 app.post('/api/resumeDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const owned_download = await db_api.getRecord('download_queue', {uid: download_uid, ...getScopedFilterByUser(user_uid)});
+    if (!owned_download) {
+        res.send({success: false});
+        return;
+    }
     const success = await downloader_api.resumeDownload(download_uid);
     res.send({success: success});
 });
@@ -2162,7 +2306,7 @@ app.post('/api/resumeDownload', optionalJwt, async (req, res) => {
 app.post('/api/resumeAllDownloads', optionalJwt, async (req, res) => {
     const user_uid = req.isAuthenticated() ? req.user.uid : null;
     let success = true;
-    const all_paused_downloads = await db_api.getRecords('download_queue', {paused: true, user_uid: user_uid, error: null});
+    const all_paused_downloads = await db_api.getRecords('download_queue', {paused: true, ...getScopedFilterByUser(user_uid), error: null});
     for (let i = 0; i < all_paused_downloads.length; i++) {
         success &= await downloader_api.resumeDownload(all_paused_downloads[i]['uid']);
     }
@@ -2171,12 +2315,24 @@ app.post('/api/resumeAllDownloads', optionalJwt, async (req, res) => {
 
 app.post('/api/restartDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const owned_download = await db_api.getRecord('download_queue', {uid: download_uid, ...getScopedFilterByUser(user_uid)});
+    if (!owned_download) {
+        res.send({success: false, new_download_uid: null});
+        return;
+    }
     const new_download = await downloader_api.restartDownload(download_uid);
     res.send({success: !!new_download, new_download_uid: new_download ? new_download['uid'] : null});
 });
 
 app.post('/api/cancelDownload', optionalJwt, async (req, res) => {
     const download_uid = req.body.download_uid;
+    const user_uid = req.isAuthenticated() ? req.user.uid : null;
+    const owned_download = await db_api.getRecord('download_queue', {uid: download_uid, ...getScopedFilterByUser(user_uid)});
+    if (!owned_download) {
+        res.send({success: false});
+        return;
+    }
     const success = await downloader_api.cancelDownload(download_uid);
     res.send({success: success});
 });
@@ -2342,7 +2498,72 @@ app.post('/api/clearAllLogs', optionalJwt, async function(req, res) {
 
 // user authentication
 
+app.get('/api/auth/oidc/status', (req, res) => {
+    res.send(oidc_api.getStatus());
+});
+
+app.get('/api/auth/oidc/login', async (req, res) => {
+    if (!oidc_api.isEnabled()) {
+        res.status(404).send('OIDC is disabled.');
+        return;
+    }
+
+    try {
+        const return_to = req.query.returnTo ? String(req.query.returnTo) : '/home';
+        const authorization_url = oidc_api.createAuthorizationURL(return_to);
+        res.redirect(authorization_url);
+    } catch (err) {
+        logger.error(`OIDC login redirect failed: ${err.message}`);
+        res.sendStatus(500);
+    }
+});
+
+app.get('/api/auth/oidc/callback', async (req, res) => {
+    if (!oidc_api.isEnabled()) {
+        res.status(404).send('OIDC is disabled.');
+        return;
+    }
+
+    try {
+        const callback_result = await oidc_api.consumeAuthorizationCallback(req);
+        const claims = callback_result.claims || {};
+        if (!oidc_api.isClaimsAllowed(claims)) {
+            logger.error('OIDC login rejected: user does not match allowed groups policy.');
+            res.sendStatus(403);
+            return;
+        }
+
+        const oidc_config = oidc_api.getConfiguration();
+        const user_obj = await auth_api.upsertOIDCUser(claims, {
+            auto_register: oidc_config.auto_register,
+            admin_claim: oidc_config.admin_claim,
+            admin_value: oidc_config.admin_value,
+            groups_claim: oidc_config.groups_claim,
+            username_claim: oidc_config.username_claim,
+            display_name_claim: oidc_config.display_name_claim
+        });
+        if (!user_obj) {
+            res.sendStatus(403);
+            return;
+        }
+
+        const auth_response = await auth_api.getAuthResponseObject(user_obj);
+        const return_to = callback_result.return_to ? callback_result.return_to : '/home';
+        const redirect_path = `${getOrigin()}/#/login;oidc_token=${encodeURIComponent(auth_response.token)};redirect=${encodeURIComponent(return_to)}`;
+        res.setHeader('Set-Cookie', 'ytdl_oidc_bootstrap=1; Path=/; Max-Age=60; HttpOnly; SameSite=Lax');
+        res.redirect(redirect_path);
+    } catch (err) {
+        logger.error(`OIDC callback failed: ${err.message}`);
+        res.sendStatus(401);
+    }
+});
+
 app.post('/api/auth/register', optionalJwt, async (req, res) => {
+    if (oidc_api.isEnabled()) {
+        res.status(403).send('Registration is disabled when OIDC is enabled.');
+        return;
+    }
+
     const userid = req.body.userid;
     const username = req.body.username;
     const plaintextPassword = req.body.password;
@@ -2375,6 +2596,13 @@ app.post('/api/auth/register', optionalJwt, async (req, res) => {
     });
 });
 app.post('/api/auth/login'
+        , (req, res, next) => {
+            if (oidc_api.isEnabled()) {
+                res.status(403).send('Password login is disabled when OIDC is enabled.');
+                return;
+            }
+            next();
+        }
         , auth_api.passport.authenticate(['local', 'ldapauth'], { session: false })
         , auth_api.generateJWT
         , auth_api.returnAuthResponse
@@ -2583,6 +2811,37 @@ app.get('/api/rss', async function (req, res) {
 });
 
 // web server
+
+app.use(function(req, res, next) {
+    if (!oidc_api.isEnabled() || !config_api.getConfigItem('ytdl_multi_user_mode')) {
+        return next();
+    }
+
+    if (req.path.includes('/api/')) {
+        return next();
+    }
+
+    const accept = req.accepts('html', 'json', 'xml');
+    if (accept !== 'html') {
+        return next();
+    }
+
+    const ext = path.extname(req.path);
+    if (ext !== '') {
+        return next();
+    }
+
+    const cookie_header = req.headers.cookie || '';
+    const has_bootstrap_cookie = cookie_header.split(';').map(cookie => cookie.trim()).includes('ytdl_oidc_bootstrap=1');
+    if (has_bootstrap_cookie) {
+        res.setHeader('Set-Cookie', 'ytdl_oidc_bootstrap=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax');
+        return next();
+    }
+
+    const return_to = req.path && req.path !== '/' ? req.path : '/home';
+    const redirect_path = `/api/auth/oidc/login?returnTo=${encodeURIComponent(return_to)}`;
+    return res.redirect(redirect_path);
+});
 
 app.use(function(req, res, next) {
     //if the request is not html then move along

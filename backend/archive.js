@@ -2,10 +2,14 @@ const path = require('path');
 const fs = require('fs-extra');
 const { v4: uuid } = require('uuid');
 
+const config_api = require('./config');
 const db_api = require('./db');
 
 exports.generateArchive = async (type = null, user_uid = null, sub_id = null) => {
-    const filter = {user_uid: user_uid, sub_id: sub_id};
+    const filter = {sub_id: sub_id};
+    if (config_api.getConfigItem('ytdl_multi_user_mode')) {
+        filter['user_uid'] = user_uid;
+    }
     if (type) filter['type'] = type;
     const archive_items = await db_api.getRecords('archives', filter);
     const archive_item_lines = archive_items.map(archive_item => `${archive_item['extractor']} ${archive_item['id']}`);
@@ -14,17 +18,29 @@ exports.generateArchive = async (type = null, user_uid = null, sub_id = null) =>
 
 exports.addToArchive = async (extractor, id, type, title, user_uid = null, sub_id = null) => {
     const archive_item = createArchiveItem(extractor, id, type, title, user_uid, sub_id);
-    const success = await db_api.insertRecordIntoTable('archives', archive_item, {extractor: extractor, id: id, type: type});
+    const replace_filter = {extractor: extractor, id: id, type: type, sub_id: sub_id};
+    if (config_api.getConfigItem('ytdl_multi_user_mode')) {
+        replace_filter['user_uid'] = user_uid;
+    }
+    const success = await db_api.insertRecordIntoTable('archives', archive_item, replace_filter);
     return success;
 }
 
 exports.removeFromArchive = async (extractor, id, type, user_uid = null, sub_id = null) => {
-    const success = await db_api.removeAllRecords('archives', {extractor: extractor, id: id, type: type, user_uid: user_uid, sub_id: sub_id});
+    const filter = {extractor: extractor, id: id, type: type, sub_id: sub_id};
+    if (config_api.getConfigItem('ytdl_multi_user_mode')) {
+        filter['user_uid'] = user_uid;
+    }
+    const success = await db_api.removeAllRecords('archives', filter);
     return success;
 }
 
 exports.existsInArchive = async (extractor, id, type, user_uid, sub_id) => {
-    const archive_item = await db_api.getRecord('archives', {extractor: extractor, id: id, type: type, user_uid: user_uid, sub_id: sub_id});
+    const filter = {extractor: extractor, id: id, type: type, sub_id: sub_id};
+    if (config_api.getConfigItem('ytdl_multi_user_mode')) {
+        filter['user_uid'] = user_uid;
+    }
+    const archive_item = await db_api.getRecord('archives', filter);
     return !!archive_item;
 }
 

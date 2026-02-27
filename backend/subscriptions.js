@@ -13,6 +13,10 @@ const debugMode = process.env.YTDL_MODE === 'debug';
 const db_api = require('./db');
 const downloader_api = require('./downloader');
 
+function shouldRestrictToUser(user_uid) {
+    return config_api.getConfigItem('ytdl_multi_user_mode') && user_uid !== null && user_uid !== undefined;
+}
+
 exports.subscribe = async (sub, user_uid = null, skip_get_info = false) => {
     const result_obj = {
         success: false,
@@ -100,7 +104,13 @@ async function getSubscriptionInfo(sub) {
 }
 
 exports.unsubscribe = async (sub_id, deleteMode, user_uid = null) => {
-    const sub = await exports.getSubscription(sub_id);
+    const sub = await exports.getSubscription(sub_id, user_uid);
+    if (!sub) {
+        return {
+            success: false,
+            error: 'Subscription not found or not owned by the current user.'
+        };
+    }
     let basePath = null;
     if (user_uid)
         basePath = path.join(config_api.getConfigItem('ytdl_users_base_path'), user_uid, 'subscriptions');
@@ -124,12 +134,14 @@ exports.unsubscribe = async (sub_id, deleteMode, user_uid = null) => {
     }
 
     await killSubDownloads(sub_id, true);
-    await db_api.removeRecord('subscriptions', {id: id});
-    await db_api.removeAllRecords('files', {sub_id: id});
+    const remove_sub_filter = {id: id};
+    if (shouldRestrictToUser(user_uid)) remove_sub_filter['user_uid'] = user_uid;
+    await db_api.removeRecord('subscriptions', remove_sub_filter);
+    await db_api.removeAllRecords('files', {sub_id: id, ...(shouldRestrictToUser(user_uid) ? {user_uid: user_uid} : {})});
 
     // failed subs have no name, on unsubscribe they shouldn't error
     if (!sub.name) {
-        return;
+        return {success: true};
     }
 
     const appendedBasePath = getAppendedBasePath(sub, basePath);
@@ -137,7 +149,8 @@ exports.unsubscribe = async (sub_id, deleteMode, user_uid = null) => {
         await fs.remove(appendedBasePath);
     }
 
-    await db_api.removeAllRecords('archives', {sub_id: sub.id});
+    await db_api.removeAllRecords('archives', {sub_id: sub.id, ...(shouldRestrictToUser(user_uid) ? {user_uid: user_uid} : {})});
+    return {success: true};
 }
 
 exports.deleteSubscriptionFile = async (sub, file, deleteForever, file_uid = null, user_uid = null) => {
@@ -266,8 +279,8 @@ async function getValidSubscriptionsToCheck() {
     return valid_subscription_ids;
 }
 
-exports.getVideosForSub = async (sub_id) => {
-    const sub = await exports.getSubscription(sub_id);
+exports.getVideosForSub = async (sub_id, user_uid = null) => {
+    const sub = await exports.getSubscription(sub_id, user_uid);
     if (!sub || sub['downloading']) {
         return false;
     }
@@ -468,8 +481,12 @@ async function getFilesToDownload(sub, output_jsons) {
     return files_to_download;
 }
 
-exports.cancelCheckSubscription = async (sub_id) => {
-    const sub = await exports.getSubscription(sub_id);
+exports.cancelCheckSubscription = async (sub_id, user_uid = null) => {
+    const sub = await exports.getSubscription(sub_id, user_uid);
+    if (!sub) {
+        logger.error('Failed to cancel subscription check, subscription not found.');
+        return false;
+    }
     if (!sub['downloading'] && !sub['child_process']) {
         logger.error('Failed to cancel subscription check, verify that it is still running!');
         return false;
@@ -499,18 +516,26 @@ async function killSubDownloads(sub_id, remove_downloads = false) {
 
 exports.getSubscriptions = async (user_uid = null) => {
     // TODO: fix issue where the downloading property may not match getSubscription()
+    if (!config_api.getConfigItem('ytdl_multi_user_mode')) {
+        return await db_api.getRecords('subscriptions');
+    }
     return await db_api.getRecords('subscriptions', {user_uid: user_uid});
 }
 
 exports.getAllSubscriptions = async () => {
     const all_subs = await db_api.getRecords('subscriptions');
     const multiUserMode = config_api.getConfigItem('ytdl_multi_user_mode');
-    return all_subs.filter(sub => !!(sub.user_uid) === !!multiUserMode);
+    if (!multiUserMode) return all_subs;
+    return all_subs.filter(sub => !!(sub.user_uid));
 }
 
-exports.getSubscription = async (subID) => {
+exports.getSubscription = async (subID, user_uid = null) => {
     // stringify and parse because we may override the 'downloading' property
-    const sub = JSON.parse(JSON.stringify(await db_api.getRecord('subscriptions', {id: subID})));
+    const filter_obj = {id: subID};
+    if (shouldRestrictToUser(user_uid)) filter_obj['user_uid'] = user_uid;
+    const raw_sub = await db_api.getRecord('subscriptions', filter_obj);
+    if (!raw_sub) return null;
+    const sub = JSON.parse(JSON.stringify(raw_sub));
     // now with the download_queue, we may need to override 'downloading'
     const current_downloads = await db_api.getRecords('download_queue', {running: true, sub_id: subID}, true);
     if (!sub['downloading']) sub['downloading'] = current_downloads > 0;
@@ -518,11 +543,17 @@ exports.getSubscription = async (subID) => {
 }
 
 exports.getSubscriptionByName = async (subName, user_uid = null) => {
+    if (!config_api.getConfigItem('ytdl_multi_user_mode')) {
+        return await db_api.getRecord('subscriptions', {name: subName});
+    }
     return await db_api.getRecord('subscriptions', {name: subName, user_uid: user_uid});
 }
 
-exports.updateSubscription = async (sub) => {
-    await db_api.updateRecord('subscriptions', {id: sub.id}, sub);
+exports.updateSubscription = async (sub, user_uid = null) => {
+    const filter_obj = {id: sub.id};
+    if (shouldRestrictToUser(user_uid)) filter_obj['user_uid'] = user_uid;
+    const updated = await db_api.updateRecord('subscriptions', filter_obj, sub);
+    if (!updated) return false;
     exports.writeSubscriptionMetadata(sub);
     return true;
 }

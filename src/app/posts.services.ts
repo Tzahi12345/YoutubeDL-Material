@@ -195,7 +195,9 @@ export class PostsService {
                 this.config = result['YoutubeDLMaterial'];
                 this.titleService.setTitle(this.config['Extra']['title_top']);
                 if (this.config['Advanced']['multi_user_mode']) {
-                    this.checkAdminCreationStatus();
+                    if (!this.isOIDCEnabled()) {
+                        this.checkAdminCreationStatus();
+                    }
                     // login stuff
                     if (localStorage.getItem('jwt_token') && localStorage.getItem('jwt_token') !== 'null') {
                         this.token = localStorage.getItem('jwt_token');
@@ -720,7 +722,7 @@ export class PostsService {
         return this.http.get('https://api.github.com/repos/voc0der/youtubedl-material/releases');
     }
 
-    afterLogin(user, token, permissions, available_permissions) {
+    afterLogin(user, token, permissions, available_permissions, redirect_path = '/home') {
         this.isLoggedIn = true;
         this.user = user;
         this.permissions = permissions;
@@ -734,8 +736,8 @@ export class PostsService {
         // needed to re-initialize parts of app after login
         this.config_reloaded.next(true);
 
-        if (this.router.url === '/login') {
-            this.router.navigate(['/home']);
+        if (this.router.url.startsWith('/login')) {
+            this.router.navigateByUrl(redirect_path || '/home');
         }
     }
 
@@ -743,6 +745,30 @@ export class PostsService {
     login(username: string, password: string) {
         const body: LoginRequest = {username: username, password: password};
         return this.http.post<LoginResponse>(this.path + 'auth/login', body, this.httpOptions);
+    }
+
+    completeOIDCLogin(token: string, redirect_path = '/home') {
+        this.token = token;
+        this.httpOptions.params = this.httpOptions.params.set('jwt', this.token);
+        const call = this.http.post<LoginResponse>(this.path + 'auth/jwtAuth', {}, this.httpOptions);
+        call.subscribe(res => {
+            if (res['token']) {
+                this.afterLogin(res['user'], res['token'], res['permissions'], res['available_permissions'], redirect_path);
+            }
+        }, () => {
+            this.sendToLogin();
+            this.token = null;
+            this.resetHttpParams();
+        });
+        return call;
+    }
+
+    isOIDCEnabled(): boolean {
+        return !!(this.config && this.config['Users'] && this.config['Users']['oidc'] && this.config['Users']['oidc']['enabled']);
+    }
+
+    getOIDCLoginURL(return_to = '/home'): string {
+        return `${this.path}auth/oidc/login?returnTo=${encodeURIComponent(return_to)}`;
     }
 
     // user methods
@@ -769,7 +795,7 @@ export class PostsService {
         this.isLoggedIn = false;
         this.token = null;
         localStorage.setItem('jwt_token', null);
-        if (this.router.url !== '/login') {
+        if (!this.router.url.startsWith('/login')) {
             this.router.navigate(['/login']);
         }
 
@@ -795,11 +821,16 @@ export class PostsService {
         if (!this.initialized) {
             this.setInitialized();
         }
-        if (this.router.url === '/login') {
+        if (this.router.url.startsWith('/login')) {
             return;
         }
 
-        this.router.navigate(['/login']);
+        const return_to = this.router.url && this.router.url !== '/login' ? this.router.url : '/home';
+        this.router.navigate(['/login'], {queryParams: {returnTo: return_to}});
+
+        if (this.isOIDCEnabled()) {
+            return;
+        }
 
         // send login notification
         this.openSnackBar('You must log in to access this page!');
@@ -843,6 +874,9 @@ export class PostsService {
     }
 
     checkAdminCreationStatus(force_show = false) {
+        if (this.isOIDCEnabled()) {
+            return;
+        }
         if (!force_show && !this.config['Advanced']['multi_user_mode']) {
             return;
         }
