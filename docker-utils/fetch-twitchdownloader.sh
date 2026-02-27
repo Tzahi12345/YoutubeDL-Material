@@ -35,19 +35,38 @@ if [ -z "$VERSION" ] || [ "$VERSION" = "latest" ]; then
 fi
 
 echo "(2/5) DOWNLOAD - Acquire twitchdownloader ($VERSION)"
+
+download_asset() {
+  url="$1"
+  # GitHub release CDN occasionally returns transient 5xx responses.
+  curl -fL -o twitchdownloader.zip \
+    --connect-timeout 10 \
+    --max-time 240 \
+    --retry 20 \
+    --retry-delay 2 \
+    --retry-max-time 300 \
+    --retry-all-errors \
+    "$url"
+}
+
 DOWNLOAD_OK=0
 for CANDIDATE_VERSION in "$VERSION" "${VERSION#v}"; do
   [ -n "$CANDIDATE_VERSION" ] || continue
-  ASSET_URL="https://github.com/lay295/TwitchDownloader/releases/download/$VERSION/TwitchDownloaderCLI-$CANDIDATE_VERSION-$ARCH.zip"
-  if curl -fL -o twitchdownloader.zip \
-      --connect-timeout 5 \
-      --max-time 120 \
-      --retry 5 \
-      --retry-delay 0 \
-      --retry-max-time 40 \
-      "$ASSET_URL"; then
-    DOWNLOAD_OK=1
+  # Avoid trying the exact same candidate twice.
+  if [ "$DOWNLOAD_OK" -ne 0 ]; then
     break
+  fi
+  ASSET_URL="https://github.com/lay295/TwitchDownloader/releases/download/$VERSION/TwitchDownloaderCLI-$CANDIDATE_VERSION-$ARCH.zip"
+  if download_asset "$ASSET_URL"; then
+    DOWNLOAD_OK=1
+  fi
+
+  # Some releases are tagged with a leading "v" while asset names may omit it.
+  if [ "$VERSION" != "${VERSION#v}" ]; then
+    ALT_ASSET_URL="https://github.com/lay295/TwitchDownloader/releases/download/$VERSION/TwitchDownloaderCLI-${VERSION#v}-$ARCH.zip"
+    if [ "$ALT_ASSET_URL" != "$ASSET_URL" ] && download_asset "$ALT_ASSET_URL"; then
+      DOWNLOAD_OK=1
+    fi
   fi
 done
 
