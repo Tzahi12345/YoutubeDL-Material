@@ -194,7 +194,7 @@ exports.getPlaylist = async (playlist_id, user_uid = null, require_sharing = fal
     }
 
     // prevent unauthorized users from accessing the file info
-    if (require_sharing && !playlist['sharingEnabled']) return null;
+    if (require_sharing && (!playlist || !playlist['sharingEnabled'])) return null;
 
     return playlist;
 }

@@ -482,7 +482,7 @@ exports.getUserPlaylist = async function(user_uid, playlistID, requireSharing = 
   let playlist = await db_api.getRecord('playlists', filter_obj);
 
   // prevent unauthorized users from accessing the file info
-  if (requireSharing && !playlist['sharingEnabled']) playlist = null;
+  if (requireSharing && (!playlist || !playlist['sharingEnabled'])) playlist = null;
 
   return playlist;
 }

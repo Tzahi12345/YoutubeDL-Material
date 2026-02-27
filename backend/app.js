@@ -928,7 +928,7 @@ const optionalJwt = async function (req, res, next) {
         const uuid = using_body ? req.body.uuid : req.query.uuid;
         const uid = using_body ? req.body.uid : req.query.uid;
         const playlist_id = using_body ? req.body.playlist_id : req.query.playlist_id;
-        const file = !playlist_id ? auth_api.getUserVideo(uuid, uid, true) : await files_api.getPlaylist(playlist_id, uuid, true);
+        const file = !playlist_id ? await auth_api.getUserVideo(uuid, uid, true) : await files_api.getPlaylist(playlist_id, uuid, true);
         if (file) {
             req.can_watch = true;
             return next();
