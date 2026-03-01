@@ -667,17 +667,28 @@ async function migrateUnassignedVideosToConfiguredUser() {
     }
 
     const unassigned_filter = {user_uid: null};
-    const unassigned_count = await db_api.getRecords('files', unassigned_filter, true);
-    if (!unassigned_count) {
-        throw new Error('No unassigned videos/files exist for ytdl_oidc_migrate_videos. Remove this env variable to continue startup.');
+    const unassigned_file_count = await db_api.getRecords('files', unassigned_filter, true);
+    const unassigned_playlist_count = await db_api.getRecords('playlists', unassigned_filter, true);
+
+    if (!unassigned_file_count && !unassigned_playlist_count) {
+        throw new Error('No unassigned videos/files or playlists exist for ytdl_oidc_migrate_videos. Remove this env variable to continue startup.');
     }
 
-    const migrated = await db_api.updateRecords('files', unassigned_filter, {user_uid: target_user.uid});
-    if (!migrated) {
-        throw new Error(`Failed to migrate unassigned videos/files to user '${target_user.uid}'.`);
+    if (unassigned_file_count) {
+        const migrated_files = await db_api.updateRecords('files', unassigned_filter, {user_uid: target_user.uid});
+        if (!migrated_files) {
+            throw new Error(`Failed to migrate unassigned videos/files to user '${target_user.uid}'.`);
+        }
     }
 
-    logger.info(`Migrated ${unassigned_count} unassigned videos/files to user '${target_user.uid}' from ytdl_oidc_migrate_videos.`);
+    if (unassigned_playlist_count) {
+        const migrated_playlists = await db_api.updateRecords('playlists', unassigned_filter, {user_uid: target_user.uid});
+        if (!migrated_playlists) {
+            throw new Error(`Failed to migrate unassigned playlists to user '${target_user.uid}'.`);
+        }
+    }
+
+    logger.info(`Migrated ${unassigned_file_count} unassigned videos/files and ${unassigned_playlist_count} unassigned playlists to user '${target_user.uid}' from ytdl_oidc_migrate_videos.`);
     return true;
 }
 
