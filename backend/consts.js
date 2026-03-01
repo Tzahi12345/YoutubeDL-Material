@@ -229,6 +229,58 @@ exports.CONFIG_ITEMS = {
         'key': 'ytdl_ldap_config',
         'path': 'YoutubeDLMaterial.Users.ldap_config'
     },
+    'ytdl_oidc_enabled': {
+        'key': 'ytdl_oidc_enabled',
+        'path': 'YoutubeDLMaterial.Users.oidc.enabled'
+    },
+    'ytdl_oidc_issuer_url': {
+        'key': 'ytdl_oidc_issuer_url',
+        'path': 'YoutubeDLMaterial.Users.oidc.issuer_url'
+    },
+    'ytdl_oidc_client_id': {
+        'key': 'ytdl_oidc_client_id',
+        'path': 'YoutubeDLMaterial.Users.oidc.client_id'
+    },
+    'ytdl_oidc_client_secret': {
+        'key': 'ytdl_oidc_client_secret',
+        'path': 'YoutubeDLMaterial.Users.oidc.client_secret'
+    },
+    'ytdl_oidc_redirect_uri': {
+        'key': 'ytdl_oidc_redirect_uri',
+        'path': 'YoutubeDLMaterial.Users.oidc.redirect_uri'
+    },
+    'ytdl_oidc_scope': {
+        'key': 'ytdl_oidc_scope',
+        'path': 'YoutubeDLMaterial.Users.oidc.scope'
+    },
+    'ytdl_oidc_auto_register': {
+        'key': 'ytdl_oidc_auto_register',
+        'path': 'YoutubeDLMaterial.Users.oidc.auto_register'
+    },
+    'ytdl_oidc_admin_claim': {
+        'key': 'ytdl_oidc_admin_claim',
+        'path': 'YoutubeDLMaterial.Users.oidc.admin_claim'
+    },
+    'ytdl_oidc_admin_value': {
+        'key': 'ytdl_oidc_admin_value',
+        'path': 'YoutubeDLMaterial.Users.oidc.admin_value'
+    },
+    'ytdl_oidc_group_claim': {
+        'key': 'ytdl_oidc_group_claim',
+        'path': 'YoutubeDLMaterial.Users.oidc.group_claim'
+    },
+    'ytdl_oidc_allowed_groups': {
+        'key': 'ytdl_oidc_allowed_groups',
+        'path': 'YoutubeDLMaterial.Users.oidc.allowed_groups'
+    },
+    'ytdl_oidc_username_claim': {
+        'key': 'ytdl_oidc_username_claim',
+        'path': 'YoutubeDLMaterial.Users.oidc.username_claim'
+    },
+    'ytdl_oidc_display_name_claim': {
+        'key': 'ytdl_oidc_display_name_claim',
+        'path': 'YoutubeDLMaterial.Users.oidc.display_name_claim'
+    },
 
     // Database
     'ytdl_use_local_db': {
