@@ -4,7 +4,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
 COPY docker-utils/*.sh .
 RUN chmod +x *.sh
-RUN sh ./ffmpeg-fetch.sh
+RUN sh ./ffmpeg-fetch.sh && \
+    test -x /usr/local/bin/ffmpeg && \
+    test -x /usr/local/bin/ffprobe
 RUN sh ./fetch-twitchdownloader.sh
 
 
@@ -48,7 +50,7 @@ RUN apt update && \
 
 # Build frontend
 ARG BUILDPLATFORM
-FROM --platform=${BUILDPLATFORM} node:24 as frontend
+FROM --platform=${BUILDPLATFORM} node:24 AS frontend
 RUN npm install -g @angular/cli
 WORKDIR /build
 COPY [ ".npmrc", "package.json", "package-lock.json", "angular.json", "tsconfig.json", "/build/" ]
@@ -61,7 +63,7 @@ RUN rm -rf node_modules
 
 
 # Install backend deps
-FROM base as backend
+FROM base AS backend
 WORKDIR /app
 COPY [ "backend/","/app/" ]
 RUN npm config set strict-ssl false && \
