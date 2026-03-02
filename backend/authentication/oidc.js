@@ -1,4 +1,4 @@
-const { Issuer, generators } = require('openid-client');
+const openid_client = require('openid-client');
 
 const config_api = require('../config');
 const logger = require('../logger');
@@ -6,8 +6,7 @@ const logger = require('../logger');
 const AUTH_TX_TTL_MS = 10 * 60 * 1000;
 const auth_transactions = new Map();
 
-let oidc_issuer = null;
-let oidc_client = null;
+let oidc_configuration = null;
 let initialized = false;
 
 function parseBool(input, fallback = false) {
@@ -84,8 +83,45 @@ function claimToArray(claimValue) {
   return normalized ? [normalized] : [];
 }
 
+function normalizeURL(url_value, field_name) {
+  const normalized = String(url_value || '').trim();
+  if (!normalized) {
+    throw new Error(`OIDC ${field_name} is missing.`);
+  }
+  try {
+    return new URL(normalized);
+  } catch (_err) {
+    throw new Error(`OIDC ${field_name} is not a valid URL.`);
+  }
+}
+
+function getQueryParam(req, key) {
+  if (!req || !req.query) return undefined;
+  const raw_value = req.query[key];
+  if (Array.isArray(raw_value)) return raw_value[0];
+  if (raw_value === undefined || raw_value === null) return undefined;
+  return String(raw_value);
+}
+
+function buildCallbackURL(req, redirect_uri) {
+  const callback_url = new URL(String(redirect_uri).trim());
+  const search_params = new URLSearchParams();
+  if (req && req.query) {
+    Object.entries(req.query).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      if (Array.isArray(value)) {
+        value.forEach(entry => search_params.append(key, String(entry)));
+        return;
+      }
+      search_params.set(key, String(value));
+    });
+  }
+  callback_url.search = search_params.toString();
+  return callback_url;
+}
+
 function ensureOIDCReady() {
-  if (!initialized || !oidc_client) {
+  if (!initialized || !oidc_configuration) {
     throw new Error('OIDC is not initialized.');
   }
 }
@@ -101,8 +137,7 @@ exports.getConfiguration = () => {
 exports.initialize = async () => {
   const oidc_config = getOIDCConfiguration();
   if (!oidc_config.enabled) {
-    oidc_issuer = null;
-    oidc_client = null;
+    oidc_configuration = null;
     initialized = false;
     auth_transactions.clear();
     return true;
@@ -112,15 +147,18 @@ exports.initialize = async () => {
     throw new Error('OIDC is enabled but one or more required settings are missing (issuer_url, client_id, client_secret, redirect_uri).');
   }
 
-  const discovered_issuer = await Issuer.discover(String(oidc_config.issuer_url).trim());
-  oidc_issuer = discovered_issuer;
-  oidc_client = new oidc_issuer.Client({
-    client_id: String(oidc_config.client_id).trim(),
-    client_secret: String(oidc_config.client_secret).trim(),
-    redirect_uris: [String(oidc_config.redirect_uri).trim()],
-    response_types: ['code'],
-    token_endpoint_auth_method: 'client_secret_post'
-  });
+  const issuer_url = normalizeURL(oidc_config.issuer_url, 'issuer_url');
+  const redirect_uri = normalizeURL(oidc_config.redirect_uri, 'redirect_uri');
+  oidc_configuration = await openid_client.discovery(
+    issuer_url,
+    String(oidc_config.client_id).trim(),
+    {
+      client_secret: String(oidc_config.client_secret).trim(),
+      redirect_uris: [redirect_uri.toString()],
+      response_types: ['code'],
+      token_endpoint_auth_method: 'client_secret_post'
+    }
+  );
   initialized = true;
   logger.info('OIDC authentication initialized successfully.');
   return true;
@@ -130,20 +168,21 @@ exports.getStatus = () => {
   const oidc_config = getOIDCConfiguration();
   return {
     enabled: oidc_config.enabled,
-    initialized: initialized && !!oidc_client,
+    initialized: initialized && !!oidc_configuration,
     auto_register: oidc_config.auto_register
   };
 }
 
-exports.createAuthorizationURL = (return_to = '/home') => {
+exports.createAuthorizationURL = async (return_to = '/home') => {
   ensureOIDCReady();
   cleanupTransactions();
   const oidc_config = getOIDCConfiguration();
+  const redirect_uri = normalizeURL(oidc_config.redirect_uri, 'redirect_uri').toString();
   const normalized_return_to = normalizeRelativePath(return_to);
-  const code_verifier = generators.codeVerifier();
-  const code_challenge = generators.codeChallenge(code_verifier);
-  const state = generators.state();
-  const nonce = generators.nonce();
+  const code_verifier = openid_client.randomPKCECodeVerifier();
+  const code_challenge = await openid_client.calculatePKCECodeChallenge(code_verifier);
+  const state = openid_client.randomState();
+  const nonce = openid_client.randomNonce();
 
   auth_transactions.set(state, {
     code_verifier: code_verifier,
@@ -152,22 +191,23 @@ exports.createAuthorizationURL = (return_to = '/home') => {
     created: Date.now()
   });
 
-  return oidc_client.authorizationUrl({
+  const authorization_url = openid_client.buildAuthorizationUrl(oidc_configuration, {
     scope: oidc_config.scope,
+    redirect_uri: redirect_uri,
     code_challenge: code_challenge,
     code_challenge_method: 'S256',
     response_type: 'code',
     state: state,
     nonce: nonce
   });
+  return authorization_url.href;
 }
 
 exports.consumeAuthorizationCallback = async (req) => {
   ensureOIDCReady();
   cleanupTransactions();
 
-  const params = oidc_client.callbackParams(req);
-  const state = params.state;
+  const state = getQueryParam(req, 'state');
   if (!state || !auth_transactions.has(state)) {
     throw new Error('OIDC callback rejected: missing or invalid state.');
   }
@@ -176,19 +216,24 @@ exports.consumeAuthorizationCallback = async (req) => {
   auth_transactions.delete(state);
 
   const oidc_config = getOIDCConfiguration();
-  const redirect_uri = String(oidc_config.redirect_uri).trim();
+  const redirect_uri = normalizeURL(oidc_config.redirect_uri, 'redirect_uri').toString();
+  const callback_url = buildCallbackURL(req, redirect_uri);
 
-  const token_set = await oidc_client.callback(redirect_uri, params, {
-    state: state,
-    nonce: tx.nonce,
-    code_verifier: tx.code_verifier
+  const token_set = await openid_client.authorizationCodeGrant(oidc_configuration, callback_url, {
+    expectedState: state,
+    expectedNonce: tx.nonce,
+    pkceCodeVerifier: tx.code_verifier
   });
   const id_claims = token_set.claims() || {};
 
   let userinfo_claims = {};
   if (token_set.access_token) {
     try {
-      userinfo_claims = await oidc_client.userinfo(token_set.access_token);
+      userinfo_claims = await openid_client.fetchUserInfo(
+        oidc_configuration,
+        token_set.access_token,
+        id_claims.sub || openid_client.skipSubjectCheck
+      );
     } catch (err) {
       logger.warn(`OIDC userinfo call failed, falling back to ID token claims. ${err.message}`);
     }
