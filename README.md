@@ -142,6 +142,21 @@ Common Docker env vars used by the provided `docker-compose.yml` (plus logging):
 - Valid log levels: `error`, `warn`, `info`, `verbose`, `debug`
 - `ytdl_ssl_cert_path` / `ytdl_ssl_key_path`: enable HTTPS by pointing to mounted cert/key files
 - `ytdl_reverse_proxy_whitelist`: comma-separated CIDR ranges allowed to connect (reverse proxy IPs, not client IPs)
+- `ytdl_multi_user_mode`: set to `'true'` to enable user-scoped media; required when OIDC is enabled
+- OIDC required vars:
+  - `ytdl_oidc_enabled`: set to `'true'`
+  - `ytdl_oidc_issuer_url`: your OIDC issuer URL
+  - `ytdl_oidc_client_id`: OIDC client ID
+  - `ytdl_oidc_client_secret`: OIDC client secret
+  - `ytdl_oidc_redirect_uri`: callback URL (must end with `/api/auth/oidc/callback`)
+- OIDC optional vars:
+  - `ytdl_oidc_scope` (default `openid profile email`)
+  - `ytdl_oidc_allowed_groups` (comma-separated allow-list)
+  - `ytdl_oidc_group_claim` (default `groups`)
+  - `ytdl_oidc_admin_claim` / `ytdl_oidc_admin_value` (defaults `groups` / `admin`)
+  - `ytdl_oidc_auto_register` (default `'true'`)
+  - `ytdl_oidc_username_claim` / `ytdl_oidc_display_name_claim`
+- `ytdl_oidc_migrate_videos`: optional one-time startup migration target (UID or username) for unassigned media ownership
 
 Example Docker Compose snippet:
 
@@ -156,9 +171,25 @@ environment:
     # ytdl_ssl_cert_path: /mnt/keys/fullchain.pem
     # ytdl_ssl_key_path: /mnt/keys/privkey.pem
     # ytdl_reverse_proxy_whitelist: 172.28.0.100/32
+    # ytdl_multi_user_mode: 'true'
+    # ytdl_oidc_enabled: 'true'
+    # ytdl_oidc_issuer_url: 'https://idp.example.com/realms/ytdl'
+    # ytdl_oidc_client_id: 'youtubedl-material'
+    # ytdl_oidc_client_secret: 'replace-with-secret'
+    # ytdl_oidc_redirect_uri: 'https://ytdl.example.com/api/auth/oidc/callback'
+    # ytdl_oidc_scope: 'openid profile email'
+    # ytdl_oidc_allowed_groups: 'media,admins'
+    # ytdl_oidc_admin_claim: 'groups'
+    # ytdl_oidc_admin_value: 'admin'
+    # ytdl_oidc_auto_register: 'true'
+    # ytdl_oidc_username_claim: 'preferred_username'
+    # ytdl_oidc_display_name_claim: 'name'
+    # ytdl_oidc_migrate_videos: 'admin'
 ```
 
 If you prefer, you can also use Docker's `user: "UID:GID"` setting instead of `UID`/`GID`.
+
+OIDC note: when `ytdl_oidc_enabled` is `'true'`, `ytdl_multi_user_mode` must also be `'true'` or backend startup will fail.
 
 </details>
 

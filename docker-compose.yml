@@ -17,6 +17,27 @@ services:
             # Backend log level (optional): error, warn, info, verbose, debug
             # YTDL_LOG_LEVEL: info
 
+            # Multi-user mode (required for OIDC)
+            # ytdl_multi_user_mode: 'true'
+
+            # OIDC / OpenID Connect (optional)
+            # If enabled, ytdl_multi_user_mode must also be true
+            # ytdl_oidc_enabled: 'true'
+            # ytdl_oidc_issuer_url: 'https://idp.example.com/realms/ytdl'
+            # ytdl_oidc_client_id: 'youtubedl-material'
+            # ytdl_oidc_client_secret: 'replace-with-secret'
+            # ytdl_oidc_redirect_uri: 'https://ytdl.example.com/api/auth/oidc/callback'
+            # ytdl_oidc_scope: 'openid profile email'
+            # ytdl_oidc_allowed_groups: 'media,admins'
+            # ytdl_oidc_group_claim: 'groups'
+            # ytdl_oidc_admin_claim: 'groups'
+            # ytdl_oidc_admin_value: 'admin'
+            # ytdl_oidc_auto_register: 'true'
+            # ytdl_oidc_username_claim: 'preferred_username'
+            # ytdl_oidc_display_name_claim: 'name'
+            # Optional one-time ownership migration for unassigned media:
+            # ytdl_oidc_migrate_videos: 'admin'
+
             # Reverse Proxy Whitelist (optional)
             # Whitelists the reverse proxy's IP (the direct connecting IP, not end clients)
             # This checks which reverse proxy is allowed to connect, not client IPs

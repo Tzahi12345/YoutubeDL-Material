@@ -2521,7 +2521,7 @@ app.get('/api/auth/oidc/login', async (req, res) => {
 
     try {
         const return_to = req.query.returnTo ? String(req.query.returnTo) : '/home';
-        const authorization_url = oidc_api.createAuthorizationURL(return_to);
+        const authorization_url = await oidc_api.createAuthorizationURL(return_to);
         res.redirect(authorization_url);
     } catch (err) {
         logger.error(`OIDC login redirect failed: ${err.message}`);

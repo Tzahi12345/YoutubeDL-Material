@@ -1,7 +1,8 @@
 const fs = require('fs-extra');
 const fetch = globalThis.fetch;
 const path = require('path');
-const execa = require('execa');
+const execa_module = require('execa');
+const execa = typeof execa_module === 'function' ? execa_module : execa_module.execa;
 const kill = require('tree-kill');
 
 const logger = require('./logger');
