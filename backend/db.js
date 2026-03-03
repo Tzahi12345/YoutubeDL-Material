@@ -7,8 +7,8 @@ const config_api = require('./config');
 const utils = require('./utils')
 const logger = require('./logger');
 
-const low = require('lowdb')
-const FileSync = require('lowdb/adapters/FileSync');
+const low = require('./lowdb-compat')
+const FileSync = require('./lowdb-compat/adapters/FileSync');
 const { BehaviorSubject } = require('rxjs');
 
 let local_db = null;
