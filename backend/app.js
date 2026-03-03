@@ -2832,6 +2832,12 @@ app.use(function(req, res, next) {
         return next();
     }
 
+    // Hash routes (/#/...) are received as "/" on the server. Let the SPA load so
+    // client-side routing can preserve return targets like /player;uid=... .
+    if (req.path === '/') {
+        return next();
+    }
+
     const accept = req.accepts('html', 'json', 'xml');
     if (accept !== 'html') {
         return next();
