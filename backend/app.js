@@ -15,7 +15,7 @@ const archiver = require('archiver');
 const unzipper = require('unzipper');
 const db_api = require('./db');
 const utils = require('./utils')
-const low = require('lowdb')
+const low = require('./lowdb-compat')
 const fetch = globalThis.fetch;
 const URL = require('url').URL;
 const CONSTS = require('./consts')
@@ -75,7 +75,7 @@ function configureExpressTrustProxy() {
 }
 
 // database setup
-const FileSync = require('lowdb/adapters/FileSync');
+const FileSync = require('./lowdb-compat/adapters/FileSync');
 
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)

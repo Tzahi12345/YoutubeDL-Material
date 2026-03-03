@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const assert = require('assert');
-const low = require('lowdb')
+const low = require('../lowdb-compat')
 const winston = require('winston');
 const path = require('path');
 const util = require('util');
@@ -9,7 +9,7 @@ const { v4: uuid } = require('uuid');
 const NodeID3 = require('node-id3');
 const exec = util.promisify(require('child_process').exec);
 
-const FileSync = require('lowdb/adapters/FileSync');
+const FileSync = require('../lowdb-compat/adapters/FileSync');
 
 const adapter = new FileSync('./appdata/db.json');
 const db = low(adapter)
