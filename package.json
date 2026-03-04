@@ -40,7 +40,7 @@
     "crypto-js": "^4.2.0",
     "file-saver": "^2.0.2",
     "filesize": "^11.0.13",
-    "fs-extra": "^11.3.3",
+    "fs-extra": "^11.3.4",
     "material-icons": "^1.10.8",
     "nan": "^2.14.1",
     "ngx-avatars": "1.10.1",
