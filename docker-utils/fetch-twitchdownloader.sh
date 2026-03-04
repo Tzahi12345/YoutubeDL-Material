@@ -26,8 +26,29 @@ echo "(1/5) READY - Install unzip"
 apt-get update && apt-get -y install unzip curl libicu74
 
 # Resolve latest version from GitHub's redirect endpoint to avoid API rate-limit failures.
-LATEST_RELEASE_URL=$(curl -fsSL -o /dev/null -w '%{url_effective}' "https://github.com/lay295/TwitchDownloader/releases/latest")
+LATEST_RELEASE_URL="$(curl -fL -o /dev/null -w '%{url_effective}' \
+  --connect-timeout 10 \
+  --max-time 60 \
+  --retry 20 \
+  --retry-delay 2 \
+  --retry-max-time 300 \
+  --retry-all-errors \
+  "https://github.com/lay295/TwitchDownloader/releases/latest" || true)"
 VERSION="${LATEST_RELEASE_URL##*/}"
+
+if [ -z "$VERSION" ] || [ "$VERSION" = "latest" ]; then
+  # Fallback to API in case the redirect endpoint is temporarily unavailable.
+  VERSION="$(curl -fsSL \
+    --connect-timeout 10 \
+    --max-time 60 \
+    --retry 20 \
+    --retry-delay 2 \
+    --retry-max-time 300 \
+    --retry-all-errors \
+    "https://api.github.com/repos/lay295/TwitchDownloader/releases/latest" \
+    | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
+    | head -n 1 || true)"
+fi
 
 if [ -z "$VERSION" ] || [ "$VERSION" = "latest" ]; then
   echo "Unable to resolve TwitchDownloader latest release version."
