@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="et">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="is">
     <body>
       <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html">
         <source>Profile</source>
-        <target state="translated">Profiil</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">22</context>
@@ -13,7 +12,6 @@
       </trans-unit>
       <trans-unit id="c748ac656af9f13998206ef2c52018dd418b0483" datatype="html">
         <source>Archives</source>
-        <target state="translated">Arhiivid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">26</context>
@@ -22,7 +20,6 @@
       </trans-unit>
       <trans-unit id="adb4562d2dbd3584370e44496969d58c511ecb63" datatype="html">
         <source>Dark</source>
-        <target state="translated">Tume</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">30</context>
@@ -35,7 +32,6 @@
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
         <source>About</source>
-        <target state="translated">Tarkvara kohta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">35</context>
@@ -44,7 +40,6 @@
       </trans-unit>
       <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html">
         <source>Home</source>
-        <target state="translated">Koduleht</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">47</context>
@@ -53,7 +48,6 @@
       </trans-unit>
       <trans-unit id="6765b4c916060f6bc42d9bb69e80377dbcb5e4e9" datatype="html">
         <source>Login</source>
-        <target state="translated">Sisselogimine</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">48</context>
@@ -66,15 +60,10 @@
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">39</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
         <note priority="1" from="description">Navigation menu Login Page title</note>
       </trans-unit>
       <trans-unit id="357064ca9d9ac859eb618e28e8126fa32be049e2" datatype="html">
         <source>Subscriptions</source>
-        <target state="translated">Tellimused</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">49</context>
@@ -83,7 +72,6 @@
       </trans-unit>
       <trans-unit id="822fab38216f64e8166d368b59fe756ca39d301b" datatype="html">
         <source>Downloads</source>
-        <target state="translated">Allalaadimisi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">50</context>
@@ -92,7 +80,6 @@
       </trans-unit>
       <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
         <source>Tasks</source>
-        <target state="translated">Ülesanded</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">51</context>
@@ -101,7 +88,6 @@
       </trans-unit>
       <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716" datatype="html">
         <source>Settings</source>
-        <target state="translated">Sätted</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">54</context>
@@ -118,7 +104,6 @@
       </trans-unit>
       <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
         <source>Filter</source>
-        <target state="translated">Filter</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">3</context>
@@ -127,7 +112,6 @@
       </trans-unit>
       <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
         <source>Date</source>
-        <target state="translated">Kuupäev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">31</context>
@@ -140,7 +124,6 @@
       </trans-unit>
       <trans-unit id="fdf7cbdc140d0aab0f0b6c06065a0fd448ed6a2e" datatype="html">
         <source>Title</source>
-        <target state="translated">Pealkiri</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">37</context>
@@ -157,7 +140,6 @@
       </trans-unit>
       <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html">
         <source>ID</source>
-        <target state="translated">ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">47</context>
@@ -166,7 +148,6 @@
       </trans-unit>
       <trans-unit id="28da11220a3377ddce3c7948825d33101f142782" datatype="html">
         <source>Extractor</source>
-        <target state="translated">Ekstraktor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">57</context>
@@ -175,7 +156,6 @@
       </trans-unit>
       <trans-unit id="c150a30bbbdb175b4d08820196a9acb66b167653" datatype="html">
         <source>Archives empty</source>
-        <target state="translated">Tühjad arhiivid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">72</context>
@@ -184,7 +164,6 @@
       </trans-unit>
       <trans-unit id="51a161ce175abcd44f6c6cbd0e996681bf553ac3" datatype="html">
         <source>Delete selected</source>
-        <target state="translated">Kustuta valitud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">77</context>
@@ -193,7 +172,6 @@
       </trans-unit>
       <trans-unit id="c41475a25c9f9d9639db9efa56637603a77528b4" datatype="html">
         <source>Download archive</source>
-        <target state="translated">Lae arhiiv alla</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">80</context>
@@ -202,7 +180,6 @@
       </trans-unit>
       <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html">
         <source>Subscription</source>
-        <target state="translated">Tellimus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">82</context>
@@ -223,7 +200,6 @@
       </trans-unit>
       <trans-unit id="a2f14a73f7a6e94479f67423cc51102da8d6f524" datatype="html">
         <source>None</source>
-        <target state="translated">Puudub</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">84</context>
@@ -244,7 +220,6 @@
       </trans-unit>
       <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
         <source>File type</source>
-        <target state="translated">Failitüüp</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">89</context>
@@ -261,7 +236,6 @@
       </trans-unit>
       <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
         <source>Both</source>
-        <target state="translated">Mõlemad</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">91</context>
@@ -274,7 +248,6 @@
       </trans-unit>
       <trans-unit id="2d1ea268a6a9f483dbc2cbfe19bf4256a57a6af4" datatype="html">
         <source>Video</source>
-        <target state="translated">Video</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">92</context>
@@ -287,7 +260,6 @@
       </trans-unit>
       <trans-unit id="f0baeb8b69d120073b6d60d34785889b0c3232c8" datatype="html">
         <source>Audio</source>
-        <target state="translated">Heli</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">93</context>
@@ -300,7 +272,6 @@
       </trans-unit>
       <trans-unit id="98a8a42e5efffe17ab786636ed0139b4c7032d0e" datatype="html">
         <source>Drag and Drop</source>
-        <target state="translated">Pukseeri</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">104</context>
@@ -313,7 +284,6 @@
       </trans-unit>
       <trans-unit id="4b3972c3e9485218508a95f7a4ce7758e3f09ced" datatype="html">
         <source>Upload</source>
-        <target state="translated">Lae üles</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">137</context>
@@ -326,7 +296,6 @@
       </trans-unit>
       <trans-unit id="6549265851868599441" datatype="html">
         <source>Video</source>
-        <target state="translated">Video</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -334,7 +303,6 @@
       </trans-unit>
       <trans-unit id="347407180135731058" datatype="html">
         <source>Audio</source>
-        <target state="translated">Heli</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -342,7 +310,6 @@
       </trans-unit>
       <trans-unit id="8953483585652369683" datatype="html">
         <source>Archive successfully imported!</source>
-        <target state="translated">Arhiivi importimine õnnestus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">130</context>
@@ -350,7 +317,6 @@
       </trans-unit>
       <trans-unit id="3159807825117518005" datatype="html">
         <source>Delete archives</source>
-        <target state="translated">Kustuta arhiivid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">152</context>
@@ -358,7 +324,6 @@
       </trans-unit>
       <trans-unit id="8425787787095143143" datatype="html">
         <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
-        <target state="translated">Kas soovite kustutada <x id="selected archives amount" equiv-text="this.selection.selected.length"/> arhiiv(i)?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">153</context>
@@ -366,19 +331,17 @@
       </trans-unit>
       <trans-unit id="7022070615528435141" datatype="html">
         <source>Delete</source>
-        <target state="translated">Kustuta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">160</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2525880134753073592" datatype="html">
         <source>Successfully deleted archive items!</source>
-        <target state="translated">Arhiivi esemete kustutamine õnnestus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">172</context>
@@ -386,7 +349,6 @@
       </trans-unit>
       <trans-unit id="8224301330941792118" datatype="html">
         <source>Failed to delete archive items!</source>
-        <target state="translated">Arhiivi esemete kustutamine nurjus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">174</context>
@@ -394,7 +356,6 @@
       </trans-unit>
       <trans-unit id="39921032161993566" datatype="html">
         <source>Successfully created playlist!</source>
-        <target state="translated">Esitusloendi loomine õnnestus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -402,7 +363,6 @@
       </trans-unit>
       <trans-unit id="2070856663109337061" datatype="html">
         <source>ERROR: failed to create playlist!</source>
-        <target state="translated">VIGA: Esitusloendi loomine nurjus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">58</context>
@@ -410,7 +370,6 @@
       </trans-unit>
       <trans-unit id="820184305380634591" datatype="html">
         <source>Playlist successfully removed.</source>
-        <target state="translated">Esitusloendi eemaldamine õnnetus.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">100</context>
@@ -418,28 +377,33 @@
       </trans-unit>
       <trans-unit id="72c341bca7ebacc66e8a13f1a527d500619e89ff" datatype="html">
         <source>Stage</source>
-        <target state="translated">Etapp</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">Stage</note>
       </trans-unit>
-      <trans-unit id="15793f4cbc261bedbc60f7105533dde536a3f42b" datatype="html">
-        <source>Progress</source>
-        <target state="translated">Edu</target>
+      <trans-unit id="6080b77234e92ad41bb52653b239c4c4f851317d" datatype="html">
+        <source>Error</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">42</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <note priority="1" from="description">Error</note>
+      </trans-unit>
+      <trans-unit id="15793f4cbc261bedbc60f7105533dde536a3f42b" datatype="html">
+        <source>Progress</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
+          <context context-type="linenumber">45</context>
         </context-group>
         <note priority="1" from="description">Progress</note>
       </trans-unit>
       <trans-unit id="030b4423b92167200e39519599f9b863b4f7c62c" datatype="html">
         <source>Actions</source>
-        <target state="translated">Toimingud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">58</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
@@ -447,307 +411,234 @@
         </context-group>
         <note priority="1" from="description">Actions</note>
       </trans-unit>
-      <trans-unit id="b2838c6165a9672a17db188f4dd9676574353dd8" datatype="html">
-        <source>Pause</source>
-        <target state="translated">Pausi</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">59</context>
-        </context-group>
-        <note priority="1" from="description">Pause</note>
-      </trans-unit>
-      <trans-unit id="4cd979821c89535df23df1c8ac8f260673610d90" datatype="html">
-        <source>Resume</source>
-        <target state="translated">Jätka</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">60</context>
-        </context-group>
-        <note priority="1" from="description">Resume</note>
-      </trans-unit>
-      <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7" datatype="html">
-        <source>Cancel</source>
-        <target state="translated">Tühista</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">61</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
-          <context context-type="linenumber">62</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
-          <context context-type="linenumber">25</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
-          <context context-type="linenumber">90</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
-          <context context-type="linenumber">56</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
-          <context context-type="linenumber">64</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
-          <context context-type="linenumber">24</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
-          <context context-type="linenumber">81</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
-          <context context-type="linenumber">52</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">611</context>
-        </context-group>
-        <note priority="1" from="description">Cancel</note>
-      </trans-unit>
-      <trans-unit id="73a7ade062c611e4bc92f3a4c672bee29b8aae9d" datatype="html">
-        <source>Watch content</source>
-        <target state="translated">Vaata sisu</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">64</context>
-        </context-group>
-        <note priority="1" from="description">Watch content</note>
-      </trans-unit>
-      <trans-unit id="54cb4c7c3a0da911ebda5a07666b448868020308" datatype="html">
-        <source>Show error</source>
-        <target state="translated">Kuva viga</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">65</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
-          <context context-type="linenumber">81</context>
-        </context-group>
-        <note priority="1" from="description">Show error</note>
-      </trans-unit>
-      <trans-unit id="b6d79c6ff771d7b86ce572306867a1705200f957" datatype="html">
-        <source>Restart</source>
-        <target state="translated">Taaskäivita</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-        <note priority="1" from="description">Restart</note>
-      </trans-unit>
-      <trans-unit id="99ee4faa69cd2ea8e3678c1f557c0ff1f05aae46" datatype="html">
-        <source>Clear</source>
-        <target state="translated">Tühjenda</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">68</context>
-        </context-group>
-        <note priority="1" from="description">Clear</note>
-      </trans-unit>
       <trans-unit id="b36b7458192b833592e13029fa8a0b3555e0d9bd" datatype="html">
         <source>Pause all downloads</source>
-        <target state="translated">Pausi kõik allalaadimised</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">89</context>
         </context-group>
         <note priority="1" from="description">Pause all downloads</note>
       </trans-unit>
       <trans-unit id="9b2084f9aea764292cf0978cb083907d8be51bf7" datatype="html">
         <source>Resume all downloads</source>
-        <target state="translated">Jätka kõik allalaadimised</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">90</context>
         </context-group>
         <note priority="1" from="description">Resume all downloads</note>
       </trans-unit>
       <trans-unit id="a4a4a5f03d7d0831ccf6774094e66a9507a42b58" datatype="html">
         <source>Clear downloads</source>
-        <target state="translated">Tühjenda allalaadimised</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <note priority="1" from="description">Clear downloads</note>
       </trans-unit>
       <trans-unit id="7117fc42f860e86d983bfccfcf2654e5750f3406" datatype="html">
         <source>No downloads available!</source>
-        <target state="translated">Allalaadimisi puudub!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">96</context>
         </context-group>
         <note priority="1" from="description">No downloads label</note>
       </trans-unit>
       <trans-unit id="2827589726081052618" datatype="html">
         <source>Creating download</source>
-        <target state="translated">Allalaadimise loomine</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4027175717527633324" datatype="html">
         <source>Getting info</source>
-        <target state="translated">Info hankimine</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">60</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7724483709075923163" datatype="html">
         <source>Downloading file</source>
-        <target state="translated">Faili allalaadimine</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8384225360105280028" datatype="html">
         <source>Complete</source>
-        <target state="translated">Täielik</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3640026747176198246" datatype="html">
+        <source>Watch content</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8456659390937171831" datatype="html">
+        <source>Show error</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1236604279860679031" datatype="html">
+        <source>Restart</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3299455901271096793" datatype="html">
-        <source>Clear downloads</source>
-        <target state="translated">Tühjenda allalaadimised</target>
+      <trans-unit id="9042260521669277115" datatype="html">
+        <source>Pause</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">131</context>
+          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5215119607776782829" datatype="html">
-        <source>Select downloads to clear</source>
-        <target state="translated">Vali allalaadimised tühjendamiseks</target>
+      <trans-unit id="7182974689040833178" datatype="html">
+        <source>Resume</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">132</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2159130950882492111" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/confirm-dialog/confirm-dialog.component.ts</context>
+          <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8700121026680200191" datatype="html">
         <source>Clear</source>
-        <target state="translated">Tühjenda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">133</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">177</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3299455901271096793" datatype="html">
+        <source>Clear downloads</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">175</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5215119607776782829" datatype="html">
+        <source>Select downloads to clear</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">176</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8485375438204712002" datatype="html">
         <source>Finished downloads</source>
-        <target state="translated">Lõpetatud allalaadimised</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5801924165267871854" datatype="html">
         <source>Paused downloads</source>
-        <target state="translated">Pausitud allalaadimised</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">142</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="2723988842145709249" datatype="html">
-        <source>Errored downloads</source>
-        <target state="translated">Vealised allalaadimised</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">146</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="3961621815065792326" datatype="html">
-        <source>Failed to clear finished downloads!</source>
-        <target state="translated">Allalaadimiste tühjendamine nurjus!</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">157</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5823550543348347814" datatype="html">
-        <source>Cleared downloads!</source>
-        <target state="translated">Allalaadimised tühjendatud!</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">159</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7114033980971410157" datatype="html">
-        <source>Failed to pause download! See server logs for more info.</source>
-        <target state="translated">Allalaadimiste pausimine nurjus! Lisateavet leiate serverilogist.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">170</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">222</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5223827577229167333" datatype="html">
-        <source>Failed to pause all downloads! See server logs for more info.</source>
-        <target state="translated">Kõikide allalaadimiste pausimine nurjus! Lisateavet leiate serverilogist.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">178</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5456775416888155476" datatype="html">
-        <source>Failed to resume download! See server logs for more info.</source>
-        <target state="translated">Allalaadimiste jätkamine nurjus! Lisateavet leiate serverilogist.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">186</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6268791413935580107" datatype="html">
-        <source>Failed to resume all downloads! See server logs for more info.</source>
-        <target state="translated">Kõikide allalaadimiste jätkamine nurjus! Lisateavet leiate serverilogist.</target>
+      <trans-unit id="2723988842145709249" datatype="html">
+        <source>Errored downloads</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">194</context>
+          <context context-type="linenumber">190</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="571023367671104036" datatype="html">
-        <source>Failed to restart download! See server logs for more info.</source>
-        <target state="translated">Allalaadimise taaskäivitamine nurjus! Lisateavet leiate serverilogist.</target>
+      <trans-unit id="3961621815065792326" datatype="html">
+        <source>Failed to clear finished downloads!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">202</context>
+          <context context-type="linenumber">201</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4529487534884306633" datatype="html">
-        <source>Failed to cancel download! See server logs for more info.</source>
-        <target state="translated">Allalaadimise tühistamine nurjus! Lisateavet leiate serverilogist.</target>
+      <trans-unit id="5823550543348347814" datatype="html">
+        <source>Cleared downloads!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">203</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7114033980971410157" datatype="html">
+        <source>Failed to pause download! See server logs for more info.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
           <context context-type="linenumber">214</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">266</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5223827577229167333" datatype="html">
+        <source>Failed to pause all downloads! See server logs for more info.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">222</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5456775416888155476" datatype="html">
+        <source>Failed to resume download! See server logs for more info.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">230</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6268791413935580107" datatype="html">
+        <source>Failed to resume all downloads! See server logs for more info.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="571023367671104036" datatype="html">
+        <source>Failed to restart download! See server logs for more info.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">246</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4529487534884306633" datatype="html">
+        <source>Failed to cancel download! See server logs for more info.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
+          <context context-type="linenumber">258</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="2560364143605631750" datatype="html">
         <source>Error for <x id="url" equiv-text="download['url']"/></source>
-        <target state="translated">Viga <x id="url" equiv-text="download['url']"/>-le</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">308</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8738732372986673558" datatype="html">
         <source>Copy to clipboard</source>
-        <target state="translated">Kopeeri lõikelauale</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">265</context>
+          <context context-type="linenumber">310</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
@@ -756,10 +647,9 @@
       </trans-unit>
       <trans-unit id="7819314041543176992" datatype="html">
         <source>Close</source>
-        <target state="translated">Sulge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">266</context>
+          <context context-type="linenumber">311</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
@@ -768,10 +658,9 @@
       </trans-unit>
       <trans-unit id="3795459839164395144" datatype="html">
         <source>Copied to clipboard!</source>
-        <target state="translated">Lõikelauale kopeeritud!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/downloads/downloads.component.ts</context>
-          <context context-type="linenumber">274</context>
+          <context context-type="linenumber">319</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.ts</context>
@@ -784,7 +673,6 @@
       </trans-unit>
       <trans-unit id="024886ca34a6f309e3e51c2ed849320592c3faaa" datatype="html">
         <source>User name</source>
-        <target state="translated">Kasutajatunnus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">6</context>
@@ -801,7 +689,6 @@
       </trans-unit>
       <trans-unit id="c32ef07f8803a223a83ed17024b38e8d82292407" datatype="html">
         <source>Password</source>
-        <target state="translated">Parool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">12</context>
@@ -826,7 +713,6 @@
       </trans-unit>
       <trans-unit id="cfc2f436ec2beffb042e7511a73c89c372e86a6c" datatype="html">
         <source>Register</source>
-        <target state="translated">Registreeri</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">17</context>
@@ -843,7 +729,6 @@
       </trans-unit>
       <trans-unit id="c1b7e6d75ff4285c7636c67e5ef259629b81725b" datatype="html">
         <source>Confirm Password</source>
-        <target state="translated">Kinnita Parool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/login/login.component.html</context>
           <context context-type="linenumber">32</context>
@@ -852,7 +737,6 @@
       </trans-unit>
       <trans-unit id="5009630cdf32ab4f1c78737b9617b8773512c05a" datatype="html">
         <source>Lines:</source>
-        <target state="translated">Rida:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.html</context>
           <context context-type="linenumber">22</context>
@@ -861,7 +745,6 @@
       </trans-unit>
       <trans-unit id="8a0bda4c47f10b2423ff183acefbf70d4ab52ea2" datatype="html">
         <source>Clear logs</source>
-        <target state="translated">Tühjenda logid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.html</context>
           <context context-type="linenumber">34</context>
@@ -870,7 +753,6 @@
       </trans-unit>
       <trans-unit id="1019978815798793544" datatype="html">
         <source>Failed to retrieve logs!</source>
-        <target state="translated">Logide hankimine nurjus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
           <context context-type="linenumber">46</context>
@@ -882,7 +764,6 @@
       </trans-unit>
       <trans-unit id="87406377200084623" datatype="html">
         <source>Logs copied to clipboard!</source>
-        <target state="translated">Logid lõikelauale kopeeritud!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -890,7 +771,6 @@
       </trans-unit>
       <trans-unit id="2293081271355999967" datatype="html">
         <source>Logs successfully cleared!</source>
-        <target state="translated">Logide tühjendamine õnnestus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
           <context context-type="linenumber">75</context>
@@ -898,7 +778,6 @@
       </trans-unit>
       <trans-unit id="4516710756538206828" datatype="html">
         <source>Failed to clear logs!</source>
-        <target state="translated">Logide tühjendamine nurjus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/logs-viewer/logs-viewer.component.ts</context>
           <context context-type="linenumber">77</context>
@@ -910,7 +789,6 @@
       </trans-unit>
       <trans-unit id="57c6c05d8ebf4ef1180c2705033c044f655bb2c4" datatype="html">
         <source>Manage role</source>
-        <target state="translated">Halda rolli</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">1</context>
@@ -919,7 +797,6 @@
       </trans-unit>
       <trans-unit id="4f20f2d5a6882190892e58b85f6ccbedfa737952" datatype="html">
         <source>Yes</source>
-        <target state="translated">Jah</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">8</context>
@@ -932,7 +809,6 @@
       </trans-unit>
       <trans-unit id="3d3ae7deebc5949b0c1c78b9847886a94321d9fd" datatype="html">
         <source>No</source>
-        <target state="translated">Ei</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">9</context>
@@ -945,7 +821,6 @@
       </trans-unit>
       <trans-unit id="f4e529ae5ffd73001d1ff4bbdeeb0a72e342e5c8" datatype="html">
         <source>Close</source>
-        <target state="translated">Sulge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.html</context>
           <context context-type="linenumber">16</context>
@@ -960,7 +835,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/add-user-dialog/add-user-dialog.component.html</context>
@@ -988,17 +863,16 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">81</context>
         </context-group>
         <note priority="1" from="description">Close</note>
       </trans-unit>
       <trans-unit id="4250042184551786923" datatype="html">
         <source>File manager</source>
-        <target state="translated">Failihaldur</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">17</context>
@@ -1010,7 +884,6 @@
       </trans-unit>
       <trans-unit id="8525406024045742391" datatype="html">
         <source>Settings access</source>
-        <target state="translated">Juurdepääs sätetele</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">18</context>
@@ -1022,7 +895,6 @@
       </trans-unit>
       <trans-unit id="1812379335568847528" datatype="html">
         <source>Subscriptions</source>
-        <target state="translated">Tellimused</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">19</context>
@@ -1034,7 +906,6 @@
       </trans-unit>
       <trans-unit id="4744991787069301975" datatype="html">
         <source>Share files</source>
-        <target state="translated">Jaga faile</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">20</context>
@@ -1046,7 +917,6 @@
       </trans-unit>
       <trans-unit id="5029464708330583545" datatype="html">
         <source>Use advanced download mode</source>
-        <target state="translated">Kasuta täiustatud allalaadimisrežiimi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">21</context>
@@ -1058,7 +928,6 @@
       </trans-unit>
       <trans-unit id="4278268519633335280" datatype="html">
         <source>Use downloads manager</source>
-        <target state="translated">Kasuta allalaadimishaldurit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">22</context>
@@ -1070,7 +939,6 @@
       </trans-unit>
       <trans-unit id="3426988753455920032" datatype="html">
         <source>Use tasks manager</source>
-        <target state="translated">Kasuta ülesannete haldurit</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-role/manage-role.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -1082,7 +950,6 @@
       </trans-unit>
       <trans-unit id="2bd201aea09e43fbfd3cd15ec0499b6755302329" datatype="html">
         <source>Manage user</source>
-        <target state="translated">Halda kasutajat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1095,7 +962,6 @@
       </trans-unit>
       <trans-unit id="29c97c8e76763bb15b6d515648fa5bd1eb0f7510" datatype="html">
         <source>User UID:</source>
-        <target state="translated">Kasutaja UID:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">4</context>
@@ -1104,7 +970,6 @@
       </trans-unit>
       <trans-unit id="e70e209561583f360b1e9cefd2cbb1fe434b6229" datatype="html">
         <source>New password</source>
-        <target state="translated">Uus parool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">8</context>
@@ -1113,7 +978,6 @@
       </trans-unit>
       <trans-unit id="6498fa1b8f563988f769654a75411bb8060134b9" datatype="html">
         <source>Set new password</source>
-        <target state="translated">Määra uus parool</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">11</context>
@@ -1122,7 +986,6 @@
       </trans-unit>
       <trans-unit id="544e09cdc99a8978f48521d45f62db0da6dcf742" datatype="html">
         <source>Use role default</source>
-        <target state="translated">Kasuta rolli vaikimisi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/manage-user/manage-user.component.html</context>
           <context context-type="linenumber">19</context>
@@ -1131,7 +994,6 @@
       </trans-unit>
       <trans-unit id="7e892ba15f2c6c17e83510e273b3e10fc32ea016" datatype="html">
         <source>Search</source>
-        <target state="translated">Otsi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1144,7 +1006,6 @@
       </trans-unit>
       <trans-unit id="746f64ddd9001ac456327cd9a3d5152203a4b93c" datatype="html">
         <source>User name</source>
-        <target state="translated">Kasutajatunnus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1153,7 +1014,6 @@
       </trans-unit>
       <trans-unit id="52c1447c1ec9570a2a3025c7e566557b8d19ed92" datatype="html">
         <source>Role</source>
-        <target state="translated">Roll</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">36</context>
@@ -1162,7 +1022,6 @@
       </trans-unit>
       <trans-unit id="59a8c38db3091a63ac1cb9590188dc3a972acfb3" datatype="html">
         <source>Actions</source>
-        <target state="translated">Toimingud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">56</context>
@@ -1171,7 +1030,6 @@
       </trans-unit>
       <trans-unit id="52c9a103b812f258bcddc3d90a6e3f46871d25fe" datatype="html">
         <source>Save</source>
-        <target state="translated">Salvesta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">59</context>
@@ -1186,7 +1044,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">60</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
@@ -1194,17 +1052,56 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">82</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">608</context>
+          <context context-type="linenumber">589</context>
         </context-group>
         <note priority="1" from="description">save user edit action button tooltip</note>
       </trans-unit>
+      <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/restore-db-dialog/restore-db-dialog.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/subscribe-dialog/subscribe-dialog.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/update-task-schedule-dialog/update-task-schedule-dialog.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">592</context>
+        </context-group>
+        <note priority="1" from="description">cancel user edit action button tooltip</note>
+      </trans-unit>
       <trans-unit id="632e8b20c98e8eec4059a605a4b011bb476137af" datatype="html">
         <source>Edit user</source>
-        <target state="translated">Redigeeri kasutaja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">67</context>
@@ -1213,7 +1110,6 @@
       </trans-unit>
       <trans-unit id="95b95a9c79e4fd9ed41f6855e37b3b06af25bcab" datatype="html">
         <source>Delete user</source>
-        <target state="translated">Kustuta kasutaja</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">74</context>
@@ -1222,7 +1118,6 @@
       </trans-unit>
       <trans-unit id="4d92a0395dd66778a931460118626c5794a3fc7a" datatype="html">
         <source>Add Users</source>
-        <target state="translated">Lisa Kasutajaid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">91</context>
@@ -1231,7 +1126,6 @@
       </trans-unit>
       <trans-unit id="b0d7dd8a1b0349622d6e0c6e643e24a9ea0efa1d" datatype="html">
         <source>Edit Role</source>
-        <target state="translated">Redigeeri Rolli</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modify-users/modify-users.component.html</context>
           <context context-type="linenumber">96</context>
@@ -1240,7 +1134,6 @@
       </trans-unit>
       <trans-unit id="019d4bd6a5690f0cfa0ecf346a4e6bf7f0d8debb" datatype="html">
         <source>Remove</source>
-        <target state="translated">Eemalda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.html</context>
           <context context-type="linenumber">23</context>
@@ -1249,7 +1142,6 @@
       </trans-unit>
       <trans-unit id="6219551536751479443" datatype="html">
         <source>Finished downloading</source>
-        <target state="translated">Allalaadimine lõpetatud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">17</context>
@@ -1257,7 +1149,6 @@
       </trans-unit>
       <trans-unit id="5947241266456580665" datatype="html">
         <source>Download failed</source>
-        <target state="translated">Allalaadimine nurjus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">18</context>
@@ -1265,7 +1156,6 @@
       </trans-unit>
       <trans-unit id="8443034725057696949" datatype="html">
         <source>Task finished</source>
-        <target state="translated">Ülesanne lõpetatud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">19</context>
@@ -1273,7 +1163,6 @@
       </trans-unit>
       <trans-unit id="8564202903947049539" datatype="html">
         <source>Play</source>
-        <target state="translated">Mängi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">30</context>
@@ -1281,7 +1170,6 @@
       </trans-unit>
       <trans-unit id="8643601595923420698" datatype="html">
         <source>Retry download</source>
-        <target state="translated">Proovi allalaadimist uuesti</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1289,7 +1177,6 @@
       </trans-unit>
       <trans-unit id="8571838164752006148" datatype="html">
         <source>View error</source>
-        <target state="translated">Kuva viga</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">32</context>
@@ -1297,7 +1184,6 @@
       </trans-unit>
       <trans-unit id="5709555629190115111" datatype="html">
         <source>View task</source>
-        <target state="translated">Kuva ülesanne</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications-list/notifications-list.component.ts</context>
           <context context-type="linenumber">33</context>
@@ -1305,7 +1191,6 @@
       </trans-unit>
       <trans-unit id="5a105e7bd7e7db6ea211fe950fc9f317379acceb" datatype="html">
         <source>No notifications available</source>
-        <target state="translated">Teated puuduvad</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1314,7 +1199,6 @@
       </trans-unit>
       <trans-unit id="6876310993601590130" datatype="html">
         <source>Download completed</source>
-        <target state="translated">Allalaadimine lõpetatud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -1322,7 +1206,6 @@
       </trans-unit>
       <trans-unit id="1879058637439215882" datatype="html">
         <source>Download error</source>
-        <target state="translated">Allalaadimise viga</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
           <context context-type="linenumber">27</context>
@@ -1330,7 +1213,6 @@
       </trans-unit>
       <trans-unit id="4578192247039196794" datatype="html">
         <source>Task</source>
-        <target state="translated">Ülesanne</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
           <context context-type="linenumber">31</context>
@@ -1338,7 +1220,6 @@
       </trans-unit>
       <trans-unit id="5000203534763292992" datatype="html">
         <source>Download restarted!</source>
-        <target state="translated">Allalaadimine taaskäivitatud!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/notifications/notifications.component.ts</context>
           <context context-type="linenumber">72</context>
@@ -1346,7 +1227,6 @@
       </trans-unit>
       <trans-unit id="52e0fa8ada52c3f29774a4508582fd98250b9f93" datatype="html">
         <source>My files</source>
-        <target state="translated">Minu failid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">9</context>
@@ -1355,7 +1235,6 @@
       </trans-unit>
       <trans-unit id="6827066f436adfc56a142d5816a8be6113d73b01" datatype="html">
         <source>No files found.</source>
-        <target state="translated">Failid puuduvad.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1364,7 +1243,6 @@
       </trans-unit>
       <trans-unit id="5704ec2049d007c5f5fb495a5d8b607e68d58081" datatype="html">
         <source>Order</source>
-        <target state="translated">Järjekord</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">54</context>
@@ -1373,7 +1251,6 @@
       </trans-unit>
       <trans-unit id="33026f57ea65cd9c8a5d917a08083f71a718933a" datatype="html">
         <source>Normal order</source>
-        <target state="translated">Normaalne järjekord</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">56</context>
@@ -1382,7 +1259,6 @@
       </trans-unit>
       <trans-unit id="29376982b1205d9d6ea3d289e8e2f8e1ac2839b1" datatype="html">
         <source>Reverse order</source>
-        <target state="translated">Tagurpidi järjekord</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">57</context>
@@ -1391,7 +1267,6 @@
       </trans-unit>
       <trans-unit id="ae9a5141f5c6bd62cee4ce837598ea8b0904e5cf" datatype="html">
         <source>Select files</source>
-        <target state="translated">Vali failid</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.html</context>
           <context context-type="linenumber">72</context>
@@ -1400,7 +1275,6 @@
       </trans-unit>
       <trans-unit id="7911845622864460134" datatype="html">
         <source>Video only</source>
-        <target state="translated">Ainult video</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">55</context>
@@ -1408,7 +1282,6 @@
       </trans-unit>
       <trans-unit id="6437411876967154040" datatype="html">
         <source>Audio only</source>
-        <target state="translated">Ainult heli</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">60</context>
@@ -1416,7 +1289,6 @@
       </trans-unit>
       <trans-unit id="4665451070906079743" datatype="html">
         <source>Favorited</source>
-        <target state="translated">Eelistatud</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
           <context context-type="linenumber">65</context>
@@ -1424,55 +1296,50 @@
       </trans-unit>
       <trans-unit id="4050356167294261426" datatype="html">
         <source>Delete success!</source>
-        <target state="translated">Kustutamine õnnestus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">301</context>
+          <context context-type="linenumber">302</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8348223454028662277" datatype="html">
         <source>OK.</source>
-        <target state="translated">OK.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">301</context>
+          <context context-type="linenumber">302</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">305</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">307</context>
+          <context context-type="linenumber">308</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7405156667148936748" datatype="html">
         <source>Delete failed!</source>
-        <target state="translated">Kustutamine nurjus!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">305</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">307</context>
+          <context context-type="linenumber">308</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8937901770314883418" datatype="html">
         <source>Successfully deleted file:</source>
-        <target state="translated">Faili kustutamine õnnestus:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">321</context>
+          <context context-type="linenumber">322</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/recent-videos/recent-videos.component.ts</context>
-          <context context-type="linenumber">328</context>
+          <context context-type="linenumber">329</context>
         </context-group>
       </trans-unit>
       <trans-unit id="ddc31f2885b1b33a7651963254b0c197f2a64086" datatype="html">
         <source>See more.</source>
-        <target state="translated">Kuva rohkem.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">4,6</context>
@@ -1481,7 +1348,6 @@
       </trans-unit>
       <trans-unit id="56a2a773fbd5a6b9ac2e6b89d29d70a2ed0f3227" datatype="html">
         <source>See less.</source>
-        <target state="translated">Kuva vähem.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/see-more/see-more.component.html</context>
           <context context-type="linenumber">7,9</context>
@@ -1490,7 +1356,6 @@
       </trans-unit>
       <trans-unit id="82dbc50a84e5c0865aa27479b8ce82da3a85d29b" datatype="html">
         <source>Skip ad</source>
-        <target state="translated">Jäta reklaam vahele</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/skip-ad-button/skip-ad-button.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1499,7 +1364,6 @@
       </trans-unit>
       <trans-unit id="6268070779441507380" datatype="html">
         <source>Download Date</source>
-        <target state="translated">Allalaadimise Kuupäev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
           <context context-type="linenumber">13</context>
@@ -1507,7 +1371,6 @@
       </trans-unit>
       <trans-unit id="3533826530554274875" datatype="html">
         <source>Upload Date</source>
-        <target state="translated">Üleslaadimise Kuupäev</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
           <context context-type="linenumber">17</context>
@@ -1515,7 +1378,6 @@
       </trans-unit>
       <trans-unit id="8953033926734869941" datatype="html">
         <source>Name</source>
-        <target state="translated">Nimi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
           <context context-type="linenumber">21</context>
@@ -1523,7 +1385,6 @@
       </trans-unit>
       <trans-unit id="2492098975665776610" datatype="html">
         <source>File Size</source>
-        <target state="translated">Faili Suurus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
           <context context-type="linenumber">25</context>
@@ -1531,7 +1392,6 @@
       </trans-unit>
       <trans-unit id="7410432243549869948" datatype="html">
         <source>Duration</source>
-        <target state="translated">Kestvus</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sort-property/sort-property.component.ts</context>
           <context context-type="linenumber">29</context>
@@ -1539,7 +1399,6 @@
       </trans-unit>
       <trans-unit id="ea2b65121b93921fe54692025da9b9e3ce779ad5" datatype="html">
         <source>Task settings - <x id="INTERPOLATION" equiv-text="{{task.title}}"/></source>
-        <target state="translated">Ülesande sätted - <x id="INTERPOLATION" equiv-text="{{task.title}}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-settings/task-settings.component.html</context>
           <context context-type="linenumber">1</context>
@@ -1686,6 +1545,14 @@
         </context-group>
         <note priority="1" from="description">Schedule</note>
       </trans-unit>
+      <trans-unit id="54cb4c7c3a0da911ebda5a07666b448868020308" datatype="html">
+        <source>Show error</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+        <note priority="1" from="description">Show error</note>
+      </trans-unit>
       <trans-unit id="40bd7093f5fbd3fbeff9a50baaf5d4c8416add1e" datatype="html">
         <source>Restore DB from backup</source>
         <context-group purpose="location">
@@ -1708,7 +1575,6 @@
       </trans-unit>
       <trans-unit id="5e96c9d4528bf259da3944daac3171d7462b065a" datatype="html">
         <source>No tasks available!</source>
-        <target state="translated">Ülesanded puuduvad!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/tasks/tasks.component.html</context>
           <context context-type="linenumber">103</context>
@@ -1799,7 +1665,6 @@
       </trans-unit>
       <trans-unit id="792dc6a57f28a1066db283f2e736484f066005fd" datatype="html">
         <source>Download Twitch Chat</source>
-        <target state="translated">Lae alla Twitch Chat</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1815,7 +1680,6 @@
       </trans-unit>
       <trans-unit id="880407735794041263" datatype="html">
         <source>Download failed.</source>
-        <target state="translated">Allalaadimine nurjus.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">107</context>
@@ -1823,7 +1687,6 @@
       </trans-unit>
       <trans-unit id="7157191502004604261" datatype="html">
         <source>Chat could not be downloaded.</source>
-        <target state="translated">Chat'i ei saanud alla laadida.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/twitch-chat/twitch-chat.component.ts</context>
           <context context-type="linenumber">111</context>
@@ -1903,43 +1766,37 @@
       </trans-unit>
       <trans-unit id="94e01842dcee90531caa52e4147f70679bac87fe" datatype="html">
         <source>Delete and redownload</source>
-        <target state="translated">Kustuta ja lae uuesti alla</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">38</context>
         </context-group>
         <note priority="1" from="description">Delete and redownload subscription video button</note>
-      </trans-unit>
-      <trans-unit id="e58f5716d6c08b6a841eb003c9f9774b5c5d34a9" datatype="html">
-        <source>Delete and don't download again</source>
-        <target state="translated">Kustuta ja ära lae uuesti alla</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">45</context>
-        </context-group>
-        <note priority="1" from="description">Delete forever subscription video button</note>
       </trans-unit>
       <trans-unit id="826b25211922a1b46436589233cb6f1a163d89b7" datatype="html">
         <source>Delete</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">39</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">45</context>
         </context-group>
         <note priority="1" from="description">Delete video button</note>
+      </trans-unit>
+      <trans-unit id="e58f5716d6c08b6a841eb003c9f9774b5c5d34a9" datatype="html">
+        <source>Delete and don't download again</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <note priority="1" from="description">Delete and don't download again</note>
       </trans-unit>
       <trans-unit id="28f86ffd419b869711aa13f5e5ff54be6d70731c" datatype="html">
         <source>Edit</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/unified-file-card/unified-file-card.component.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="linenumber">43</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
@@ -2020,7 +1877,6 @@
       </trans-unit>
       <trans-unit id="199c17e5d6a419313af3c325f06dcbb9645ca618" datatype="html">
         <source>is an open-source YouTube downloader built under Google's Material Design specifications. You can seamlessly download your favorite videos as video or audio files, and even subscribe to your favorite channels and playlists to keep updated with their new videos.</source>
-        <target state="translated">on avatud lähtekoodiga YouTube'i allalaadimisprogramm, mis on ehitatud Google'i Material Design spetsifikatsioonide alusel. Saate oma lemmikvideod sujuvalt video- või helifailidena alla laadida ning isegi oma lemmikkanaleid ja esitusloendeid tellida, et nende uute videotega kursis olla.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">12</context>
@@ -2053,7 +1909,6 @@
       </trans-unit>
       <trans-unit id="a16e92385b4fd9677bb830a4b796b8b79c113290" datatype="html">
         <source>Update available</source>
-        <target state="translated">Värskendus saadaval</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
           <context context-type="linenumber">21</context>
@@ -2116,11 +1971,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">316</context>
+          <context context-type="linenumber">283</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">289</context>
         </context-group>
         <note priority="1" from="description">About bug click here</note>
       </trans-unit>
@@ -2131,22 +1986,6 @@
           <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="description">About bug suffix</note>
-      </trans-unit>
-      <trans-unit id="5ac5a0e5ffe8e5623b40696f4c2403c17349271f" datatype="html">
-        <source>Sidepanel mode</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">42</context>
-        </context-group>
-        <note priority="1" from="description">Sidepanel mode</note>
-      </trans-unit>
-      <trans-unit id="1f2809e6a99d511fdb6eaf041d785fe54d0680cc" datatype="html">
-        <source>File card size</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/about-dialog/about-dialog.component.html</context>
-          <context context-type="linenumber">54</context>
-        </context-group>
-        <note priority="1" from="description">File card size</note>
       </trans-unit>
       <trans-unit id="b7ff2e2b909c53abe088fe60b9f4b6ac7757247f" datatype="html">
         <source>Register a user</source>
@@ -2172,18 +2011,16 @@
         </context-group>
         <note priority="1" from="description">Simulated args title</note>
       </trans-unit>
-      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html" xml:space="preserve">
+      <trans-unit id="0b71824ae71972f236039bed43f8d2323e8fd570" datatype="html">
         <source>Add an arg</source>
-        <target state="translated">新增參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">37</context>
         </context-group>
         <note priority="1" from="description">Add arg card title</note>
       </trans-unit>
-      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html" xml:space="preserve">
+      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html">
         <source>Arg</source>
-        <target state="translated">參數</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
           <context context-type="linenumber">41</context>
@@ -2230,13 +2067,6 @@
         </context-group>
         <note priority="1" from="description">Arg modifier modify button</note>
       </trans-unit>
-      <trans-unit id="2159130950882492111" datatype="html">
-        <source>Cancel</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/dialogs/confirm-dialog/confirm-dialog.component.ts</context>
-          <context context-type="linenumber">15</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="ebadf946ae90f13ecd0c70f09edbc0f983af8a0f" datatype="html">
         <source>Upload new cookies</source>
         <context-group purpose="location">
@@ -2280,7 +2110,7 @@
         <source>Add new rule</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
-          <context context-type="linenumber">40</context>
+          <context context-type="linenumber">42</context>
         </context-group>
         <note priority="1" from="description">Add new rule tooltip</note>
       </trans-unit>
@@ -2288,7 +2118,7 @@
         <source>Custom file output</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">47</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
@@ -2304,7 +2134,7 @@
         <source>Documentation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
@@ -2320,20 +2150,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">127</context>
+          <context context-type="linenumber">110</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">381</context>
+          <context context-type="linenumber">348</context>
         </context-group>
         <note priority="1" from="description">Custom output template documentation link</note>
       </trans-unit>
       <trans-unit id="19d1ae64d94d28a29b2c57ae8671aace906b5401" datatype="html">
         <source>Path is relative to the config download path. Don't include extension.</source>
-        <target state="translated">Tee on suhteline konfiguratsiooni allalaadimistee suhtes. Ärge lisage laiendust.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-category-dialog/edit-category-dialog.component.html</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component.html</context>
@@ -2473,7 +2302,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">306</context>
+          <context context-type="linenumber">273</context>
         </context-group>
         <note priority="1" from="description">Generate RSS URL</note>
       </trans-unit>
@@ -2897,21 +2726,84 @@
         </context-group>
         <note priority="1" from="description">Created</note>
       </trans-unit>
-      <trans-unit id="fa96f2137af0a24e6d6d54c598c0af7d5d5ad344" datatype="html">
-        <source>You are not logged in.</source>
+      <trans-unit id="fe46ccaae902ce974e2441abe752399288298619" datatype="html">
+        <source>Language</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
-        <note priority="1" from="description">Not logged in notification</note>
+        <note priority="1" from="description">Language select label</note>
+      </trans-unit>
+      <trans-unit id="5ac5a0e5ffe8e5623b40696f4c2403c17349271f" datatype="html">
+        <source>Sidepanel mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+        <note priority="1" from="description">Sidepanel mode</note>
+      </trans-unit>
+      <trans-unit id="338b44701a53ce3ef2f36abfb56f89c3edfa9eab" datatype="html">
+        <source>Over</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+        <note priority="1" from="description">Over</note>
+      </trans-unit>
+      <trans-unit id="b6399391e706e2d7b7b7880eb5630e4e6f49728c" datatype="html">
+        <source>Side</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+        <note priority="1" from="description">Side</note>
+      </trans-unit>
+      <trans-unit id="1f2809e6a99d511fdb6eaf041d785fe54d0680cc" datatype="html">
+        <source>File card size</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <note priority="1" from="description">File card size</note>
+      </trans-unit>
+      <trans-unit id="e0a11fbea353b1ce1131161774e4a3e10bcb99b1" datatype="html">
+        <source>Large</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+        <note priority="1" from="description">Large</note>
+      </trans-unit>
+      <trans-unit id="378c072ce05889c9771718d05106e7685fcd3507" datatype="html">
+        <source>Medium</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+        <note priority="1" from="description">Medium</note>
+      </trans-unit>
+      <trans-unit id="9a865c2922f5c01899d06c472dba2e5bd63bcff9" datatype="html">
+        <source>Small</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+        <note priority="1" from="description">Small</note>
       </trans-unit>
       <trans-unit id="bb694b49d408265c91c62799c2b3a7e3151c824d" datatype="html">
         <source>Logout</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">61</context>
         </context-group>
         <note priority="1" from="description">Logout</note>
+      </trans-unit>
+      <trans-unit id="7180231139026789468" datatype="html">
+        <source>Language successfully changed! Reload to update the page.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="f8c7be184fefd6750e4e5d0c7a90e74721c58f8a" datatype="html">
         <source>Uploader</source>
@@ -2957,7 +2849,7 @@
         <source>View count</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">51</context>
         </context-group>
         <note priority="1" from="description">View count</note>
       </trans-unit>
@@ -2965,7 +2857,7 @@
         <source>Local view count</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">54</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <note priority="1" from="description">Local view count</note>
       </trans-unit>
@@ -2973,7 +2865,7 @@
         <source>Resolution:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">62</context>
         </context-group>
         <note priority="1" from="description">Video resolution property</note>
       </trans-unit>
@@ -2981,7 +2873,7 @@
         <source>Audio bitrate:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">66</context>
         </context-group>
         <note priority="1" from="description">Video audio bitrate property</note>
       </trans-unit>
@@ -2989,7 +2881,7 @@
         <source>File size:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">70</context>
         </context-group>
         <note priority="1" from="description">Video file size property</note>
       </trans-unit>
@@ -2997,7 +2889,7 @@
         <source>Path:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dialogs/video-info-dialog/video-info-dialog.component.html</context>
-          <context context-type="linenumber">73</context>
+          <context context-type="linenumber">74</context>
         </context-group>
         <note priority="1" from="description">Video path property</note>
       </trans-unit>
@@ -3165,18 +3057,18 @@
         <source>Download failed!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
-          <context context-type="linenumber">382</context>
+          <context context-type="linenumber">380</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
-          <context context-type="linenumber">788</context>
+          <context context-type="linenumber">783</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7220285196408439810" datatype="html">
         <source>Download for <x id="url" equiv-text="url"/> has been queued!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/main/main.component.ts</context>
-          <context context-type="linenumber">386</context>
+          <context context-type="linenumber">384</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dad95154dcef3509b8cc705046061fd24994bbb7" datatype="html">
@@ -3187,22 +3079,30 @@
         </context-group>
         <note priority="1" from="description">View count label</note>
       </trans-unit>
+      <trans-unit id="af30e51aa8b67e1133a341ec28359be05150e65c" datatype="html">
+        <source>No description available.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/player/player.component.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+        <note priority="1" from="description">No description</note>
+      </trans-unit>
       <trans-unit id="2734512985872312443" datatype="html">
         <source>Failed to get file information from the server.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">142</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6789263921624845085" datatype="html">
         <source>Failed to load playlist!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">179</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/player/player.component.ts</context>
-          <context context-type="linenumber">191</context>
+          <context context-type="linenumber">182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="82421c3e46a0453a70c42900eab51d58d79e6599" datatype="html">
@@ -3341,19 +3241,11 @@
         </context-group>
         <note priority="1" from="description">Allow theme change setting</note>
       </trans-unit>
-      <trans-unit id="fe46ccaae902ce974e2441abe752399288298619" datatype="html">
-        <source>Language</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">86</context>
-        </context-group>
-        <note priority="1" from="description">Language select label</note>
-      </trans-unit>
       <trans-unit id="0ba25ad86a240576c4f20a2fada4722ebba77b1e" datatype="html">
         <source>Downloader</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">84</context>
         </context-group>
         <note priority="1" from="description">Downloader settings label</note>
       </trans-unit>
@@ -3361,7 +3253,7 @@
         <source>Audio folder path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <note priority="1" from="description">Audio folder path</note>
       </trans-unit>
@@ -3369,7 +3261,7 @@
         <source>Path for audio only downloads. It is relative to YTDL-Material's root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">93</context>
         </context-group>
         <note priority="1" from="description">Aduio path setting input hint</note>
       </trans-unit>
@@ -3377,7 +3269,7 @@
         <source>Video folder path</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">99</context>
         </context-group>
         <note priority="1" from="description">Video folder path</note>
       </trans-unit>
@@ -3385,7 +3277,7 @@
         <source>Path for video downloads. It is relative to YTDL-Material's root folder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">118</context>
+          <context context-type="linenumber">101</context>
         </context-group>
         <note priority="1" from="description">Video path setting input hint</note>
       </trans-unit>
@@ -3393,7 +3285,7 @@
         <source>Default file output</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">124</context>
+          <context context-type="linenumber">107</context>
         </context-group>
         <note priority="1" from="description">Default file output</note>
       </trans-unit>
@@ -3401,7 +3293,7 @@
         <source>Path is relative to the above download paths. Don't include extension.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">128</context>
+          <context context-type="linenumber">111</context>
         </context-group>
         <note priority="1" from="description">Custom Output input hint</note>
       </trans-unit>
@@ -3409,7 +3301,7 @@
         <source>Global custom args</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">135</context>
+          <context context-type="linenumber">118</context>
         </context-group>
         <note priority="1" from="description">Global custom args</note>
       </trans-unit>
@@ -3417,7 +3309,7 @@
         <source>Global custom args for downloads on the home page. (Set args for subscriptions for each subscriptions separately!) Args are delimited using two commas like so: ,,</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">120</context>
         </context-group>
         <note priority="1" from="description">Custom args setting input hint</note>
       </trans-unit>
@@ -3425,7 +3317,7 @@
         <source>Categories</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">130</context>
         </context-group>
         <note priority="1" from="description">Categories</note>
       </trans-unit>
@@ -3433,7 +3325,7 @@
         <source>With this setting enabled, if a single video matches a category, the entire playlist will receive that category.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">144</context>
         </context-group>
         <note priority="1" from="description">Allow playlist categorization setting tooltip</note>
       </trans-unit>
@@ -3441,7 +3333,7 @@
         <source>Allow playlist categorization</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">161</context>
+          <context context-type="linenumber">144</context>
         </context-group>
         <note priority="1" from="description">Allow playlist categorization setting label</note>
       </trans-unit>
@@ -3449,7 +3341,7 @@
         <source>Use youtube-dl archive</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <note priority="1" from="description">Use youtubedl archive setting</note>
       </trans-unit>
@@ -3457,7 +3349,7 @@
         <source>Include thumbnail</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">173</context>
+          <context context-type="linenumber">156</context>
         </context-group>
         <note priority="1" from="description">Include thumbnail setting</note>
       </trans-unit>
@@ -3465,7 +3357,7 @@
         <source>Include metadata</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">160</context>
         </context-group>
         <note priority="1" from="description">Include metadata setting</note>
       </trans-unit>
@@ -3473,7 +3365,7 @@
         <source>Max concurrent downloads</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">186</context>
+          <context context-type="linenumber">169</context>
         </context-group>
         <note priority="1" from="description">Max concurrent downloads</note>
       </trans-unit>
@@ -3481,7 +3373,7 @@
         <source>Limits the amount of downloads that can be simultaneously downloaded. Use -1 for no limit.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <note priority="1" from="description">Max concurrent downloads input hint</note>
       </trans-unit>
@@ -3489,7 +3381,7 @@
         <source>Download rate limit</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <note priority="1" from="description">Download rate limit</note>
       </trans-unit>
@@ -3497,7 +3389,7 @@
         <source>Rate limits your downloads to the specified amount. Ex: 200K</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">178</context>
         </context-group>
         <note priority="1" from="description">Download rate limit input hint</note>
       </trans-unit>
@@ -3505,7 +3397,7 @@
         <source>Kill all downloads</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">204</context>
+          <context context-type="linenumber">187</context>
         </context-group>
         <note priority="1" from="description">Kill all downloads button</note>
       </trans-unit>
@@ -3513,7 +3405,7 @@
         <source>Extra</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">211</context>
+          <context context-type="linenumber">194</context>
         </context-group>
         <note priority="1" from="description">Extra settings label</note>
       </trans-unit>
@@ -3521,7 +3413,7 @@
         <source>Top title</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">217</context>
+          <context context-type="linenumber">200</context>
         </context-group>
         <note priority="1" from="description">Top title</note>
       </trans-unit>
@@ -3529,7 +3421,7 @@
         <source>File manager enabled</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">223</context>
+          <context context-type="linenumber">206</context>
         </context-group>
         <note priority="1" from="description">File manager enabled setting</note>
       </trans-unit>
@@ -3537,7 +3429,7 @@
         <source>Downloads manager enabled</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">226</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <note priority="1" from="description">Downloads manager enabled setting</note>
       </trans-unit>
@@ -3545,7 +3437,7 @@
         <source>Allow quality select</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">229</context>
+          <context context-type="linenumber">212</context>
         </context-group>
         <note priority="1" from="description">Allow quality seelct setting</note>
       </trans-unit>
@@ -3553,7 +3445,7 @@
         <source>Download only mode</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="linenumber">215</context>
         </context-group>
         <note priority="1" from="description">Download only mode setting</note>
       </trans-unit>
@@ -3561,7 +3453,7 @@
         <source>Force autoplay</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">235</context>
+          <context context-type="linenumber">218</context>
         </context-group>
         <note priority="1" from="description">Force autoplay setting</note>
       </trans-unit>
@@ -3569,7 +3461,7 @@
         <source>Enable Public API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">243</context>
+          <context context-type="linenumber">226</context>
         </context-group>
         <note priority="1" from="description">Enable Public API key setting</note>
       </trans-unit>
@@ -3577,7 +3469,7 @@
         <source>Public API Key</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">248</context>
+          <context context-type="linenumber">231</context>
         </context-group>
         <note priority="1" from="description">Public API Key</note>
       </trans-unit>
@@ -3585,7 +3477,7 @@
         <source>View documentation</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">250</context>
+          <context context-type="linenumber">233</context>
         </context-group>
         <note priority="1" from="description">View API docs setting hint</note>
       </trans-unit>
@@ -3593,7 +3485,7 @@
         <source>This will delete your old API key!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">254</context>
+          <context context-type="linenumber">237</context>
         </context-group>
         <note priority="1" from="description">delete api key tooltip</note>
       </trans-unit>
@@ -3601,7 +3493,7 @@
         <source>Generate</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">254</context>
+          <context context-type="linenumber">237</context>
         </context-group>
         <note priority="1" from="description">Generate key button</note>
       </trans-unit>
@@ -3609,7 +3501,7 @@
         <source>Use YouTube API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">246</context>
         </context-group>
         <note priority="1" from="description">Use YouTube API setting</note>
       </trans-unit>
@@ -3617,7 +3509,7 @@
         <source>Youtube API Key</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">267</context>
+          <context context-type="linenumber">250</context>
         </context-group>
         <note priority="1" from="description">Youtube API Key</note>
       </trans-unit>
@@ -3625,55 +3517,23 @@
         <source>Generating a key is easy!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">269</context>
+          <context context-type="linenumber">252</context>
         </context-group>
         <note priority="1" from="description">Youtube API Key setting hint</note>
-      </trans-unit>
-      <trans-unit id="d162f9fcd6a7187b391e004f072ab3da8377c47d" datatype="html">
-        <source>Use Twitch API</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">273</context>
-        </context-group>
-        <note priority="1" from="description">Use Twitch API setting</note>
       </trans-unit>
       <trans-unit id="5fb1e0083c9b2a40ac8ae7dcb2618311c291b8b9" datatype="html">
         <source>Auto-download Twitch Chat</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">276</context>
+          <context context-type="linenumber">256</context>
         </context-group>
         <note priority="1" from="description">Auto download Twitch Chat setting</note>
-      </trans-unit>
-      <trans-unit id="5d78fe9ba69a8710613d3f7c35b22e9c8226e4dc" datatype="html">
-        <source>Twitch Client ID</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">280</context>
-        </context-group>
-        <note priority="1" from="description">Twitch Client ID</note>
-      </trans-unit>
-      <trans-unit id="4c9a15ab7fb3dce1002ea7aea4ecada3c1ee12e9" datatype="html">
-        <source>Generating an ID/secret is easy!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">282</context>
-        </context-group>
-        <note priority="1" from="description">Twitch Client ID setting hint</note>
-      </trans-unit>
-      <trans-unit id="8506540da14d205ea092b4c856e242ed7f500643" datatype="html">
-        <source>Twitch Client Secret</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">287</context>
-        </context-group>
-        <note priority="1" from="description">Twitch Client Secret</note>
       </trans-unit>
       <trans-unit id="c55604d30653e3d8310190d8d26761226132a901" datatype="html">
         <source>Enables a button to skip ads when viewing supported videos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">292</context>
+          <context context-type="linenumber">259</context>
         </context-group>
         <note priority="1" from="description">SponsorBlock API tooltip</note>
       </trans-unit>
@@ -3681,7 +3541,7 @@
         <source>Use SponsorBlock API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">292</context>
+          <context context-type="linenumber">259</context>
         </context-group>
         <note priority="1" from="description">Use SponsorBlock API setting</note>
       </trans-unit>
@@ -3689,7 +3549,7 @@
         <source>Generates NFO files with every download, primarily used by Kodi.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">295</context>
+          <context context-type="linenumber">262</context>
         </context-group>
         <note priority="1" from="description">Generate NFO files tooltip</note>
       </trans-unit>
@@ -3697,7 +3557,7 @@
         <source>Generate NFO files</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">295</context>
+          <context context-type="linenumber">262</context>
         </context-group>
         <note priority="1" from="description">Generate NFO files setting</note>
       </trans-unit>
@@ -3705,7 +3565,7 @@
         <source>Enable RSS Feed</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">271</context>
         </context-group>
         <note priority="1" from="description">Enable RSS Feed setting</note>
       </trans-unit>
@@ -3713,7 +3573,7 @@
         <source>Be careful enabling this with multi-user mode! User data may be exposed.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">305</context>
+          <context context-type="linenumber">272</context>
         </context-group>
         <note priority="1" from="description">RSS Feed prefix</note>
       </trans-unit>
@@ -3721,7 +3581,7 @@
         <source>See documentation here.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">307</context>
+          <context context-type="linenumber">274</context>
         </context-group>
         <note priority="1" from="description">RSS feed documentation</note>
       </trans-unit>
@@ -3729,7 +3589,7 @@
         <source>to download the official YoutubeDL-Material Chrome extension manually.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">316</context>
+          <context context-type="linenumber">283</context>
         </context-group>
         <note priority="1" from="description">Chrome click here suffix</note>
       </trans-unit>
@@ -3737,7 +3597,7 @@
         <source>You must manually load the extension and modify the extension's settings to set the frontend URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">317</context>
+          <context context-type="linenumber">284</context>
         </context-group>
         <note priority="1" from="description">Chrome setup suffix</note>
       </trans-unit>
@@ -3745,7 +3605,7 @@
         <source>to install the official YoutubeDL-Material Firefox extension right off the Firefox extensions page.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">289</context>
         </context-group>
         <note priority="1" from="description">Firefox click here suffix</note>
       </trans-unit>
@@ -3753,7 +3613,7 @@
         <source>Detailed setup instructions.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">323</context>
+          <context context-type="linenumber">290</context>
         </context-group>
         <note priority="1" from="description">Firefox setup prefix link</note>
       </trans-unit>
@@ -3761,7 +3621,7 @@
         <source>Not much is required other than changing the extension's settings to set the frontend URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">323</context>
+          <context context-type="linenumber">290</context>
         </context-group>
         <note priority="1" from="description">Firefox setup suffix</note>
       </trans-unit>
@@ -3769,7 +3629,7 @@
         <source>Drag the link below to your bookmarks, and you're good to go! Just navigate to the YouTube video you'd like to download, and click the bookmark.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">328</context>
+          <context context-type="linenumber">295</context>
         </context-group>
         <note priority="1" from="description">Bookmarklet instructions</note>
       </trans-unit>
@@ -3777,7 +3637,7 @@
         <source>Generate 'audio only' bookmarklet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">329</context>
+          <context context-type="linenumber">296</context>
         </context-group>
         <note priority="1" from="description">Generate audio only bookmarklet checkbox</note>
       </trans-unit>
@@ -3785,7 +3645,7 @@
         <source>Database</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">338</context>
+          <context context-type="linenumber">305</context>
         </context-group>
         <note priority="1" from="description">Database settings label</note>
       </trans-unit>
@@ -3793,7 +3653,7 @@
         <source>Database location:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">344</context>
+          <context context-type="linenumber">311</context>
         </context-group>
         <note priority="1" from="description">Database location label</note>
       </trans-unit>
@@ -3801,7 +3661,7 @@
         <source>Records per table</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">345</context>
+          <context context-type="linenumber">312</context>
         </context-group>
         <note priority="1" from="description">Records per table label</note>
       </trans-unit>
@@ -3809,7 +3669,7 @@
         <source>MongoDB Connection String</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">353</context>
+          <context context-type="linenumber">320</context>
         </context-group>
         <note priority="1" from="description">MongoDB Connection String</note>
       </trans-unit>
@@ -3817,7 +3677,7 @@
         <source>Example:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">355</context>
+          <context context-type="linenumber">322</context>
         </context-group>
         <note priority="1" from="description">MongoDB Connection String setting hint AKA preamble</note>
       </trans-unit>
@@ -3825,7 +3685,7 @@
         <source>Test connection string</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">359</context>
+          <context context-type="linenumber">326</context>
         </context-group>
         <note priority="1" from="description">Test connection string button</note>
       </trans-unit>
@@ -3833,7 +3693,7 @@
         <source>Transfer DB to</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">364</context>
+          <context context-type="linenumber">331</context>
         </context-group>
         <note priority="1" from="description">Transfer DB button</note>
       </trans-unit>
@@ -3841,7 +3701,7 @@
         <source>Database information could not be retrieved. Check the server logs for more information.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">368</context>
+          <context context-type="linenumber">335</context>
         </context-group>
         <note priority="1" from="description">Database info not retrieved error message</note>
       </trans-unit>
@@ -3849,7 +3709,7 @@
         <source>Notifications</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">376</context>
+          <context context-type="linenumber">343</context>
         </context-group>
         <note priority="1" from="description">Notifications settings label</note>
       </trans-unit>
@@ -3857,7 +3717,7 @@
         <source>Enable notifications</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">382</context>
+          <context context-type="linenumber">349</context>
         </context-group>
         <note priority="1" from="description">Enable notifications setting</note>
       </trans-unit>
@@ -3865,7 +3725,7 @@
         <source>Enable all notifications</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">385</context>
+          <context context-type="linenumber">352</context>
         </context-group>
         <note priority="1" from="description">Enable all notifications setting</note>
       </trans-unit>
@@ -3873,7 +3733,7 @@
         <source>Allowed notification types</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">389</context>
+          <context context-type="linenumber">356</context>
         </context-group>
         <note priority="1" from="description">Allowed notification types</note>
       </trans-unit>
@@ -3881,7 +3741,7 @@
         <source>Download complete</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">391</context>
+          <context context-type="linenumber">358</context>
         </context-group>
         <note priority="1" from="description">Download complete</note>
       </trans-unit>
@@ -3889,7 +3749,7 @@
         <source>Download error</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">392</context>
+          <context context-type="linenumber">359</context>
         </context-group>
         <note priority="1" from="description">Download error</note>
       </trans-unit>
@@ -3897,7 +3757,7 @@
         <source>Task finished</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">393</context>
+          <context context-type="linenumber">360</context>
         </context-group>
         <note priority="1" from="description">Task finished</note>
       </trans-unit>
@@ -3905,15 +3765,55 @@
         <source>Webhook URL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">399</context>
+          <context context-type="linenumber">366</context>
         </context-group>
         <note priority="1" from="description">webhook URL</note>
+      </trans-unit>
+      <trans-unit id="3264d82792954815be755b3da01e2625458711dc" datatype="html">
+        <source>Discord Webhook URL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">373</context>
+        </context-group>
+        <note priority="1" from="description">Discord Webhook URL</note>
+      </trans-unit>
+      <trans-unit id="0cfc9cfe7cd8ea14bc053693b28872da739af02c" datatype="html">
+        <source>See docs here.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">375</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">382</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">392</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">402</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">409</context>
+        </context-group>
+        <note priority="1" from="description">Discord API setting hint</note>
+      </trans-unit>
+      <trans-unit id="7cedb649779673568447b994463b2882c4e0436a" datatype="html">
+        <source>Slack Webhook URL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">380</context>
+        </context-group>
+        <note priority="1" from="description">Slack Webhook URL</note>
       </trans-unit>
       <trans-unit id="8c1bf02206fbc371ff69ab1b7e35a17ba29d169d" datatype="html">
         <source>Use ntfy API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">405</context>
+          <context context-type="linenumber">386</context>
         </context-group>
         <note priority="1" from="description">Use ntfy API setting</note>
       </trans-unit>
@@ -3921,31 +3821,15 @@
         <source>ntfy topic URL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">409</context>
+          <context context-type="linenumber">390</context>
         </context-group>
         <note priority="1" from="description">ntfy topic URL</note>
-      </trans-unit>
-      <trans-unit id="0cfc9cfe7cd8ea14bc053693b28872da739af02c" datatype="html">
-        <source>See docs here.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">411</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">421</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">428</context>
-        </context-group>
-        <note priority="1" from="description">ntfy API setting hint</note>
       </trans-unit>
       <trans-unit id="5827fde8fcafdd55ae80921ad3ad4aa01012e203" datatype="html">
         <source>Use gotify API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">415</context>
+          <context context-type="linenumber">396</context>
         </context-group>
         <note priority="1" from="description">Use gotify API setting</note>
       </trans-unit>
@@ -3953,7 +3837,7 @@
         <source>Gotify server URL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">419</context>
+          <context context-type="linenumber">400</context>
         </context-group>
         <note priority="1" from="description">Gotify server URL</note>
       </trans-unit>
@@ -3961,7 +3845,7 @@
         <source>Gotify app token</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">426</context>
+          <context context-type="linenumber">407</context>
         </context-group>
         <note priority="1" from="description">Gotify app token</note>
       </trans-unit>
@@ -3969,7 +3853,7 @@
         <source>Use Telegram API</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">432</context>
+          <context context-type="linenumber">413</context>
         </context-group>
         <note priority="1" from="description">Use Telegram API setting</note>
       </trans-unit>
@@ -3977,7 +3861,7 @@
         <source>Telegram bot token</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">436</context>
+          <context context-type="linenumber">417</context>
         </context-group>
         <note priority="1" from="description">Telegram bot token</note>
       </trans-unit>
@@ -3985,7 +3869,7 @@
         <source>Create bot here.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">438</context>
+          <context context-type="linenumber">419</context>
         </context-group>
         <note priority="1" from="description">Telegram bot create link</note>
       </trans-unit>
@@ -3993,7 +3877,7 @@
         <source>Telegram chat ID</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">443</context>
+          <context context-type="linenumber">424</context>
         </context-group>
         <note priority="1" from="description">Telegram chat ID</note>
       </trans-unit>
@@ -4001,7 +3885,7 @@
         <source>How do I get the chat ID?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">445</context>
+          <context context-type="linenumber">426</context>
         </context-group>
         <note priority="1" from="description">Telegram chat ID help</note>
       </trans-unit>
@@ -4009,7 +3893,7 @@
         <source>Advanced</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">453</context>
+          <context context-type="linenumber">434</context>
         </context-group>
         <note priority="1" from="description">Host settings label</note>
       </trans-unit>
@@ -4017,7 +3901,7 @@
         <source>Select a downloader</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">459</context>
+          <context context-type="linenumber">440</context>
         </context-group>
         <note priority="1" from="description">Default downloader select label</note>
       </trans-unit>
@@ -4025,7 +3909,7 @@
         <source>Restart required.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">465</context>
+          <context context-type="linenumber">446</context>
         </context-group>
         <note priority="1" from="description">Restart required hint</note>
       </trans-unit>
@@ -4033,7 +3917,7 @@
         <source>Use default downloading agent</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">469</context>
+          <context context-type="linenumber">450</context>
         </context-group>
         <note priority="1" from="description">Use default downloading agent setting</note>
       </trans-unit>
@@ -4041,7 +3925,7 @@
         <source>Select a download agent</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">473</context>
+          <context context-type="linenumber">454</context>
         </context-group>
         <note priority="1" from="description">Custom downloader select label</note>
       </trans-unit>
@@ -4049,7 +3933,7 @@
         <source>Log Level</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">487</context>
+          <context context-type="linenumber">468</context>
         </context-group>
         <note priority="1" from="description">Log Level label</note>
       </trans-unit>
@@ -4057,7 +3941,7 @@
         <source>Login expiration</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">499</context>
+          <context context-type="linenumber">480</context>
         </context-group>
         <note priority="1" from="description">Login expiration select label</note>
       </trans-unit>
@@ -4065,7 +3949,7 @@
         <source>Allow advanced download</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">510</context>
+          <context context-type="linenumber">491</context>
         </context-group>
         <note priority="1" from="description">Allow advanced downloading setting</note>
       </trans-unit>
@@ -4073,7 +3957,7 @@
         <source>Use Cookies</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">518</context>
+          <context context-type="linenumber">499</context>
         </context-group>
         <note priority="1" from="description">Use cookies setting</note>
       </trans-unit>
@@ -4081,7 +3965,7 @@
         <source>Set Cookies</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">519</context>
+          <context context-type="linenumber">500</context>
         </context-group>
         <note priority="1" from="description">Set cookies button</note>
       </trans-unit>
@@ -4089,7 +3973,7 @@
         <source>Restart server</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">531</context>
+          <context context-type="linenumber">512</context>
         </context-group>
         <note priority="1" from="description">Restart server button</note>
       </trans-unit>
@@ -4097,7 +3981,7 @@
         <source>Users</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">540</context>
+          <context context-type="linenumber">521</context>
         </context-group>
         <note priority="1" from="description">Users settings label</note>
       </trans-unit>
@@ -4105,7 +3989,7 @@
         <source>Allow user registration</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">546</context>
+          <context context-type="linenumber">527</context>
         </context-group>
         <note priority="1" from="description">Allow registration setting</note>
       </trans-unit>
@@ -4113,7 +3997,7 @@
         <source>Auth method</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">550</context>
+          <context context-type="linenumber">531</context>
         </context-group>
         <note priority="1" from="description">Auth method</note>
       </trans-unit>
@@ -4121,7 +4005,7 @@
         <source>Internal</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">553</context>
+          <context context-type="linenumber">534</context>
         </context-group>
         <note priority="1" from="description">Internal auth method</note>
       </trans-unit>
@@ -4129,7 +4013,7 @@
         <source>LDAP</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">556</context>
+          <context context-type="linenumber">537</context>
         </context-group>
         <note priority="1" from="description">LDAP auth method</note>
       </trans-unit>
@@ -4137,7 +4021,7 @@
         <source>LDAP URL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">563</context>
+          <context context-type="linenumber">544</context>
         </context-group>
         <note priority="1" from="description">LDAP URL</note>
       </trans-unit>
@@ -4145,7 +4029,7 @@
         <source>Bind DN</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">569</context>
+          <context context-type="linenumber">550</context>
         </context-group>
         <note priority="1" from="description">Bind DN</note>
       </trans-unit>
@@ -4153,7 +4037,7 @@
         <source>Bind Credentials</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">575</context>
+          <context context-type="linenumber">556</context>
         </context-group>
         <note priority="1" from="description">Bind Credentials</note>
       </trans-unit>
@@ -4161,7 +4045,7 @@
         <source>Search Base</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">581</context>
+          <context context-type="linenumber">562</context>
         </context-group>
         <note priority="1" from="description">Search Base</note>
       </trans-unit>
@@ -4169,7 +4053,7 @@
         <source>Search Filter</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">587</context>
+          <context context-type="linenumber">568</context>
         </context-group>
         <note priority="1" from="description">Search Filter</note>
       </trans-unit>
@@ -4177,7 +4061,7 @@
         <source>Logs</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
-          <context context-type="linenumber">597</context>
+          <context context-type="linenumber">578</context>
         </context-group>
         <note priority="1" from="description">Logs settings label</note>
       </trans-unit>
@@ -4185,130 +4069,123 @@
         <source>You must enable multi-user mode to access this tab.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9208873922277364009" datatype="html">
         <source>Failed to update categories!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6785427850041119037" datatype="html">
         <source>Delete category</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">173</context>
+          <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2481374649045841364" datatype="html">
         <source>Would you like to delete <x id="category name" equiv-text="category['name']"/>?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">159</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7332320960988475089" datatype="html">
         <source>Successfully deleted <x id="category name" equiv-text="category['name']"/>!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">183</context>
+          <context context-type="linenumber">168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3371159074051387771" datatype="html">
         <source>Failed to delete <x id="category name" equiv-text="category['name']"/>!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">187</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7180231139026789468" datatype="html">
-        <source>Language successfully changed! Reload to update the page.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">212</context>
+          <context context-type="linenumber">172</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4604336107574138791" datatype="html">
         <source>Chrome users must drag the 'Alternate URL' link to your bookmarks.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">240</context>
+          <context context-type="linenumber">220</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4257962986336738751" datatype="html">
         <source>Successfully killed all downloads!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">295</context>
+          <context context-type="linenumber">275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2600933489084742998" datatype="html">
         <source>Failed to kill all downloads! Check logs for details.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">298</context>
+          <context context-type="linenumber">278</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">302</context>
+          <context context-type="linenumber">282</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1942965859829798388" datatype="html">
         <source>Restarting!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">310</context>
+          <context context-type="linenumber">290</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6224607866493148072" datatype="html">
         <source>Failed to restart the server.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">312</context>
+          <context context-type="linenumber">292</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6123898845299902958" datatype="html">
         <source>Successfully transfered DB! Reloading info...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">343</context>
+          <context context-type="linenumber">323</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5681417617361245213" datatype="html">
         <source>Failed to transfer DB -- transfer was aborted. Error:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">346</context>
+          <context context-type="linenumber">326</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1716030487077666916" datatype="html">
         <source>Failed to transfer DB -- API call failed. See browser logs for details.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">350</context>
+          <context context-type="linenumber">330</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6018050954136387828" datatype="html">
         <source>Connection successful!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">360</context>
+          <context context-type="linenumber">340</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4021495815084152271" datatype="html">
         <source>Connection failed! Error:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">362</context>
+          <context context-type="linenumber">342</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6519219215739537829" datatype="html">
         <source>Connection failed! Error: Server error. See logs for more info.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
-          <context context-type="linenumber">366</context>
+          <context context-type="linenumber">346</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8c6e24eab969d9f63a8a0e9d617aee3b99e28ae6" datatype="html">
@@ -4345,7 +4222,6 @@
       </trans-unit>
       <trans-unit id="29b89f751593e1b347eef103891b7a1ff36ec03f" datatype="html">
         <source>Name not available. Channel retrieval in progress.</source>
-        <target state="translated">Nimi pole saadaval. Kanali hankimine käimas.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
           <context context-type="linenumber">14</context>
