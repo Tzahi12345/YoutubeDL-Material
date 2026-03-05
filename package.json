@@ -85,6 +85,7 @@
       "@angular/common": "21.2.0",
       "@angular/core": "21.2.0"
     },
+    "immutable": "5.1.5",
     "serialize-javascript": "7.0.3",
     "tmp": "0.2.5"
   }
