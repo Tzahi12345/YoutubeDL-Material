@@ -87,6 +87,7 @@
     },
     "immutable": "5.1.5",
     "serialize-javascript": "7.0.3",
+    "tar": "7.5.10",
     "tmp": "0.2.5"
   }
 }
