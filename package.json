@@ -60,7 +60,7 @@
     "@types/core-js": "^2.5.2",
     "@types/file-saver": "^2.0.1",
     "@types/jasmine": "^6.0.0",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.3.5",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "ajv": "^8.18.0",
