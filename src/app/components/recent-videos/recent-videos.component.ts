@@ -255,20 +255,31 @@ export class RecentVideosComponent implements OnInit {
 
   navigateToFile(file: DatabaseFile, new_tab: boolean): void {
     localStorage.setItem('player_navigator', this.router.url);
-    if (file.sub_id) {
-      if (!new_tab) {
-        this.router.navigate(['/player', {uid: file.uid, type: file.isAudio ? 'audio' : 'video'}]);
-      } else {
-        window.open(`/#/player;uid=${file.uid};type=${file.isAudio ? 'audio' : 'video'}`);
-      }
+    const routeParams = this.getPlayerRouteParams(file);
+    if (!new_tab) {
+      this.router.navigate(['/player', routeParams]);
     } else {
-      // normal files
-      if (!new_tab) {
-        this.router.navigate(['/player', {type: file.isAudio ? 'audio' : 'video', uid: file.uid}]);
-      } else {
-        window.open(`/#/player;type=${file.isAudio ? 'audio' : 'video'};uid=${file.uid}`);
-      }
+      const routeURL = this.router.serializeUrl(this.router.createUrlTree(['/player', routeParams]));
+      window.open(`/#${routeURL}`);
     }
+  }
+
+  getPlayerRouteParams(file: DatabaseFile): Record<string, string> {
+    const routeParams: Record<string, string> = {
+      type: file.isAudio ? 'audio' : 'video',
+      uid: file.uid,
+      queue_sort_by: this.sortProperty,
+      queue_sort_order: this.descendingMode ? '-1' : '1',
+      queue_file_type_filter: this.getFileTypeFilter(),
+      queue_favorite_filter: '' + this.getFavoriteFilter()
+    };
+    if (this.search_mode && this.search_text?.trim()) {
+      routeParams.queue_search = this.search_text.trim();
+    }
+    if (this.sub_id) {
+      routeParams.queue_sub_id = this.sub_id;
+    }
+    return routeParams;
   }
 
   goToSubscription(file: DatabaseFile): void {

@@ -32,37 +32,45 @@
                                         </p>
                   }
                 </div>
-                <div class="col-2">
-                  @if (db_playlist) {
-                    <span class="buttons">
-                      <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon></button>
-                      @if (downloading) {
-                        <mat-spinner class="spinner" [diameter]="35"></mat-spinner>
-                      }
-                      @if ((!postsService.isLoggedIn || postsService.permissions.includes('sharing')) && !auto) {
-                        <button (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
-                      }
-                    </span>
-                  }
-                  @if (db_file) {
-                    <span class="buttons">
-                      <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
-                      @if (downloading) {
-                        <mat-spinner class="spinner" [diameter]="35"></mat-spinner>
-                      }
-                      @if (!postsService.isLoggedIn || postsService.permissions.includes('sharing')) {
-                        <button (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
-                      }
-                    </span>
-                  }
-                  @if (db_file || playlist[currentIndex]) {
-                  }
-                  @if (db_file || db_playlist) {
-                    <button (click)="openFileInfoDialog()" mat-icon-button><mat-icon>info</mat-icon></button>
-                  }
-                  @if (db_file && db_file.url.includes('twitch.tv')) {
-                    <button (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
-                  }
+                <div class="col-2 action-column">
+                  <span class="action-buttons-row">
+                    @if (db_playlist) {
+                      <span class="buttons">
+                        <button (click)="downloadContent()" [disabled]="downloading" mat-icon-button><mat-icon>save</mat-icon></button>
+                        @if (downloading) {
+                          <mat-spinner class="spinner" [diameter]="35"></mat-spinner>
+                        }
+                        @if ((!postsService.isLoggedIn || postsService.permissions.includes('sharing')) && !auto) {
+                          <button (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
+                        }
+                      </span>
+                    }
+                    @if (db_file) {
+                      <span class="buttons">
+                        <button (click)="downloadFile()" [disabled]="downloading" mat-icon-button><mat-icon>cloud_download</mat-icon></button>
+                        @if (downloading) {
+                          <mat-spinner class="spinner" [diameter]="35"></mat-spinner>
+                        }
+                        @if (!postsService.isLoggedIn || postsService.permissions.includes('sharing')) {
+                          <button (click)="openShareDialog()" mat-icon-button><mat-icon>share</mat-icon></button>
+                        }
+                      </span>
+                    }
+                    @if (db_file || playlist[currentIndex]) {
+                      <button class="playback-mode-button" [class.active]="autoplay_enabled" (click)="toggleAutoplay()" matTooltip="Autoplay" i18n-matTooltip="Autoplay toggle tooltip" mat-icon-button>
+                        <mat-icon>playlist_play</mat-icon>
+                      </button>
+                      <button class="playback-mode-button" [class.active]="repeat_enabled" (click)="toggleRepeat()" matTooltip="Repeat current video" i18n-matTooltip="Repeat current video toggle tooltip" mat-icon-button>
+                        <mat-icon>repeat_one</mat-icon>
+                      </button>
+                    }
+                    @if (db_file || db_playlist) {
+                      <button (click)="openFileInfoDialog()" mat-icon-button><mat-icon>info</mat-icon></button>
+                    }
+                    @if (db_file && db_file.url.includes('twitch.tv')) {
+                      <button (click)="drawer.toggle()" mat-icon-button><mat-icon>chat</mat-icon></button>
+                    }
+                  </span>
                 </div>
               </div>
             </div>
