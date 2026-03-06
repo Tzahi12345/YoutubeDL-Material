@@ -94,3 +94,11 @@
     right: 20px;
     bottom: 75px;
 }
+
+.playback-mode-button {
+    opacity: 0.6;
+}
+
+.playback-mode-button.active {
+    opacity: 1;
+}

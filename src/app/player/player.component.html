@@ -56,6 +56,12 @@
                     </span>
                   }
                   @if (db_file || playlist[currentIndex]) {
+                    <button class="playback-mode-button" [class.active]="autoplay_enabled" (click)="toggleAutoplay()" matTooltip="Autoplay" i18n-matTooltip="Autoplay toggle tooltip" mat-icon-button>
+                      <mat-icon>playlist_play</mat-icon>
+                    </button>
+                    <button class="playback-mode-button" [class.active]="repeat_enabled" (click)="toggleRepeat()" matTooltip="Repeat current video" i18n-matTooltip="Repeat current video toggle tooltip" mat-icon-button>
+                      <mat-icon>repeat_one</mat-icon>
+                    </button>
                   }
                   @if (db_file || db_playlist) {
                     <button (click)="openFileInfoDialog()" mat-icon-button><mat-icon>info</mat-icon></button>

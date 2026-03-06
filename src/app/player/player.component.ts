@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-media-dialog.component';
-import { DatabaseFile, FileType, Playlist } from '../../api-types';
+import { DatabaseFile, FileType, FileTypeFilter, Playlist, Sort } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
 import { saveAs } from 'file-saver';
@@ -19,6 +19,9 @@ export interface IMedia {
   url: string;
   uid?: string;
 }
+
+const AUTOPLAY_STORAGE_KEY = 'player_autoplay_enabled';
+const REPEAT_STORAGE_KEY = 'player_repeat_enabled';
 
 @Component({
     selector: 'app-player',
@@ -51,6 +54,12 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   uuid = null; // used for sharing in multi-user mode, uuid is the user that downloaded the video
   timestamp = null;
   auto = null;
+  queue_sort_by = 'registered';
+  queue_sort_order = -1;
+  queue_file_type_filter: FileTypeFilter = null;
+  queue_favorite_filter = false;
+  queue_search = null;
+  queue_sub_id = null;
 
   db_playlist: Playlist = null;
   db_file: DatabaseFile = null;
@@ -69,9 +78,16 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   save_volume_timer = null;
   original_volume = null;
 
+  autoplay_enabled = false;
+  repeat_enabled = false;
+  autoplay_queue_loading = false;
+  autoplay_queue_initialized = false;
+  pending_autoplay_advance = false;
+
   @ViewChild('twitchchat') twitchChat: TwitchChatComponent;
 
   ngOnInit(): void {
+    this.initPlaybackModeToggles();
     this.playlist_id = this.route.snapshot.paramMap.get('playlist_id');
     this.uid = this.route.snapshot.paramMap.get('uid');
     this.sub_id = this.route.snapshot.paramMap.get('sub_id');
@@ -80,6 +96,12 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.uuid = this.route.snapshot.paramMap.get('uuid');
     this.timestamp = this.route.snapshot.paramMap.get('timestamp');
     this.auto = this.route.snapshot.paramMap.get('auto');
+    this.queue_sort_by = this.route.snapshot.paramMap.get('queue_sort_by') ?? 'registered';
+    this.queue_sort_order = this.parseSortOrder(this.route.snapshot.paramMap.get('queue_sort_order'));
+    this.queue_file_type_filter = this.parseFileTypeFilter(this.route.snapshot.paramMap.get('queue_file_type_filter'));
+    this.queue_favorite_filter = this.route.snapshot.paramMap.get('queue_favorite_filter') === 'true';
+    this.queue_search = this.route.snapshot.paramMap.get('queue_search');
+    this.queue_sub_id = this.route.snapshot.paramMap.get('queue_sub_id');
 
     // loading config
     if (this.postsService.initialized) {
@@ -189,50 +211,33 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  parseFileNames(): void {    
+  parseFileNames(): void {
     this.playlist = [];
+    this.autoplay_queue_initialized = false;
+    if (!this.queue_file_type_filter && this.db_file) {
+      this.queue_file_type_filter = this.db_file.isAudio ? FileTypeFilter.AUDIO_ONLY : FileTypeFilter.VIDEO_ONLY;
+    }
     for (let i = 0; i < this.uids.length; i++) {
       const file_obj = this.playlist_id ? this.file_objs[i]
-                      : this.sub_id ? this.subscription['videos'][i]
-                      : this.db_file;
+                     : this.sub_id ? this.subscription['videos'][i]
+                     : this.db_file;
 
-      const mime_type = file_obj.isAudio ? 'audio/mp3' : 'video/mp4' 
-
-      const baseLocation = 'stream/';
-      let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${file_obj['uid']}`;
-
-      if (this.postsService.isLoggedIn) {
-        fullLocation += `&jwt=${this.postsService.token}`;
-      } else if (this.postsService.auth_token) {
-        fullLocation += `&apiKey=${this.postsService.auth_token}`;
-      }
-      
-      if (this.uuid) {
-        fullLocation += `&uuid=${this.uuid}`;
-      }
-
-      if (this.sub_id) {
-        fullLocation += `&sub_id=${this.sub_id}`;
-      } else if (this.playlist_id) {
-        fullLocation += `&playlist_id=${this.playlist_id}`;
-      }
-
-      const mediaObject: IMedia = {
-        title: file_obj['title'],
-        src: fullLocation,
-        type: mime_type,
-        label: file_obj['title'],
-        url: file_obj['url'],
-        uid: file_obj['uid']
-      }
+      const mediaObject: IMedia = this.createMediaObject(file_obj);
       this.playlist.push(mediaObject);
     }
     if (this.db_playlist && this.db_playlist['randomize_order']) {
       this.shuffleArray(this.playlist);
     }
+    const currentUID = this.currentItem?.uid;
+    const currentIndex = currentUID ? this.playlist.findIndex(file_obj => file_obj.uid === currentUID) : this.currentIndex;
+    this.currentIndex = currentIndex >= 0 ? currentIndex : 0;
     this.currentItem = this.playlist[this.currentIndex];
     this.original_playlist = JSON.stringify(this.playlist);
     this.show_player = true;
+
+    if (this.autoplay_enabled) {
+      this.ensureAutoplayQueueReady();
+    }
   }
 
   onPlayerReady(api: VgApiService): void {
@@ -263,13 +268,23 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   nextVideo(): void {
-      if (this.currentIndex === this.playlist.length - 1) {
-        // dont continue playing
-          // this.currentIndex = 0;
-          return;
+      if (this.repeat_enabled) {
+        this.repeatCurrentVideo();
+        return;
       }
 
-      this.updateCurrentItem(this.playlist[this.currentIndex], ++this.currentIndex);
+      if (!this.autoplay_enabled) {
+        return;
+      }
+
+      if (this.advanceToNextVideo()) {
+        return;
+      }
+
+      if (this.shouldAutoloadWholeLibraryQueue()) {
+        this.pending_autoplay_advance = true;
+        this.ensureAutoplayQueueReady();
+      }
   }
 
   updateCurrentItem(newCurrentItem: IMedia, newCurrentIndex: number) {
@@ -282,9 +297,27 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onClickPlaylistItem(item: IMedia, index: number): void {
-      this.currentIndex = index;
-      this.currentItem = item;
-      this.updateCurrentItem(this.currentItem, this.currentIndex);
+      this.updateCurrentItem(item, index);
+  }
+
+  toggleAutoplay(): void {
+    this.autoplay_enabled = !this.autoplay_enabled;
+    if (this.autoplay_enabled) {
+      this.repeat_enabled = false;
+      this.saveRepeatMode();
+      this.ensureAutoplayQueueReady();
+    }
+    this.saveAutoplayMode();
+  }
+
+  toggleRepeat(): void {
+    this.repeat_enabled = !this.repeat_enabled;
+    if (this.repeat_enabled) {
+      this.autoplay_enabled = false;
+      this.saveAutoplayMode();
+      this.pending_autoplay_advance = false;
+    }
+    this.saveRepeatMode();
   }
 
   getFileNames(): string[] {
@@ -403,6 +436,141 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setPlaybackRate(speed: number): void {
     this.api.playbackRate = speed;
+  }
+
+  initPlaybackModeToggles(): void {
+    this.autoplay_enabled = localStorage.getItem(AUTOPLAY_STORAGE_KEY) === 'true';
+    this.repeat_enabled = localStorage.getItem(REPEAT_STORAGE_KEY) === 'true';
+    if (this.autoplay_enabled && this.repeat_enabled) {
+      this.repeat_enabled = false;
+      this.saveRepeatMode();
+    }
+  }
+
+  saveAutoplayMode(): void {
+    localStorage.setItem(AUTOPLAY_STORAGE_KEY, `${this.autoplay_enabled}`);
+  }
+
+  saveRepeatMode(): void {
+    localStorage.setItem(REPEAT_STORAGE_KEY, `${this.repeat_enabled}`);
+  }
+
+  parseSortOrder(sortOrder: string): number {
+    return sortOrder === '1' ? 1 : -1;
+  }
+
+  parseFileTypeFilter(fileTypeFilter: string): FileTypeFilter {
+    if (fileTypeFilter === FileTypeFilter.AUDIO_ONLY || fileTypeFilter === FileTypeFilter.VIDEO_ONLY || fileTypeFilter === FileTypeFilter.BOTH) {
+      return fileTypeFilter;
+    }
+    return null;
+  }
+
+  createMediaObject(file_obj: DatabaseFile): IMedia {
+    const mime_type = file_obj.isAudio ? 'audio/mp3' : 'video/mp4';
+    const mediaObject: IMedia = {
+      title: file_obj.title,
+      src: this.createStreamURL(file_obj.uid),
+      type: mime_type,
+      label: file_obj.title,
+      url: file_obj.url,
+      uid: file_obj.uid
+    };
+    return mediaObject;
+  }
+
+  createStreamURL(uid: string): string {
+    const baseLocation = 'stream/';
+    let fullLocation = this.baseStreamPath + baseLocation + `?test=test&uid=${uid}`;
+
+    if (this.postsService.isLoggedIn) {
+      fullLocation += `&jwt=${this.postsService.token}`;
+    } else if (this.postsService.auth_token) {
+      fullLocation += `&apiKey=${this.postsService.auth_token}`;
+    }
+
+    if (this.uuid) {
+      fullLocation += `&uuid=${this.uuid}`;
+    }
+
+    if (this.sub_id) {
+      fullLocation += `&sub_id=${this.sub_id}`;
+    } else if (this.playlist_id) {
+      fullLocation += `&playlist_id=${this.playlist_id}`;
+    }
+
+    return fullLocation;
+  }
+
+  shouldAutoloadWholeLibraryQueue(): boolean {
+    return !!this.uid && !this.playlist_id && !this.sub_id && this.playlist.length <= 1;
+  }
+
+  ensureAutoplayQueueReady(): void {
+    if (!this.shouldAutoloadWholeLibraryQueue() || this.autoplay_queue_loading || this.autoplay_queue_initialized) {
+      return;
+    }
+
+    this.autoplay_queue_loading = true;
+    const sort: Sort = {
+      by: this.queue_sort_by,
+      order: this.queue_sort_order
+    };
+    const fileTypeFilter = this.resolveQueueFileTypeFilter();
+    const textSearch = this.queue_search?.trim() ? this.queue_search.trim() : null;
+    const queueSubID = this.queue_sub_id || null;
+
+    this.postsService.getAllFiles(sort, null, textSearch, fileTypeFilter, this.queue_favorite_filter, queueSubID).subscribe(res => {
+      this.autoplay_queue_loading = false;
+      const files = res['files'] ?? [];
+      if (files.length === 0) return;
+
+      const current_uid = this.currentItem?.uid || this.uid;
+      const newPlaylist = files.map(file_obj => this.createMediaObject(file_obj));
+      const currentIndex = newPlaylist.findIndex(file_obj => file_obj.uid === current_uid);
+      if (currentIndex === -1) return;
+
+      this.playlist = newPlaylist;
+      this.currentIndex = currentIndex;
+      this.currentItem = this.playlist[currentIndex];
+      this.original_playlist = JSON.stringify(this.playlist);
+      this.autoplay_queue_initialized = true;
+
+      if (this.pending_autoplay_advance) {
+        this.pending_autoplay_advance = false;
+        this.advanceToNextVideo();
+      }
+    }, err => {
+      console.error('Failed to load autoplay queue');
+      console.error(err);
+      this.autoplay_queue_loading = false;
+      this.pending_autoplay_advance = false;
+    });
+  }
+
+  resolveQueueFileTypeFilter(): FileTypeFilter {
+    if (this.queue_file_type_filter) {
+      return this.queue_file_type_filter;
+    }
+    if (this.db_file) {
+      return this.db_file.isAudio ? FileTypeFilter.AUDIO_ONLY : FileTypeFilter.VIDEO_ONLY;
+    }
+    return FileTypeFilter.BOTH;
+  }
+
+  repeatCurrentVideo(): void {
+    if (!this.api) return;
+    this.api.seekTime(0);
+    this.api.play();
+  }
+
+  advanceToNextVideo(): boolean {
+    const nextIndex = this.currentIndex + 1;
+    if (nextIndex >= this.playlist.length) {
+      return false;
+    }
+    this.updateCurrentItem(this.playlist[nextIndex], nextIndex);
+    return true;
   }
 
   shuffleArray(array: unknown[]): void {
