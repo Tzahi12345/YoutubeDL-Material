@@ -36,7 +36,7 @@
     "config": "^4.4.1",
     "execa": "^9.6.1",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.2.1",
+    "express-rate-limit": "^8.3.0",
     "express-session": "^1.19.0",
     "feed": "^5.2.0",
     "fluent-ffmpeg": "^2.1.3",
