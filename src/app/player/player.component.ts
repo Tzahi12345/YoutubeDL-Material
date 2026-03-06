@@ -83,6 +83,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   autoplay_queue_loading = false;
   autoplay_queue_initialized = false;
   pending_autoplay_advance = false;
+  autoplay_queue_file_objs: DatabaseFile[] = [];
 
   @ViewChild('twitchchat') twitchChat: TwitchChatComponent;
 
@@ -232,6 +233,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const currentIndex = currentUID ? this.playlist.findIndex(file_obj => file_obj.uid === currentUID) : this.currentIndex;
     this.currentIndex = currentIndex >= 0 ? currentIndex : 0;
     this.currentItem = this.playlist[this.currentIndex];
+    this.syncCurrentSingleFileMetadata();
     this.original_playlist = JSON.stringify(this.playlist);
     this.show_player = true;
 
@@ -290,6 +292,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   updateCurrentItem(newCurrentItem: IMedia, newCurrentIndex: number) {
     this.currentItem  = newCurrentItem;
     this.currentIndex = newCurrentIndex;
+    this.syncCurrentSingleFileMetadata();
   }
 
   playVideo(): void {
@@ -352,10 +355,11 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadFile(): void {
-    const filename = this.playlist[0].title;
-    const ext = (this.playlist[0].type === 'audio/mp3') ? '.mp3' : '.mp4';
+    const filename = this.currentItem?.title ?? this.playlist[0]?.title;
+    const ext = (this.currentItem?.type === 'audio/mp3') ? '.mp3' : '.mp4';
+    const uid = this.currentItem?.uid ?? this.uid;
     this.downloading = true;
-    this.postsService.downloadFileFromServer(this.uid, this.uuid).subscribe(res => {
+    this.postsService.downloadFileFromServer(uid, this.uuid).subscribe(res => {
       this.downloading = false;
       const blob: Blob = res;
       saveAs(blob, filename + ext);
@@ -421,6 +425,9 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
         const idx = this.getPlaylistFileIndexUID(original_uid);
         this.file_objs[idx] = dialogRef.componentInstance.file;
       } 
+      if (this.db_file) {
+        this.patchAutoplayQueueFile(dialogRef.componentInstance.file);
+      }
     });
   }
 
@@ -552,6 +559,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       if (files.length === 0) return;
 
       const current_uid = this.currentItem?.uid || this.uid;
+      this.autoplay_queue_file_objs = files;
       const newPlaylist = files.map(file_obj => this.createMediaObject(file_obj));
       const currentIndex = newPlaylist.findIndex(file_obj => file_obj.uid === current_uid);
       if (currentIndex === -1) return;
@@ -559,6 +567,7 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playlist = newPlaylist;
       this.currentIndex = currentIndex;
       this.currentItem = this.playlist[currentIndex];
+      this.syncCurrentSingleFileMetadata();
       this.original_playlist = JSON.stringify(this.playlist);
       this.autoplay_queue_initialized = true;
 
@@ -572,6 +581,24 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.autoplay_queue_loading = false;
       this.pending_autoplay_advance = false;
     });
+  }
+
+  syncCurrentSingleFileMetadata(): void {
+    if (!this.isSingleFileMode() || !this.currentItem?.uid) {
+      return;
+    }
+
+    const current_file = this.autoplay_queue_file_objs.find(file_obj => file_obj.uid === this.currentItem.uid);
+    if (current_file) {
+      this.db_file = current_file;
+    }
+  }
+
+  patchAutoplayQueueFile(updated_file: DatabaseFile): void {
+    const idx = this.autoplay_queue_file_objs.findIndex(file_obj => file_obj.uid === updated_file.uid);
+    if (idx >= 0) {
+      this.autoplay_queue_file_objs[idx] = updated_file;
+    }
   }
 
   resolveQueueFileTypeFilter(): FileTypeFilter {
