@@ -46,6 +46,25 @@
     position: relative;
 }
 
+.action-column {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-buttons-row {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.action-buttons-row button {
+    flex: 0 0 auto;
+}
+
 .save-button {
     right: 25px;
     position: fixed;

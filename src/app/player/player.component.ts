@@ -306,6 +306,10 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.repeat_enabled = false;
       this.saveRepeatMode();
       this.ensureAutoplayQueueReady();
+    } else {
+      this.pending_autoplay_advance = false;
+      this.autoplay_queue_loading = false;
+      this.collapseAutoplayQueueToCurrentItem();
     }
     this.saveAutoplayMode();
   }
@@ -316,6 +320,8 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.autoplay_enabled = false;
       this.saveAutoplayMode();
       this.pending_autoplay_advance = false;
+      this.autoplay_queue_loading = false;
+      this.collapseAutoplayQueueToCurrentItem();
     }
     this.saveRepeatMode();
   }
@@ -503,7 +509,21 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   shouldAutoloadWholeLibraryQueue(): boolean {
-    return !!this.uid && !this.playlist_id && !this.sub_id && this.playlist.length <= 1;
+    return this.isSingleFileMode() && this.playlist.length <= 1;
+  }
+
+  isSingleFileMode(): boolean {
+    return !!this.uid && !this.playlist_id && !this.sub_id;
+  }
+
+  collapseAutoplayQueueToCurrentItem(): void {
+    if (!this.isSingleFileMode() || !this.autoplay_queue_initialized || !this.currentItem) {
+      return;
+    }
+    this.playlist = [this.currentItem];
+    this.currentIndex = 0;
+    this.original_playlist = JSON.stringify(this.playlist);
+    this.autoplay_queue_initialized = false;
   }
 
   ensureAutoplayQueueReady(): void {
@@ -521,6 +541,12 @@ export class PlayerComponent implements OnInit, AfterViewInit, OnDestroy {
     const queueSubID = this.queue_sub_id || null;
 
     this.postsService.getAllFiles(sort, null, textSearch, fileTypeFilter, this.queue_favorite_filter, queueSubID).subscribe(res => {
+      if (!this.autoplay_enabled) {
+        this.autoplay_queue_loading = false;
+        this.pending_autoplay_advance = false;
+        return;
+      }
+
       this.autoplay_queue_loading = false;
       const files = res['files'] ?? [];
       if (files.length === 0) return;
