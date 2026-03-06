@@ -14,25 +14,28 @@
           </div>
           <div style="height: fit-content; width: 100%; margin-top: 10px;">
             <div class="container">
-              <div class="row">
-                <div class="col-2 col-lg-1">
+              <div class="row media-info-row">
+                <div class="col-auto view-column">
                   @if (db_file) {
-                    {{db_file['local_view_count'] ? db_file['local_view_count']+1 : 1}}&nbsp;<ng-container i18n="View count label">views</ng-container>
+                    <span class="view-count" [matTooltip]="(db_file['local_view_count'] ? db_file['local_view_count']+1 : 1) + ' views'" i18n-matTooltip="View count tooltip">
+                      <mat-icon class="view-icon">visibility</mat-icon>
+                      {{db_file['local_view_count'] ? db_file['local_view_count']+1 : 1}}
+                    </span>
                   }
                 </div>
-                <div style="white-space: pre-line;" class="col-8 col-lg-9">
+                <div style="white-space: pre-line;" class="col media-description-column">
                   @if (db_file && db_file['description']) {
-                    <p>
-                      <app-see-more [text]="db_file['description']"></app-see-more>
+                    <p class="media-description">
+                      <app-see-more [text]="db_file['description']" [line_limit]="1"></app-see-more>
                     </p>
                   }
                   @if (!db_file || !db_file['description']) {
-                    <p i18n="No description" style="text-align: center;">
+                    <p class="media-description no-description" i18n="No description">
                                             No description available.
                                         </p>
                   }
                 </div>
-                <div class="col-2 action-column">
+                <div class="col-auto action-column">
                   <span class="action-buttons-row">
                     @if (db_playlist) {
                       <span class="buttons">

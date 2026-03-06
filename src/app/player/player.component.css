@@ -46,9 +46,50 @@
     position: relative;
 }
 
+.media-info-row {
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.view-column {
+    align-items: center;
+    display: flex;
+    padding-right: 0;
+}
+
+.view-count {
+    align-items: center;
+    display: inline-flex;
+    font-size: 0.9rem;
+    font-weight: 500;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.view-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+}
+
+.media-description-column {
+    min-width: 0;
+}
+
+.media-description {
+    font-size: 0.9rem;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.no-description {
+    text-align: center;
+}
+
 .action-column {
     display: flex;
     justify-content: flex-end;
+    padding-left: 0;
 }
 
 .action-buttons-row {
@@ -56,13 +97,18 @@
     display: flex;
     flex-wrap: nowrap;
     justify-content: flex-end;
-    overflow-x: auto;
     white-space: nowrap;
-    width: 100%;
 }
 
 .action-buttons-row button {
     flex: 0 0 auto;
+}
+
+.action-buttons-row .mat-mdc-icon-button {
+    --mdc-icon-button-state-layer-size: 40px;
+    height: 40px;
+    padding: 8px;
+    width: 40px;
 }
 
 .save-button {
