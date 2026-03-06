@@ -51,7 +51,7 @@ jobs:
 
       - name: Generate Docker image metadata
         id: docker-meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         # Defaults:
         #     DOCKERHUB_USERNAME  : voc0der
         #     DOCKERHUB_REPO      : youtubedl-material
