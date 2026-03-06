@@ -319,16 +319,32 @@ function sendSlackNotification({body, title, type, url, thumbnail}) {
 
 // Generic
 
-function isLikelyAppriseWebhookURL(webhook_url) {
-    try {
-        const url = new URL(webhook_url);
-        const path = url.pathname.toLowerCase();
-        const host = url.hostname.toLowerCase();
+function parseWebhookURL(webhook_url) {
+    if (typeof webhook_url !== 'string') return null;
+    const trimmed_url = webhook_url.trim();
+    if (!trimmed_url) return null;
 
-        // Apprise commonly exposes /notify[/<key>], while reverse proxies often include /apprise.
-        return /(^|\/)notify(\/[\w-]{1,128})?\/?$/.test(path) || /(^|\/)apprise(\/|$)/.test(path) || host.includes('apprise');
+    let request_url = trimmed_url;
+    let explicit_apprise = false;
+
+    const apprises_match = trimmed_url.match(/^apprises:\/\/(.+)$/i);
+    const apprise_match = trimmed_url.match(/^apprise:\/\/(.+)$/i);
+    if (apprises_match) {
+        request_url = `https://${apprises_match[1]}`;
+        explicit_apprise = true;
+    } else if (apprise_match) {
+        request_url = `http://${apprise_match[1]}`;
+        explicit_apprise = true;
+    }
+
+    try {
+        return {
+            request_url: request_url,
+            parsed_url: new URL(request_url),
+            explicit_apprise: explicit_apprise
+        };
     } catch {
-        return false;
+        return null;
     }
 }
 
@@ -336,9 +352,21 @@ function mapNotificationTypeToAppriseType(type) {
     return NOTIFICATION_TYPE_TO_APPRISE_TYPE[type] ? NOTIFICATION_TYPE_TO_APPRISE_TYPE[type] : 'info';
 }
 
-function getWebhookPayload(webhook_url, data) {
-    if (!isLikelyAppriseWebhookURL(webhook_url)) return data;
-    return {
+function isLikelyAppriseWebhookURL(webhook_info) {
+    if (!webhook_info || !webhook_info['parsed_url']) return false;
+    if (webhook_info['explicit_apprise']) return true;
+
+    const path = webhook_info['parsed_url'].pathname.toLowerCase();
+    const host = webhook_info['parsed_url'].hostname.toLowerCase();
+
+    // Apprise commonly exposes /notify[/<key>], while reverse proxies often include /apprise.
+    return /(^|\/)notify(\/[\w-]{1,128})?\/?$/.test(path) || /(^|\/)apprise(\/|$)/.test(path) || host.includes('apprise');
+}
+
+function getWebhookPayload(webhook_info, data) {
+    if (!isLikelyAppriseWebhookURL(webhook_info)) return data;
+
+    const payload = {
         title: data['title'],
         body: data['body'],
         type: mapNotificationTypeToAppriseType(data['type']),
@@ -346,13 +374,20 @@ function getWebhookPayload(webhook_url, data) {
         url: data['url'],
         thumbnail: data['thumbnail']
     };
+
+    const apprise_tag = webhook_info['parsed_url'].searchParams.get('tag') || webhook_info['parsed_url'].searchParams.get('tags');
+    if (apprise_tag) payload['tag'] = apprise_tag;
+
+    return payload;
 }
 
 function sendGenericNotification(data) {
     const webhook_url = config_api.getConfigItem('ytdl_webhook_url');
-    logger.verbose(`Sending generic notification to ${webhook_url}`);
-    const payload = getWebhookPayload(webhook_url, data);
-    fetch(webhook_url, {
+    const webhook_info = parseWebhookURL(webhook_url);
+    const request_url = webhook_info ? webhook_info['request_url'] : webhook_url;
+    logger.verbose(`Sending generic notification to ${request_url}`);
+    const payload = getWebhookPayload(webhook_info, data);
+    fetch(request_url, {
         method: 'POST',
         headers: {
             "Content-Type": "application/json"
