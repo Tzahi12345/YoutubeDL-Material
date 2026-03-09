@@ -1,64 +1,68 @@
 <h4 mat-dialog-title i18n="User profile dialog title">Your Profile</h4>
-
 <mat-dialog-content>
-    <div *ngIf="postsService.isLoggedIn && postsService.user">
-        <div>
-            <strong><ng-container i18n="Name">Name:</ng-container></strong>&nbsp;{{postsService.user.name}}
-        </div>
-        <div>
-            <strong><ng-container i18n="UID">UID:</ng-container></strong>&nbsp;{{postsService.user.uid}}
-        </div>
-        <div>
-            <strong><ng-container i18n="Created">Created:</ng-container></strong>&nbsp;{{postsService.user.created ? (postsService.user.created | date) : 'N/A'}}
-        </div>
-        <div style="margin-top: 20px;">
-        </div>
-        <mat-divider style="margin-bottom: 20px"></mat-divider>
+  @if (postsService.isLoggedIn && postsService.user) {
+    <div>
+      <div>
+        <strong><ng-container i18n="Name">Name:</ng-container></strong>&nbsp;{{postsService.user.name}}
+      </div>
+      <div>
+        <strong><ng-container i18n="UID">UID:</ng-container></strong>&nbsp;{{postsService.user.uid}}
+      </div>
+      <div>
+        <strong><ng-container i18n="Created">Created:</ng-container></strong>&nbsp;{{postsService.user.created ? (postsService.user.created | date) : 'N/A'}}
+      </div>
+      <div style="margin-top: 20px;">
+      </div>
+      <mat-divider style="margin-bottom: 20px"></mat-divider>
     </div>
-    <mat-form-field color="accent">
-        <mat-label><ng-container i18n="Language select label">Language</ng-container></mat-label>
-        <mat-select (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
-            <mat-option *ngFor="let locale of supported_locales" [value]="locale">
-                <ng-container *ngIf="all_locales[locale]">
-                    {{all_locales[locale]['nativeName']}}
-                </ng-container>
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <br/>
-    <mat-form-field>
-        <mat-label i18n="Sidepanel mode">Sidepanel mode</mat-label>
-        <mat-select [(ngModel)]="sidepanel_mode" (selectionChange)="sidePanelModeChanged($event.value)">
-            <mat-option i18n="Over" value="over">
-                Over
-            </mat-option>
-            <mat-option i18n="Side" value="side">
-                Side
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <br/>
-    <mat-form-field>
-        <mat-label i18n="File card size">File card size</mat-label>
-        <mat-select [(ngModel)]="card_size" (selectionChange)="cardSizeOptionChanged($event.value)">
-            <mat-option i18n="Large" value="large">
-                Large
-            </mat-option>
-            <mat-option i18n="Medium" value="medium">
-                Medium
-            </mat-option>
-            <mat-option i18n="Small" value="small">
-                Small
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+  }
+  <mat-form-field color="accent">
+    <mat-label><ng-container i18n="Language select label">Language</ng-container></mat-label>
+    <mat-select (selectionChange)="localeSelectChanged($event.value)" [(value)]="initialLocale">
+      @for (locale of supported_locales; track locale) {
+        <mat-option [value]="locale">
+          @if (all_locales[locale]) {
+            {{all_locales[locale]['nativeName']}}
+          }
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <br/>
+  <mat-form-field>
+    <mat-label i18n="Sidepanel mode">Sidepanel mode</mat-label>
+    <mat-select [(ngModel)]="sidepanel_mode" (selectionChange)="sidePanelModeChanged($event.value)">
+      <mat-option i18n="Over" value="over">
+        Over
+      </mat-option>
+      <mat-option i18n="Side" value="side">
+        Side
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br/>
+  <mat-form-field>
+    <mat-label i18n="File card size">File card size</mat-label>
+    <mat-select [(ngModel)]="card_size" (selectionChange)="cardSizeOptionChanged($event.value)">
+      <mat-option i18n="Large" value="large">
+        Large
+      </mat-option>
+      <mat-option i18n="Medium" value="medium">
+        Medium
+      </mat-option>
+      <mat-option i18n="Small" value="small">
+        Small
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 </mat-dialog-content>
-
 <mat-dialog-actions>
-    <div style="width: 100%">
-        <div style="position: relative">
-            <button mat-stroked-button mat-dialog-close color="primary"><ng-container i18n="Close">Close</ng-container></button>
-            <button *ngIf="postsService.isLoggedIn" style="position: absolute; right: 0px;" (click)="logoutClicked()" mat-stroked-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
-        </div>
+  <div style="width: 100%">
+    <div style="position: relative">
+      <button mat-stroked-button mat-dialog-close color="primary"><ng-container i18n="Close">Close</ng-container></button>
+      @if (postsService.isLoggedIn) {
+        <button style="position: absolute; right: 0px;" (click)="logoutClicked()" mat-stroked-button color="warn"><ng-container i18n="Logout">Logout</ng-container></button>
+      }
     </div>
+  </div>
 </mat-dialog-actions>

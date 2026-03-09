@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
 
 @import '~material-icons/iconfont/material-icons.css';
 
@@ -12,7 +13,6 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-@import '@angular/material/theming';
 // Plus imports for other components in your app.
 
 /*// Typography
@@ -24,22 +24,22 @@ $custom-typography: mat-typography-config(
 @include angular-material-typography($custom-typography);
 */
 // Default colors
-$my-app-primary: mat-palette($mat-light-blue, 700, 100, 800);
-$my-app-accent:  mat-palette($mat-blue, 700, 100, 800);
-$my-app-warn: mat-palette($mat-red, 700, 100, 800);
+$my-app-primary: mat.define-palette(mat.$light-blue-palette, 700, 100, 800); // mat-palette($mat-light-blue, 700, 100, 800);
+$my-app-accent:  mat.define-palette(mat.$blue-palette, 700, 100, 800);
+$my-app-warn: mat.define-palette(mat.$red-palette, 700, 100, 800);
 
-$my-app-theme: mat-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
-@include angular-material-theme($my-app-theme);
+$my-app-theme: mat.define-light-theme((color: (primary: $my-app-primary, accent: $my-app-accent, warn: $my-app-warn)));
+@include mat.all-component-themes($my-app-theme);
 
 // Dark theme
-$dark-primary: mat-palette($mat-light-blue, 700, 100, 800);
-$dark-accent:  mat-palette($mat-blue);
-$dark-warn:    mat-palette($mat-deep-orange);
+$dark-primary: mat.define-palette(mat.$light-blue-palette, 700, 100, 800);
+$dark-accent:  mat.define-palette(mat.$blue-palette);
+$dark-warn:    mat.define-palette(mat.$deep-orange-palette);
 
-$dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+$dark-theme:   mat.define-dark-theme((color: (primary: $dark-primary, accent: $dark-accent, warn: $dark-warn)));
 
 .dark-theme {
-  @include angular-material-theme($dark-theme);
+  @include mat.all-component-themes($dark-theme);
 }
 
 .mat-mdc-outlined-button, .mat-mdc-raised-button, .mat-mdc-flat-button {
@@ -47,14 +47,14 @@ $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 }
 
 // Light theme
-$light-primary: mat-palette($mat-grey, 200, 500, 300);
-$light-accent: mat-palette($mat-brown, 200);
-$light-warn: mat-palette($mat-deep-orange, 200);
+$light-primary: mat.define-palette(mat.$grey-palette, 200, 500, 300);
+$light-accent: mat.define-palette(mat.$brown-palette, 200);
+$light-warn: mat.define-palette(mat.$deep-orange-palette, 200);
 
-$light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
+$light-theme: mat.define-light-theme((color: (primary: $light-primary, accent: $light-accent, warn: $light-warn)));
 
 .light-theme {
-  @include angular-material-theme($light-theme);
+  @include mat.all-component-themes($light-theme);
 }
 
 .no-outline {
@@ -65,9 +65,7 @@ $light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
-
-// @import '../node_modules/@angular/material/theming';
+@include mat.core();
 
 .centered {
     margin: 0 auto;

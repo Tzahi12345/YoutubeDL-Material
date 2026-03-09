@@ -3,6 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { PostsService } from 'app/posts.services';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Subscription } from 'api-types';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-subscription-info-dialog',

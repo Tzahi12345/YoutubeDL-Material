@@ -1,31 +1,32 @@
 <h4 mat-dialog-title>
-    <ng-container *ngIf="is_playlist" i18n="Share playlist dialog title">Share playlist</ng-container>
-    <ng-container *ngIf="!is_playlist" i18n="Share video dialog title">Share file</ng-container>
+  @if (is_playlist) {
+    <ng-container i18n="Share playlist dialog title">Share playlist</ng-container>
+  } @else {
+    <ng-container i18n="Share video dialog title">Share file</ng-container>
+  }
 </h4>
-
 <mat-dialog-content>
+  <div>
     <div>
-        <div>
-            <mat-checkbox [checked]="sharing_enabled" (change)="sharingChanged($event)" [disabled]="uuid && (!postsService.isLoggedIn || postsService.user?.uid !== uuid)"><ng-container i18n="Enable sharing checkbox">Enable sharing</ng-container></mat-checkbox>
-        </div>
-        <div>
-            <mat-checkbox style="margin-right: 15px;" (change)="useTimestampChanged()" [(ngModel)]="timestamp_enabled"><ng-container i18n="Use timestamp">Use timestamp</ng-container></mat-checkbox>
-            <mat-form-field>
-                <mat-label i18n="Seconds">Seconds</mat-label>
-                <input matInput type="number" [(ngModel)]="current_timestamp" [disabled]="!timestamp_enabled" (change)="timestampInputChanged($event)">
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field style="width: 100%">
-                <input matInput [disabled]="!sharing_enabled" [readonly]="true" [value]="share_url">
-            </mat-form-field>
-        </div>
-        <div style="margin-bottom: 10px;">
-            <button color="accent" (click)="copiedToClipboard()" [disabled]="!sharing_enabled" [cdkCopyToClipboard]="share_url" mat-raised-button><ng-container i18n="Copy to clipboard button">Copy to clipboard</ng-container></button>
-        </div>
+      <mat-checkbox [checked]="sharing_enabled" (change)="sharingChanged($event)" [disabled]="uuid && (!postsService.isLoggedIn || postsService.user?.uid !== uuid)"><ng-container i18n="Enable sharing checkbox">Enable sharing</ng-container></mat-checkbox>
     </div>
+    <div>
+      <mat-checkbox style="margin-right: 15px;" (change)="useTimestampChanged()" [(ngModel)]="timestamp_enabled"><ng-container i18n="Use timestamp">Use timestamp</ng-container></mat-checkbox>
+      <mat-form-field>
+        <mat-label i18n="Seconds">Seconds</mat-label>
+        <input matInput type="number" [(ngModel)]="current_timestamp" [disabled]="!timestamp_enabled" (change)="timestampInputChanged($event)">
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field style="width: 100%">
+        <input matInput [disabled]="!sharing_enabled" [readonly]="true" [value]="share_url">
+      </mat-form-field>
+    </div>
+    <div style="margin-bottom: 10px;">
+      <button color="accent" (click)="copiedToClipboard()" [disabled]="!sharing_enabled" [cdkCopyToClipboard]="share_url" mat-raised-button><ng-container i18n="Copy to clipboard button">Copy to clipboard</ng-container></button>
+    </div>
+  </div>
 </mat-dialog-content>
-
 <mat-dialog-actions>
-    <button mat-button mat-dialog-close><ng-container i18n="Close button">Close</ng-container></button>
+  <button mat-button mat-dialog-close><ng-container i18n="Close button">Close</ng-container></button>
 </mat-dialog-actions>

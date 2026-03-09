@@ -2,24 +2,27 @@
 <mat-dialog-content>
   <div style="margin-bottom: 10px;">
     <!-- We can support text dialogs or dialogs where users must select items from a list -->
-    <ng-container *ngIf="dialogType === 'text'">
+    @if (dialogType === 'text') {
       {{dialogText}}
-    </ng-container>
-    <ng-container *ngIf="dialogType === 'selection_list'">
+    } @else if (dialogType === 'selection_list') {
       <mat-selection-list [(ngModel)]="selected_items">
-        <mat-list-option *ngFor="let item of list" [value]="item.key">
-          {{item.title}}
-        </mat-list-option>
+        @for (item of list; track item) {
+          <mat-list-option [value]="item.key">
+            {{item.title}}
+          </mat-list-option>
+        }
       </mat-selection-list>
-    </ng-container>
+    }
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
   <button [disabled]="dialogType === 'selection_list' && selected_items.length === 0" [color]="warnSubmitColor ? 'warn' : 'primary'" mat-flat-button type="submit" (click)="confirmClicked()">{{submitText}}</button>
-  <div class="mat-spinner" *ngIf="submitClicked">
-    <mat-spinner [diameter]="25"></mat-spinner>
-  </div>
+  @if (submitClicked) {
+    <div class="mat-spinner">
+      <mat-spinner [diameter]="25"></mat-spinner>
+    </div>
+  }
   <span class="spacer"></span>
   <button style="float: right;" mat-stroked-button mat-dialog-close>
     {{cancelText}}

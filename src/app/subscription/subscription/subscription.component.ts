@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSubscriptionDialogComponent } from 'app/dialogs/edit-subscription-dialog/edit-subscription-dialog.component';
 import { Subscription } from 'api-types';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-subscription',

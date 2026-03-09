@@ -8,6 +8,7 @@ import { ShareMediaDialogComponent } from '../dialogs/share-media-dialog/share-m
 import { DatabaseFile, FileType, Playlist } from '../../api-types';
 import { TwitchChatComponent } from 'app/components/twitch-chat/twitch-chat.component';
 import { VideoInfoDialogComponent } from 'app/dialogs/video-info-dialog/video-info-dialog.component';
+import { saveAs } from 'file-saver';
 
 export interface IMedia {
   title: string;

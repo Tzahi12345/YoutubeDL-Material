@@ -67,7 +67,9 @@ const runYoutubeDLProcess = async (url, args, youtubedl_fork = config_api.getCon
             const parsed_output = utils.parseOutputJSON(stdout.trim().split(/\r?\n/), stderr);
             resolve({parsed_output, err: stderr});
         } catch (e) {
-            resolve({parsed_output: null, err: e})
+            // Attempt to not fail
+            const parsed_output = utils.parseOutputJSON(e && e.stdout && e.stdout.trim().split(/\r?\n/), e && e.stderr);
+            resolve({parsed_output: parsed_output, err: parsed_output ? null : e});
         }
     });
     return {child_process, callback}

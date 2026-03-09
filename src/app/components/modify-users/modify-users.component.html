@@ -1,108 +1,103 @@
-<div *ngIf="dataSource; else loading">
+@if (dataSource) {
+  <div>
     <div style="padding: 15px">
-    <div class="row">
+      <div class="row">
         <div class="table table-responsive pb-4 pt-4">
-        <div class="example-header">
+          <div class="example-header">
             <mat-form-field appearance="outline">
-                <mat-label i18n="Search">Search</mat-label>
-                <input matInput (keyup)="applyFilter($event)">
+              <mat-label i18n="Search">Search</mat-label>
+              <input matInput (keyup)="applyFilter($event)">
             </mat-form-field>
-        </div>
-        
-        <div class="mat-elevation-z8" style="margin-right: 15px;">
-        
+          </div>
+          <div class="mat-elevation-z8" style="margin-right: 15px;">
             <mat-table #table [dataSource]="dataSource" matSort>
-        
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef mat-sort-header><ng-container i18n="Username users table header"> User name </ng-container></mat-header-cell>
-
                 <mat-cell *matCellDef="let row">
-                <span *ngIf="editObject && editObject.uid === row.uid; else noteditingname">
-                    <span style="width: 80%;">
-                    <mat-form-field>
-                        <input matInput [(ngModel)]="constructedObject['name']" type="text" style="font-size: 12px">
-                    </mat-form-field>
+                  @if (editObject && editObject.uid === row.uid) {
+                    <span>
+                      <span style="width: 80%;">
+                        <mat-form-field>
+                          <input matInput [(ngModel)]="constructedObject['name']" type="text" style="font-size: 12px">
+                        </mat-form-field>
+                      </span>
                     </span>
-                </span>
-                <ng-template #noteditingname>
-                    {{row.name}} 
-                </ng-template>
+                  } @else {
+                    {{row.name}}
+                  }
                 </mat-cell>
-            </ng-container>
-        
-            <!-- Email Column -->
-            <ng-container matColumnDef="role">
+              </ng-container>
+              <!-- Email Column -->
+              <ng-container matColumnDef="role">
                 <mat-header-cell *matHeaderCellDef mat-sort-header><ng-container i18n="Role users table header"> Role </ng-container></mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <span *ngIf="editObject && editObject.uid === row.uid; else noteditingemail">
-                    <span style="width: 80%;">
+                  @if (editObject && editObject.uid === row.uid) {
+                    <span>
+                      <span style="width: 80%;">
                         <mat-form-field>
-                            <mat-select [(ngModel)]="constructedObject['role']">
-                                <mat-option value="admin">Admin</mat-option>
-                                <mat-option value="user">User</mat-option>
-                            </mat-select>
+                          <mat-select [(ngModel)]="constructedObject['role']">
+                            <mat-option value="admin">Admin</mat-option>
+                            <mat-option value="user">User</mat-option>
+                          </mat-select>
                         </mat-form-field>
+                      </span>
                     </span>
-                    </span>
-                    <ng-template #noteditingemail>
-                        {{row.role}}
-                    </ng-template>
+                  } @else {
+                    {{row.role}}
+                  }
                 </mat-cell>
-            </ng-container>
-
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
+              </ng-container>
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
                 <mat-header-cell *matHeaderCellDef mat-sort-header><ng-container i18n="Actions users table header"> Actions </ng-container></mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                <span *ngIf="editObject && editObject.uid === row.uid; else notediting">
-                    <button mat-icon-button color="primary" (click)="finishEditing(row.uid)" matTooltip="Save" i18n-matTooltip="save user edit action button tooltip">
-                    <mat-icon>done</mat-icon>
-                    </button>
-                    <button mat-icon-button (click)="disableEditMode()" matTooltip="Cancel" i18n-matTooltip="cancel user edit action button tooltip">
-                    <mat-icon>cancel</mat-icon>
-                    </button>
-                </span>
-                <ng-template #notediting>
+                  @if (editObject && editObject.uid === row.uid) {
+                    <span>
+                      <button mat-icon-button color="primary" (click)="finishEditing(row.uid)" matTooltip="Save" i18n-matTooltip="save user edit action button tooltip">
+                        <mat-icon>done</mat-icon>
+                      </button>
+                      <button mat-icon-button (click)="disableEditMode()" matTooltip="Cancel" i18n-matTooltip="cancel user edit action button tooltip">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </span>
+                  } @else {
                     <button mat-icon-button (click)="enableEditMode(row.uid)" matTooltip="Edit user" i18n-matTooltip="edit user action button tooltip">
-                    <mat-icon>edit</mat-icon>
+                      <mat-icon>edit</mat-icon>
                     </button>
-                </ng-template>
-                <button (click)="manageUser(row.uid)" mat-icon-button [disabled]="editObject && editObject.uid === row.uid" matTooltip="Manage user" i18n-matTooltip="manage user action button tooltip">
+                  }
+                  <button (click)="manageUser(row.uid)" mat-icon-button [disabled]="editObject && editObject.uid === row.uid" matTooltip="Manage user" i18n-matTooltip="manage user action button tooltip">
                     <mat-icon>settings</mat-icon>
-                </button>
-                <button mat-icon-button [disabled]="editObject && editObject.uid === row.uid || row.uid === postsService.user.uid" (click)="removeUser(row.uid)" matTooltip="Delete user" i18n-matTooltip="delete user action button tooltip">
+                  </button>
+                  <button mat-icon-button [disabled]="editObject && editObject.uid === row.uid || row.uid === postsService.user.uid" (click)="removeUser(row.uid)" matTooltip="Delete user" i18n-matTooltip="delete user action button tooltip">
                     <mat-icon>delete</mat-icon>
-                </button>
+                  </button>
                 </mat-cell>
-            </ng-container>
-        
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;">
-            </mat-row>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;">
+              </mat-row>
             </mat-table>
-        
             <mat-paginator #paginator [length]="length"
-                [pageSize]="pageSize"
-                [pageSizeOptions]="pageSizeOptions">
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions">
             </mat-paginator>
-
             <button color="primary" [disabled]="!this.users" mat-raised-button (click)="openAddUserDialog()" style="float: left; top: -45px; left: 15px">
-                <ng-container i18n="Add users button">Add Users</ng-container>
+              <ng-container i18n="Add users button">Add Users</ng-container>
             </button>
+          </div>
         </div>
-        </div>
+      </div>
+      <button color="primary" [matMenuTriggerFor]="edit_roles_menu" class="edit-role" mat-raised-button><ng-container i18n="Edit role">Edit Role</ng-container></button>
+      <mat-menu #edit_roles_menu="matMenu">
+        @for (role of roles; track role) {
+          <button (click)="openModifyRole(role)" mat-menu-item>{{role.key}}</button>
+        }
+      </mat-menu>
     </div>
-    <button color="primary" [matMenuTriggerFor]="edit_roles_menu" class="edit-role" mat-raised-button><ng-container i18n="Edit role">Edit Role</ng-container></button>
-    <mat-menu #edit_roles_menu="matMenu">
-        <button (click)="openModifyRole(role)" mat-menu-item *ngFor="let role of roles">{{role.key}}</button>
-    </mat-menu>
-    </div>
-    
   </div>
-    
-    <div style="position: absolute" class="centered">
-      <ng-template #loading>
-        <mat-spinner></mat-spinner>
-      </ng-template>
-    </div>
+} @else {
+  <div style="position: absolute" class="centered">
+    <mat-spinner></mat-spinner>
+  </div>
+}
