@@ -38,7 +38,7 @@
     "@ngneat/content-loader": "^7.0.0",
     "@videogular/ngx-videogular": "^6.0.0",
     "core-js": "^2.4.1",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "file-saver": "^2.0.2",
     "filesize": "^10.0.7",
     "fs-extra": "^10.0.0",
