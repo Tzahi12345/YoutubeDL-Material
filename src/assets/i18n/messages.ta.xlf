@@ -3,8 +3,8 @@
   <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="ta">
     <body>
       <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html" xml:space="preserve">
-        <source>Profile</source>
-        <target state="translated">சுயவிவரம்</target>
+        <source> Profile</source>
+        <target state="needs-translation">சுயவிவரம்</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">22</context>
