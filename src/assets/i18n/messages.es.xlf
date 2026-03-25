@@ -550,9 +550,9 @@
         <source>Create</source>
         <target state="translated">Crear</target>
       </trans-unit>
-      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8">
-        <source>Profile</source>
-        <target state="translated">Perfil</target>
+      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" xml:space="preserve">
+        <source> Profile</source>
+        <target state="needs-translation">Perfil</target>
       </trans-unit>
       <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a">
         <source>About</source>
