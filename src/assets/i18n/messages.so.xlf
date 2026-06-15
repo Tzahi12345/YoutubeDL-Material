@@ -4,6 +4,7 @@
     <body>
       <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html" xml:space="preserve">
         <source> Profile</source>
+        <target state="translated"> Aqoonsi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">22</context>
@@ -18,8 +19,9 @@
         </context-group>
         <note priority="1" from="description">Archives menu label</note>
       </trans-unit>
-      <trans-unit id="adb4562d2dbd3584370e44496969d58c511ecb63" datatype="html">
+      <trans-unit id="adb4562d2dbd3584370e44496969d58c511ecb63" datatype="html" xml:space="preserve">
         <source>Dark</source>
+        <target state="translated">Mugdi</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">30</context>
@@ -30,24 +32,27 @@
         </context-group>
         <note priority="1" from="description">Dark mode toggle label</note>
       </trans-unit>
-      <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html">
+      <trans-unit id="004b222ff9ef9dd4771b777950ca1d0e4cd4348a" datatype="html" xml:space="preserve">
         <source>About</source>
+        <target state="translated">Ku saabsan</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">35</context>
         </context-group>
         <note priority="1" from="description">About menu label</note>
       </trans-unit>
-      <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html">
+      <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html" xml:space="preserve">
         <source>Home</source>
+        <target state="translated">Guriga</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
         <note priority="1" from="description">Navigation menu Home Page title</note>
       </trans-unit>
-      <trans-unit id="6765b4c916060f6bc42d9bb69e80377dbcb5e4e9" datatype="html">
+      <trans-unit id="6765b4c916060f6bc42d9bb69e80377dbcb5e4e9" datatype="html" xml:space="preserve">
         <source>Login</source>
+        <target state="translated">Gal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">48</context>
@@ -62,32 +67,36 @@
         </context-group>
         <note priority="1" from="description">Navigation menu Login Page title</note>
       </trans-unit>
-      <trans-unit id="357064ca9d9ac859eb618e28e8126fa32be049e2" datatype="html">
+      <trans-unit id="357064ca9d9ac859eb618e28e8126fa32be049e2" datatype="html" xml:space="preserve">
         <source>Subscriptions</source>
+        <target state="translated">Rukunnada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">49</context>
         </context-group>
         <note priority="1" from="description">Navigation menu Subscriptions Page title</note>
       </trans-unit>
-      <trans-unit id="822fab38216f64e8166d368b59fe756ca39d301b" datatype="html">
+      <trans-unit id="822fab38216f64e8166d368b59fe756ca39d301b" datatype="html" xml:space="preserve">
         <source>Downloads</source>
+        <target state="translated">Soo dejinta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">50</context>
         </context-group>
         <note priority="1" from="description">Navigation menu Downloads Page title</note>
       </trans-unit>
-      <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
+      <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html" xml:space="preserve">
         <source>Tasks</source>
+        <target state="translated">Howlaha</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">51</context>
         </context-group>
         <note priority="1" from="description">Navigation menu Tasks Page title</note>
       </trans-unit>
-      <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716" datatype="html">
+      <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716" datatype="html" xml:space="preserve">
         <source>Settings</source>
+        <target state="translated">Habaynta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">54</context>
@@ -102,16 +111,18 @@
         </context-group>
         <note priority="1" from="description">Settings menu label</note>
       </trans-unit>
-      <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
+      <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html" xml:space="preserve">
         <source>Filter</source>
+        <target state="translated">Shaandhaynta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
         <note priority="1" from="description">Filter</note>
       </trans-unit>
-      <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
+      <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html" xml:space="preserve">
         <source>Date</source>
+        <target state="translated">Taariikhda</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">31</context>
@@ -122,8 +133,9 @@
         </context-group>
         <note priority="1" from="description">Date</note>
       </trans-unit>
-      <trans-unit id="fdf7cbdc140d0aab0f0b6c06065a0fd448ed6a2e" datatype="html">
+      <trans-unit id="fdf7cbdc140d0aab0f0b6c06065a0fd448ed6a2e" datatype="html" xml:space="preserve">
         <source>Title</source>
+        <target state="translated">Cinwaanka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">37</context>
@@ -138,16 +150,18 @@
         </context-group>
         <note priority="1" from="description">Title</note>
       </trans-unit>
-      <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html">
+      <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html" xml:space="preserve">
         <source>ID</source>
+        <target state="translated">ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
         <note priority="1" from="description">ID</note>
       </trans-unit>
-      <trans-unit id="28da11220a3377ddce3c7948825d33101f142782" datatype="html">
+      <trans-unit id="28da11220a3377ddce3c7948825d33101f142782" datatype="html" xml:space="preserve">
         <source>Extractor</source>
+        <target state="needs-translation">Soo-saare</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">57</context>
@@ -162,8 +176,9 @@
         </context-group>
         <note priority="1" from="description">Archives empty</note>
       </trans-unit>
-      <trans-unit id="51a161ce175abcd44f6c6cbd0e996681bf553ac3" datatype="html">
+      <trans-unit id="51a161ce175abcd44f6c6cbd0e996681bf553ac3" datatype="html" xml:space="preserve">
         <source>Delete selected</source>
+        <target state="translated">Tirtir xulka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">77</context>
@@ -178,8 +193,9 @@
         </context-group>
         <note priority="1" from="description">Download archive</note>
       </trans-unit>
-      <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html">
+      <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html" xml:space="preserve">
         <source>Subscription</source>
+        <target state="translated">Rukunka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">82</context>
@@ -198,8 +214,9 @@
         </context-group>
         <note priority="1" from="description">Subscription</note>
       </trans-unit>
-      <trans-unit id="a2f14a73f7a6e94479f67423cc51102da8d6f524" datatype="html">
+      <trans-unit id="a2f14a73f7a6e94479f67423cc51102da8d6f524" datatype="html" xml:space="preserve">
         <source>None</source>
+        <target state="translated">Waxba</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">84</context>
@@ -218,8 +235,9 @@
         </context-group>
         <note priority="1" from="description">None</note>
       </trans-unit>
-      <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
+      <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html" xml:space="preserve">
         <source>File type</source>
+        <target state="translated">Nooca faylka</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">89</context>
@@ -234,8 +252,9 @@
         </context-group>
         <note priority="1" from="description">File type</note>
       </trans-unit>
-      <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
+      <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html" xml:space="preserve">
         <source>Both</source>
+        <target state="translated">Labadaba</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">91</context>
@@ -246,8 +265,9 @@
         </context-group>
         <note priority="1" from="description">Both</note>
       </trans-unit>
-      <trans-unit id="2d1ea268a6a9f483dbc2cbfe19bf4256a57a6af4" datatype="html">
+      <trans-unit id="2d1ea268a6a9f483dbc2cbfe19bf4256a57a6af4" datatype="html" xml:space="preserve">
         <source>Video</source>
+        <target state="translated">Muuqaal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">92</context>
@@ -258,8 +278,9 @@
         </context-group>
         <note priority="1" from="description">Video</note>
       </trans-unit>
-      <trans-unit id="f0baeb8b69d120073b6d60d34785889b0c3232c8" datatype="html">
+      <trans-unit id="f0baeb8b69d120073b6d60d34785889b0c3232c8" datatype="html" xml:space="preserve">
         <source>Audio</source>
+        <target state="translated">Maqal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">93</context>
@@ -270,8 +291,9 @@
         </context-group>
         <note priority="1" from="description">Audio</note>
       </trans-unit>
-      <trans-unit id="98a8a42e5efffe17ab786636ed0139b4c7032d0e" datatype="html">
+      <trans-unit id="98a8a42e5efffe17ab786636ed0139b4c7032d0e" datatype="html" xml:space="preserve">
         <source>Drag and Drop</source>
+        <target state="translated">Jiid oo Dhig</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">104</context>
@@ -282,8 +304,9 @@
         </context-group>
         <note priority="1" from="description">Drag and Drop</note>
       </trans-unit>
-      <trans-unit id="4b3972c3e9485218508a95f7a4ce7758e3f09ced" datatype="html">
+      <trans-unit id="4b3972c3e9485218508a95f7a4ce7758e3f09ced" datatype="html" xml:space="preserve">
         <source>Upload</source>
+        <target state="translated">Soo geli</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">137</context>
@@ -294,15 +317,17 @@
         </context-group>
         <note priority="1" from="description">Upload</note>
       </trans-unit>
-      <trans-unit id="6549265851868599441" datatype="html">
+      <trans-unit id="6549265851868599441" datatype="html" xml:space="preserve">
         <source>Video</source>
+        <target state="translated">Muuqaal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="347407180135731058" datatype="html">
+      <trans-unit id="347407180135731058" datatype="html" xml:space="preserve">
         <source>Audio</source>
+        <target state="translated">Maqal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -322,15 +347,17 @@
           <context context-type="linenumber">152</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8425787787095143143" datatype="html">
+      <trans-unit id="8425787787095143143" datatype="html" xml:space="preserve">
         <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
+        <target state="translated">Ma jeclaan lahayd inaad tirtirto kaydka <x id="selected archive amount" equiv-text="this.selected.length"/>?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">153</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7022070615528435141" datatype="html">
+      <trans-unit id="7022070615528435141" datatype="html" xml:space="preserve">
         <source>Delete</source>
+        <target state="translated">Tirtir</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">154</context>
@@ -340,15 +367,17 @@
           <context context-type="linenumber">160</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2525880134753073592" datatype="html">
+      <trans-unit id="2525880134753073592" datatype="html" xml:space="preserve">
         <source>Successfully deleted archive items!</source>
+        <target state="needs-translation">Si guul leh ayaa loo tirtiray walxaha kaydka ah!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">172</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8224301330941792118" datatype="html">
+      <trans-unit id="8224301330941792118" datatype="html" xml:space="preserve">
         <source>Failed to delete archive items!</source>
+        <target state="translated">Laguma guuleysan in la tirtiro walxaha kaydka ah!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">174</context>
