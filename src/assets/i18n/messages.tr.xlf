@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html" xml:space="preserve">
         <source> Profile</source>
-        <target state="needs-translation">Profil</target>
+        <target state="translated"> Profil</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">19</context>
@@ -103,9 +103,9 @@
         </context-group>
         <note priority="1" from="description">Settings menu label</note>
       </trans-unit>
-      <trans-unit id="39921032161993566" datatype="html">
-        <source>Playlist created.</source>
-        <target state="translated">Oynatma listesi oluşturuldu.</target>
+      <trans-unit id="39921032161993566" datatype="html" xml:space="preserve">
+        <source>Successfully created playlist!</source>
+        <target state="translated">Oynatma listesi oluşturuldu!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/custom-playlists/custom-playlists.component.ts</context>
           <context context-type="linenumber">56</context>
@@ -4543,6 +4543,134 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/settings/settings.component.html</context>
           <context context-type="linenumber">356</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html" xml:space="preserve">
+        <source>ID</source>
+        <target state="translated">Kimlik</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d618f383a0ea2458eeb945a85190d4a002ea394b" datatype="html" xml:space="preserve">
+        <source>Arg</source>
+        <target state="translated">Arg</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/arg-modifier-dialog/arg-modifier-dialog.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="338b44701a53ce3ef2f36abfb56f89c3edfa9eab" datatype="html" xml:space="preserve">
+        <source>Over</source>
+        <target state="translated">Üzerinde</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dialogs/user-profile-dialog/user-profile-dialog.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8c1bf02206fbc371ff69ab1b7e35a17ba29d169d" datatype="html" xml:space="preserve">
+        <source>Use ntfy API</source>
+        <target state="translated">ntfy API'sini kullan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">386</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="06f503e492d6dbcf59e7b9c412ca86913d718689" datatype="html" xml:space="preserve">
+        <source>ntfy topic URL</source>
+        <target state="translated">ntfy konu URL'si</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">390</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5827fde8fcafdd55ae80921ad3ad4aa01012e203" datatype="html" xml:space="preserve">
+        <source>Use gotify API</source>
+        <target state="translated">gotify API'sini kullan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">396</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="55f559d6f666b945479f534b0c182f70cd0a8a69" datatype="html" xml:space="preserve">
+        <source>Gotify server URL</source>
+        <target state="translated">Gotify sunucu URL'si</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">400</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="b770c48628d98cb4633d6a17e3f0ba0265376af5" datatype="html" xml:space="preserve">
+        <source>Gotify app token</source>
+        <target state="translated">Gotify uygulama belirteci</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">407</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="38992954440d6afb54aeb58af12ca0123ee5e26e" datatype="html" xml:space="preserve">
+        <source>Use Telegram API</source>
+        <target state="translated">Telegram API'sini kullan</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">413</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2e076ff9866213d0815961c494aa48b177046b9d" datatype="html" xml:space="preserve">
+        <source>Telegram bot token</source>
+        <target state="translated">Telegram bot belirteci</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">417</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="144e1a21ebe8fa238f88d2ac27515ed711cfc9a0" datatype="html" xml:space="preserve">
+        <source>Telegram chat ID</source>
+        <target state="translated">Telegram sohbet kimliği</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">424</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3e420c675b8f3f3702576d52e8bb6e8e1d3feda0" datatype="html" xml:space="preserve">
+        <source>How do I get the chat ID?</source>
+        <target state="translated">Sohbet kimliğini nasıl alabilirim?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.html</context>
+          <context context-type="linenumber">426</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3371159074051387771" datatype="html" xml:space="preserve">
+        <source>Failed to delete <x id="category name" equiv-text="category['name']"/>!</source>
+        <target state="translated"><x id="category name" equiv-text="category['name']"/> silinemedi!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/settings/settings.component.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8c6e24eab969d9f63a8a0e9d617aee3b99e28ae6" datatype="html" xml:space="preserve">
+        <source>Play all</source>
+        <target state="translated">Tümünü oynat</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="674a999dd48d7da565ffdd105602261b8a4761ea" datatype="html" xml:space="preserve">
+        <source>Download zip</source>
+        <target state="translated">Zip dosyasını indir</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscription/subscription/subscription.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0ed98b4c6ec1db6708a963e8a2699478ac97f55c" datatype="html" xml:space="preserve">
+        <source>Add subscription</source>
+        <target state="translated">Abonelik ekle</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/subscriptions/subscriptions.component.html</context>
+          <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
     </body>
