@@ -31,7 +31,8 @@ NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker
 Required dependencies:
 
 * Node.js 16
-* Python
+* Python 3.11 or above (yt-dlp deprecated older versions)
+* A JavaScript runtime, [Deno](https://deno.com/) by default (required by yt-dlp to solve YouTube's player challenges, see the [yt-dlp wiki](https://github.com/yt-dlp/yt-dlp/wiki/EJS)). Without it YouTube downloads fail with `HTTP Error 403: Forbidden`
 
 Optional dependencies:
 
