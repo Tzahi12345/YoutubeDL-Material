@@ -6,11 +6,12 @@ COPY docker-utils/*.sh .
 RUN chmod +x *.sh
 RUN sh ./ffmpeg-fetch.sh
 RUN sh ./fetch-twitchdownloader.sh
+RUN sh ./fetch-deno.sh
 
 
-# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
-# Go to 20.04
-FROM ubuntu:22.04 AS base
+# Create our Ubuntu 24.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
+# 24.04 is required because yt-dlp deprecated Python 3.10, which is what 22.04 ships
+FROM ubuntu:24.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
@@ -23,9 +24,11 @@ ENV npm_config_cache=/app/.npm
 
 # Use NVM to get specific node version
 ENV NODE_VERSION=16.14.2
-RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
+# Ubuntu 24.04 ships a default "ubuntu" user occupying UID/GID 1000, remove it first
+RUN { userdel -r ubuntu || true; groupdel ubuntu || true; } 2>/dev/null; \
+    groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
-    apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 libatomic1 && \
+    apt install -y --no-install-recommends curl ca-certificates tzdata libicu74 libatomic1 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -74,17 +77,14 @@ RUN npm config set strict-ssl false && \
 FROM base
 RUN npm install -g pm2 && \
     apt update && \
-    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
-    pip install pycryptodomex && \
-    apt remove -y --purge build-essential && \
-    apt autoremove -y --purge && \
+    apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pycryptodome atomicparsley && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 # User 1000 already exist from base image
-COPY --chown=$UID:$GID --from=utils [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
-COPY --chown=$UID:$GID --from=utils [ "/usr/local/bin/ffprobe", "/usr/local/bin/ffprobe" ]
-COPY --chown=$UID:$GID --from=utils [ "/usr/local/bin/TwitchDownloaderCLI", "/usr/local/bin/TwitchDownloaderCLI"]
+# Copies ffmpeg, ffprobe, TwitchDownloaderCLI and (where available) deno in one go.
+# deno is optional as it does not ship binaries for every architecture we build for.
+COPY --chown=$UID:$GID --from=utils [ "/usr/local/bin/", "/usr/local/bin/" ]
 COPY --chown=$UID:$GID --from=backend ["/app/","/app/"]
 COPY --chown=$UID:$GID --from=frontend [ "/build/backend/public/", "/app/public/" ]
 #COPY --chown=$UID:$GID --from=python ["/app/TwitchDownloaderCLI","/usr/local/bin/TwitchDownloaderCLI"]
