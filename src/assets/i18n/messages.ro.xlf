@@ -113,6 +113,7 @@
       </trans-unit>
       <trans-unit id="5ca707824ab93066c7d9b44e1b8bf216725c2c22" datatype="html">
         <source>Filter</source>
+        <target state="translated">Filtru</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">3</context>
@@ -121,6 +122,7 @@
       </trans-unit>
       <trans-unit id="2f933b826a570836cab04f683970a2d22068458c" datatype="html">
         <source>Date</source>
+        <target state="translated">Data</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">31</context>
@@ -133,6 +135,7 @@
       </trans-unit>
       <trans-unit id="fdf7cbdc140d0aab0f0b6c06065a0fd448ed6a2e" datatype="html">
         <source>Title</source>
+        <target state="translated">Titlu</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">37</context>
@@ -149,6 +152,7 @@
       </trans-unit>
       <trans-unit id="45cc8ca94b5a50842a9a8ef804a5ab089a38ae5c" datatype="html">
         <source>ID</source>
+        <target state="translated">ID</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">47</context>
@@ -157,6 +161,7 @@
       </trans-unit>
       <trans-unit id="28da11220a3377ddce3c7948825d33101f142782" datatype="html">
         <source>Extractor</source>
+        <target state="needs-translation">Extractor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">57</context>
@@ -165,6 +170,7 @@
       </trans-unit>
       <trans-unit id="c150a30bbbdb175b4d08820196a9acb66b167653" datatype="html">
         <source>Archives empty</source>
+        <target state="translated">Arhive Goale</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">72</context>
@@ -173,6 +179,7 @@
       </trans-unit>
       <trans-unit id="51a161ce175abcd44f6c6cbd0e996681bf553ac3" datatype="html">
         <source>Delete selected</source>
+        <target state="translated">Șterge selecția</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">77</context>
@@ -181,6 +188,7 @@
       </trans-unit>
       <trans-unit id="c41475a25c9f9d9639db9efa56637603a77528b4" datatype="html">
         <source>Download archive</source>
+        <target state="translated">Descarcă arhiva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">80</context>
@@ -189,6 +197,7 @@
       </trans-unit>
       <trans-unit id="47bbc861efa59ba4135e6aa8f63213420e3f3b91" datatype="html">
         <source>Subscription</source>
+        <target state="translated">Abonamente</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">82</context>
@@ -209,6 +218,7 @@
       </trans-unit>
       <trans-unit id="a2f14a73f7a6e94479f67423cc51102da8d6f524" datatype="html">
         <source>None</source>
+        <target state="needs-translation">Niciuna</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">84</context>
@@ -229,6 +239,7 @@
       </trans-unit>
       <trans-unit id="b4e61d531b8db72449f043f122119da964f4fc54" datatype="html">
         <source>File type</source>
+        <target state="translated">Tipul de fișier</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">89</context>
@@ -245,6 +256,7 @@
       </trans-unit>
       <trans-unit id="a47b663952ecf47fd8bc942a1c08ff0d3893bba5" datatype="html">
         <source>Both</source>
+        <target state="translated">Ambele</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">91</context>
@@ -257,6 +269,7 @@
       </trans-unit>
       <trans-unit id="2d1ea268a6a9f483dbc2cbfe19bf4256a57a6af4" datatype="html">
         <source>Video</source>
+        <target state="translated">Videoclip</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">92</context>
@@ -269,6 +282,7 @@
       </trans-unit>
       <trans-unit id="f0baeb8b69d120073b6d60d34785889b0c3232c8" datatype="html">
         <source>Audio</source>
+        <target state="translated">Audio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">93</context>
@@ -281,6 +295,7 @@
       </trans-unit>
       <trans-unit id="98a8a42e5efffe17ab786636ed0139b4c7032d0e" datatype="html">
         <source>Drag and Drop</source>
+        <target state="translated">Trage și Scapă (Drag and Drop)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">104</context>
@@ -293,6 +308,7 @@
       </trans-unit>
       <trans-unit id="4b3972c3e9485218508a95f7a4ce7758e3f09ced" datatype="html">
         <source>Upload</source>
+        <target state="translated">Încarcă</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">137</context>
@@ -305,6 +321,7 @@
       </trans-unit>
       <trans-unit id="6549265851868599441" datatype="html">
         <source>Video</source>
+        <target state="translated">Videoclip</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">40</context>
@@ -312,6 +329,7 @@
       </trans-unit>
       <trans-unit id="347407180135731058" datatype="html">
         <source>Audio</source>
+        <target state="translated">Audio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">44</context>
@@ -319,6 +337,7 @@
       </trans-unit>
       <trans-unit id="8953483585652369683" datatype="html">
         <source>Archive successfully imported!</source>
+        <target state="translated">Arhiva a fost importată cu succes!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">130</context>
@@ -326,6 +345,7 @@
       </trans-unit>
       <trans-unit id="3159807825117518005" datatype="html">
         <source>Delete archives</source>
+        <target state="translated">Șterge arhivele</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">152</context>
@@ -333,6 +353,7 @@
       </trans-unit>
       <trans-unit id="8425787787095143143" datatype="html">
         <source>Would you like to delete <x id="selected archives amount" equiv-text="this.selection.selected.length"/> archive(s)?</source>
+        <target state="translated">Ai dori să ștergi <x id="selected archives amount" equiv-text="this.selection.selected.length"/> arhiva/arhivele?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">153</context>
@@ -340,6 +361,7 @@
       </trans-unit>
       <trans-unit id="7022070615528435141" datatype="html">
         <source>Delete</source>
+        <target state="translated">Șterge</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">154</context>
@@ -351,6 +373,7 @@
       </trans-unit>
       <trans-unit id="2525880134753073592" datatype="html">
         <source>Successfully deleted archive items!</source>
+        <target state="translated">S-au șters elementele arhivei cu succes!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">172</context>
@@ -358,6 +381,7 @@
       </trans-unit>
       <trans-unit id="8224301330941792118" datatype="html">
         <source>Failed to delete archive items!</source>
+        <target state="translated">Nu s-au putut șterge elementele arhivei!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.ts</context>
           <context context-type="linenumber">174</context>
