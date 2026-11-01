@@ -1325,9 +1325,9 @@
           <context context-type="linenumber">17</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html">
-        <source>Profile</source>
-        <target xml:lang="de-DE">Profil</target>
+      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html" xml:space="preserve">
+        <source> Profile</source>
+        <target xml:lang="de-DE" state="translated"> Profile</target>
         <note from="description" priority="1">Profile menu label</note>
         <context-group purpose="location">
           <context context-type="sourcefile">app/app.component.html</context>
