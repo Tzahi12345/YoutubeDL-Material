@@ -2,7 +2,7 @@
 {
     "name": "Node.js",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18-bullseye",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
     "features": {
 	"ghcr.io/devcontainers-contrib/features/jshint:2": {},
 	"ghcr.io/devcontainers-contrib/features/angular-cli:2": {},

@@ -1,5 +1,5 @@
 # Fetching our utils
-FROM ubuntu:22.04 AS utils
+FROM ubuntu:24.04 AS utils
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
 COPY docker-utils/*.sh .
@@ -8,9 +8,9 @@ RUN sh ./ffmpeg-fetch.sh
 RUN sh ./fetch-twitchdownloader.sh
 
 
-# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
-# Go to 20.04
-FROM ubuntu:22.04 AS base
+# Create our Ubuntu 24.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
+# Ubuntu 24.04 ships Python 3.12, yt-dlp requires Python >= 3.11
+FROM ubuntu:24.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
@@ -23,9 +23,11 @@ ENV npm_config_cache=/app/.npm
 
 # Use NVM to get specific node version
 ENV NODE_VERSION=16.14.2
-RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
+# Ubuntu 24.04 images ship a default 'ubuntu' user with UID/GID 1000, remove it so ours can take that ID
+RUN (userdel -r ubuntu || true) && \
+    groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
-    apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 libatomic1 && \
+    apt install -y --no-install-recommends curl ca-certificates tzdata libicu74 libatomic1 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -75,11 +77,12 @@ FROM base
 RUN npm install -g pm2 && \
     apt update && \
     apt install -y --no-install-recommends gosu python3-minimal python-is-python3 python3-pip atomicparsley build-essential && \
-    pip install pycryptodomex && \
+    pip install --break-system-packages pycryptodomex && \
     apt remove -y --purge build-essential && \
     apt autoremove -y --purge && \
     apt clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    python3 -c 'import sys; assert sys.version_info >= (3, 11), "yt-dlp requires Python >= 3.11, found " + sys.version'
 WORKDIR /app
 # User 1000 already exist from base image
 COPY --chown=$UID:$GID --from=utils [ "/usr/local/bin/ffmpeg", "/usr/local/bin/ffmpeg" ]
