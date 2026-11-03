@@ -31,7 +31,7 @@ NOTE: If you would like to use Docker, you can skip down to the [Docker](#Docker
 Required dependencies:
 
 * Node.js 16
-* Python
+* Python 3.11 or newer (required by yt-dlp)
 
 Optional dependencies:
 
@@ -43,7 +43,7 @@ Optional dependencies:
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-sudo apt-get install nodejs youtube-dl ffmpeg unzip python npm
+sudo apt-get install nodejs ffmpeg unzip python3 npm
 ```
 
 </details>

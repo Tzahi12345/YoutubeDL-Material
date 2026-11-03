@@ -83,8 +83,26 @@ exports.killYoutubeDLProcess = async (child_process) => {
     kill(child_process.pid, 'SIGKILL');
 }
 
+// yt-dlp's Linux/macOS release is a Python zipapp, so it runs with the system python3
+const MIN_PYTHON_VERSION = [3, 11];
+
+const checkPythonVersion = async () => {
+    if (is_windows) return; // the Windows release is a standalone .exe
+    try {
+        const {stdout} = await execa('python3', ['-c', 'import sys; print("%d.%d.%d" % sys.version_info[:3])']);
+        const version = stdout.trim().split('.').map(Number);
+        const [min_major, min_minor] = MIN_PYTHON_VERSION;
+        if (version[0] < min_major || (version[0] === min_major && version[1] < min_minor)) {
+            logger.error(`yt-dlp requires Python ${MIN_PYTHON_VERSION.join('.')} or newer, but python3 is version ${stdout.trim()}. Downloads will fail until Python is upgraded.`);
+        }
+    } catch (e) {
+        logger.error(`Could not find python3, which yt-dlp requires (version ${MIN_PYTHON_VERSION.join('.')} or newer).`);
+    }
+}
+
 exports.checkForYoutubeDLUpdate = async () => {
     const selected_fork = config_api.getConfigItem('ytdl_default_downloader');
+    if (selected_fork === 'yt-dlp') await checkPythonVersion();
     const output_file_path = getYoutubeDLPath();
     // get current version
     let current_app_details_exists = fs.existsSync(CONSTS.DETAILS_BIN_PATH);
