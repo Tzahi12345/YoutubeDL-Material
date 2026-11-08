@@ -1,5 +1,5 @@
 # Fetching our utils
-FROM ubuntu:22.04 AS utils
+FROM ubuntu:24.04 AS utils
 ENV DEBIAN_FRONTEND=noninteractive
 # Use script due local build compability
 COPY docker-utils/*.sh .
@@ -8,9 +8,11 @@ RUN sh ./ffmpeg-fetch.sh
 RUN sh ./fetch-twitchdownloader.sh
 
 
-# Create our Ubuntu 22.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
-# Go to 20.04
-FROM ubuntu:22.04 AS base
+# Create our Ubuntu 24.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
+# Upgrading from 22.04 is required because yt-dlp (bundled via node_modules/youtube-dl) requires Python 3.11+,
+# and Ubuntu 22.04 ships Python 3.10 by default, causing: ImportError: You are using an unsupported version of Python.
+# Ubuntu 24.04 ships Python 3.12, which satisfies yt-dlp's requirements.
+FROM ubuntu:24.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 ENV UID=1000
@@ -25,7 +27,7 @@ ENV npm_config_cache=/app/.npm
 ENV NODE_VERSION=16.14.2
 RUN groupadd -g $GID $USER && useradd --system -m -g $USER --uid $UID $USER && \
     apt update && \
-    apt install -y --no-install-recommends curl ca-certificates tzdata libicu70 libatomic1 && \
+    apt install -y --no-install-recommends curl ca-certificates tzdata libicu72 libatomic1 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
