@@ -3,7 +3,21 @@ FROM tzahi12345/youtubedl-material:latest
 # Install deno - required by yt-dlp for YouTube JS challenge solving
 # See: https://github.com/yt-dlp/yt-dlp/wiki/EJS
 USER root
-RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/* && \
+# yt-dlp requires Python 3.11+, but images built from Ubuntu 22.04 provide
+# Python 3.10 as python3. Install python3.11 (available in jammy-updates) and
+# make it the default python3 so yt-dlp runs even on older base images.
+# Images already built from Ubuntu 24.04 are unaffected (python3 is 3.12+ there
+# and this block is a harmless no-op for the version gate).
+RUN apt-get update && apt-get install -y unzip python3.11 && rm -rf /var/lib/apt/lists/* && \
+    python3 --version && \
+    if ! python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)'; then \
+        ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
+        curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && \
+        python3.11 /tmp/get-pip.py && rm -f /tmp/get-pip.py && \
+        python3.11 -m pip install --no-cache-dir pycryptodomex; \
+    fi && \
+    python3 --version && \
+    python3 -c 'import sys; assert sys.version_info >= (3, 11), sys.version' && \
     curl -fsSL https://deno.land/install.sh | sh && \
     mv /root/.deno/bin/deno /usr/local/bin/deno && \
     deno --version

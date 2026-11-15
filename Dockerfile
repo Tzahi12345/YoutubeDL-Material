@@ -9,9 +9,11 @@ RUN sh ./fetch-twitchdownloader.sh
 
 
 # Create our Ubuntu 24.04 with node 16.14.2 (that specific version is required as per: https://stackoverflow.com/a/72855258/8088021)
-# Upgrading from 22.04 is required because yt-dlp (bundled via node_modules/youtube-dl) requires Python 3.11+,
-# and Ubuntu 22.04 ships Python 3.10 by default, causing: ImportError: You are using an unsupported version of Python.
-# Ubuntu 24.04 ships Python 3.12, which satisfies yt-dlp's requirements.
+# Upgrading from 22.04 is required because yt-dlp (downloaded as a standalone
+# binary by backend/youtube-dl.js) requires Python 3.11+,
+# and Ubuntu 22.04's python3-minimal resolves to Python 3.10, causing:
+# ImportError: You are using an unsupported version of Python.
+# Ubuntu 24.04's python3-minimal resolves to Python 3.12, which satisfies yt-dlp's requirements.
 FROM ubuntu:24.04 AS base
 ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
