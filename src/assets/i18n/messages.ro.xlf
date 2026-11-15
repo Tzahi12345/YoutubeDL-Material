@@ -88,6 +88,7 @@
       </trans-unit>
       <trans-unit id="586a5fd72602b5b14ec0c55f84814de47bb21e3a" datatype="html">
         <source>Tasks</source>
+        <target state="needs-translation">Sarcini</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">51</context>
@@ -161,7 +162,7 @@
       </trans-unit>
       <trans-unit id="28da11220a3377ddce3c7948825d33101f142782" datatype="html">
         <source>Extractor</source>
-        <target state="needs-translation">Extractor</target>
+        <target state="translated">Extractor</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/archive-viewer/archive-viewer.component.html</context>
           <context context-type="linenumber">57</context>
